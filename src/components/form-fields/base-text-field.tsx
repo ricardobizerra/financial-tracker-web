@@ -1,0 +1,35 @@
+import { useDescription, useTsController } from '@ts-react/form';
+import { Input } from '../ui/input';
+import { useFormContext } from 'react-hook-form';
+import { BaseField, BaseFieldProps } from './base-field';
+import { HTMLInputAutoCompleteAttribute, HTMLInputTypeAttribute } from 'react';
+
+export interface BaseTextFieldProps extends BaseFieldProps {
+  inputType: HTMLInputTypeAttribute;
+  autoComplete?: HTMLInputAutoCompleteAttribute | undefined;
+}
+
+export function BaseTextField({
+  inputType,
+  autoComplete,
+  ...baseProps
+}: BaseTextFieldProps) {
+  const {
+    field: { onChange, value, ...field },
+  } = useTsController<string>();
+  const { placeholder } = useDescription();
+  const { setValue } = useFormContext();
+
+  return (
+    <BaseField {...baseProps}>
+      <Input
+        type={inputType}
+        placeholder={placeholder}
+        onChange={(e) => setValue(field.name, e.target.value || undefined)}
+        value={value ?? ''}
+        autoComplete={autoComplete}
+        {...field}
+      />
+    </BaseField>
+  );
+}
