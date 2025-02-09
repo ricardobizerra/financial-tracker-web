@@ -38,6 +38,7 @@ interface ChartProps<TData> {
   tooltip?: {
     indicator: 'line' | 'dot' | 'dashed';
   };
+  legend?: boolean;
 }
 
 export function Chart<TData>({
@@ -45,6 +46,7 @@ export function Chart<TData>({
   config,
   type,
   tooltip = { indicator: 'line' },
+  legend = true,
 }: ChartProps<TData>) {
   const SelectedChart = chartTypes[type];
 
@@ -52,6 +54,7 @@ export function Chart<TData>({
     <ChartContainer config={config} className="min-h-[200px] w-full">
       <SelectedChart accessibilityLayer data={data}>
         <CartesianGrid vertical={false} />
+
         {type !== 'pie' && (
           <XAxis
             dataKey="month"
@@ -61,12 +64,14 @@ export function Chart<TData>({
             tickFormatter={(value) => value.slice(0, 3)}
           />
         )}
+
         {!!tooltip && (
           <ChartTooltip
             content={<ChartTooltipContent indicator={tooltip.indicator} />}
           />
         )}
-        {/* <ChartLegend content={<ChartLegendContent />} /> */}
+
+        {!!legend && <ChartLegend content={<ChartLegendContent />} />}
 
         {type === 'bar' &&
           Object.keys(config).map((key) => (
