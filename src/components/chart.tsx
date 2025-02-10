@@ -20,6 +20,7 @@ import {
   Pie,
   PieChart,
   XAxis,
+  YAxis,
 } from 'recharts';
 
 const chartTypes = {
@@ -39,6 +40,8 @@ interface ChartProps<TData> {
     indicator: 'line' | 'dot' | 'dashed';
   };
   legend?: boolean;
+  xAxis?: boolean;
+  yAxis?: boolean;
 }
 
 export function Chart<TData>({
@@ -47,6 +50,8 @@ export function Chart<TData>({
   type,
   tooltip = { indicator: 'line' },
   legend = true,
+  xAxis = true,
+  yAxis = false,
 }: ChartProps<TData>) {
   const SelectedChart = chartTypes[type];
 
@@ -55,13 +60,22 @@ export function Chart<TData>({
       <SelectedChart accessibilityLayer data={data}>
         <CartesianGrid vertical={false} />
 
-        {type !== 'pie' && (
+        {type !== 'pie' && !!xAxis && (
           <XAxis
             dataKey="month"
             tickLine={false}
             tickMargin={10}
             axisLine={false}
             tickFormatter={(value) => value.slice(0, 3)}
+          />
+        )}
+
+        {type !== 'pie' && !!yAxis && (
+          <YAxis
+            tickLine={false}
+            tickMargin={10}
+            axisLine={false}
+            tickFormatter={(value) => formatNumberWithSuffix(value as number)}
           />
         )}
 
@@ -127,4 +141,13 @@ export function Chart<TData>({
       </SelectedChart>
     </ChartContainer>
   );
+}
+
+function formatNumberWithSuffix(num: number): string {
+  if (num < 1000) return num.toString();
+  if (num < 1_000_000)
+    return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+  if (num < 1_000_000_000)
+    return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+  return (num / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
 }
