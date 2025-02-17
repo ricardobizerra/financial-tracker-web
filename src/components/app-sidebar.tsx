@@ -1,6 +1,6 @@
 'use client';
 
-import { Home } from 'lucide-react';
+import { PiggyBank } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -27,9 +27,9 @@ import { APP_CONFIG } from '@/lib/config';
 
 const items = [
   {
-    title: 'Example',
-    url: '/example',
-    icon: Home,
+    title: 'Investimentos',
+    url: '/investments',
+    icon: PiggyBank,
   },
 ];
 
