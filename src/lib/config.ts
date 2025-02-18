@@ -3,11 +3,17 @@ type SidebarAppearance = 'only-app' | 'app-and-landing';
 type AppConfig = {
   sidebarAppearance: SidebarAppearance;
   withAuth: boolean;
+  redirects: {
+    signIn: string;
+  };
 };
 
 export const APP_CONFIG: AppConfig = {
   sidebarAppearance: 'only-app',
   withAuth: true,
+  redirects: {
+    signIn: '/investments',
+  },
 };
 
 if (!APP_CONFIG) {

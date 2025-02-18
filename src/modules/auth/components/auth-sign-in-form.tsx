@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { setAccessToken } from '@/lib/auth';
+import { APP_CONFIG } from '@/lib/config';
 import { AuthSignInMutation } from '@/modules/auth/graphql/auth-mutations';
 import { useMutation } from '@apollo/client';
 import Link from 'next/link';
@@ -39,7 +40,7 @@ export function AuthSignInForm() {
         if (data.authSignIn?.accessToken) {
           await setAccessToken(data.authSignIn.accessToken);
 
-          router.push('/');
+          router.push(APP_CONFIG.redirects.signIn);
 
           toast.success('Login realizado com sucesso!', {
             description: 'Você será redirecionado em instantes.',
