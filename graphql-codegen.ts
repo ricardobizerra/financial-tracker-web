@@ -3,7 +3,9 @@ import { CodegenConfig } from '@graphql-codegen/cli';
 const config: CodegenConfig = {
   schema: `${process.env.NEXT_PUBLIC_API_URL}/graphql`,
   require: ['dotenv'],
-  documents: ['src/**/*.ts'],
+  documents: [
+    'src/modules/**/graphql/*-{queries,mutations,suscriptions,fragments}.ts',
+  ],
   generates: {
     './src/graphql/': {
       preset: 'client',
