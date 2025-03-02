@@ -26,11 +26,11 @@ export function InvestmentsTable() {
             <>
               {row.getValue('currentAmount')} (
               {row.original.currentVariation.startsWith('-') ? (
-                <CircleArrowDown className="h-4 w-4" />
+                <CircleArrowDown className="h-4 w-4 text-green-700 dark:text-green-500" />
               ) : row.original.currentVariation === '0,00%' ? (
                 <CircleEqual className="h-4 w-4" />
               ) : (
-                <CircleArrowUp className="h-4 w-4" />
+                <CircleArrowUp className="h-4 w-4 text-destructive" />
               )}{' '}
               {row.original.currentVariation})
             </>
