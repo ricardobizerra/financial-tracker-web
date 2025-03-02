@@ -1,8 +1,9 @@
+import { InvestmentsTable } from '../investments-table';
+
 export function InvestmentsTracking() {
   return (
-    <div>
-      <h2>Investments</h2>
-      <p>This is the Investments page.</p>
+    <div className="flex flex-col gap-4">
+      <InvestmentsTable />
     </div>
   );
 }
