@@ -2,8 +2,26 @@
 
 import { DataTable } from '@/components/data-table';
 import { OrderDirection } from '@/graphql/graphql';
-import { CircleArrowDown, CircleArrowUp, CircleEqual } from 'lucide-react';
 import { InvestmentsQuery } from '../graphql/investments-queries';
+import { cn } from '@/lib/utils';
+
+interface VariationBadgeProps {
+  variation: string;
+}
+
+function VariationBadge({ variation }: VariationBadgeProps) {
+  return (
+    <span
+      className={cn('rounded px-1.5 text-sm text-white', {
+        'bg-destructive': variation.startsWith('-'),
+        'bg-gray-600 dark:bg-gray-500': variation === '0,00%',
+        'bg-green-700': !variation.startsWith('-') && variation !== '0,00%',
+      })}
+    >
+      {variation}
+    </span>
+  );
+}
 
 export function InvestmentsTable() {
   return (
@@ -23,17 +41,10 @@ export function InvestmentsTable() {
           type: 'custom',
           enableSorting: false,
           cell: ({ row }) => (
-            <>
-              {row.getValue('currentAmount')} (
-              {row.original.currentVariation.startsWith('-') ? (
-                <CircleArrowDown className="h-4 w-4 text-green-700 dark:text-green-500" />
-              ) : row.original.currentVariation === '0,00%' ? (
-                <CircleEqual className="h-4 w-4" />
-              ) : (
-                <CircleArrowUp className="h-4 w-4 text-destructive" />
-              )}{' '}
-              {row.original.currentVariation})
-            </>
+            <div className="flex items-center gap-2">
+              {row.getValue('currentAmount')}
+              <VariationBadge variation={row.original.currentVariation} />
+            </div>
           ),
         },
         {
@@ -48,17 +59,10 @@ export function InvestmentsTable() {
           type: 'custom',
           enableSorting: false,
           cell: ({ row }) => (
-            <>
-              {row.getValue('taxedAmount')} (
-              {row.original.taxedVariation.startsWith('-') ? (
-                <CircleArrowDown className="h-4 w-4" />
-              ) : row.original.taxedVariation === '0,00%' ? (
-                <CircleEqual className="h-4 w-4" />
-              ) : (
-                <CircleArrowUp className="h-4 w-4" />
-              )}{' '}
-              {row.original.taxedVariation})
-            </>
+            <div className="flex items-center gap-2">
+              {row.getValue('taxedAmount')}
+              <VariationBadge variation={row.original.taxedVariation} />
+            </div>
           ),
         },
         { accessorKey: 'period', title: 'Período', type: 'text' },
