@@ -68,8 +68,13 @@ export function generateColumns<TData>({
 
   for (const column of initialColumns) {
     if (column.type === 'custom') {
-      const { type, title, ...rest } = column;
-      columns.push(rest);
+      const { type, ...rest } = column;
+      columns.push({
+        ...rest,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} {...rest} />
+        ),
+      });
     } else {
       const { accessorKey, enableSorting, enableHiding, ...rest } = column;
 
