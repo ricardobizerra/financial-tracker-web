@@ -25,13 +25,14 @@ export function DataTableContent() {
     search,
     setSearch,
     networkStatus,
+    actionButtons,
   } = useDataTable();
 
   const loading = networkStatus === NetworkStatus.loading;
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center">
+      <div className="flex items-center justify-between gap-4">
         {search !== undefined && (
           <Input
             placeholder={searchPlaceholder}
@@ -40,7 +41,10 @@ export function DataTableContent() {
             className="max-w-sm"
           />
         )}
-        {!!enableHiding && <DataTableViewOptions />}
+        <div className="flex items-center gap-4">
+          {actionButtons}
+          {!!enableHiding && <DataTableViewOptions />}
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>

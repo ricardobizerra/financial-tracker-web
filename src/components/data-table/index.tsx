@@ -22,6 +22,7 @@ type DataTableBaseProps<TData> = {
   enableRowSelection?: boolean | ((row: Row<TData>) => boolean);
   enableSorting?: boolean;
   searchPlaceholder?: string;
+  actionButtons?: React.ReactNode;
 };
 
 type DataTableSortingState<TData> = Array<{

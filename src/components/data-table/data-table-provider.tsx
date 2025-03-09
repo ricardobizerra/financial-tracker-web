@@ -82,6 +82,7 @@ function useDataTableController<TData>({
   enableSorting = true,
   searchPlaceholder,
   initialSorting,
+  actionButtons,
 }: DataTableQueryProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([
     {
@@ -225,6 +226,7 @@ function useDataTableController<TData>({
     pageInfo,
     paginate,
     networkStatus,
+    actionButtons,
   };
 }
 
@@ -246,6 +248,7 @@ function useDataTableNoQueryController<TData>({
   pageInfo,
   paginate,
   networkStatus,
+  actionButtons,
 }: DataTableNoQueryProps<TData>) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
@@ -309,5 +312,6 @@ function useDataTableNoQueryController<TData>({
     pageInfo,
     paginate,
     networkStatus,
+    actionButtons,
   };
 }
