@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { EmailField } from './form-fields/email-field';
 import { CreatePasswordField } from './form-fields/create-password-field';
 import { PasswordField } from './form-fields/password-field';
+import { CurrencyField } from './form-fields/currency-field';
 
 interface FormComponentProps extends React.FormHTMLAttributes<HTMLFormElement> {
   isPreventDefault?: boolean;
@@ -56,6 +57,7 @@ export const formFields = {
     createPasswordSchema,
     'createPassword',
   ),
+  currency: createUniqueFieldSchema(z.string(), 'currency'),
 };
 
 const mapping = [
@@ -64,6 +66,7 @@ const mapping = [
   [formFields.email, EmailField],
   [formFields.password, PasswordField],
   [formFields.createPassword, CreatePasswordField],
+  [formFields.currency, CurrencyField],
 ] as const;
 
 export const TsForm = createTsForm(mapping, { FormComponent });
