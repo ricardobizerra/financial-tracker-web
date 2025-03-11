@@ -17,6 +17,7 @@ type Documents = {
   '\n  mutation AuthSignIn($data: AuthSignInInput!) {\n    authSignIn(data: $data) {\n      accessToken\n      user {\n        id\n        email\n        name\n      }\n    }\n  }\n': typeof types.AuthSignInDocument;
   '\n  mutation CreateUser($data: UserCreateInput!) {\n    createUser(data: $data) {\n      accessToken\n      user {\n        id\n      }\n    }\n  }\n': typeof types.CreateUserDocument;
   '\n  query User {\n    user {\n      id\n      name\n      email\n      role\n    }\n  }\n': typeof types.UserDocument;
+  '\n  mutation CreateInvestment($data: InvestmentCreateWithoutUserInput!) {\n    createInvestment(data: $data) {\n      id\n      amount\n      startDate\n      duration\n      regimeName\n      regimePercentage\n      userId\n      createdAt\n      updatedAt\n    }\n  }\n': typeof types.CreateInvestmentDocument;
   '\n  fragment InvestmentFragment on InvestmentModel {\n    id\n    initialAmount\n    currentAmount\n    currentVariation\n    taxPercentage\n    taxedAmount\n    taxedVariation\n    period\n    duration\n  }\n': typeof types.InvestmentFragmentFragmentDoc;
   '\n  query Investments(\n    $first: Int\n    $orderDirection: OrderDirection\n    $orderBy: OrdenationInvestmentModel\n    $after: String\n    $last: Int\n    $before: String\n  ) {\n    investments(\n      first: $first\n      orderDirection: $orderDirection\n      orderBy: $orderBy\n      after: $after\n      last: $last\n      before: $before\n    ) {\n      edges {\n        cursor\n        node {\n          ...InvestmentFragment\n        }\n      }\n      pageInfo {\n        startCursor\n        endCursor\n        hasPreviousPage\n        hasNextPage\n      }\n    }\n  }\n': typeof types.InvestmentsDocument;
   '\n  query Users(\n    $first: Int\n    $after: String\n    $search: String\n    $before: String\n    $last: Int\n    $orderBy: OrdenationUserModel\n    $orderDirection: OrderDirection\n  ) {\n    users(\n      first: $first\n      after: $after\n      search: $search\n      before: $before\n      last: $last\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n    ) {\n      edges {\n        cursor\n        node {\n          id\n          email\n          name\n          role\n        }\n      }\n      pageInfo {\n        startCursor\n        endCursor\n        hasPreviousPage\n        hasNextPage\n      }\n    }\n  }\n': typeof types.UsersDocument;
@@ -28,6 +29,8 @@ const documents: Documents = {
     types.CreateUserDocument,
   '\n  query User {\n    user {\n      id\n      name\n      email\n      role\n    }\n  }\n':
     types.UserDocument,
+  '\n  mutation CreateInvestment($data: InvestmentCreateWithoutUserInput!) {\n    createInvestment(data: $data) {\n      id\n      amount\n      startDate\n      duration\n      regimeName\n      regimePercentage\n      userId\n      createdAt\n      updatedAt\n    }\n  }\n':
+    types.CreateInvestmentDocument,
   '\n  fragment InvestmentFragment on InvestmentModel {\n    id\n    initialAmount\n    currentAmount\n    currentVariation\n    taxPercentage\n    taxedAmount\n    taxedVariation\n    period\n    duration\n  }\n':
     types.InvestmentFragmentFragmentDoc,
   '\n  query Investments(\n    $first: Int\n    $orderDirection: OrderDirection\n    $orderBy: OrdenationInvestmentModel\n    $after: String\n    $last: Int\n    $before: String\n  ) {\n    investments(\n      first: $first\n      orderDirection: $orderDirection\n      orderBy: $orderBy\n      after: $after\n      last: $last\n      before: $before\n    ) {\n      edges {\n        cursor\n        node {\n          ...InvestmentFragment\n        }\n      }\n      pageInfo {\n        startCursor\n        endCursor\n        hasPreviousPage\n        hasNextPage\n      }\n    }\n  }\n':
@@ -68,6 +71,12 @@ export function graphql(
 export function graphql(
   source: '\n  query User {\n    user {\n      id\n      name\n      email\n      role\n    }\n  }\n',
 ): (typeof documents)['\n  query User {\n    user {\n      id\n      name\n      email\n      role\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  mutation CreateInvestment($data: InvestmentCreateWithoutUserInput!) {\n    createInvestment(data: $data) {\n      id\n      amount\n      startDate\n      duration\n      regimeName\n      regimePercentage\n      userId\n      createdAt\n      updatedAt\n    }\n  }\n',
+): (typeof documents)['\n  mutation CreateInvestment($data: InvestmentCreateWithoutUserInput!) {\n    createInvestment(data: $data) {\n      id\n      amount\n      startDate\n      duration\n      regimeName\n      regimePercentage\n      userId\n      createdAt\n      updatedAt\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

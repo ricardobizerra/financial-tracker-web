@@ -601,6 +601,26 @@ export type UserQuery = {
   };
 };
 
+export type CreateInvestmentMutationVariables = Exact<{
+  data: InvestmentCreateWithoutUserInput;
+}>;
+
+export type CreateInvestmentMutation = {
+  __typename?: 'Mutation';
+  createInvestment: {
+    __typename?: 'Investment';
+    id: string;
+    amount: number;
+    startDate: any;
+    duration: number;
+    regimeName: Regime;
+    regimePercentage: number | null;
+    userId: string;
+    createdAt: any;
+    updatedAt: any;
+  };
+};
+
 export type InvestmentFragmentFragment = {
   __typename?: 'InvestmentModel';
   id: string;
@@ -861,6 +881,68 @@ export const UserDocument = {
     },
   ],
 } as unknown as DocumentNode<UserQuery, UserQueryVariables>;
+export const CreateInvestmentDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CreateInvestment' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'InvestmentCreateWithoutUserInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createInvestment' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'data' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'data' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'regimeName' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'regimePercentage' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'userId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreateInvestmentMutation,
+  CreateInvestmentMutationVariables
+>;
 export const InvestmentsDocument = {
   kind: 'Document',
   definitions: [
