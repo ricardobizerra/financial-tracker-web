@@ -4,6 +4,7 @@ import { DataTable } from '@/components/data-table';
 import { OrderDirection } from '@/graphql/graphql';
 import { InvestmentsQuery } from '../graphql/investments-queries';
 import { cn } from '@/lib/utils';
+import { InvestmentCreateForm } from './investment-create-form';
 
 interface VariationBadgeProps {
   variation: string;
@@ -74,6 +75,7 @@ export function InvestmentsTable() {
         },
       ]}
       initialPageSize={50}
+      actionButtons={<InvestmentCreateForm />}
     />
   );
 }
