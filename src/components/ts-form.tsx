@@ -59,7 +59,7 @@ export const formFields = {
     createPasswordSchema,
     'createPassword',
   ),
-  currency: createUniqueFieldSchema(z.string(), 'currency'),
+  currency: createUniqueFieldSchema(z.number(), 'currency'),
   select: createUniqueFieldSchema(selectSchema, 'select'),
 };
 
