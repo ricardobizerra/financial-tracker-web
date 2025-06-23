@@ -10,6 +10,7 @@ import { DayButton, DayPicker, getDefaultClassNames } from 'react-day-picker';
 
 import { cn } from '@/lib/utils';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { ptBR } from 'date-fns/locale';
 
 function Calendar({
   className,
@@ -27,6 +28,7 @@ function Calendar({
 
   return (
     <DayPicker
+      locale={ptBR}
       showOutsideDays={showOutsideDays}
       className={cn(
         'group/calendar bg-background p-3 [--cell-size:2rem] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent',
@@ -37,7 +39,11 @@ function Calendar({
       captionLayout={captionLayout}
       formatters={{
         formatMonthDropdown: (date) =>
-          date.toLocaleString('default', { month: 'short' }),
+          date.toLocaleString('pt-BR', { month: 'short' })?.slice(0, 3),
+        formatWeekdayName: (date) =>
+          date.toLocaleString('pt-BR', { weekday: 'short' })?.slice(0, 3),
+        formatCaption: (date) =>
+          date.toLocaleString('pt-BR', { month: 'short' })?.slice(0, 3),
         ...formatters,
       }}
       classNames={{
@@ -62,7 +68,7 @@ function Calendar({
           defaultClassNames.button_next,
         ),
         month_caption: cn(
-          'flex h-[--cell-size] w-full items-center justify-center px-[--cell-size]',
+          'flex h-[--cell-size] w-full items-center justify-center px-[--cell-size] capitalize',
           defaultClassNames.month_caption,
         ),
         dropdowns: cn(
@@ -75,14 +81,14 @@ function Calendar({
         ),
         dropdown: cn('absolute inset-0 opacity-0', defaultClassNames.dropdown),
         caption_label: cn(
-          'select-none font-medium',
+          'select-none font-medium capitalize',
           captionLayout === 'label'
             ? 'text-sm'
             : '[&>svg]:text-muted-foreground flex h-8 items-center gap-1 rounded-md pl-2 pr-1 text-sm [&>svg]:size-3.5',
           defaultClassNames.caption_label,
         ),
         table: 'w-full border-collapse',
-        weekdays: cn('flex', defaultClassNames.weekdays),
+        weekdays: cn('flex capitalize', defaultClassNames.weekdays),
         weekday: cn(
           'text-muted-foreground flex-1 select-none rounded-md text-[0.8rem] font-normal',
           defaultClassNames.weekday,
