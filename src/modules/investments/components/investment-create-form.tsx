@@ -4,6 +4,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -13,6 +14,9 @@ import { z } from 'zod';
 import { CreateInvestmentMutation } from '../graphql/investments-mutations';
 import { useMutation } from '@apollo/client';
 import { Regime } from '@/graphql/graphql';
+import { InvestmentsQuery } from '../graphql/investments-queries';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 const schema = z.object({
   amount: formFields.currency.describe('Valor // '),
@@ -20,11 +24,12 @@ const schema = z.object({
     'Duração em dias // Insira aqui a duração em dias',
   ),
   regimeName: formFields.select.describe('Regime // '),
-  // regimePercentage: InputMaybe<Scalars['Float']['input']>;
-  // startDate: Scalars['DateTime']['input'];
+  regimePercentage: formFields.number.describe('Percentual do regime // '),
+  startDate: formFields.date.describe('Data de início // '),
 });
 
 export function InvestmentCreateForm() {
+  const [open, setOpen] = useState(false);
   const [createInvestment, { loading }] = useMutation(CreateInvestmentMutation);
 
   const investmentRegimeOptions = Object.values(Regime).map((regime) => ({
@@ -33,7 +38,7 @@ export function InvestmentCreateForm() {
   }));
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="sm" className="flex items-center gap-1">
           <PlusIcon />
@@ -62,12 +67,31 @@ export function InvestmentCreateForm() {
                   amount: data.amount,
                   duration: data.duration,
                   regimeName: data.regimeName?.value as Regime,
-                  // regimePercentage: InputMaybe<Scalars['Float']['input']>;
-                  // startDate: Scalars['DateTime']['input'];
+                  regimePercentage: data.regimePercentage,
+                  startDate: data.startDate,
                 },
+              },
+              refetchQueries: [InvestmentsQuery],
+              onCompleted: () => {
+                toast.success('Investimento criado!', {
+                  description: 'As informações foram salvas com sucesso.',
+                });
+                setOpen(false);
+              },
+              onError: (error) => {
+                toast.error('Erro ao criar investimento!', {
+                  description: error.message,
+                });
               },
             });
           }}
+          renderAfter={() => (
+            <DialogFooter>
+              <Button type="submit" disabled={loading} loading={loading}>
+                Salvar
+              </Button>
+            </DialogFooter>
+          )}
         />
       </DialogContent>
     </Dialog>
