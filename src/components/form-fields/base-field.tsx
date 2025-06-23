@@ -30,7 +30,7 @@ export function BaseField({
       control={form.control}
       name={field.name}
       render={() => (
-        <FormItem>
+        <FormItem className="flex flex-col gap-2 space-y-0">
           <FormLabel>{label}</FormLabel>
           <FormControl>{children}</FormControl>
           {!!description && <FormDescription>{description}</FormDescription>}
