@@ -1,13 +1,14 @@
 'use client';
 
 import { ArrowDownIcon, ArrowUpIcon, EqualIcon } from 'lucide-react';
-import { Badge } from './ui/badge';
+import { Badge, BadgeProps } from './ui/badge';
 
 interface VariationBadgeProps {
   variation: string;
+  size?: BadgeProps['size'];
 }
 
-export function VariationBadge({ variation }: VariationBadgeProps) {
+export function VariationBadge({ variation, size }: VariationBadgeProps) {
   return (
     <Badge
       variant={
@@ -17,7 +18,8 @@ export function VariationBadge({ variation }: VariationBadgeProps) {
             ? 'outline'
             : 'success'
       }
-      className="flex items-center gap-1 font-medium"
+      className="font-medium"
+      size={size}
     >
       {variation.startsWith('-') ? (
         <ArrowDownIcon className="h-4 w-4" />
