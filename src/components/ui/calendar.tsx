@@ -44,8 +44,6 @@ function Calendar({
           date.toLocaleString('pt-BR', { month: 'short' })?.slice(0, 3),
         formatWeekdayName: (date) =>
           date.toLocaleString('pt-BR', { weekday: 'short' })?.slice(0, 3),
-        formatCaption: (date) =>
-          date.toLocaleString('pt-BR', { month: 'short' })?.slice(0, 3),
         ...formatters,
       }}
       classNames={{
