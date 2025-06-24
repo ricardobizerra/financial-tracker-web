@@ -26,7 +26,10 @@ export function InvestmentsTable() {
           cell: ({ row }) => (
             <div className="flex items-center gap-2">
               {row.getValue('currentAmount')}
-              <VariationBadge variation={row.original.currentVariation} />
+              <VariationBadge
+                variation={row.original.currentVariation}
+                size="sm"
+              />
             </div>
           ),
         },
@@ -44,7 +47,10 @@ export function InvestmentsTable() {
           cell: ({ row }) => (
             <div className="flex items-center gap-2">
               {row.getValue('taxedAmount')}
-              <VariationBadge variation={row.original.taxedVariation} />
+              <VariationBadge
+                variation={row.original.taxedVariation}
+                size="sm"
+              />
             </div>
           ),
         },
