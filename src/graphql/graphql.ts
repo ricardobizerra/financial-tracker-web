@@ -611,6 +611,14 @@ export type UserQuery = {
   };
 };
 
+export type PageInfoFragmentFragment = {
+  __typename?: 'PageInfo';
+  startCursor: string | null;
+  endCursor: string | null;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+};
+
 export type CreateInvestmentMutationVariables = Exact<{
   data: InvestmentCreateWithoutUserInput;
 }>;
@@ -732,6 +740,28 @@ export type UsersQuery = {
   };
 };
 
+export const PageInfoFragmentFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'PageInfoFragment' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'PageInfo' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'startCursor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'endCursor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'hasPreviousPage' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'hasNextPage' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<PageInfoFragmentFragment, unknown>;
 export const InvestmentFragmentFragmentDoc = {
   kind: 'Document',
   definitions: [
