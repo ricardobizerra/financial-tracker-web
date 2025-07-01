@@ -46,3 +46,15 @@ export const InvestmentsQuery = graphql(`
     }
   }
 `);
+
+export const TotalInvestmentsQuery = graphql(`
+  query TotalInvestments {
+    totalInvestments {
+      initialAmount
+      currentAmount
+      currentVariation
+      taxedAmount
+      taxedVariation
+    }
+  }
+`);

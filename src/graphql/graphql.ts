@@ -392,6 +392,7 @@ export type Query = {
   __typename?: 'Query';
   health: Scalars['String']['output'];
   investments: InvestmentConnection;
+  totalInvestments: TotalInvestmentsModel;
   user: UserModel;
   users: UserConnection;
 };
@@ -453,6 +454,15 @@ export type StringFilter = {
 export type Subscription = {
   __typename?: 'Subscription';
   userAdded: UserModel;
+};
+
+export type TotalInvestmentsModel = {
+  __typename?: 'TotalInvestmentsModel';
+  currentAmount: Scalars['String']['output'];
+  currentVariation: Scalars['String']['output'];
+  initialAmount: Scalars['String']['output'];
+  taxedAmount: Scalars['String']['output'];
+  taxedVariation: Scalars['String']['output'];
 };
 
 export type User = {
@@ -670,6 +680,20 @@ export type InvestmentsQuery = {
       hasPreviousPage: boolean;
       hasNextPage: boolean;
     } | null;
+  };
+};
+
+export type TotalInvestmentsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type TotalInvestmentsQuery = {
+  __typename?: 'Query';
+  totalInvestments: {
+    __typename?: 'TotalInvestmentsModel';
+    initialAmount: string;
+    currentAmount: string;
+    currentVariation: string;
+    taxedAmount: string;
+    taxedVariation: string;
   };
 };
 
@@ -1146,6 +1170,50 @@ export const InvestmentsDocument = {
     },
   ],
 } as unknown as DocumentNode<InvestmentsQuery, InvestmentsQueryVariables>;
+export const TotalInvestmentsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'TotalInvestments' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'totalInvestments' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'initialAmount' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'currentAmount' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'currentVariation' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'taxedAmount' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'taxedVariation' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  TotalInvestmentsQuery,
+  TotalInvestmentsQueryVariables
+>;
 export const UsersDocument = {
   kind: 'Document',
   definitions: [
