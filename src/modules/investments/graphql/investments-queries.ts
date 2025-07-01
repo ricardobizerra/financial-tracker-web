@@ -38,10 +38,7 @@ export const InvestmentsQuery = graphql(`
         }
       }
       pageInfo {
-        startCursor
-        endCursor
-        hasPreviousPage
-        hasNextPage
+        ...PageInfoFragment
       }
     }
   }
