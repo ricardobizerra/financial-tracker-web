@@ -35,7 +35,7 @@ export function DataTableContent() {
       <div className="flex items-center justify-between gap-4">
         {search !== undefined && (
           <Input
-            placeholder={searchPlaceholder}
+            placeholder={searchPlaceholder || 'Buscar itens...'}
             value={search ?? ''}
             onChange={(e) => setSearch?.(e.target.value)}
             className="max-w-sm"
