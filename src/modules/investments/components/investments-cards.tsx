@@ -9,9 +9,11 @@ import {
 import { useQuery } from '@apollo/client';
 import { TotalInvestmentsQuery } from '../graphql/investments-queries';
 import { VariationBadge } from '@/components/variation-badge';
+import { formatCurrency } from '@/lib/formatters/currency';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function InvestmentsCards() {
-  const { data } = useQuery(TotalInvestmentsQuery);
+  const { data, loading } = useQuery(TotalInvestmentsQuery);
 
   const cards = [
     {
@@ -32,23 +34,31 @@ export function InvestmentsCards() {
 
   return (
     <div className="grid w-full grid-cols-3 gap-4">
-      {cards.map((card) => (
-        <Card key={card.title}>
-          <CardHeader className="relative">
-            <CardDescription>{card.title}</CardDescription>
+      {loading ? (
+        <>
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+        </>
+      ) : (
+        cards.map((card) => (
+          <Card key={card.title}>
+            <CardHeader className="relative">
+              <CardDescription>{card.title}</CardDescription>
 
-            <CardTitle className="text-2xl font-semibold min-[250px]:text-3xl">
-              {card.value}
-            </CardTitle>
+              <CardTitle className="text-2xl font-semibold min-[250px]:text-3xl">
+                {formatCurrency(card.value!)}
+              </CardTitle>
 
-            {card.variation && (
-              <div className="absolute right-4 top-4">
-                <VariationBadge variation={card.variation} size="lg" />
-              </div>
-            )}
-          </CardHeader>
-        </Card>
-      ))}
+              {card.variation && (
+                <div className="absolute right-4 top-4">
+                  <VariationBadge variation={card.variation} size="lg" />
+                </div>
+              )}
+            </CardHeader>
+          </Card>
+        ))
+      )}
     </div>
   );
 }
