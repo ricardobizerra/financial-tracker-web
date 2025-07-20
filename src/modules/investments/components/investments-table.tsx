@@ -1,31 +1,37 @@
 'use client';
 
 import { DataTable } from '@/components/data-table';
-import { OrderDirection } from '@/graphql/graphql';
+import { OrdenationInvestmentModel, OrderDirection } from '@/graphql/graphql';
 import { InvestmentsQuery } from '../graphql/investments-queries';
 import { InvestmentCreateForm } from './investment-create-form';
 import { VariationBadge } from '@/components/variation-badge';
+import { add } from 'date-fns';
+import { formatCurrency } from '@/lib/formatters/currency';
+import { formatDate } from '@/lib/formatters/date';
 
 export function InvestmentsTable() {
   return (
     <DataTable
       mode="query"
       query={InvestmentsQuery}
-      initialSorting={{ key: 'period', direction: OrderDirection.Asc }}
+      initialSorting={{
+        key: OrdenationInvestmentModel.CorrectedAmount,
+        direction: OrderDirection.Desc,
+      }}
       columns={[
         {
-          accessorKey: 'initialAmount',
+          accessorKey: 'amount',
           title: 'Quantia inicial',
-          type: 'text',
+          type: 'custom',
+          cell: ({ row }) => formatCurrency(row.getValue('amount')),
         },
         {
-          accessorKey: 'currentAmount',
+          accessorKey: 'correctedAmount',
           title: 'Quantia atual',
           type: 'custom',
-          enableSorting: false,
           cell: ({ row }) => (
             <div className="flex items-center gap-2">
-              {row.getValue('currentAmount')}
+              {formatCurrency(row.getValue('correctedAmount'))}
               <VariationBadge
                 variation={row.original.currentVariation}
                 size="sm"
@@ -43,10 +49,9 @@ export function InvestmentsTable() {
           accessorKey: 'taxedAmount',
           title: 'Quantia c/ dedução IRPF',
           type: 'custom',
-          enableSorting: false,
           cell: ({ row }) => (
             <div className="flex items-center gap-2">
-              {row.getValue('taxedAmount')}
+              {formatCurrency(row.getValue('taxedAmount'))}
               <VariationBadge
                 variation={row.original.taxedVariation}
                 size="sm"
@@ -54,7 +59,17 @@ export function InvestmentsTable() {
             </div>
           ),
         },
-        { accessorKey: 'period', title: 'Período', type: 'text' },
+        {
+          accessorKey: 'startDate',
+          title: 'Período',
+          type: 'custom',
+          cell: ({ row }) =>
+            formatDate(row.original.startDate) +
+            ' - ' +
+            formatDate(
+              add(row.original.startDate, { days: row.original.duration || 0 }),
+            ),
+        },
         {
           accessorKey: 'duration',
           title: 'Duração',

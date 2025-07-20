@@ -3,13 +3,13 @@ import { graphql } from '@/graphql';
 export const InvestmentFragment = graphql(`
   fragment InvestmentFragment on InvestmentModel {
     id
-    initialAmount
-    currentAmount
+    amount
+    correctedAmount
     currentVariation
     taxPercentage
     taxedAmount
     taxedVariation
-    period
+    startDate
     duration
   }
 `);
