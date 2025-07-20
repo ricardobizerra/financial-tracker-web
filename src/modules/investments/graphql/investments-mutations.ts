@@ -15,3 +15,9 @@ export const CreateInvestmentMutation = graphql(`
     }
   }
 `);
+
+export const DeleteInvestmentMutation = graphql(`
+  mutation DeleteInvestment($id: ID!) {
+    deleteInvestment(id: $id)
+  }
+`);

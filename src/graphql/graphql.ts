@@ -713,6 +713,15 @@ export type CreateInvestmentMutation = {
   };
 };
 
+export type DeleteInvestmentMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export type DeleteInvestmentMutation = {
+  __typename?: 'Mutation';
+  deleteInvestment: string;
+};
+
 export type InvestmentFragmentFragment = {
   __typename?: 'InvestmentModel';
   id: string;
@@ -1070,6 +1079,48 @@ export const CreateInvestmentDocument = {
 } as unknown as DocumentNode<
   CreateInvestmentMutation,
   CreateInvestmentMutationVariables
+>;
+export const DeleteInvestmentDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'DeleteInvestment' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'deleteInvestment' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  DeleteInvestmentMutation,
+  DeleteInvestmentMutationVariables
 >;
 export const InvestmentsDocument = {
   kind: 'Document',

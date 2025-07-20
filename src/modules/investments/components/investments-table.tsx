@@ -8,6 +8,7 @@ import { VariationBadge } from '@/components/variation-badge';
 import { add } from 'date-fns';
 import { formatCurrency } from '@/lib/formatters/currency';
 import { formatDate } from '@/lib/formatters/date';
+import { InvestmentActions } from './investment-actions';
 
 export function InvestmentsTable() {
   return (
@@ -75,6 +76,15 @@ export function InvestmentsTable() {
           title: 'Duração',
           subtitle: 'em dias',
           type: 'text',
+        },
+        {
+          title: '',
+          accessorKey: '__typename',
+          type: 'custom',
+          enableSorting: false,
+          cell: ({ row }) => {
+            return <InvestmentActions id={row.original.id} />;
+          },
         },
       ]}
       initialPageSize={50}
