@@ -109,7 +109,10 @@ function useDataTableController<TData>({
   const columnHeaders = useMemo(
     () =>
       columns.reduce(
-        (prev, column) => ({ ...prev, [column.accessorKey]: column.title }),
+        (prev, column) =>
+          !!column.accessorKey
+            ? { ...prev, [column.accessorKey]: column.title }
+            : prev,
         {} as Record<keyof TData, string>,
       ),
     [columns],
@@ -267,7 +270,10 @@ function useDataTableNoQueryController<TData>({
   const columnHeaders = useMemo(
     () =>
       columns.reduce(
-        (prev, column) => ({ ...prev, [column.accessorKey]: column.title }),
+        (prev, column) =>
+          !!column.accessorKey
+            ? { ...prev, [column.accessorKey]: column.title }
+            : prev,
         {} as Record<keyof TData, string>,
       ),
     [columns],
