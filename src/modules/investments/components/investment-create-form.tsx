@@ -14,7 +14,10 @@ import { z } from 'zod';
 import { CreateInvestmentMutation } from '../graphql/investments-mutations';
 import { useMutation } from '@apollo/client';
 import { Regime } from '@/graphql/graphql';
-import { InvestmentsQuery } from '../graphql/investments-queries';
+import {
+  InvestmentRegimesQuery,
+  InvestmentsQuery,
+} from '../graphql/investments-queries';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -28,7 +31,11 @@ const schema = z.object({
   startDate: formFields.date.describe('Data de início // '),
 });
 
-export function InvestmentCreateForm() {
+export function InvestmentCreateForm({
+  defaultRegime,
+}: {
+  defaultRegime?: Regime;
+}) {
   const [open, setOpen] = useState(false);
   const [createInvestment, { loading }] = useMutation(CreateInvestmentMutation);
 
@@ -55,9 +62,15 @@ export function InvestmentCreateForm() {
 
         <TsForm
           schema={schema}
+          defaultValues={{
+            regimeName: {
+              value: defaultRegime,
+            },
+          }}
           props={{
             regimeName: {
               options: investmentRegimeOptions,
+              disabled: !!defaultRegime,
             },
           }}
           onSubmit={async (data) => {
@@ -71,7 +84,7 @@ export function InvestmentCreateForm() {
                   startDate: data.startDate,
                 },
               },
-              refetchQueries: [InvestmentsQuery],
+              refetchQueries: [InvestmentsQuery, InvestmentRegimesQuery],
               onCompleted: () => {
                 toast.success('Investimento criado!', {
                   description: 'As informações foram salvas com sucesso.',
@@ -92,7 +105,17 @@ export function InvestmentCreateForm() {
               </Button>
             </DialogFooter>
           )}
-        />
+        >
+          {({ regimeName, amount, duration, regimePercentage, startDate }) => (
+            <>
+              {regimeName}
+              {amount}
+              {duration}
+              {regimePercentage}
+              {startDate}
+            </>
+          )}
+        </TsForm>
       </DialogContent>
     </Dialog>
   );
