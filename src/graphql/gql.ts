@@ -21,8 +21,10 @@ type Documents = {
   '\n  mutation CreateInvestment($data: InvestmentCreateWithoutUserInput!) {\n    createInvestment(data: $data) {\n      id\n      amount\n      startDate\n      duration\n      regimeName\n      regimePercentage\n      userId\n      createdAt\n      updatedAt\n    }\n  }\n': typeof types.CreateInvestmentDocument;
   '\n  mutation DeleteInvestment($id: ID!) {\n    deleteInvestment(id: $id)\n  }\n': typeof types.DeleteInvestmentDocument;
   '\n  fragment InvestmentFragment on InvestmentModel {\n    id\n    amount\n    correctedAmount\n    currentVariation\n    taxPercentage\n    taxedAmount\n    taxedVariation\n    startDate\n    duration\n  }\n': typeof types.InvestmentFragmentFragmentDoc;
-  '\n  query Investments(\n    $first: Int\n    $orderDirection: OrderDirection\n    $orderBy: OrdenationInvestmentModel\n    $after: String\n    $last: Int\n    $before: String\n  ) {\n    investments(\n      first: $first\n      orderDirection: $orderDirection\n      orderBy: $orderBy\n      after: $after\n      last: $last\n      before: $before\n    ) {\n      edges {\n        cursor\n        node {\n          ...InvestmentFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n': typeof types.InvestmentsDocument;
+  '\n  query Investments(\n    $first: Int\n    $orderDirection: OrderDirection\n    $orderBy: OrdenationInvestmentModel\n    $after: String\n    $last: Int\n    $before: String\n    $regime: Regime\n  ) {\n    investments(\n      first: $first\n      orderDirection: $orderDirection\n      orderBy: $orderBy\n      after: $after\n      last: $last\n      before: $before\n      regime: $regime\n    ) {\n      edges {\n        cursor\n        node {\n          ...InvestmentFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n': typeof types.InvestmentsDocument;
   '\n  query TotalInvestments {\n    totalInvestments {\n      initialAmount\n      currentAmount\n      currentVariation\n      taxedAmount\n      taxedVariation\n    }\n  }\n': typeof types.TotalInvestmentsDocument;
+  '\n  fragment InvestmentRegimeSummaryFragment on InvestmentRegimeSummary {\n    name\n    quantity\n    totalInvested\n    currentInvested\n    currentInvestedPercentage\n    taxedInvested\n    taxedInvestedPercentage\n  }\n': typeof types.InvestmentRegimeSummaryFragmentFragmentDoc;
+  '\n  query InvestmentRegimes {\n    investmentRegimes {\n      edges {\n        cursor\n        node {\n          ...InvestmentRegimeSummaryFragment\n        }\n      }\n    }\n  }\n': typeof types.InvestmentRegimesDocument;
   '\n  query Users(\n    $first: Int\n    $after: String\n    $search: String\n    $before: String\n    $last: Int\n    $orderBy: OrdenationUserModel\n    $orderDirection: OrderDirection\n  ) {\n    users(\n      first: $first\n      after: $after\n      search: $search\n      before: $before\n      last: $last\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n    ) {\n      edges {\n        cursor\n        node {\n          id\n          email\n          name\n          role\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n': typeof types.UsersDocument;
 };
 const documents: Documents = {
@@ -40,10 +42,14 @@ const documents: Documents = {
     types.DeleteInvestmentDocument,
   '\n  fragment InvestmentFragment on InvestmentModel {\n    id\n    amount\n    correctedAmount\n    currentVariation\n    taxPercentage\n    taxedAmount\n    taxedVariation\n    startDate\n    duration\n  }\n':
     types.InvestmentFragmentFragmentDoc,
-  '\n  query Investments(\n    $first: Int\n    $orderDirection: OrderDirection\n    $orderBy: OrdenationInvestmentModel\n    $after: String\n    $last: Int\n    $before: String\n  ) {\n    investments(\n      first: $first\n      orderDirection: $orderDirection\n      orderBy: $orderBy\n      after: $after\n      last: $last\n      before: $before\n    ) {\n      edges {\n        cursor\n        node {\n          ...InvestmentFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n':
+  '\n  query Investments(\n    $first: Int\n    $orderDirection: OrderDirection\n    $orderBy: OrdenationInvestmentModel\n    $after: String\n    $last: Int\n    $before: String\n    $regime: Regime\n  ) {\n    investments(\n      first: $first\n      orderDirection: $orderDirection\n      orderBy: $orderBy\n      after: $after\n      last: $last\n      before: $before\n      regime: $regime\n    ) {\n      edges {\n        cursor\n        node {\n          ...InvestmentFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n':
     types.InvestmentsDocument,
   '\n  query TotalInvestments {\n    totalInvestments {\n      initialAmount\n      currentAmount\n      currentVariation\n      taxedAmount\n      taxedVariation\n    }\n  }\n':
     types.TotalInvestmentsDocument,
+  '\n  fragment InvestmentRegimeSummaryFragment on InvestmentRegimeSummary {\n    name\n    quantity\n    totalInvested\n    currentInvested\n    currentInvestedPercentage\n    taxedInvested\n    taxedInvestedPercentage\n  }\n':
+    types.InvestmentRegimeSummaryFragmentFragmentDoc,
+  '\n  query InvestmentRegimes {\n    investmentRegimes {\n      edges {\n        cursor\n        node {\n          ...InvestmentRegimeSummaryFragment\n        }\n      }\n    }\n  }\n':
+    types.InvestmentRegimesDocument,
   '\n  query Users(\n    $first: Int\n    $after: String\n    $search: String\n    $before: String\n    $last: Int\n    $orderBy: OrdenationUserModel\n    $orderDirection: OrderDirection\n  ) {\n    users(\n      first: $first\n      after: $after\n      search: $search\n      before: $before\n      last: $last\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n    ) {\n      edges {\n        cursor\n        node {\n          id\n          email\n          name\n          role\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n':
     types.UsersDocument,
 };
@@ -108,14 +114,26 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n  query Investments(\n    $first: Int\n    $orderDirection: OrderDirection\n    $orderBy: OrdenationInvestmentModel\n    $after: String\n    $last: Int\n    $before: String\n  ) {\n    investments(\n      first: $first\n      orderDirection: $orderDirection\n      orderBy: $orderBy\n      after: $after\n      last: $last\n      before: $before\n    ) {\n      edges {\n        cursor\n        node {\n          ...InvestmentFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n',
-): (typeof documents)['\n  query Investments(\n    $first: Int\n    $orderDirection: OrderDirection\n    $orderBy: OrdenationInvestmentModel\n    $after: String\n    $last: Int\n    $before: String\n  ) {\n    investments(\n      first: $first\n      orderDirection: $orderDirection\n      orderBy: $orderBy\n      after: $after\n      last: $last\n      before: $before\n    ) {\n      edges {\n        cursor\n        node {\n          ...InvestmentFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n'];
+  source: '\n  query Investments(\n    $first: Int\n    $orderDirection: OrderDirection\n    $orderBy: OrdenationInvestmentModel\n    $after: String\n    $last: Int\n    $before: String\n    $regime: Regime\n  ) {\n    investments(\n      first: $first\n      orderDirection: $orderDirection\n      orderBy: $orderBy\n      after: $after\n      last: $last\n      before: $before\n      regime: $regime\n    ) {\n      edges {\n        cursor\n        node {\n          ...InvestmentFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n',
+): (typeof documents)['\n  query Investments(\n    $first: Int\n    $orderDirection: OrderDirection\n    $orderBy: OrdenationInvestmentModel\n    $after: String\n    $last: Int\n    $before: String\n    $regime: Regime\n  ) {\n    investments(\n      first: $first\n      orderDirection: $orderDirection\n      orderBy: $orderBy\n      after: $after\n      last: $last\n      before: $before\n      regime: $regime\n    ) {\n      edges {\n        cursor\n        node {\n          ...InvestmentFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
   source: '\n  query TotalInvestments {\n    totalInvestments {\n      initialAmount\n      currentAmount\n      currentVariation\n      taxedAmount\n      taxedVariation\n    }\n  }\n',
 ): (typeof documents)['\n  query TotalInvestments {\n    totalInvestments {\n      initialAmount\n      currentAmount\n      currentVariation\n      taxedAmount\n      taxedVariation\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  fragment InvestmentRegimeSummaryFragment on InvestmentRegimeSummary {\n    name\n    quantity\n    totalInvested\n    currentInvested\n    currentInvestedPercentage\n    taxedInvested\n    taxedInvestedPercentage\n  }\n',
+): (typeof documents)['\n  fragment InvestmentRegimeSummaryFragment on InvestmentRegimeSummary {\n    name\n    quantity\n    totalInvested\n    currentInvested\n    currentInvestedPercentage\n    taxedInvested\n    taxedInvestedPercentage\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  query InvestmentRegimes {\n    investmentRegimes {\n      edges {\n        cursor\n        node {\n          ...InvestmentRegimeSummaryFragment\n        }\n      }\n    }\n  }\n',
+): (typeof documents)['\n  query InvestmentRegimes {\n    investmentRegimes {\n      edges {\n        cursor\n        node {\n          ...InvestmentRegimeSummaryFragment\n        }\n      }\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

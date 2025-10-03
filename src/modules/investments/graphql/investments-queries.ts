@@ -22,6 +22,7 @@ export const InvestmentsQuery = graphql(`
     $after: String
     $last: Int
     $before: String
+    $regime: Regime
   ) {
     investments(
       first: $first
@@ -30,6 +31,7 @@ export const InvestmentsQuery = graphql(`
       after: $after
       last: $last
       before: $before
+      regime: $regime
     ) {
       edges {
         cursor
@@ -52,6 +54,31 @@ export const TotalInvestmentsQuery = graphql(`
       currentVariation
       taxedAmount
       taxedVariation
+    }
+  }
+`);
+
+export const InvestmentRegimeSummaryFragment = graphql(`
+  fragment InvestmentRegimeSummaryFragment on InvestmentRegimeSummary {
+    name
+    quantity
+    totalInvested
+    currentInvested
+    currentInvestedPercentage
+    taxedInvested
+    taxedInvestedPercentage
+  }
+`);
+
+export const InvestmentRegimesQuery = graphql(`
+  query InvestmentRegimes {
+    investmentRegimes {
+      edges {
+        cursor
+        node {
+          ...InvestmentRegimeSummaryFragment
+        }
+      }
     }
   }
 `);

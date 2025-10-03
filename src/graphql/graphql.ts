@@ -270,6 +270,29 @@ export type InvestmentModelEdge = {
   node: InvestmentModel;
 };
 
+export type InvestmentRegimeSummary = {
+  __typename?: 'InvestmentRegimeSummary';
+  currentInvested: Scalars['Float']['output'];
+  currentInvestedPercentage: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  quantity: Scalars['Int']['output'];
+  taxedInvested: Scalars['Float']['output'];
+  taxedInvestedPercentage: Scalars['String']['output'];
+  totalInvested: Scalars['Float']['output'];
+};
+
+export type InvestmentRegimeSummaryConnection = {
+  __typename?: 'InvestmentRegimeSummaryConnection';
+  edges: Maybe<Array<InvestmentRegimeSummaryEdge>>;
+  pageInfo: Maybe<PageInfo>;
+};
+
+export type InvestmentRegimeSummaryEdge = {
+  __typename?: 'InvestmentRegimeSummaryEdge';
+  cursor: Scalars['String']['output'];
+  node: InvestmentRegimeSummary;
+};
+
 export type InvestmentSumAggregate = {
   __typename?: 'InvestmentSumAggregate';
   amount: Maybe<Scalars['Float']['output']>;
@@ -464,6 +487,7 @@ export type PageInfo = {
 export type Query = {
   __typename?: 'Query';
   health: Scalars['String']['output'];
+  investmentRegimes: InvestmentRegimeSummaryConnection;
   investments: InvestmentConnection;
   totalInvestments: TotalInvestmentsModel;
   user: UserModel;
@@ -477,6 +501,7 @@ export type QueryInvestmentsArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<OrdenationInvestmentModel>;
   orderDirection?: InputMaybe<OrderDirection>;
+  regime?: InputMaybe<Regime>;
 };
 
 export type QueryUsersArgs = {
@@ -742,6 +767,7 @@ export type InvestmentsQueryVariables = Exact<{
   after?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  regime?: InputMaybe<Regime>;
 }>;
 
 export type InvestmentsQuery = {
@@ -785,6 +811,40 @@ export type TotalInvestmentsQuery = {
     currentVariation: string;
     taxedAmount: number;
     taxedVariation: string;
+  };
+};
+
+export type InvestmentRegimeSummaryFragmentFragment = {
+  __typename?: 'InvestmentRegimeSummary';
+  name: string;
+  quantity: number;
+  totalInvested: number;
+  currentInvested: number;
+  currentInvestedPercentage: string;
+  taxedInvested: number;
+  taxedInvestedPercentage: string;
+};
+
+export type InvestmentRegimesQueryVariables = Exact<{ [key: string]: never }>;
+
+export type InvestmentRegimesQuery = {
+  __typename?: 'Query';
+  investmentRegimes: {
+    __typename?: 'InvestmentRegimeSummaryConnection';
+    edges: Array<{
+      __typename?: 'InvestmentRegimeSummaryEdge';
+      cursor: string;
+      node: {
+        __typename?: 'InvestmentRegimeSummary';
+        name: string;
+        quantity: number;
+        totalInvested: number;
+        currentInvested: number;
+        currentInvestedPercentage: string;
+        taxedInvested: number;
+        taxedInvestedPercentage: string;
+      };
+    }> | null;
   };
 };
 
@@ -872,6 +932,37 @@ export const InvestmentFragmentFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<InvestmentFragmentFragment, unknown>;
+export const InvestmentRegimeSummaryFragmentFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'InvestmentRegimeSummaryFragment' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'InvestmentRegimeSummary' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'totalInvested' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'currentInvested' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentInvestedPercentage' },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'taxedInvested' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'taxedInvestedPercentage' },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<InvestmentRegimeSummaryFragmentFragment, unknown>;
 export const AuthSignInDocument = {
   kind: 'Document',
   definitions: [
@@ -1181,6 +1272,14 @@ export const InvestmentsDocument = {
           },
           type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
         },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'regime' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Regime' } },
+        },
       ],
       selectionSet: {
         kind: 'SelectionSet',
@@ -1235,6 +1334,14 @@ export const InvestmentsDocument = {
                 value: {
                   kind: 'Variable',
                   name: { kind: 'Name', value: 'before' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'regime' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'regime' },
                 },
               },
             ],
@@ -1373,6 +1480,88 @@ export const TotalInvestmentsDocument = {
 } as unknown as DocumentNode<
   TotalInvestmentsQuery,
   TotalInvestmentsQueryVariables
+>;
+export const InvestmentRegimesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'InvestmentRegimes' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'investmentRegimes' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'edges' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'cursor' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'node' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'FragmentSpread',
+                              name: {
+                                kind: 'Name',
+                                value: 'InvestmentRegimeSummaryFragment',
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'InvestmentRegimeSummaryFragment' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'InvestmentRegimeSummary' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'totalInvested' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'currentInvested' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentInvestedPercentage' },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'taxedInvested' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'taxedInvestedPercentage' },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  InvestmentRegimesQuery,
+  InvestmentRegimesQueryVariables
 >;
 export const UsersDocument = {
   kind: 'Document',
