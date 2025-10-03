@@ -24,7 +24,7 @@ import { generateColumns } from './utils';
 import { useQuery } from '@apollo/client';
 import { OrderDirection } from '@/graphql/graphql';
 
-type DataTableContextType<
+export type DataTableContextType<
   TData extends RowData = any, // eslint-disable-line @typescript-eslint/no-explicit-any
 > = ReturnType<typeof useDataTableController<TData>>;
 
@@ -83,6 +83,7 @@ function useDataTableController<TData>({
   searchPlaceholder,
   initialSorting,
   actionButtons,
+  CustomBody,
 }: DataTableQueryProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([
     {
@@ -132,7 +133,7 @@ function useDataTableController<TData>({
       }),
       ...variables,
     },
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'cache-and-network',
     notifyOnNetworkStatusChange: true,
   });
 
@@ -230,6 +231,7 @@ function useDataTableController<TData>({
     paginate,
     networkStatus,
     actionButtons,
+    CustomBody,
   };
 }
 
@@ -252,6 +254,7 @@ function useDataTableNoQueryController<TData>({
   paginate,
   networkStatus,
   actionButtons,
+  CustomBody,
 }: DataTableNoQueryProps<TData>) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
@@ -319,5 +322,6 @@ function useDataTableNoQueryController<TData>({
     paginate,
     networkStatus,
     actionButtons,
+    CustomBody,
   };
 }

@@ -4,6 +4,7 @@ import { ColumnSort, Row, SortingState } from '@tanstack/react-table';
 import {
   BaseData,
   DataTableContext,
+  DataTableContextType,
   DataTableNoQueryProvider,
   DataTableProvider,
 } from './data-table-provider';
@@ -23,6 +24,7 @@ type DataTableBaseProps<TData> = {
   enableSorting?: boolean;
   searchPlaceholder?: string;
   actionButtons?: React.ReactNode;
+  CustomBody?: React.ReactNode;
 };
 
 type DataTableSortingState<TData> = Array<{
@@ -83,8 +85,8 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
   );
 }
 
-export function useDataTable() {
-  const context = useContext(DataTableContext);
+export function useDataTable<TData>() {
+  const context = useContext(DataTableContext) as DataTableContextType<TData>;
 
   if (!context) {
     throw new Error('useDataTable must be used within a DataTableProvider');
