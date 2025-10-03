@@ -20,6 +20,7 @@ import {
 } from '../graphql/investments-queries';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 const schema = z.object({
   amount: formFields.currency.describe('Valor // '),
@@ -33,8 +34,10 @@ const schema = z.object({
 
 export function InvestmentCreateForm({
   defaultRegime,
+  triggerClassName,
 }: {
   defaultRegime?: Regime;
+  triggerClassName?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [createInvestment, { loading }] = useMutation(CreateInvestmentMutation);
@@ -47,7 +50,10 @@ export function InvestmentCreateForm({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" className="flex items-center gap-1">
+        <Button
+          size="sm"
+          className={cn('flex items-center gap-1', triggerClassName)}
+        >
           <PlusIcon />
           Novo investimento
         </Button>
