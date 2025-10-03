@@ -28,7 +28,7 @@ export function DateField({
   return (
     <Popover modal>
       <BaseField {...baseProps}>
-        <PopoverTrigger asChild>
+        <PopoverTrigger asChild disabled={baseProps.disabled}>
           <Button
             type="button"
             variant="outline"

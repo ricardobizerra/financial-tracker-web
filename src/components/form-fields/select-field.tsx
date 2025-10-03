@@ -38,7 +38,7 @@ export function SelectField({ options, ...baseProps }: SelectFieldProps) {
       defaultValue={value?.value}
     >
       <BaseField {...baseProps}>
-        <SelectTrigger>
+        <SelectTrigger disabled={baseProps.disabled}>
           <SelectValue placeholder={placeholder || 'Selecione'} />
         </SelectTrigger>
       </BaseField>
