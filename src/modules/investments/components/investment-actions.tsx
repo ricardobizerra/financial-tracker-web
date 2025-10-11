@@ -31,7 +31,7 @@ export function InvestmentActions({ id }: { id: string }) {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Ações</DropdownMenuLabel>
         <DropdownMenuItem
-          className="bg-destructive/50 text-destructive-foreground"
+          className="bg-destructive text-destructive-foreground focus:bg-destructive/75 focus:text-destructive-foreground"
           onClick={() => {
             deleteInvestment({
               variables: {
