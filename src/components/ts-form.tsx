@@ -6,6 +6,10 @@ import { cn } from '@/lib/utils';
 import { EmailField } from './form-fields/email-field';
 import { CreatePasswordField } from './form-fields/create-password-field';
 import { PasswordField } from './form-fields/password-field';
+import { CurrencyField } from './form-fields/currency-field';
+import { SelectField } from './form-fields/select-field';
+import { selectSchema } from './form-fields/utils/select-schema';
+import { DateField } from './form-fields/date-field';
 
 interface FormComponentProps extends React.FormHTMLAttributes<HTMLFormElement> {
   isPreventDefault?: boolean;
@@ -23,7 +27,7 @@ function FormComponent({
   return (
     <fieldset disabled={disabled}>
       <form
-        className={cn('space-y-4', className)}
+        className={cn('space-y-6', className)}
         {...rest}
         onSubmit={(e) => {
           if (isPreventDefault) {
@@ -56,6 +60,9 @@ export const formFields = {
     createPasswordSchema,
     'createPassword',
   ),
+  currency: createUniqueFieldSchema(z.number(), 'currency'),
+  select: createUniqueFieldSchema(selectSchema, 'select'),
+  date: z.date(),
 };
 
 const mapping = [
@@ -64,6 +71,9 @@ const mapping = [
   [formFields.email, EmailField],
   [formFields.password, PasswordField],
   [formFields.createPassword, CreatePasswordField],
+  [formFields.currency, CurrencyField],
+  [formFields.select, SelectField],
+  [formFields.date, DateField],
 ] as const;
 
 export const TsForm = createTsForm(mapping, { FormComponent });

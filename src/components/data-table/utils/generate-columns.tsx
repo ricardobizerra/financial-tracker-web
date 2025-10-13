@@ -5,20 +5,29 @@ import { DataTableColumnHeader } from '../data-table-column-header';
 import { DataTableProps } from '..';
 import { Checkbox } from '@/components/ui/checkbox';
 
-type InitialColumnDefType = 'custom' | 'text' | 'date';
-
-export type InitialColumnDef<TData> = {
-  title: string;
-  accessorKey: keyof TData;
-} & (
-  | ({ type: 'custom' } & ColumnDef<TData>)
-  | {
-      type: Exclude<InitialColumnDefType, 'custom'>;
-      subtitle?: string;
-      enableSorting?: boolean;
-      enableHiding?: boolean;
-    }
-);
+export type InitialColumnDef<TData> = Omit<ColumnDef<TData>, 'header'> &
+  (
+    | {
+        header: ColumnDef<TData>['header'];
+        title?: never;
+        subtitle?: never;
+      }
+    | {
+        header?: never;
+        title: string;
+        subtitle?: string;
+      }
+  ) &
+  (
+    | {
+        id: string;
+        accessorKey?: never;
+      }
+    | {
+        accessorKey: string;
+        id?: never;
+      }
+  );
 
 export function generateColumns<TData>({
   initialColumns,
@@ -66,22 +75,25 @@ export function generateColumns<TData>({
 
   const columns: ColumnDef<TData>[] = [];
 
-  for (const column of initialColumns) {
-    if (column.type === 'custom') {
-      const { type, title, ...rest } = column;
-      columns.push(rest);
-    } else {
-      const { accessorKey, enableSorting, enableHiding, ...rest } = column;
-
-      columns.push({
-        accessorKey,
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} {...rest} />
-        ),
-        enableSorting: enableSorting ?? globalEnableSorting,
-        enableHiding: enableHiding ?? globalEnableHiding,
-      });
-    }
+  for (const initialColumn of initialColumns) {
+    columns.push({
+      ...initialColumn,
+      id: initialColumn.id ?? initialColumn.accessorKey,
+      ...(!!initialColumn.accessorKey && {
+        accessorKey: initialColumn.accessorKey,
+      }),
+      header: !!initialColumn.header
+        ? initialColumn.header
+        : ({ column }) => (
+            <DataTableColumnHeader
+              column={column}
+              title={initialColumn.title ?? ''}
+              subtitle={initialColumn.subtitle}
+            />
+          ),
+      enableSorting: initialColumn.enableSorting ?? globalEnableSorting,
+      enableHiding: initialColumn.enableHiding ?? globalEnableHiding,
+    });
   }
 
   return [...selectColumn, ...columns];

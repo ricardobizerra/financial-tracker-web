@@ -29,10 +29,7 @@ export const UsersQuery = graphql(`
         }
       }
       pageInfo {
-        startCursor
-        endCursor
-        hasPreviousPage
-        hasNextPage
+        ...PageInfoFragment
       }
     }
   }

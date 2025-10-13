@@ -47,6 +47,8 @@ export function DataTablePagination() {
     }
   }, [paginationLoading]);
 
+  if (!pageInfo) return <></>;
+
   return (
     <div
       className={cn(

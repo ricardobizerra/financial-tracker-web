@@ -24,7 +24,7 @@ export function DataTableColumnHeader<TData, TValue>({
   className,
 }: DataTableColumnHeaderProps<TData, TValue>) {
   if (!column.getCanSort() && !column.getCanHide()) {
-    return <div className={cn(className)}>{title}</div>;
+    return <div className={cn('text-sm', className)}>{title}</div>;
   }
 
   return (
@@ -37,7 +37,7 @@ export function DataTableColumnHeader<TData, TValue>({
             className="-ml-3 h-8 data-[state=open]:bg-accent"
           >
             <div className="flex flex-col items-start">
-              <span>{title}</span>
+              <span className="text-sm">{title}</span>
               {!!subtitle && <span className="text-xs">{subtitle}</span>}
             </div>
             {column.getIsSorted() === 'desc' ? (

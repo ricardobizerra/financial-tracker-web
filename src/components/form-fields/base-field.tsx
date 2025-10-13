@@ -14,12 +14,14 @@ import { CircleXIcon } from 'lucide-react';
 export interface BaseFieldProps {
   description?: string;
   withError?: boolean;
+  disabled?: boolean;
 }
 
 export function BaseField({
   description,
   children,
   withError = true,
+  disabled,
 }: PropsWithChildren<BaseFieldProps>) {
   const form = useForm();
   const { field, error } = useTsController();
@@ -29,8 +31,9 @@ export function BaseField({
     <FormField
       control={form.control}
       name={field.name}
+      disabled={disabled}
       render={() => (
-        <FormItem>
+        <FormItem className="flex flex-col gap-2 space-y-0">
           <FormLabel>{label}</FormLabel>
           <FormControl>{children}</FormControl>
           {!!description && <FormDescription>{description}</FormDescription>}
