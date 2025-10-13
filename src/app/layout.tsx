@@ -29,12 +29,7 @@ export default function RootLayout({
         <main className="flex h-full">
           <AppProvider>{children}</AppProvider>
         </main>
-        <Toaster
-          closeButton
-          visibleToasts={1}
-          duration={10000}
-          pauseWhenPageIsHidden
-        />
+        <Toaster closeButton duration={5000} pauseWhenPageIsHidden />
       </body>
     </html>
   );
