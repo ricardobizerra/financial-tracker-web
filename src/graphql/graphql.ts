@@ -274,7 +274,7 @@ export type InvestmentRegimeSummary = {
   __typename?: 'InvestmentRegimeSummary';
   currentInvested: Scalars['Float']['output'];
   currentInvestedPercentage: Scalars['String']['output'];
-  name: Scalars['String']['output'];
+  name: Regime;
   quantity: Scalars['Int']['output'];
   taxedInvested: Scalars['Float']['output'];
   taxedInvestedPercentage: Scalars['String']['output'];
@@ -816,7 +816,7 @@ export type TotalInvestmentsQuery = {
 
 export type InvestmentRegimeSummaryFragmentFragment = {
   __typename?: 'InvestmentRegimeSummary';
-  name: string;
+  name: Regime;
   quantity: number;
   totalInvested: number;
   currentInvested: number;
@@ -836,7 +836,7 @@ export type InvestmentRegimesQuery = {
       cursor: string;
       node: {
         __typename?: 'InvestmentRegimeSummary';
-        name: string;
+        name: Regime;
         quantity: number;
         totalInvested: number;
         currentInvested: number;

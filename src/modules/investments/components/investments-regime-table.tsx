@@ -23,6 +23,7 @@ import { formatCurrency } from '@/lib/formatters/currency';
 import { cn } from '@/lib/utils';
 import { EyeIcon } from 'lucide-react';
 import { VariationBadge } from '@/components/variation-badge';
+import { investmentRegimeLabel } from '../investment-regime-label';
 
 export function InvestmentRegimesTable() {
   const regimesQuery = useQuery(InvestmentRegimesQuery);
@@ -59,7 +60,7 @@ function InvestmentRegimesTableBody() {
             className={cn(row.original.quantity === 0 && 'opacity-50')}
           >
             <CardHeader className="flex flex-row items-center justify-between gap-4 space-y-0 px-0">
-              <CardTitle>{row.original.name}</CardTitle>
+              <CardTitle>{investmentRegimeLabel[row.original.name]}</CardTitle>
               <CardDescription>
                 <span className="font-semibold">{row.original.quantity}</span>{' '}
                 {row.original.quantity === 1 ? 'investimento' : 'investimentos'}

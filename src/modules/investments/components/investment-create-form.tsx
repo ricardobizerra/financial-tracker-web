@@ -21,6 +21,7 @@ import {
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { investmentRegimeLabel } from '../investment-regime-label';
 
 const schema = z.object({
   amount: formFields.currency.describe('Valor // '),
@@ -44,7 +45,7 @@ export function InvestmentCreateForm({
 
   const investmentRegimeOptions = Object.values(Regime).map((regime) => ({
     value: regime,
-    label: regime,
+    label: investmentRegimeLabel[regime],
   }));
 
   return (
