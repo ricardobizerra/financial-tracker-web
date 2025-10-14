@@ -14,6 +14,7 @@ import { setAccessToken } from '@/lib/auth';
 import { APP_CONFIG } from '@/lib/config';
 import { AuthSignInMutation } from '@/modules/auth/graphql/auth-mutations';
 import { useMutation } from '@apollo/client';
+import { DollarSignIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -56,18 +57,16 @@ export function AuthSignInForm() {
   }
 
   return (
-    <Card className="m-auto w-full max-w-[500px] p-4">
-      <CardHeader>
-        <CardTitle>Login</CardTitle>
-        <CardDescription>
-          <p>Entre com seu e-mail e senha.</p>
-          <p>
-            Não tem uma conta?{' '}
-            <Link href="/register" className="underline underline-offset-2">
-              Registre-se
-            </Link>
-          </p>
-        </CardDescription>
+    <Card className="m-auto w-full max-w-sm p-0">
+      <div className="flex items-center justify-center gap-2 rounded-t-[inherit] border-b border-[inherit] bg-primary p-4 text-center text-primary-foreground">
+        <DollarSignIcon className="h-6 w-6" />
+        <p className="text-lg">
+          <span className="font-semibold">Financial</span>Tracker
+        </p>
+      </div>
+      <CardHeader className="space-y-1 text-center">
+        <CardTitle className="text-lg">Login</CardTitle>
+        <CardDescription>Entre com seu e-mail e senha.</CardDescription>
       </CardHeader>
       <CardContent>
         <TsForm
@@ -76,10 +75,24 @@ export function AuthSignInForm() {
           onSubmit={handleSubmit}
         />
       </CardContent>
-      <CardFooter>
-        <Button type="submit" form="auth-sign-in-form" loading={loading}>
+      <CardFooter className="flex-col gap-4">
+        <Button
+          type="submit"
+          form="auth-sign-in-form"
+          loading={loading}
+          className="w-full"
+        >
           Fazer login
         </Button>
+        <p className="text-sm">
+          Não tem uma conta?{' '}
+          <Link
+            href="/register"
+            className="text-primary underline underline-offset-2"
+          >
+            Registre-se
+          </Link>
+        </p>
       </CardFooter>
     </Card>
   );
