@@ -531,7 +531,6 @@ export enum Role {
 
 export type SignIn = {
   __typename?: 'SignIn';
-  accessToken: Scalars['String']['output'];
   user: Maybe<UserModel>;
 };
 
@@ -674,7 +673,6 @@ export type AuthSignInMutation = {
   __typename?: 'Mutation';
   authSignIn: {
     __typename?: 'SignIn';
-    accessToken: string;
     user: {
       __typename?: 'UserModel';
       id: string;
@@ -692,7 +690,6 @@ export type CreateUserMutation = {
   __typename?: 'Mutation';
   createUser: {
     __typename?: 'SignIn';
-    accessToken: string;
     user: { __typename?: 'UserModel'; id: string } | null;
   };
 };
@@ -1002,7 +999,6 @@ export const AuthSignInDocument = {
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'accessToken' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'user' },
@@ -1062,7 +1058,6 @@ export const CreateUserDocument = {
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'accessToken' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'user' },

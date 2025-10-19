@@ -14,8 +14,8 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
-  '\n  mutation AuthSignIn($data: AuthSignInInput!) {\n    authSignIn(data: $data) {\n      accessToken\n      user {\n        id\n        email\n        name\n      }\n    }\n  }\n': typeof types.AuthSignInDocument;
-  '\n  mutation CreateUser($data: UserCreateInput!) {\n    createUser(data: $data) {\n      accessToken\n      user {\n        id\n      }\n    }\n  }\n': typeof types.CreateUserDocument;
+  '\n  mutation AuthSignIn($data: AuthSignInInput!) {\n    authSignIn(data: $data) {\n      user {\n        id\n        email\n        name\n      }\n    }\n  }\n': typeof types.AuthSignInDocument;
+  '\n  mutation CreateUser($data: UserCreateInput!) {\n    createUser(data: $data) {\n      user {\n        id\n      }\n    }\n  }\n': typeof types.CreateUserDocument;
   '\n  query User {\n    user {\n      id\n      name\n      email\n      role\n    }\n  }\n': typeof types.UserDocument;
   '\n  fragment PageInfoFragment on PageInfo {\n    startCursor\n    endCursor\n    hasPreviousPage\n    hasNextPage\n  }\n': typeof types.PageInfoFragmentFragmentDoc;
   '\n  mutation CreateInvestment($data: InvestmentCreateWithoutUserInput!) {\n    createInvestment(data: $data) {\n      id\n      amount\n      startDate\n      duration\n      regimeName\n      regimePercentage\n      userId\n      createdAt\n      updatedAt\n    }\n  }\n': typeof types.CreateInvestmentDocument;
@@ -28,9 +28,9 @@ type Documents = {
   '\n  query Users(\n    $first: Int\n    $after: String\n    $search: String\n    $before: String\n    $last: Int\n    $orderBy: OrdenationUserModel\n    $orderDirection: OrderDirection\n  ) {\n    users(\n      first: $first\n      after: $after\n      search: $search\n      before: $before\n      last: $last\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n    ) {\n      edges {\n        cursor\n        node {\n          id\n          email\n          name\n          role\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n': typeof types.UsersDocument;
 };
 const documents: Documents = {
-  '\n  mutation AuthSignIn($data: AuthSignInInput!) {\n    authSignIn(data: $data) {\n      accessToken\n      user {\n        id\n        email\n        name\n      }\n    }\n  }\n':
+  '\n  mutation AuthSignIn($data: AuthSignInInput!) {\n    authSignIn(data: $data) {\n      user {\n        id\n        email\n        name\n      }\n    }\n  }\n':
     types.AuthSignInDocument,
-  '\n  mutation CreateUser($data: UserCreateInput!) {\n    createUser(data: $data) {\n      accessToken\n      user {\n        id\n      }\n    }\n  }\n':
+  '\n  mutation CreateUser($data: UserCreateInput!) {\n    createUser(data: $data) {\n      user {\n        id\n      }\n    }\n  }\n':
     types.CreateUserDocument,
   '\n  query User {\n    user {\n      id\n      name\n      email\n      role\n    }\n  }\n':
     types.UserDocument,
@@ -72,14 +72,14 @@ export function graphql(source: string): unknown;
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n  mutation AuthSignIn($data: AuthSignInInput!) {\n    authSignIn(data: $data) {\n      accessToken\n      user {\n        id\n        email\n        name\n      }\n    }\n  }\n',
-): (typeof documents)['\n  mutation AuthSignIn($data: AuthSignInInput!) {\n    authSignIn(data: $data) {\n      accessToken\n      user {\n        id\n        email\n        name\n      }\n    }\n  }\n'];
+  source: '\n  mutation AuthSignIn($data: AuthSignInInput!) {\n    authSignIn(data: $data) {\n      user {\n        id\n        email\n        name\n      }\n    }\n  }\n',
+): (typeof documents)['\n  mutation AuthSignIn($data: AuthSignInInput!) {\n    authSignIn(data: $data) {\n      user {\n        id\n        email\n        name\n      }\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n  mutation CreateUser($data: UserCreateInput!) {\n    createUser(data: $data) {\n      accessToken\n      user {\n        id\n      }\n    }\n  }\n',
-): (typeof documents)['\n  mutation CreateUser($data: UserCreateInput!) {\n    createUser(data: $data) {\n      accessToken\n      user {\n        id\n      }\n    }\n  }\n'];
+  source: '\n  mutation CreateUser($data: UserCreateInput!) {\n    createUser(data: $data) {\n      user {\n        id\n      }\n    }\n  }\n',
+): (typeof documents)['\n  mutation CreateUser($data: UserCreateInput!) {\n    createUser(data: $data) {\n      user {\n        id\n      }\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

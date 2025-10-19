@@ -11,9 +11,11 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Role } from '@/graphql/graphql';
-import { setAccessToken } from '@/lib/auth';
+import { getAccessToken } from '@/lib/auth';
+import { APP_CONFIG } from '@/lib/config';
 import { CreateUserMutation } from '@/modules/auth/graphql/auth-mutations';
 import { useMutation } from '@apollo/client';
+import { DollarSignIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -41,10 +43,10 @@ export function AuthRegisterForm() {
         },
       },
       onCompleted: async (data) => {
-        if (data.createUser?.accessToken) {
-          await setAccessToken(data.createUser.accessToken);
+        const { token } = await getAccessToken();
 
-          router.push('/');
+        if (!!data.createUser && !!token) {
+          router.push(APP_CONFIG.redirects.signIn);
 
           toast.success('Conta criada com sucesso!', {
             description: 'Você será redirecionado em instantes.',
@@ -60,9 +62,15 @@ export function AuthRegisterForm() {
   }
 
   return (
-    <Card className="m-auto w-full max-w-[500px] p-4">
-      <CardHeader>
-        <CardTitle>Novo usuário</CardTitle>
+    <Card className="m-auto w-full max-w-sm p-0">
+      <div className="flex items-center justify-center gap-2 rounded-t-[inherit] border-b border-[inherit] bg-primary p-4 text-center text-primary-foreground">
+        <DollarSignIcon className="h-6 w-6" />
+        <p className="text-lg">
+          <span className="font-semibold">Financial</span>Tracker
+        </p>
+      </div>
+      <CardHeader className="space-y-1 text-center">
+        <CardTitle className="text-lg">Novo usuário</CardTitle>
         <CardDescription>
           Insira seus dados para criar uma nova conta.
         </CardDescription>
