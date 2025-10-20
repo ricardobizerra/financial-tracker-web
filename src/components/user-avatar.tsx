@@ -5,9 +5,18 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
 import Link from 'next/link';
 import { useAuth } from '@/providers/auth-base-provider';
-import { UserCircle2Icon } from 'lucide-react';
+import { UserCircle2Icon, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SimpleTooltip } from './simple-tooltip';
+import { Skeleton } from './ui/skeleton';
+import { removeAccessToken } from '@/lib/auth';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
+import { useRouter } from 'next/navigation';
 
 interface UserAvatarProps {
   icon?: boolean;
@@ -19,9 +28,46 @@ const UserAvatarContext = createContext<
 >(undefined);
 
 export function UserAvatar({ icon = false, ...props }: UserAvatarProps) {
+  const { user } = useAuth();
+  const router = useRouter();
+
   return (
     <UserAvatarContext.Provider value={props}>
-      {icon ? <UserAvatarCollapsed /> : <UserAvatarExpanded />}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            className={cn(
+              'p-0 hover:bg-accent',
+              icon ? 'h-8 w-8 rounded-full' : 'w-full',
+            )}
+          >
+            {icon ? <UserAvatarCollapsed /> : <UserAvatarExpanded />}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" align="end" forceMount>
+          {user && (
+            <div className="flex items-center gap-2 p-2">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">{user.name}</p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  {user.email}
+                </p>
+              </div>
+            </div>
+          )}
+          <DropdownMenuItem
+            className="cursor-pointer bg-destructive text-destructive-foreground focus:bg-destructive/90 focus:text-destructive-foreground"
+            onClick={async () => {
+              await removeAccessToken();
+              router.push('/login');
+            }}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Sair</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </UserAvatarContext.Provider>
   );
 }
@@ -30,11 +76,7 @@ function UserAvatarCollapsed() {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return (
-      <Avatar className="h-8 w-8">
-        <AvatarFallback className="bg-muted">?</AvatarFallback>
-      </Avatar>
-    );
+    return <Skeleton className="h-8 w-8 rounded-full" />;
   }
 
   if (!user) {
@@ -110,7 +152,7 @@ function UserInfo() {
   const { user } = useAuth();
 
   return (
-    <div>
+    <div className="text-left">
       <p className="text-nowrap text-sm font-medium">{user?.name}</p>
       <p className="text-xs text-muted-foreground">{user?.email}</p>
     </div>
