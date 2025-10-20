@@ -12,6 +12,12 @@ export const AuthSignInMutation = graphql(`
   }
 `);
 
+export const AuthSignOutMutation = graphql(`
+  mutation AuthSignOut {
+    authSignOut
+  }
+`);
+
 export const CreateUserMutation = graphql(`
   mutation CreateUser($data: UserCreateInput!) {
     createUser(data: $data) {

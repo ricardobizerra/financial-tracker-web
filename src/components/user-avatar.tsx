@@ -17,6 +17,9 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { useRouter } from 'next/navigation';
+import { AuthSignOutMutation } from '@/modules/auth/graphql/auth-mutations';
+import { useMutation } from '@apollo/client';
+import { toast } from 'sonner';
 
 interface UserAvatarProps {
   icon?: boolean;
@@ -30,6 +33,8 @@ const UserAvatarContext = createContext<
 export function UserAvatar({ icon = false, ...props }: UserAvatarProps) {
   const { user } = useAuth();
   const router = useRouter();
+
+  const [authSignOut] = useMutation(AuthSignOutMutation);
 
   return (
     <UserAvatarContext.Provider value={props}>
@@ -59,8 +64,20 @@ export function UserAvatar({ icon = false, ...props }: UserAvatarProps) {
           <DropdownMenuItem
             className="cursor-pointer bg-destructive text-destructive-foreground focus:bg-destructive/90 focus:text-destructive-foreground"
             onClick={async () => {
-              await removeAccessToken();
-              router.push('/login');
+              await authSignOut({
+                onCompleted: async (data) => {
+                  router.push('/login');
+
+                  toast.success('Logout realizado', {
+                    description: 'Faça login novamente',
+                  });
+                },
+                onError: (error) => {
+                  toast.error('Erro ao realizar logout', {
+                    description: error.message,
+                  });
+                },
+              });
             }}
           >
             <LogOut className="mr-2 h-4 w-4" />

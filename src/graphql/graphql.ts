@@ -345,6 +345,7 @@ export type InvestmentWhereUniqueInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   authSignIn: SignIn;
+  authSignOut: Scalars['Boolean']['output'];
   createInvestment: Investment;
   createUser: SignIn;
   deleteInvestment: Scalars['ID']['output'];
@@ -680,6 +681,13 @@ export type AuthSignInMutation = {
       name: string;
     } | null;
   };
+};
+
+export type AuthSignOutMutationVariables = Exact<{ [key: string]: never }>;
+
+export type AuthSignOutMutation = {
+  __typename?: 'Mutation';
+  authSignOut: boolean;
 };
 
 export type CreateUserMutationVariables = Exact<{
@@ -1019,6 +1027,22 @@ export const AuthSignInDocument = {
     },
   ],
 } as unknown as DocumentNode<AuthSignInMutation, AuthSignInMutationVariables>;
+export const AuthSignOutDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'AuthSignOut' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'authSignOut' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<AuthSignOutMutation, AuthSignOutMutationVariables>;
 export const CreateUserDocument = {
   kind: 'Document',
   definitions: [
