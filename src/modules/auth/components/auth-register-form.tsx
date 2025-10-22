@@ -2,6 +2,7 @@
 
 import { formFields, TsForm } from '@/components/ts-form';
 import { Button } from '@/components/ui/button';
+import { AuthOAuthOptions } from './auth-oauth-options';
 import {
   Card,
   CardContent,
@@ -85,29 +86,7 @@ export function AuthRegisterForm() {
         >
           {(fields) => (
             <>
-              <div className="flex flex-col gap-4">
-                <Button
-                  variant="outline"
-                  type="button"
-                  className="w-full"
-                  asChild
-                >
-                  <a href="http://localhost:3333/auth/google">
-                    <GoogleIcon />
-                    Cadastro com Google
-                  </a>
-                </Button>
-              </div>
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="bg-background px-2 text-muted-foreground">
-                    Ou continue com
-                  </span>
-                </div>
-              </div>
+              <AuthOAuthOptions action="register" />
 
               <div className="flex flex-col gap-4">
                 {Object.entries(fields).map(([key, field]) => (
