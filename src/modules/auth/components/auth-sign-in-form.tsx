@@ -19,6 +19,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import GoogleIcon from '@/static/google-icon.svg';
 
 const schema = z.object({
   email: formFields.email.describe('E-mail // Insira aqui seu e-mail'),
@@ -65,15 +66,49 @@ export function AuthSignInForm() {
         </p>
       </div>
       <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-lg">Login</CardTitle>
-        <CardDescription>Entre com seu e-mail e senha.</CardDescription>
+        <CardTitle className="text-lg">Bem-vindo de volta</CardTitle>
+        <CardDescription>Faça seu login para continuar</CardDescription>
       </CardHeader>
       <CardContent>
         <TsForm
           formProps={{ id: 'auth-sign-in-form' }}
           schema={schema}
           onSubmit={handleSubmit}
-        />
+        >
+          {(fields) => (
+            <>
+              <div className="flex flex-col gap-4">
+                <Button
+                  variant="outline"
+                  type="button"
+                  className="w-full"
+                  asChild
+                >
+                  <a href={`${process.env.NEXT_PUBLIC_API_URL}/auth/google`}>
+                    <GoogleIcon />
+                    Login com Google
+                  </a>
+                </Button>
+              </div>
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    Ou continue com
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-4">
+                {Object.entries(fields).map(([key, field]) => (
+                  <div key={key}>{field}</div>
+                ))}
+              </div>
+            </>
+          )}
+        </TsForm>
       </CardContent>
       <CardFooter className="flex-col gap-4">
         <Button

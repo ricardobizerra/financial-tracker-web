@@ -19,6 +19,8 @@ import { DollarSignIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import GoogleIcon from '@/static/google-icon.svg';
+import Link from 'next/link';
 
 const schema = z.object({
   name: formFields.text.describe('Nome // Insira aqui seu nome'),
@@ -72,7 +74,7 @@ export function AuthRegisterForm() {
       <CardHeader className="space-y-1 text-center">
         <CardTitle className="text-lg">Novo usuário</CardTitle>
         <CardDescription>
-          Insira seus dados para criar uma nova conta.
+          Insira seus dados para criar uma nova conta
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -80,12 +82,60 @@ export function AuthRegisterForm() {
           formProps={{ id: 'auth-register-form' }}
           schema={schema}
           onSubmit={handleSubmit}
-        />
+        >
+          {(fields) => (
+            <>
+              <div className="flex flex-col gap-4">
+                <Button
+                  variant="outline"
+                  type="button"
+                  className="w-full"
+                  asChild
+                >
+                  <a href="http://localhost:3333/auth/google">
+                    <GoogleIcon />
+                    Cadastro com Google
+                  </a>
+                </Button>
+              </div>
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    Ou continue com
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-4">
+                {Object.entries(fields).map(([key, field]) => (
+                  <div key={key}>{field}</div>
+                ))}
+              </div>
+            </>
+          )}
+        </TsForm>
       </CardContent>
-      <CardFooter>
-        <Button type="submit" form="auth-register-form" loading={loading}>
+      <CardFooter className="flex-col gap-4">
+        <Button
+          type="submit"
+          form="auth-register-form"
+          loading={loading}
+          className="w-full"
+        >
           Criar conta
         </Button>
+        <p className="text-sm">
+          Já tem uma conta?{' '}
+          <Link
+            href="/login"
+            className="text-primary underline underline-offset-2"
+          >
+            Faça login
+          </Link>
+        </p>
       </CardFooter>
     </Card>
   );
