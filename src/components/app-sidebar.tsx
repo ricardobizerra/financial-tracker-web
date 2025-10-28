@@ -1,6 +1,6 @@
 'use client';
 
-import { PiggyBank } from 'lucide-react';
+import { Landmark, PiggyBank } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -26,6 +26,11 @@ import { ThemeToggle } from './theme-toggle';
 import { APP_CONFIG } from '@/lib/config';
 
 const items = [
+  {
+    title: 'Contas',
+    url: '/accounts',
+    icon: Landmark,
+  },
   {
     title: 'Investimentos',
     url: '/investments',
