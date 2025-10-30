@@ -14,6 +14,8 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
+  '\n  fragment AccountFragment on AccountModel {\n    id\n    name\n    type\n    balance\n    description\n    isActive\n    institutionId\n    createdAt\n    updatedAt\n    institution {\n      id\n      code\n      name\n      logoUrl\n      color\n      createdAt\n      updatedAt\n    }\n  }\n': typeof types.AccountFragmentFragmentDoc;
+  '\n  query Accounts(\n    $orderBy: OrdenationAccountModel\n    $orderDirection: OrderDirection\n    $first: Int\n    $after: String\n    $search: String\n    $last: Int\n    $before: String\n  ) {\n    accounts(\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      first: $first\n      after: $after\n      search: $search\n      last: $last\n      before: $before\n    ) {\n      edges {\n        cursor\n        node {\n          ...AccountFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n': typeof types.AccountsDocument;
   '\n  mutation AuthSignIn($data: AuthSignInInput!) {\n    authSignIn(data: $data) {\n      accessToken\n      user {\n        id\n        email\n        name\n      }\n    }\n  }\n': typeof types.AuthSignInDocument;
   '\n  mutation CreateUser($data: UserCreateInput!) {\n    createUser(data: $data) {\n      accessToken\n      user {\n        id\n      }\n    }\n  }\n': typeof types.CreateUserDocument;
   '\n  query User {\n    user {\n      id\n      name\n      email\n      role\n    }\n  }\n': typeof types.UserDocument;
@@ -28,6 +30,10 @@ type Documents = {
   '\n  query Users(\n    $first: Int\n    $after: String\n    $search: String\n    $before: String\n    $last: Int\n    $orderBy: OrdenationUserModel\n    $orderDirection: OrderDirection\n  ) {\n    users(\n      first: $first\n      after: $after\n      search: $search\n      before: $before\n      last: $last\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n    ) {\n      edges {\n        cursor\n        node {\n          id\n          email\n          name\n          role\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n': typeof types.UsersDocument;
 };
 const documents: Documents = {
+  '\n  fragment AccountFragment on AccountModel {\n    id\n    name\n    type\n    balance\n    description\n    isActive\n    institutionId\n    createdAt\n    updatedAt\n    institution {\n      id\n      code\n      name\n      logoUrl\n      color\n      createdAt\n      updatedAt\n    }\n  }\n':
+    types.AccountFragmentFragmentDoc,
+  '\n  query Accounts(\n    $orderBy: OrdenationAccountModel\n    $orderDirection: OrderDirection\n    $first: Int\n    $after: String\n    $search: String\n    $last: Int\n    $before: String\n  ) {\n    accounts(\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      first: $first\n      after: $after\n      search: $search\n      last: $last\n      before: $before\n    ) {\n      edges {\n        cursor\n        node {\n          ...AccountFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n':
+    types.AccountsDocument,
   '\n  mutation AuthSignIn($data: AuthSignInInput!) {\n    authSignIn(data: $data) {\n      accessToken\n      user {\n        id\n        email\n        name\n      }\n    }\n  }\n':
     types.AuthSignInDocument,
   '\n  mutation CreateUser($data: UserCreateInput!) {\n    createUser(data: $data) {\n      accessToken\n      user {\n        id\n      }\n    }\n  }\n':
@@ -68,6 +74,18 @@ const documents: Documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  fragment AccountFragment on AccountModel {\n    id\n    name\n    type\n    balance\n    description\n    isActive\n    institutionId\n    createdAt\n    updatedAt\n    institution {\n      id\n      code\n      name\n      logoUrl\n      color\n      createdAt\n      updatedAt\n    }\n  }\n',
+): (typeof documents)['\n  fragment AccountFragment on AccountModel {\n    id\n    name\n    type\n    balance\n    description\n    isActive\n    institutionId\n    createdAt\n    updatedAt\n    institution {\n      id\n      code\n      name\n      logoUrl\n      color\n      createdAt\n      updatedAt\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  query Accounts(\n    $orderBy: OrdenationAccountModel\n    $orderDirection: OrderDirection\n    $first: Int\n    $after: String\n    $search: String\n    $last: Int\n    $before: String\n  ) {\n    accounts(\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      first: $first\n      after: $after\n      search: $search\n      last: $last\n      before: $before\n    ) {\n      edges {\n        cursor\n        node {\n          ...AccountFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n',
+): (typeof documents)['\n  query Accounts(\n    $orderBy: OrdenationAccountModel\n    $orderDirection: OrderDirection\n    $first: Int\n    $after: String\n    $search: String\n    $last: Int\n    $before: String\n  ) {\n    accounts(\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      first: $first\n      after: $after\n      search: $search\n      last: $last\n      before: $before\n    ) {\n      edges {\n        cursor\n        node {\n          ...AccountFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
