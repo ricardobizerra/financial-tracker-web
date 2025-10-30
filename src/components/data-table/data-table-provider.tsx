@@ -133,7 +133,6 @@ function useDataTableController<TData>({
       }),
       ...variables,
     },
-    fetchPolicy: 'cache-and-network',
     notifyOnNetworkStatusChange: true,
   });
 
