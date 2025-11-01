@@ -15,9 +15,14 @@ import { z } from 'zod';
 
 interface SelectFieldProps extends BaseFieldProps {
   options: z.infer<typeof selectSchema>[];
+  renderLabel?: (option: z.infer<typeof selectSchema>) => React.ReactNode;
 }
 
-export function SelectField({ options, ...baseProps }: SelectFieldProps) {
+export function SelectField({
+  options,
+  renderLabel,
+  ...baseProps
+}: SelectFieldProps) {
   const {
     field: { onChange, value, ...field },
   } = useTsController<z.infer<typeof selectSchema>>();
@@ -45,7 +50,7 @@ export function SelectField({ options, ...baseProps }: SelectFieldProps) {
       <SelectContent>
         {options?.map((option) => (
           <SelectItem key={option.value} value={option.value}>
-            {option.label}
+            {renderLabel ? renderLabel(option) : option.label}
           </SelectItem>
         ))}
       </SelectContent>
