@@ -54,3 +54,43 @@ export const AccountsQuery = graphql(`
     }
   }
 `);
+
+export const InstitutionFragment = graphql(`
+  fragment InstitutionFragment on InstitutionModel {
+    id
+    code
+    name
+    logoUrl
+    color
+    createdAt
+    updatedAt
+  }
+`);
+
+export const InstitutionsQuery = graphql(`
+  query Institutions(
+    $first: Int
+    $after: String
+    $search: String
+    $orderBy: OrdenationInstitutionModel
+    $orderDirection: OrderDirection
+  ) {
+    institutions(
+      first: $first
+      after: $after
+      search: $search
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+    ) {
+      edges {
+        cursor
+        node {
+          ...InstitutionFragment
+        }
+      }
+      pageInfo {
+        ...PageInfoFragment
+      }
+    }
+  }
+`);

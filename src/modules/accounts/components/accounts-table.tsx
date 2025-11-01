@@ -2,6 +2,7 @@ import { DataTable } from '@/components/data-table';
 import { OrderDirection } from '@/graphql/graphql';
 import { AccountsQuery } from '../graphql/accounts-queries';
 import { AccountsTableBody } from './accounts-table-body';
+import { AccountCreateForm } from './account-create-form';
 
 export function AccountsTable() {
   return (
@@ -14,6 +15,7 @@ export function AccountsTable() {
       }}
       columns={[]}
       CustomBody={<AccountsTableBody />}
+      actionButtons={<AccountCreateForm />}
     />
   );
 }
