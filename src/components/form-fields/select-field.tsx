@@ -12,15 +12,22 @@ import {
 } from '../ui/select';
 import { selectSchema } from './utils/select-schema';
 import { z } from 'zod';
+import { NetworkStatus } from '@apollo/client';
 
 interface SelectFieldProps extends BaseFieldProps {
   options: z.infer<typeof selectSchema>[];
   renderLabel?: (option: z.infer<typeof selectSchema>) => React.ReactNode;
+  networkStatus?: NetworkStatus;
+  hasMore?: boolean;
+  fetchMore?: () => void;
 }
 
 export function SelectField({
   options,
   renderLabel,
+  networkStatus,
+  hasMore = false,
+  fetchMore,
   ...baseProps
 }: SelectFieldProps) {
   const {
@@ -29,7 +36,8 @@ export function SelectField({
   const { placeholder } = useDescription();
   const { setValue } = useFormContext();
 
-  console.log('value', value);
+  const loading = networkStatus === NetworkStatus.loading;
+  const fetchMoreLoading = networkStatus === NetworkStatus.fetchMore;
 
   return (
     <Select
@@ -53,6 +61,19 @@ export function SelectField({
             {renderLabel ? renderLabel(option) : option.label}
           </SelectItem>
         ))}
+        {hasMore && (
+          <div
+            className="relative flex w-full cursor-default select-none items-center justify-center rounded-sm py-1.5 pl-2 pr-8 text-sm text-muted-foreground outline-none focus:bg-accent focus:text-accent-foreground"
+            onClick={fetchMore}
+          >
+            {fetchMoreLoading ? 'Carregando...' : 'Carregar mais'}
+          </div>
+        )}
+        {loading && (
+          <div className="animate-pulse py-2 text-center text-sm text-muted-foreground">
+            Carregando...
+          </div>
+        )}
       </SelectContent>
     </Select>
   );
