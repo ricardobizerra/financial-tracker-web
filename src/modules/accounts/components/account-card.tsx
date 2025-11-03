@@ -3,6 +3,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -12,6 +13,9 @@ import Image from 'next/image';
 import { AccountTypeBadge } from './account-type-badge';
 import { AccountStatusBadge } from './account-status-badge';
 import { LastUpdatedLabel } from '@/components/last-updated-label';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { EyeIcon } from 'lucide-react';
 
 export function AccountCard({ account }: { account: AccountFragmentFragment }) {
   return (
@@ -68,19 +72,25 @@ export function AccountCard({ account }: { account: AccountFragmentFragment }) {
           </div>
         </CardHeader>
 
-        {account.description && (
-          <p className="mb-4 text-sm text-muted-foreground">
-            {account.description}
-          </p>
-        )}
-
-        <div className="mt-4 flex items-center justify-between border-t pt-3 text-xs text-muted-foreground">
+        <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
             <AccountTypeBadge type={account.type} />
             <AccountStatusBadge isActive={account.isActive} />
           </div>
           <LastUpdatedLabel updatedAt={account.updatedAt} />
         </div>
+
+        <CardFooter className="flex flex-wrap gap-4 px-0 pb-0 pt-6">
+          <Button variant="outline" size="sm" className="flex-1" asChild>
+            <Link
+              href={`/accounts/${account.id}`}
+              className="flex items-center gap-1"
+            >
+              <EyeIcon className="h-4 w-4" />
+              Ver conta
+            </Link>
+          </Button>
+        </CardFooter>
       </CardContent>
     </Card>
   );

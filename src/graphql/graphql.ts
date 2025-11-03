@@ -35,6 +35,7 @@ export type Scalars = {
 
 export type Account = {
   __typename?: 'Account';
+  _count: AccountCount;
   balance: Scalars['Decimal']['output'];
   createdAt: Scalars['DateTime']['output'];
   description: Maybe<Scalars['String']['output']>;
@@ -43,6 +44,7 @@ export type Account = {
   institutionId: Scalars['String']['output'];
   isActive: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
+  transactions: Maybe<Array<Transaction>>;
   type: AccountType;
   updatedAt: Scalars['DateTime']['output'];
   user: User;
@@ -58,6 +60,11 @@ export type AccountConnection = {
   __typename?: 'AccountConnection';
   edges: Maybe<Array<AccountModelEdge>>;
   pageInfo: Maybe<PageInfo>;
+};
+
+export type AccountCount = {
+  __typename?: 'AccountCount';
+  transactions: Scalars['Int']['output'];
 };
 
 export type AccountCountAggregate = {
@@ -99,9 +106,33 @@ export type AccountCreateNestedManyWithoutUserInput = {
   createMany?: InputMaybe<AccountCreateManyUserInputEnvelope>;
 };
 
+export type AccountCreateNestedOneWithoutTransactionsInput = {
+  connect?: InputMaybe<AccountWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<AccountCreateOrConnectWithoutTransactionsInput>;
+  create?: InputMaybe<AccountCreateWithoutTransactionsInput>;
+};
+
+export type AccountCreateOrConnectWithoutTransactionsInput = {
+  create: AccountCreateWithoutTransactionsInput;
+  where: AccountWhereUniqueInput;
+};
+
 export type AccountCreateOrConnectWithoutUserInput = {
   create: AccountCreateWithoutUserInput;
   where: AccountWhereUniqueInput;
+};
+
+export type AccountCreateWithoutTransactionsInput = {
+  balance?: InputMaybe<Scalars['Decimal']['input']>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  institution: InstitutionCreateNestedOneWithoutAccountsInput;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  name: Scalars['String']['input'];
+  type: AccountType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutAccountsInput;
 };
 
 export type AccountCreateWithoutUserInput = {
@@ -112,6 +143,7 @@ export type AccountCreateWithoutUserInput = {
   institution: InstitutionCreateNestedOneWithoutAccountsInput;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
+  transactions?: InputMaybe<TransactionCreateNestedManyWithoutAccountInput>;
   type: AccountType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
@@ -152,6 +184,7 @@ export type AccountMinAggregate = {
 
 export type AccountModel = {
   __typename?: 'AccountModel';
+  _count: AccountCount;
   balance: Scalars['Decimal']['output'];
   createdAt: Scalars['DateTime']['output'];
   description: Maybe<Scalars['String']['output']>;
@@ -160,6 +193,7 @@ export type AccountModel = {
   institutionId: Scalars['String']['output'];
   isActive: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
+  transactions: Maybe<Array<Transaction>>;
   type: AccountType;
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -168,6 +202,11 @@ export type AccountModelEdge = {
   __typename?: 'AccountModelEdge';
   cursor: Scalars['String']['output'];
   node: AccountModel;
+};
+
+export type AccountRelationFilter = {
+  is?: InputMaybe<AccountWhereInput>;
+  isNot?: InputMaybe<AccountWhereInput>;
 };
 
 export type AccountSumAggregate = {
@@ -196,6 +235,7 @@ export type AccountWhereInput = {
   institutionId?: InputMaybe<StringFilter>;
   isActive?: InputMaybe<BoolFilter>;
   name?: InputMaybe<StringFilter>;
+  transactions?: InputMaybe<TransactionListRelationFilter>;
   type?: InputMaybe<EnumAccountTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
   user?: InputMaybe<UserRelationFilter>;
@@ -214,6 +254,7 @@ export type AccountWhereUniqueInput = {
   institutionId?: InputMaybe<StringFilter>;
   isActive?: InputMaybe<BoolFilter>;
   name?: InputMaybe<StringFilter>;
+  transactions?: InputMaybe<TransactionListRelationFilter>;
   type?: InputMaybe<EnumAccountTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
   user?: InputMaybe<UserRelationFilter>;
@@ -282,6 +323,20 @@ export type EnumRoleFilter = {
   in?: InputMaybe<Array<Role>>;
   not?: InputMaybe<NestedEnumRoleFilter>;
   notIn?: InputMaybe<Array<Role>>;
+};
+
+export type EnumTransactionStatusFilter = {
+  equals?: InputMaybe<TransactionStatus>;
+  in?: InputMaybe<Array<TransactionStatus>>;
+  not?: InputMaybe<NestedEnumTransactionStatusFilter>;
+  notIn?: InputMaybe<Array<TransactionStatus>>;
+};
+
+export type EnumTransactionTypeFilter = {
+  equals?: InputMaybe<TransactionType>;
+  in?: InputMaybe<Array<TransactionType>>;
+  not?: InputMaybe<NestedEnumTransactionTypeFilter>;
+  notIn?: InputMaybe<Array<TransactionType>>;
 };
 
 export type FloatFilter = {
@@ -689,6 +744,7 @@ export type Mutation = {
   authSignIn: SignIn;
   createAccount: AccountModel;
   createInvestment: Investment;
+  createTransaction: TransactionModel;
   createUser: SignIn;
   deleteInvestment: Scalars['ID']['output'];
 };
@@ -703,6 +759,10 @@ export type MutationCreateAccountArgs = {
 
 export type MutationCreateInvestmentArgs = {
   data: InvestmentCreateWithoutUserInput;
+};
+
+export type MutationCreateTransactionArgs = {
+  data: TransactionCreateWithoutUserInput;
 };
 
 export type MutationCreateUserArgs = {
@@ -772,6 +832,20 @@ export type NestedEnumRoleFilter = {
   notIn?: InputMaybe<Array<Role>>;
 };
 
+export type NestedEnumTransactionStatusFilter = {
+  equals?: InputMaybe<TransactionStatus>;
+  in?: InputMaybe<Array<TransactionStatus>>;
+  not?: InputMaybe<NestedEnumTransactionStatusFilter>;
+  notIn?: InputMaybe<Array<TransactionStatus>>;
+};
+
+export type NestedEnumTransactionTypeFilter = {
+  equals?: InputMaybe<TransactionType>;
+  in?: InputMaybe<Array<TransactionType>>;
+  not?: InputMaybe<NestedEnumTransactionTypeFilter>;
+  notIn?: InputMaybe<Array<TransactionType>>;
+};
+
 export type NestedFloatFilter = {
   equals?: InputMaybe<Scalars['Float']['input']>;
   gt?: InputMaybe<Scalars['Float']['input']>;
@@ -834,12 +908,14 @@ export type NestedStringNullableFilter = {
 };
 
 export enum OrdenationAccountModel {
+  Count = '_count',
   Balance = 'balance',
   CreatedAt = 'createdAt',
   Institution = 'institution',
   InstitutionId = 'institutionId',
   IsActive = 'isActive',
   Name = 'name',
+  Transactions = 'transactions',
   Type = 'type',
   UpdatedAt = 'updatedAt',
 }
@@ -867,6 +943,18 @@ export enum OrdenationInvestmentModel {
   RegimePercentage = 'regimePercentage',
   StartDate = 'startDate',
   TaxedAmount = 'taxedAmount',
+  UpdatedAt = 'updatedAt',
+}
+
+export enum OrdenationTransactionModel {
+  Account = 'account',
+  AccountId = 'accountId',
+  Amount = 'amount',
+  CreatedAt = 'createdAt',
+  Date = 'date',
+  Description = 'description',
+  Status = 'status',
+  Type = 'type',
   UpdatedAt = 'updatedAt',
 }
 
@@ -900,6 +988,7 @@ export type Query = {
   investmentRegimes: InvestmentRegimeSummaryConnection;
   investments: InvestmentConnection;
   totalInvestments: TotalInvestmentsModel;
+  transactions: TransactionConnection;
   user: UserModel;
   users: UserConnection;
 };
@@ -940,6 +1029,17 @@ export type QueryInvestmentsArgs = {
   orderBy?: InputMaybe<OrdenationInvestmentModel>;
   orderDirection?: InputMaybe<OrderDirection>;
   regime?: InputMaybe<Regime>;
+};
+
+export type QueryTransactionsArgs = {
+  accountId?: InputMaybe<Scalars['ID']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<OrdenationTransactionModel>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  search?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type QueryUsersArgs = {
@@ -1017,6 +1117,240 @@ export type TotalInvestmentsModel = {
   taxedVariation: Scalars['String']['output'];
 };
 
+export type Transaction = {
+  __typename?: 'Transaction';
+  account: Account;
+  accountId: Scalars['String']['output'];
+  amount: Scalars['Decimal']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  date: Scalars['DateTime']['output'];
+  description: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  status: TransactionStatus;
+  type: TransactionType;
+  updatedAt: Scalars['DateTime']['output'];
+  user: User;
+  userId: Scalars['String']['output'];
+};
+
+export type TransactionAvgAggregate = {
+  __typename?: 'TransactionAvgAggregate';
+  amount: Maybe<Scalars['Decimal']['output']>;
+};
+
+export type TransactionConnection = {
+  __typename?: 'TransactionConnection';
+  edges: Maybe<Array<TransactionModelEdge>>;
+  pageInfo: Maybe<PageInfo>;
+};
+
+export type TransactionCountAggregate = {
+  __typename?: 'TransactionCountAggregate';
+  _all: Scalars['Int']['output'];
+  accountId: Scalars['Int']['output'];
+  amount: Scalars['Int']['output'];
+  createdAt: Scalars['Int']['output'];
+  date: Scalars['Int']['output'];
+  description: Scalars['Int']['output'];
+  id: Scalars['Int']['output'];
+  status: Scalars['Int']['output'];
+  type: Scalars['Int']['output'];
+  updatedAt: Scalars['Int']['output'];
+  userId: Scalars['Int']['output'];
+};
+
+export type TransactionCreateManyAccountInput = {
+  amount: Scalars['Decimal']['input'];
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  date: Scalars['DateTime']['input'];
+  description: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  status: TransactionStatus;
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  userId: Scalars['String']['input'];
+};
+
+export type TransactionCreateManyAccountInputEnvelope = {
+  data: Array<TransactionCreateManyAccountInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type TransactionCreateManyUserInput = {
+  accountId: Scalars['String']['input'];
+  amount: Scalars['Decimal']['input'];
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  date: Scalars['DateTime']['input'];
+  description: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  status: TransactionStatus;
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type TransactionCreateManyUserInputEnvelope = {
+  data: Array<TransactionCreateManyUserInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type TransactionCreateNestedManyWithoutAccountInput = {
+  connect?: InputMaybe<Array<TransactionWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<
+    Array<TransactionCreateOrConnectWithoutAccountInput>
+  >;
+  create?: InputMaybe<Array<TransactionCreateWithoutAccountInput>>;
+  createMany?: InputMaybe<TransactionCreateManyAccountInputEnvelope>;
+};
+
+export type TransactionCreateNestedManyWithoutUserInput = {
+  connect?: InputMaybe<Array<TransactionWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<
+    Array<TransactionCreateOrConnectWithoutUserInput>
+  >;
+  create?: InputMaybe<Array<TransactionCreateWithoutUserInput>>;
+  createMany?: InputMaybe<TransactionCreateManyUserInputEnvelope>;
+};
+
+export type TransactionCreateOrConnectWithoutAccountInput = {
+  create: TransactionCreateWithoutAccountInput;
+  where: TransactionWhereUniqueInput;
+};
+
+export type TransactionCreateOrConnectWithoutUserInput = {
+  create: TransactionCreateWithoutUserInput;
+  where: TransactionWhereUniqueInput;
+};
+
+export type TransactionCreateWithoutAccountInput = {
+  amount: Scalars['Decimal']['input'];
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  date: Scalars['DateTime']['input'];
+  description: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  status: TransactionStatus;
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutTransactionsInput;
+};
+
+export type TransactionCreateWithoutUserInput = {
+  account: AccountCreateNestedOneWithoutTransactionsInput;
+  amount: Scalars['Decimal']['input'];
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  date: Scalars['DateTime']['input'];
+  description: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  status: TransactionStatus;
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type TransactionListRelationFilter = {
+  every?: InputMaybe<TransactionWhereInput>;
+  none?: InputMaybe<TransactionWhereInput>;
+  some?: InputMaybe<TransactionWhereInput>;
+};
+
+export type TransactionMaxAggregate = {
+  __typename?: 'TransactionMaxAggregate';
+  accountId: Maybe<Scalars['String']['output']>;
+  amount: Maybe<Scalars['Decimal']['output']>;
+  createdAt: Maybe<Scalars['DateTime']['output']>;
+  date: Maybe<Scalars['DateTime']['output']>;
+  description: Maybe<Scalars['String']['output']>;
+  id: Maybe<Scalars['String']['output']>;
+  status: Maybe<TransactionStatus>;
+  type: Maybe<TransactionType>;
+  updatedAt: Maybe<Scalars['DateTime']['output']>;
+  userId: Maybe<Scalars['String']['output']>;
+};
+
+export type TransactionMinAggregate = {
+  __typename?: 'TransactionMinAggregate';
+  accountId: Maybe<Scalars['String']['output']>;
+  amount: Maybe<Scalars['Decimal']['output']>;
+  createdAt: Maybe<Scalars['DateTime']['output']>;
+  date: Maybe<Scalars['DateTime']['output']>;
+  description: Maybe<Scalars['String']['output']>;
+  id: Maybe<Scalars['String']['output']>;
+  status: Maybe<TransactionStatus>;
+  type: Maybe<TransactionType>;
+  updatedAt: Maybe<Scalars['DateTime']['output']>;
+  userId: Maybe<Scalars['String']['output']>;
+};
+
+export type TransactionModel = {
+  __typename?: 'TransactionModel';
+  account: Account;
+  accountId: Scalars['String']['output'];
+  amount: Scalars['Decimal']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  date: Scalars['DateTime']['output'];
+  description: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  status: TransactionStatus;
+  type: TransactionType;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type TransactionModelEdge = {
+  __typename?: 'TransactionModelEdge';
+  cursor: Scalars['String']['output'];
+  node: TransactionModel;
+};
+
+export enum TransactionStatus {
+  Canceled = 'CANCELED',
+  Completed = 'COMPLETED',
+  Planned = 'PLANNED',
+}
+
+export type TransactionSumAggregate = {
+  __typename?: 'TransactionSumAggregate';
+  amount: Maybe<Scalars['Decimal']['output']>;
+};
+
+export enum TransactionType {
+  Expense = 'EXPENSE',
+  Revenue = 'REVENUE',
+}
+
+export type TransactionWhereInput = {
+  AND?: InputMaybe<Array<TransactionWhereInput>>;
+  NOT?: InputMaybe<Array<TransactionWhereInput>>;
+  OR?: InputMaybe<Array<TransactionWhereInput>>;
+  account?: InputMaybe<AccountRelationFilter>;
+  accountId?: InputMaybe<StringFilter>;
+  amount?: InputMaybe<DecimalFilter>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  date?: InputMaybe<DateTimeFilter>;
+  description?: InputMaybe<StringFilter>;
+  id?: InputMaybe<StringFilter>;
+  status?: InputMaybe<EnumTransactionStatusFilter>;
+  type?: InputMaybe<EnumTransactionTypeFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+  user?: InputMaybe<UserRelationFilter>;
+  userId?: InputMaybe<StringFilter>;
+};
+
+export type TransactionWhereUniqueInput = {
+  AND?: InputMaybe<Array<TransactionWhereInput>>;
+  NOT?: InputMaybe<Array<TransactionWhereInput>>;
+  OR?: InputMaybe<Array<TransactionWhereInput>>;
+  account?: InputMaybe<AccountRelationFilter>;
+  accountId?: InputMaybe<StringFilter>;
+  amount?: InputMaybe<DecimalFilter>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  date?: InputMaybe<DateTimeFilter>;
+  description?: InputMaybe<StringFilter>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<EnumTransactionStatusFilter>;
+  type?: InputMaybe<EnumTransactionTypeFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+  user?: InputMaybe<UserRelationFilter>;
+  userId?: InputMaybe<StringFilter>;
+};
+
 export type User = {
   __typename?: 'User';
   _count: UserCount;
@@ -1028,6 +1362,7 @@ export type User = {
   name: Scalars['String']['output'];
   password: Scalars['String']['output'];
   role: Role;
+  transactions: Maybe<Array<Transaction>>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -1041,6 +1376,7 @@ export type UserCount = {
   __typename?: 'UserCount';
   accounts: Scalars['Int']['output'];
   investments: Scalars['Int']['output'];
+  transactions: Scalars['Int']['output'];
 };
 
 export type UserCountAggregate = {
@@ -1056,6 +1392,53 @@ export type UserCountAggregate = {
 };
 
 export type UserCreateInput = {
+  accounts?: InputMaybe<AccountCreateNestedManyWithoutUserInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  email: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
+  name: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  role: Role;
+  transactions?: InputMaybe<TransactionCreateNestedManyWithoutUserInput>;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type UserCreateNestedOneWithoutAccountsInput = {
+  connect?: InputMaybe<UserWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutAccountsInput>;
+  create?: InputMaybe<UserCreateWithoutAccountsInput>;
+};
+
+export type UserCreateNestedOneWithoutTransactionsInput = {
+  connect?: InputMaybe<UserWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutTransactionsInput>;
+  create?: InputMaybe<UserCreateWithoutTransactionsInput>;
+};
+
+export type UserCreateOrConnectWithoutAccountsInput = {
+  create: UserCreateWithoutAccountsInput;
+  where: UserWhereUniqueInput;
+};
+
+export type UserCreateOrConnectWithoutTransactionsInput = {
+  create: UserCreateWithoutTransactionsInput;
+  where: UserWhereUniqueInput;
+};
+
+export type UserCreateWithoutAccountsInput = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  email: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
+  name: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  role: Role;
+  transactions?: InputMaybe<TransactionCreateNestedManyWithoutUserInput>;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type UserCreateWithoutTransactionsInput = {
   accounts?: InputMaybe<AccountCreateNestedManyWithoutUserInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   email: Scalars['String']['input'];
@@ -1120,6 +1503,23 @@ export type UserWhereInput = {
   name?: InputMaybe<StringFilter>;
   password?: InputMaybe<StringFilter>;
   role?: InputMaybe<EnumRoleFilter>;
+  transactions?: InputMaybe<TransactionListRelationFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
+export type UserWhereUniqueInput = {
+  AND?: InputMaybe<Array<UserWhereInput>>;
+  NOT?: InputMaybe<Array<UserWhereInput>>;
+  OR?: InputMaybe<Array<UserWhereInput>>;
+  accounts?: InputMaybe<AccountListRelationFilter>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  investments?: InputMaybe<InvestmentListRelationFilter>;
+  name?: InputMaybe<StringFilter>;
+  password?: InputMaybe<StringFilter>;
+  role?: InputMaybe<EnumRoleFilter>;
+  transactions?: InputMaybe<TransactionListRelationFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -1434,6 +1834,62 @@ export type InvestmentRegimesQuery = {
   };
 };
 
+export type TransactionFragmentFragment = {
+  __typename?: 'TransactionModel';
+  id: string;
+  description: string;
+  amount: any;
+  date: any;
+  type: TransactionType;
+  createdAt: any;
+  updatedAt: any;
+  accountId: string;
+  status: TransactionStatus;
+  account: { __typename?: 'Account'; id: string };
+};
+
+export type TransactionsQueryVariables = Exact<{
+  first?: InputMaybe<Scalars['Int']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  orderBy?: InputMaybe<OrdenationTransactionModel>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  accountId?: InputMaybe<Scalars['ID']['input']>;
+}>;
+
+export type TransactionsQuery = {
+  __typename?: 'Query';
+  transactions: {
+    __typename?: 'TransactionConnection';
+    edges: Array<{
+      __typename?: 'TransactionModelEdge';
+      cursor: string;
+      node: {
+        __typename?: 'TransactionModel';
+        id: string;
+        description: string;
+        amount: any;
+        date: any;
+        type: TransactionType;
+        createdAt: any;
+        updatedAt: any;
+        accountId: string;
+        status: TransactionStatus;
+        account: { __typename?: 'Account'; id: string };
+      };
+    }> | null;
+    pageInfo: {
+      __typename?: 'PageInfo';
+      startCursor: string | null;
+      endCursor: string | null;
+      hasPreviousPage: boolean;
+      hasNextPage: boolean;
+    } | null;
+  };
+};
+
 export type UsersQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
@@ -1617,6 +2073,43 @@ export const InvestmentRegimeSummaryFragmentFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<InvestmentRegimeSummaryFragmentFragment, unknown>;
+export const TransactionFragmentFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'TransactionFragment' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'TransactionModel' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'date' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'accountId' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'account' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<TransactionFragmentFragment, unknown>;
 export const CreateAccountDocument = {
   kind: 'Document',
   definitions: [
@@ -2698,6 +3191,256 @@ export const InvestmentRegimesDocument = {
   InvestmentRegimesQuery,
   InvestmentRegimesQueryVariables
 >;
+export const TransactionsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'Transactions' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'first' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'after' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'last' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'before' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'search' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'orderBy' },
+          },
+          type: {
+            kind: 'NamedType',
+            name: { kind: 'Name', value: 'OrdenationTransactionModel' },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'orderDirection' },
+          },
+          type: {
+            kind: 'NamedType',
+            name: { kind: 'Name', value: 'OrderDirection' },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'accountId' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'transactions' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'first' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'first' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'after' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'after' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'last' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'last' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'before' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'before' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'search' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'search' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderBy' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'orderBy' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderDirection' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'orderDirection' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'accountId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'accountId' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'edges' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'cursor' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'node' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'FragmentSpread',
+                              name: {
+                                kind: 'Name',
+                                value: 'TransactionFragment',
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'pageInfo' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'PageInfoFragment' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'TransactionFragment' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'TransactionModel' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'date' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'accountId' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'account' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'PageInfoFragment' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'PageInfo' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'startCursor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'endCursor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'hasPreviousPage' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'hasNextPage' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<TransactionsQuery, TransactionsQueryVariables>;
 export const UsersDocument = {
   kind: 'Document',
   definitions: [
