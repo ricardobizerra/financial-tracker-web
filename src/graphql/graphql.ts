@@ -1834,6 +1834,15 @@ export type InvestmentRegimesQuery = {
   };
 };
 
+export type CreateTransactionMutationVariables = Exact<{
+  data: TransactionCreateWithoutUserInput;
+}>;
+
+export type CreateTransactionMutation = {
+  __typename?: 'Mutation';
+  createTransaction: { __typename?: 'TransactionModel'; id: string };
+};
+
 export type TransactionFragmentFragment = {
   __typename?: 'TransactionModel';
   id: string;
@@ -3190,6 +3199,60 @@ export const InvestmentRegimesDocument = {
 } as unknown as DocumentNode<
   InvestmentRegimesQuery,
   InvestmentRegimesQueryVariables
+>;
+export const CreateTransactionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CreateTransaction' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: {
+                kind: 'Name',
+                value: 'TransactionCreateWithoutUserInput',
+              },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createTransaction' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'data' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'data' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreateTransactionMutation,
+  CreateTransactionMutationVariables
 >;
 export const TransactionsDocument = {
   kind: 'Document',

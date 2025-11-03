@@ -30,6 +30,7 @@ type Documents = {
   '\n  query TotalInvestments {\n    totalInvestments {\n      initialAmount\n      currentAmount\n      currentVariation\n      taxedAmount\n      taxedVariation\n    }\n  }\n': typeof types.TotalInvestmentsDocument;
   '\n  fragment InvestmentRegimeSummaryFragment on InvestmentRegimeSummary {\n    name\n    quantity\n    totalInvested\n    currentInvested\n    currentInvestedPercentage\n    taxedInvested\n    taxedInvestedPercentage\n  }\n': typeof types.InvestmentRegimeSummaryFragmentFragmentDoc;
   '\n  query InvestmentRegimes {\n    investmentRegimes {\n      edges {\n        cursor\n        node {\n          ...InvestmentRegimeSummaryFragment\n        }\n      }\n    }\n  }\n': typeof types.InvestmentRegimesDocument;
+  '\n  mutation CreateTransaction($data: TransactionCreateWithoutUserInput!) {\n    createTransaction(data: $data) {\n      id\n    }\n  }\n': typeof types.CreateTransactionDocument;
   '\n  fragment TransactionFragment on TransactionModel {\n    id\n    description\n    amount\n    date\n    type\n    createdAt\n    updatedAt\n    accountId\n    account {\n      id\n    }\n    status\n  }\n': typeof types.TransactionFragmentFragmentDoc;
   '\n  query Transactions(\n    $first: Int\n    $after: String\n    $last: Int\n    $before: String\n    $search: String\n    $orderBy: OrdenationTransactionModel\n    $orderDirection: OrderDirection\n    $accountId: ID\n  ) {\n    transactions(\n      first: $first\n      after: $after\n      last: $last\n      before: $before\n      search: $search\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      accountId: $accountId\n    ) {\n      edges {\n        cursor\n        node {\n          ...TransactionFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n': typeof types.TransactionsDocument;
   '\n  query Users(\n    $first: Int\n    $after: String\n    $search: String\n    $before: String\n    $last: Int\n    $orderBy: OrdenationUserModel\n    $orderDirection: OrderDirection\n  ) {\n    users(\n      first: $first\n      after: $after\n      search: $search\n      before: $before\n      last: $last\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n    ) {\n      edges {\n        cursor\n        node {\n          id\n          email\n          name\n          role\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n': typeof types.UsersDocument;
@@ -67,6 +68,8 @@ const documents: Documents = {
     types.InvestmentRegimeSummaryFragmentFragmentDoc,
   '\n  query InvestmentRegimes {\n    investmentRegimes {\n      edges {\n        cursor\n        node {\n          ...InvestmentRegimeSummaryFragment\n        }\n      }\n    }\n  }\n':
     types.InvestmentRegimesDocument,
+  '\n  mutation CreateTransaction($data: TransactionCreateWithoutUserInput!) {\n    createTransaction(data: $data) {\n      id\n    }\n  }\n':
+    types.CreateTransactionDocument,
   '\n  fragment TransactionFragment on TransactionModel {\n    id\n    description\n    amount\n    date\n    type\n    createdAt\n    updatedAt\n    accountId\n    account {\n      id\n    }\n    status\n  }\n':
     types.TransactionFragmentFragmentDoc,
   '\n  query Transactions(\n    $first: Int\n    $after: String\n    $last: Int\n    $before: String\n    $search: String\n    $orderBy: OrdenationTransactionModel\n    $orderDirection: OrderDirection\n    $accountId: ID\n  ) {\n    transactions(\n      first: $first\n      after: $after\n      last: $last\n      before: $before\n      search: $search\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      accountId: $accountId\n    ) {\n      edges {\n        cursor\n        node {\n          ...TransactionFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n':
@@ -185,6 +188,12 @@ export function graphql(
 export function graphql(
   source: '\n  query InvestmentRegimes {\n    investmentRegimes {\n      edges {\n        cursor\n        node {\n          ...InvestmentRegimeSummaryFragment\n        }\n      }\n    }\n  }\n',
 ): (typeof documents)['\n  query InvestmentRegimes {\n    investmentRegimes {\n      edges {\n        cursor\n        node {\n          ...InvestmentRegimeSummaryFragment\n        }\n      }\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  mutation CreateTransaction($data: TransactionCreateWithoutUserInput!) {\n    createTransaction(data: $data) {\n      id\n    }\n  }\n',
+): (typeof documents)['\n  mutation CreateTransaction($data: TransactionCreateWithoutUserInput!) {\n    createTransaction(data: $data) {\n      id\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

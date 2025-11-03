@@ -5,10 +5,11 @@ import { OrdenationTransactionModel, OrderDirection } from '@/graphql/graphql';
 import { TransactionsQuery } from '../graphql/transactions-queries';
 import { transactionsTableColumns } from './transactions-table-columns';
 import { useParams } from 'next/navigation';
+import { TransactionCreateForm } from './transaction-create-form';
 
 export function TransactionsTable() {
   const params = useParams();
-  const accountId = params.accountId;
+  const accountId = params.accountId as string | undefined;
 
   return (
     <DataTable
@@ -27,6 +28,7 @@ export function TransactionsTable() {
       }}
       columns={transactionsTableColumns}
       initialPageSize={50}
+      actionButtons={<TransactionCreateForm accountId={accountId} />}
     />
   );
 }
