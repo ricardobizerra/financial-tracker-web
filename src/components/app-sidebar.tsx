@@ -1,6 +1,6 @@
 'use client';
 
-import { Landmark, PiggyBank } from 'lucide-react';
+import { ArrowLeftRight, Landmark, PiggyBank } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -35,6 +35,11 @@ const items = [
     title: 'Investimentos',
     url: '/investments',
     icon: PiggyBank,
+  },
+  {
+    title: 'Movimentações',
+    url: '/transactions',
+    icon: ArrowLeftRight,
   },
 ];
 
