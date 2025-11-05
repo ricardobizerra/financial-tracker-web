@@ -7,12 +7,14 @@ import { HTMLInputAutoCompleteAttribute, HTMLInputTypeAttribute } from 'react';
 export interface BaseTextFieldProps extends BaseFieldProps {
   inputType: HTMLInputTypeAttribute;
   autoComplete?: HTMLInputAutoCompleteAttribute | undefined;
+  leftSlot?: InputProps['leftSlot'];
   rightSlot?: InputProps['rightSlot'];
 }
 
 export function BaseTextField({
   inputType,
   autoComplete,
+  leftSlot,
   rightSlot,
   ...baseProps
 }: BaseTextFieldProps) {
@@ -30,6 +32,7 @@ export function BaseTextField({
         onChange={(e) => setValue(field.name, e.target.value || undefined)}
         value={value ?? ''}
         autoComplete={autoComplete}
+        leftSlot={leftSlot}
         rightSlot={rightSlot}
         {...field}
       />
