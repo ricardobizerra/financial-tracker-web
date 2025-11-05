@@ -9,7 +9,7 @@ import { RefObject, useEffect, useRef, useState } from 'react';
 const formatCurrency = (input: string | undefined) => {
   const numericValue = input?.replace(/[^0-9]/g, '');
 
-  if (!numericValue) return 'R$ 0,00';
+  if (!numericValue) return '0,00';
 
   const formatted = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -17,7 +17,7 @@ const formatCurrency = (input: string | undefined) => {
     minimumFractionDigits: 2,
   }).format(parseFloat(numericValue) / 100);
 
-  return formatted;
+  return formatted.replace('R$', '').trim();
 };
 
 const unformatCurrency = (input: string) => {
@@ -60,7 +60,7 @@ export function CurrencyField({ ...baseProps }: CurrencyFieldProps) {
   useEffect(() => {
     if (value === undefined) {
       setValue(field.name, 0);
-      setFormattedValue('R$ 0,00');
+      setFormattedValue('0,00');
     }
   }, [value, field.name, setValue]);
 
@@ -69,11 +69,12 @@ export function CurrencyField({ ...baseProps }: CurrencyFieldProps) {
       <Input
         type="text"
         ref={inputRef}
-        placeholder={placeholder ?? 'R$ 0,00'}
+        placeholder={placeholder ?? '0,00'}
         onChange={handleChange}
         onClick={() => handleFocusToEnd(inputRef)}
         onFocus={() => handleFocusToEnd(inputRef)}
         value={formattedValue ?? ''}
+        leftSlot={<span className="text-muted-foreground">R$</span>}
         {...field}
       />
     </BaseField>
