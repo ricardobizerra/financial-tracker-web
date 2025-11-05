@@ -24,6 +24,8 @@ export function PasswordToggle({
       size="icon"
       variant="ghost"
       className={cn('-mr-1 h-7 w-7', className)}
+      aria-label="Toggle password visibility"
+      aria-pressed={isVisible}
       {...props}
     >
       {isVisible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
