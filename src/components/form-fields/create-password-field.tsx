@@ -7,6 +7,7 @@ import { useFormField } from '../ui/form';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { useFormContext } from 'react-hook-form';
+import { PasswordToggle } from '../password-toggle';
 
 interface CreatePasswordFieldProps extends BaseFieldProps {}
 
@@ -17,6 +18,9 @@ export function CreatePasswordField({
   const { label } = useDescription();
   const { formItemId } = useFormField();
   const { setError } = useFormContext();
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const passwordCriteria = useMemo(
     () => [
@@ -65,8 +69,14 @@ export function CreatePasswordField({
   return (
     <div className="flex flex-col gap-2">
       <BaseTextField
-        inputType="password"
+        inputType={showPassword ? 'text' : 'password'}
         autoComplete="new-password"
+        rightSlot={
+          <PasswordToggle
+            isVisible={showPassword}
+            onToggle={() => setShowPassword((old) => !old)}
+          />
+        }
         withError={false}
         {...baseProps}
       />
@@ -82,10 +92,16 @@ export function CreatePasswordField({
       </Label>
 
       <Input
-        type="password"
+        type={showConfirmPassword ? 'text' : 'password'}
         placeholder={`Insira sua ${label?.toLowerCase() || 'senha'} novamente`}
         onChange={(e) => setConfirmPassword(e.target.value || undefined)}
         value={confirmPassword ?? ''}
+        rightSlot={
+          <PasswordToggle
+            isVisible={showConfirmPassword}
+            onToggle={() => setShowConfirmPassword((old) => !old)}
+          />
+        }
       />
 
       <ValidationGroup>
