@@ -12,16 +12,23 @@ import {
 import { PlusIcon } from 'lucide-react';
 import { z } from 'zod';
 import { CreateInvestmentMutation } from '../graphql/investments-mutations';
-import { useMutation } from '@apollo/client';
-import { Regime } from '@/graphql/graphql';
+import { useMutation, useQuery } from '@apollo/client';
+import {
+  AccountType,
+  OrdenationAccountModel,
+  OrderDirection,
+  Regime,
+} from '@/graphql/graphql';
 import {
   InvestmentRegimesQuery,
   InvestmentsQuery,
 } from '../graphql/investments-queries';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { investmentRegimeLabel } from '../investment-regime-label';
+import { AccountsQuery } from '@/modules/accounts/graphql/accounts-queries';
+import Image from 'next/image';
 
 const schema = z.object({
   amount: formFields.currency.describe('Valor // '),
@@ -31,6 +38,7 @@ const schema = z.object({
   regimeName: formFields.select.describe('Regime // '),
   regimePercentage: formFields.number.describe('Percentual do regime // '),
   startDate: formFields.date.describe('Data de início // '),
+  account: formFields.select.describe('Conta * // Insira a conta'),
 });
 
 export function InvestmentCreateForm({
@@ -47,6 +55,51 @@ export function InvestmentCreateForm({
     value: regime,
     label: investmentRegimeLabel[regime],
   }));
+
+  const institutionsQueryOptions = useQuery(AccountsQuery, {
+    variables: {
+      first: 50,
+      orderBy: OrdenationAccountModel.Name,
+      orderDirection: OrderDirection.Asc,
+      type: AccountType.Investment,
+    },
+    skip: !open,
+    notifyOnNetworkStatusChange: true,
+  });
+
+  const institutionsOptions =
+    institutionsQueryOptions.data?.accounts.edges?.map((edge) => ({
+      value: edge.node.id,
+      label: edge.node.name,
+      data: {
+        ...edge.node,
+      },
+    })) || [];
+
+  const institutionsPageInfo = institutionsQueryOptions.data?.accounts.pageInfo;
+
+  const paginate = useCallback(() => {
+    institutionsQueryOptions.fetchMore({
+      variables: {
+        after: institutionsPageInfo?.endCursor,
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev;
+
+        return {
+          ...prev,
+          accounts: {
+            ...prev.accounts,
+            ...fetchMoreResult.accounts,
+            edges: [
+              ...(prev.accounts.edges || []),
+              ...(fetchMoreResult.accounts.edges || []),
+            ],
+          },
+        };
+      },
+    });
+  }, [institutionsQueryOptions, institutionsPageInfo]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -69,15 +122,38 @@ export function InvestmentCreateForm({
 
         <TsForm
           schema={schema}
-          defaultValues={{
-            regimeName: {
-              value: defaultRegime,
-            },
-          }}
+          defaultValues={
+            defaultRegime
+              ? {
+                  regimeName: {
+                    value: defaultRegime,
+                    label: investmentRegimeLabel[defaultRegime],
+                  },
+                }
+              : undefined
+          }
           props={{
             regimeName: {
               options: investmentRegimeOptions,
               disabled: !!defaultRegime,
+            },
+            account: {
+              options: institutionsOptions,
+              renderLabel: (option) => (
+                <div className="flex items-center gap-2">
+                  <Image
+                    src={option.data.institution.logoUrl}
+                    alt={option.data.institution.name}
+                    width={20}
+                    height={20}
+                    className="rounded"
+                  />
+                  <p>{option.data.name}</p>
+                </div>
+              ),
+              fetchMore: paginate,
+              networkStatus: institutionsQueryOptions.networkStatus,
+              hasMore: institutionsPageInfo?.hasNextPage,
             },
           }}
           onSubmit={async (data) => {
@@ -89,6 +165,11 @@ export function InvestmentCreateForm({
                   regimeName: data.regimeName?.value as Regime,
                   regimePercentage: data.regimePercentage,
                   startDate: data.startDate,
+                  account: {
+                    connect: {
+                      id: data.account.value,
+                    },
+                  },
                 },
               },
               refetchQueries: [InvestmentsQuery, InvestmentRegimesQuery],
@@ -113,13 +194,21 @@ export function InvestmentCreateForm({
             </DialogFooter>
           )}
         >
-          {({ regimeName, amount, duration, regimePercentage, startDate }) => (
+          {({
+            regimeName,
+            amount,
+            duration,
+            regimePercentage,
+            startDate,
+            account,
+          }) => (
             <>
               {regimeName}
               {amount}
               {duration}
               {regimePercentage}
               {startDate}
+              {account}
             </>
           )}
         </TsForm>

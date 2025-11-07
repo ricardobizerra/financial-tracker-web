@@ -42,6 +42,7 @@ export type Account = {
   id: Scalars['ID']['output'];
   institution: Institution;
   institutionId: Scalars['String']['output'];
+  investments: Maybe<Array<Investment>>;
   isActive: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   transactions: Maybe<Array<Transaction>>;
@@ -64,6 +65,7 @@ export type AccountConnection = {
 
 export type AccountCount = {
   __typename?: 'AccountCount';
+  investments: Scalars['Int']['output'];
   transactions: Scalars['Int']['output'];
 };
 
@@ -106,10 +108,21 @@ export type AccountCreateNestedManyWithoutUserInput = {
   createMany?: InputMaybe<AccountCreateManyUserInputEnvelope>;
 };
 
+export type AccountCreateNestedOneWithoutInvestmentsInput = {
+  connect?: InputMaybe<AccountWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<AccountCreateOrConnectWithoutInvestmentsInput>;
+  create?: InputMaybe<AccountCreateWithoutInvestmentsInput>;
+};
+
 export type AccountCreateNestedOneWithoutTransactionsInput = {
   connect?: InputMaybe<AccountWhereUniqueInput>;
   connectOrCreate?: InputMaybe<AccountCreateOrConnectWithoutTransactionsInput>;
   create?: InputMaybe<AccountCreateWithoutTransactionsInput>;
+};
+
+export type AccountCreateOrConnectWithoutInvestmentsInput = {
+  create: AccountCreateWithoutInvestmentsInput;
+  where: AccountWhereUniqueInput;
 };
 
 export type AccountCreateOrConnectWithoutTransactionsInput = {
@@ -122,12 +135,27 @@ export type AccountCreateOrConnectWithoutUserInput = {
   where: AccountWhereUniqueInput;
 };
 
+export type AccountCreateWithoutInvestmentsInput = {
+  balance?: InputMaybe<Scalars['Decimal']['input']>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  institution: InstitutionCreateNestedOneWithoutAccountsInput;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  name: Scalars['String']['input'];
+  transactions?: InputMaybe<TransactionCreateNestedManyWithoutAccountInput>;
+  type: AccountType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutAccountsInput;
+};
+
 export type AccountCreateWithoutTransactionsInput = {
   balance?: InputMaybe<Scalars['Decimal']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   institution: InstitutionCreateNestedOneWithoutAccountsInput;
+  investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   type: AccountType;
@@ -141,6 +169,7 @@ export type AccountCreateWithoutUserInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   institution: InstitutionCreateNestedOneWithoutAccountsInput;
+  investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   transactions?: InputMaybe<TransactionCreateNestedManyWithoutAccountInput>;
@@ -191,6 +220,7 @@ export type AccountModel = {
   id: Scalars['ID']['output'];
   institution: Institution;
   institutionId: Scalars['String']['output'];
+  investments: Maybe<Array<Investment>>;
   isActive: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   transactions: Maybe<Array<Transaction>>;
@@ -233,6 +263,7 @@ export type AccountWhereInput = {
   id?: InputMaybe<StringFilter>;
   institution?: InputMaybe<InstitutionRelationFilter>;
   institutionId?: InputMaybe<StringFilter>;
+  investments?: InputMaybe<InvestmentListRelationFilter>;
   isActive?: InputMaybe<BoolFilter>;
   name?: InputMaybe<StringFilter>;
   transactions?: InputMaybe<TransactionListRelationFilter>;
@@ -252,6 +283,7 @@ export type AccountWhereUniqueInput = {
   id?: InputMaybe<Scalars['String']['input']>;
   institution?: InputMaybe<InstitutionRelationFilter>;
   institutionId?: InputMaybe<StringFilter>;
+  investments?: InputMaybe<InvestmentListRelationFilter>;
   isActive?: InputMaybe<BoolFilter>;
   name?: InputMaybe<StringFilter>;
   transactions?: InputMaybe<TransactionListRelationFilter>;
@@ -309,6 +341,20 @@ export type EnumAccountTypeFilter = {
   in?: InputMaybe<Array<AccountType>>;
   not?: InputMaybe<NestedEnumAccountTypeFilter>;
   notIn?: InputMaybe<Array<AccountType>>;
+};
+
+export type EnumInvestmentStatusFilter = {
+  equals?: InputMaybe<InvestmentStatus>;
+  in?: InputMaybe<Array<InvestmentStatus>>;
+  not?: InputMaybe<NestedEnumInvestmentStatusFilter>;
+  notIn?: InputMaybe<Array<InvestmentStatus>>;
+};
+
+export type EnumInvestmentTransactionRoleFilter = {
+  equals?: InputMaybe<InvestmentTransactionRole>;
+  in?: InputMaybe<Array<InvestmentTransactionRole>>;
+  not?: InputMaybe<NestedEnumInvestmentTransactionRoleFilter>;
+  notIn?: InputMaybe<Array<InvestmentTransactionRole>>;
 };
 
 export type EnumRegimeFilter = {
@@ -504,6 +550,9 @@ export type IntNullableFilter = {
 
 export type Investment = {
   __typename?: 'Investment';
+  _count: InvestmentCount;
+  account: Account;
+  accountId: Scalars['String']['output'];
   amount: Scalars['Float']['output'];
   correctedAmount: Maybe<Scalars['Float']['output']>;
   createdAt: Scalars['DateTime']['output'];
@@ -514,7 +563,9 @@ export type Investment = {
   regimeName: Regime;
   regimePercentage: Maybe<Scalars['Float']['output']>;
   startDate: Scalars['DateTime']['output'];
+  status: InvestmentStatus;
   taxedAmount: Maybe<Scalars['Float']['output']>;
+  transactions: Maybe<Array<InvestmentTransaction>>;
   updatedAt: Scalars['DateTime']['output'];
   user: User;
   userId: Scalars['String']['output'];
@@ -535,9 +586,15 @@ export type InvestmentConnection = {
   pageInfo: Maybe<PageInfo>;
 };
 
+export type InvestmentCount = {
+  __typename?: 'InvestmentCount';
+  transactions: Scalars['Int']['output'];
+};
+
 export type InvestmentCountAggregate = {
   __typename?: 'InvestmentCountAggregate';
   _all: Scalars['Int']['output'];
+  accountId: Scalars['Int']['output'];
   amount: Scalars['Int']['output'];
   correctedAmount: Scalars['Int']['output'];
   createdAt: Scalars['Int']['output'];
@@ -548,12 +605,13 @@ export type InvestmentCountAggregate = {
   regimeName: Scalars['Int']['output'];
   regimePercentage: Scalars['Int']['output'];
   startDate: Scalars['Int']['output'];
+  status: Scalars['Int']['output'];
   taxedAmount: Scalars['Int']['output'];
   updatedAt: Scalars['Int']['output'];
   userId: Scalars['Int']['output'];
 };
 
-export type InvestmentCreateManyUserInput = {
+export type InvestmentCreateManyAccountInput = {
   amount: Scalars['Float']['input'];
   correctedAmount?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -564,6 +622,30 @@ export type InvestmentCreateManyUserInput = {
   regimeName: Regime;
   regimePercentage?: InputMaybe<Scalars['Float']['input']>;
   startDate: Scalars['DateTime']['input'];
+  status?: InputMaybe<InvestmentStatus>;
+  taxedAmount?: InputMaybe<Scalars['Float']['input']>;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  userId: Scalars['String']['input'];
+};
+
+export type InvestmentCreateManyAccountInputEnvelope = {
+  data: Array<InvestmentCreateManyAccountInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type InvestmentCreateManyUserInput = {
+  accountId: Scalars['String']['input'];
+  amount: Scalars['Float']['input'];
+  correctedAmount?: InputMaybe<Scalars['Float']['input']>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  duration?: InputMaybe<Scalars['Int']['input']>;
+  finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  lastCorrectedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  regimeName: Regime;
+  regimePercentage?: InputMaybe<Scalars['Float']['input']>;
+  startDate: Scalars['DateTime']['input'];
+  status?: InputMaybe<InvestmentStatus>;
   taxedAmount?: InputMaybe<Scalars['Float']['input']>;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
@@ -571,6 +653,15 @@ export type InvestmentCreateManyUserInput = {
 export type InvestmentCreateManyUserInputEnvelope = {
   data: Array<InvestmentCreateManyUserInput>;
   skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type InvestmentCreateNestedManyWithoutAccountInput = {
+  connect?: InputMaybe<Array<InvestmentWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<
+    Array<InvestmentCreateOrConnectWithoutAccountInput>
+  >;
+  create?: InputMaybe<Array<InvestmentCreateWithoutAccountInput>>;
+  createMany?: InputMaybe<InvestmentCreateManyAccountInputEnvelope>;
 };
 
 export type InvestmentCreateNestedManyWithoutUserInput = {
@@ -582,12 +673,28 @@ export type InvestmentCreateNestedManyWithoutUserInput = {
   createMany?: InputMaybe<InvestmentCreateManyUserInputEnvelope>;
 };
 
+export type InvestmentCreateNestedOneWithoutTransactionsInput = {
+  connect?: InputMaybe<InvestmentWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<InvestmentCreateOrConnectWithoutTransactionsInput>;
+  create?: InputMaybe<InvestmentCreateWithoutTransactionsInput>;
+};
+
+export type InvestmentCreateOrConnectWithoutAccountInput = {
+  create: InvestmentCreateWithoutAccountInput;
+  where: InvestmentWhereUniqueInput;
+};
+
+export type InvestmentCreateOrConnectWithoutTransactionsInput = {
+  create: InvestmentCreateWithoutTransactionsInput;
+  where: InvestmentWhereUniqueInput;
+};
+
 export type InvestmentCreateOrConnectWithoutUserInput = {
   create: InvestmentCreateWithoutUserInput;
   where: InvestmentWhereUniqueInput;
 };
 
-export type InvestmentCreateWithoutUserInput = {
+export type InvestmentCreateWithoutAccountInput = {
   amount: Scalars['Float']['input'];
   correctedAmount?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -598,7 +705,46 @@ export type InvestmentCreateWithoutUserInput = {
   regimeName: Regime;
   regimePercentage?: InputMaybe<Scalars['Float']['input']>;
   startDate: Scalars['DateTime']['input'];
+  status?: InputMaybe<InvestmentStatus>;
   taxedAmount?: InputMaybe<Scalars['Float']['input']>;
+  transactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutInvestmentInput>;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutInvestmentsInput;
+};
+
+export type InvestmentCreateWithoutTransactionsInput = {
+  account: AccountCreateNestedOneWithoutInvestmentsInput;
+  amount: Scalars['Float']['input'];
+  correctedAmount?: InputMaybe<Scalars['Float']['input']>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  duration?: InputMaybe<Scalars['Int']['input']>;
+  finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  lastCorrectedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  regimeName: Regime;
+  regimePercentage?: InputMaybe<Scalars['Float']['input']>;
+  startDate: Scalars['DateTime']['input'];
+  status?: InputMaybe<InvestmentStatus>;
+  taxedAmount?: InputMaybe<Scalars['Float']['input']>;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutInvestmentsInput;
+};
+
+export type InvestmentCreateWithoutUserInput = {
+  account: AccountCreateNestedOneWithoutInvestmentsInput;
+  amount: Scalars['Float']['input'];
+  correctedAmount?: InputMaybe<Scalars['Float']['input']>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  duration?: InputMaybe<Scalars['Int']['input']>;
+  finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  lastCorrectedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  regimeName: Regime;
+  regimePercentage?: InputMaybe<Scalars['Float']['input']>;
+  startDate: Scalars['DateTime']['input'];
+  status?: InputMaybe<InvestmentStatus>;
+  taxedAmount?: InputMaybe<Scalars['Float']['input']>;
+  transactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutInvestmentInput>;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
@@ -610,6 +756,7 @@ export type InvestmentListRelationFilter = {
 
 export type InvestmentMaxAggregate = {
   __typename?: 'InvestmentMaxAggregate';
+  accountId: Maybe<Scalars['String']['output']>;
   amount: Maybe<Scalars['Float']['output']>;
   correctedAmount: Maybe<Scalars['Float']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
@@ -620,6 +767,7 @@ export type InvestmentMaxAggregate = {
   regimeName: Maybe<Regime>;
   regimePercentage: Maybe<Scalars['Float']['output']>;
   startDate: Maybe<Scalars['DateTime']['output']>;
+  status: Maybe<InvestmentStatus>;
   taxedAmount: Maybe<Scalars['Float']['output']>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
   userId: Maybe<Scalars['String']['output']>;
@@ -627,6 +775,7 @@ export type InvestmentMaxAggregate = {
 
 export type InvestmentMinAggregate = {
   __typename?: 'InvestmentMinAggregate';
+  accountId: Maybe<Scalars['String']['output']>;
   amount: Maybe<Scalars['Float']['output']>;
   correctedAmount: Maybe<Scalars['Float']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
@@ -637,6 +786,7 @@ export type InvestmentMinAggregate = {
   regimeName: Maybe<Regime>;
   regimePercentage: Maybe<Scalars['Float']['output']>;
   startDate: Maybe<Scalars['DateTime']['output']>;
+  status: Maybe<InvestmentStatus>;
   taxedAmount: Maybe<Scalars['Float']['output']>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
   userId: Maybe<Scalars['String']['output']>;
@@ -644,6 +794,8 @@ export type InvestmentMinAggregate = {
 
 export type InvestmentModel = {
   __typename?: 'InvestmentModel';
+  account: Account;
+  accountId: Scalars['String']['output'];
   amount: Scalars['Float']['output'];
   correctedAmount: Maybe<Scalars['Float']['output']>;
   createdAt: Scalars['DateTime']['output'];
@@ -655,9 +807,11 @@ export type InvestmentModel = {
   regimeName: Regime;
   regimePercentage: Maybe<Scalars['Float']['output']>;
   startDate: Scalars['DateTime']['output'];
+  status: InvestmentStatus;
   taxPercentage: Scalars['String']['output'];
   taxedAmount: Maybe<Scalars['Float']['output']>;
   taxedVariation: Scalars['String']['output'];
+  transactions: Maybe<Array<InvestmentTransaction>>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -690,6 +844,16 @@ export type InvestmentRegimeSummaryEdge = {
   node: InvestmentRegimeSummary;
 };
 
+export type InvestmentRelationFilter = {
+  is?: InputMaybe<InvestmentWhereInput>;
+  isNot?: InputMaybe<InvestmentWhereInput>;
+};
+
+export enum InvestmentStatus {
+  Closed = 'CLOSED',
+  Open = 'OPEN',
+}
+
 export type InvestmentSumAggregate = {
   __typename?: 'InvestmentSumAggregate';
   amount: Maybe<Scalars['Float']['output']>;
@@ -699,10 +863,188 @@ export type InvestmentSumAggregate = {
   taxedAmount: Maybe<Scalars['Float']['output']>;
 };
 
+export type InvestmentTransaction = {
+  __typename?: 'InvestmentTransaction';
+  amount: Scalars['Decimal']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  investment: Investment;
+  investmentId: Scalars['String']['output'];
+  role: InvestmentTransactionRole;
+  transaction: Transaction;
+  transactionId: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type InvestmentTransactionAvgAggregate = {
+  __typename?: 'InvestmentTransactionAvgAggregate';
+  amount: Maybe<Scalars['Decimal']['output']>;
+};
+
+export type InvestmentTransactionCountAggregate = {
+  __typename?: 'InvestmentTransactionCountAggregate';
+  _all: Scalars['Int']['output'];
+  amount: Scalars['Int']['output'];
+  createdAt: Scalars['Int']['output'];
+  id: Scalars['Int']['output'];
+  investmentId: Scalars['Int']['output'];
+  role: Scalars['Int']['output'];
+  transactionId: Scalars['Int']['output'];
+  updatedAt: Scalars['Int']['output'];
+};
+
+export type InvestmentTransactionCreateManyInvestmentInput = {
+  amount: Scalars['Decimal']['input'];
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  role: InvestmentTransactionRole;
+  transactionId: Scalars['String']['input'];
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type InvestmentTransactionCreateManyInvestmentInputEnvelope = {
+  data: Array<InvestmentTransactionCreateManyInvestmentInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type InvestmentTransactionCreateManyTransactionInput = {
+  amount: Scalars['Decimal']['input'];
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  investmentId: Scalars['String']['input'];
+  role: InvestmentTransactionRole;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type InvestmentTransactionCreateManyTransactionInputEnvelope = {
+  data: Array<InvestmentTransactionCreateManyTransactionInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type InvestmentTransactionCreateNestedManyWithoutInvestmentInput = {
+  connect?: InputMaybe<Array<InvestmentTransactionWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<
+    Array<InvestmentTransactionCreateOrConnectWithoutInvestmentInput>
+  >;
+  create?: InputMaybe<Array<InvestmentTransactionCreateWithoutInvestmentInput>>;
+  createMany?: InputMaybe<InvestmentTransactionCreateManyInvestmentInputEnvelope>;
+};
+
+export type InvestmentTransactionCreateNestedManyWithoutTransactionInput = {
+  connect?: InputMaybe<Array<InvestmentTransactionWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<
+    Array<InvestmentTransactionCreateOrConnectWithoutTransactionInput>
+  >;
+  create?: InputMaybe<
+    Array<InvestmentTransactionCreateWithoutTransactionInput>
+  >;
+  createMany?: InputMaybe<InvestmentTransactionCreateManyTransactionInputEnvelope>;
+};
+
+export type InvestmentTransactionCreateOrConnectWithoutInvestmentInput = {
+  create: InvestmentTransactionCreateWithoutInvestmentInput;
+  where: InvestmentTransactionWhereUniqueInput;
+};
+
+export type InvestmentTransactionCreateOrConnectWithoutTransactionInput = {
+  create: InvestmentTransactionCreateWithoutTransactionInput;
+  where: InvestmentTransactionWhereUniqueInput;
+};
+
+export type InvestmentTransactionCreateWithoutInvestmentInput = {
+  amount: Scalars['Decimal']['input'];
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  role: InvestmentTransactionRole;
+  transaction: TransactionCreateNestedOneWithoutInvestmentLinksInput;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type InvestmentTransactionCreateWithoutTransactionInput = {
+  amount: Scalars['Decimal']['input'];
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  investment: InvestmentCreateNestedOneWithoutTransactionsInput;
+  role: InvestmentTransactionRole;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type InvestmentTransactionListRelationFilter = {
+  every?: InputMaybe<InvestmentTransactionWhereInput>;
+  none?: InputMaybe<InvestmentTransactionWhereInput>;
+  some?: InputMaybe<InvestmentTransactionWhereInput>;
+};
+
+export type InvestmentTransactionMaxAggregate = {
+  __typename?: 'InvestmentTransactionMaxAggregate';
+  amount: Maybe<Scalars['Decimal']['output']>;
+  createdAt: Maybe<Scalars['DateTime']['output']>;
+  id: Maybe<Scalars['String']['output']>;
+  investmentId: Maybe<Scalars['String']['output']>;
+  role: Maybe<InvestmentTransactionRole>;
+  transactionId: Maybe<Scalars['String']['output']>;
+  updatedAt: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type InvestmentTransactionMinAggregate = {
+  __typename?: 'InvestmentTransactionMinAggregate';
+  amount: Maybe<Scalars['Decimal']['output']>;
+  createdAt: Maybe<Scalars['DateTime']['output']>;
+  id: Maybe<Scalars['String']['output']>;
+  investmentId: Maybe<Scalars['String']['output']>;
+  role: Maybe<InvestmentTransactionRole>;
+  transactionId: Maybe<Scalars['String']['output']>;
+  updatedAt: Maybe<Scalars['DateTime']['output']>;
+};
+
+export enum InvestmentTransactionRole {
+  Fee = 'FEE',
+  Funding = 'FUNDING',
+  Income = 'INCOME',
+  Redemption = 'REDEMPTION',
+}
+
+export type InvestmentTransactionSumAggregate = {
+  __typename?: 'InvestmentTransactionSumAggregate';
+  amount: Maybe<Scalars['Decimal']['output']>;
+};
+
+export type InvestmentTransactionWhereInput = {
+  AND?: InputMaybe<Array<InvestmentTransactionWhereInput>>;
+  NOT?: InputMaybe<Array<InvestmentTransactionWhereInput>>;
+  OR?: InputMaybe<Array<InvestmentTransactionWhereInput>>;
+  amount?: InputMaybe<DecimalFilter>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<StringFilter>;
+  investment?: InputMaybe<InvestmentRelationFilter>;
+  investmentId?: InputMaybe<StringFilter>;
+  role?: InputMaybe<EnumInvestmentTransactionRoleFilter>;
+  transaction?: InputMaybe<TransactionRelationFilter>;
+  transactionId?: InputMaybe<StringFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
+export type InvestmentTransactionWhereUniqueInput = {
+  AND?: InputMaybe<Array<InvestmentTransactionWhereInput>>;
+  NOT?: InputMaybe<Array<InvestmentTransactionWhereInput>>;
+  OR?: InputMaybe<Array<InvestmentTransactionWhereInput>>;
+  amount?: InputMaybe<DecimalFilter>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  investment?: InputMaybe<InvestmentRelationFilter>;
+  investmentId?: InputMaybe<StringFilter>;
+  role?: InputMaybe<EnumInvestmentTransactionRoleFilter>;
+  transaction?: InputMaybe<TransactionRelationFilter>;
+  transactionId?: InputMaybe<StringFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
 export type InvestmentWhereInput = {
   AND?: InputMaybe<Array<InvestmentWhereInput>>;
   NOT?: InputMaybe<Array<InvestmentWhereInput>>;
   OR?: InputMaybe<Array<InvestmentWhereInput>>;
+  account?: InputMaybe<AccountRelationFilter>;
+  accountId?: InputMaybe<StringFilter>;
   amount?: InputMaybe<FloatFilter>;
   correctedAmount?: InputMaybe<FloatNullableFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
@@ -713,7 +1055,9 @@ export type InvestmentWhereInput = {
   regimeName?: InputMaybe<EnumRegimeFilter>;
   regimePercentage?: InputMaybe<FloatNullableFilter>;
   startDate?: InputMaybe<DateTimeFilter>;
+  status?: InputMaybe<EnumInvestmentStatusFilter>;
   taxedAmount?: InputMaybe<FloatNullableFilter>;
+  transactions?: InputMaybe<InvestmentTransactionListRelationFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
   user?: InputMaybe<UserRelationFilter>;
   userId?: InputMaybe<StringFilter>;
@@ -723,6 +1067,8 @@ export type InvestmentWhereUniqueInput = {
   AND?: InputMaybe<Array<InvestmentWhereInput>>;
   NOT?: InputMaybe<Array<InvestmentWhereInput>>;
   OR?: InputMaybe<Array<InvestmentWhereInput>>;
+  account?: InputMaybe<AccountRelationFilter>;
+  accountId?: InputMaybe<StringFilter>;
   amount?: InputMaybe<FloatFilter>;
   correctedAmount?: InputMaybe<FloatNullableFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
@@ -733,7 +1079,9 @@ export type InvestmentWhereUniqueInput = {
   regimeName?: InputMaybe<EnumRegimeFilter>;
   regimePercentage?: InputMaybe<FloatNullableFilter>;
   startDate?: InputMaybe<DateTimeFilter>;
+  status?: InputMaybe<EnumInvestmentStatusFilter>;
   taxedAmount?: InputMaybe<FloatNullableFilter>;
+  transactions?: InputMaybe<InvestmentTransactionListRelationFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
   user?: InputMaybe<UserRelationFilter>;
   userId?: InputMaybe<StringFilter>;
@@ -816,6 +1164,20 @@ export type NestedEnumAccountTypeFilter = {
   in?: InputMaybe<Array<AccountType>>;
   not?: InputMaybe<NestedEnumAccountTypeFilter>;
   notIn?: InputMaybe<Array<AccountType>>;
+};
+
+export type NestedEnumInvestmentStatusFilter = {
+  equals?: InputMaybe<InvestmentStatus>;
+  in?: InputMaybe<Array<InvestmentStatus>>;
+  not?: InputMaybe<NestedEnumInvestmentStatusFilter>;
+  notIn?: InputMaybe<Array<InvestmentStatus>>;
+};
+
+export type NestedEnumInvestmentTransactionRoleFilter = {
+  equals?: InputMaybe<InvestmentTransactionRole>;
+  in?: InputMaybe<Array<InvestmentTransactionRole>>;
+  not?: InputMaybe<NestedEnumInvestmentTransactionRoleFilter>;
+  notIn?: InputMaybe<Array<InvestmentTransactionRole>>;
 };
 
 export type NestedEnumRegimeFilter = {
@@ -913,6 +1275,7 @@ export enum OrdenationAccountModel {
   CreatedAt = 'createdAt',
   Institution = 'institution',
   InstitutionId = 'institutionId',
+  Investments = 'investments',
   IsActive = 'isActive',
   Name = 'name',
   Transactions = 'transactions',
@@ -932,6 +1295,8 @@ export enum OrdenationInstitutionModel {
 }
 
 export enum OrdenationInvestmentModel {
+  Account = 'account',
+  AccountId = 'accountId',
   Amount = 'amount',
   CorrectedAmount = 'correctedAmount',
   CreatedAt = 'createdAt',
@@ -942,17 +1307,21 @@ export enum OrdenationInvestmentModel {
   RegimeName = 'regimeName',
   RegimePercentage = 'regimePercentage',
   StartDate = 'startDate',
+  Status = 'status',
   TaxedAmount = 'taxedAmount',
+  Transactions = 'transactions',
   UpdatedAt = 'updatedAt',
 }
 
 export enum OrdenationTransactionModel {
+  Count = '_count',
   Account = 'account',
   AccountId = 'accountId',
   Amount = 'amount',
   CreatedAt = 'createdAt',
   Date = 'date',
   Description = 'description',
+  InvestmentLinks = 'investmentLinks',
   Status = 'status',
   Type = 'type',
   UpdatedAt = 'updatedAt',
@@ -1005,6 +1374,7 @@ export type QueryAccountsArgs = {
   orderBy?: InputMaybe<OrdenationAccountModel>;
   orderDirection?: InputMaybe<OrderDirection>;
   search?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<AccountType>;
 };
 
 export type QueryInstitutionArgs = {
@@ -1119,6 +1489,7 @@ export type TotalInvestmentsModel = {
 
 export type Transaction = {
   __typename?: 'Transaction';
+  _count: TransactionCount;
   account: Account;
   accountId: Scalars['String']['output'];
   amount: Scalars['Decimal']['output'];
@@ -1126,6 +1497,7 @@ export type Transaction = {
   date: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  investmentLinks: Maybe<Array<InvestmentTransaction>>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt: Scalars['DateTime']['output'];
@@ -1142,6 +1514,11 @@ export type TransactionConnection = {
   __typename?: 'TransactionConnection';
   edges: Maybe<Array<TransactionModelEdge>>;
   pageInfo: Maybe<PageInfo>;
+};
+
+export type TransactionCount = {
+  __typename?: 'TransactionCount';
+  investmentLinks: Scalars['Int']['output'];
 };
 
 export type TransactionCountAggregate = {
@@ -1211,8 +1588,19 @@ export type TransactionCreateNestedManyWithoutUserInput = {
   createMany?: InputMaybe<TransactionCreateManyUserInputEnvelope>;
 };
 
+export type TransactionCreateNestedOneWithoutInvestmentLinksInput = {
+  connect?: InputMaybe<TransactionWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<TransactionCreateOrConnectWithoutInvestmentLinksInput>;
+  create?: InputMaybe<TransactionCreateWithoutInvestmentLinksInput>;
+};
+
 export type TransactionCreateOrConnectWithoutAccountInput = {
   create: TransactionCreateWithoutAccountInput;
+  where: TransactionWhereUniqueInput;
+};
+
+export type TransactionCreateOrConnectWithoutInvestmentLinksInput = {
+  create: TransactionCreateWithoutInvestmentLinksInput;
   where: TransactionWhereUniqueInput;
 };
 
@@ -1222,6 +1610,20 @@ export type TransactionCreateOrConnectWithoutUserInput = {
 };
 
 export type TransactionCreateWithoutAccountInput = {
+  amount: Scalars['Decimal']['input'];
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  date: Scalars['DateTime']['input'];
+  description: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  investmentLinks?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutTransactionInput>;
+  status: TransactionStatus;
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutTransactionsInput;
+};
+
+export type TransactionCreateWithoutInvestmentLinksInput = {
+  account: AccountCreateNestedOneWithoutTransactionsInput;
   amount: Scalars['Decimal']['input'];
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
@@ -1240,6 +1642,7 @@ export type TransactionCreateWithoutUserInput = {
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
+  investmentLinks?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutTransactionInput>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -1281,6 +1684,7 @@ export type TransactionMinAggregate = {
 
 export type TransactionModel = {
   __typename?: 'TransactionModel';
+  _count: TransactionCount;
   account: Account;
   accountId: Scalars['String']['output'];
   amount: Scalars['Decimal']['output'];
@@ -1288,6 +1692,7 @@ export type TransactionModel = {
   date: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  investmentLinks: Maybe<Array<InvestmentTransaction>>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt: Scalars['DateTime']['output'];
@@ -1297,6 +1702,11 @@ export type TransactionModelEdge = {
   __typename?: 'TransactionModelEdge';
   cursor: Scalars['String']['output'];
   node: TransactionModel;
+};
+
+export type TransactionRelationFilter = {
+  is?: InputMaybe<TransactionWhereInput>;
+  isNot?: InputMaybe<TransactionWhereInput>;
 };
 
 export enum TransactionStatus {
@@ -1326,6 +1736,7 @@ export type TransactionWhereInput = {
   date?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
+  investmentLinks?: InputMaybe<InvestmentTransactionListRelationFilter>;
   status?: InputMaybe<EnumTransactionStatusFilter>;
   type?: InputMaybe<EnumTransactionTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
@@ -1344,6 +1755,7 @@ export type TransactionWhereUniqueInput = {
   date?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
+  investmentLinks?: InputMaybe<InvestmentTransactionListRelationFilter>;
   status?: InputMaybe<EnumTransactionStatusFilter>;
   type?: InputMaybe<EnumTransactionTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
@@ -1410,6 +1822,12 @@ export type UserCreateNestedOneWithoutAccountsInput = {
   create?: InputMaybe<UserCreateWithoutAccountsInput>;
 };
 
+export type UserCreateNestedOneWithoutInvestmentsInput = {
+  connect?: InputMaybe<UserWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutInvestmentsInput>;
+  create?: InputMaybe<UserCreateWithoutInvestmentsInput>;
+};
+
 export type UserCreateNestedOneWithoutTransactionsInput = {
   connect?: InputMaybe<UserWhereUniqueInput>;
   connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutTransactionsInput>;
@@ -1418,6 +1836,11 @@ export type UserCreateNestedOneWithoutTransactionsInput = {
 
 export type UserCreateOrConnectWithoutAccountsInput = {
   create: UserCreateWithoutAccountsInput;
+  where: UserWhereUniqueInput;
+};
+
+export type UserCreateOrConnectWithoutInvestmentsInput = {
+  create: UserCreateWithoutInvestmentsInput;
   where: UserWhereUniqueInput;
 };
 
@@ -1431,6 +1854,18 @@ export type UserCreateWithoutAccountsInput = {
   email: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
   investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
+  name: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  role: Role;
+  transactions?: InputMaybe<TransactionCreateNestedManyWithoutUserInput>;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type UserCreateWithoutInvestmentsInput = {
+  accounts?: InputMaybe<AccountCreateNestedManyWithoutUserInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  email: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
   role: Role;
@@ -1563,6 +1998,7 @@ export type AccountsQueryVariables = Exact<{
   search?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<AccountType>;
 }>;
 
 export type AccountsQuery = {
@@ -2237,6 +2673,14 @@ export const AccountsDocument = {
           },
           type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
         },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'type' } },
+          type: {
+            kind: 'NamedType',
+            name: { kind: 'Name', value: 'AccountType' },
+          },
+        },
       ],
       selectionSet: {
         kind: 'SelectionSet',
@@ -2299,6 +2743,14 @@ export const AccountsDocument = {
                 value: {
                   kind: 'Variable',
                   name: { kind: 'Name', value: 'before' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'type' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'type' },
                 },
               },
             ],

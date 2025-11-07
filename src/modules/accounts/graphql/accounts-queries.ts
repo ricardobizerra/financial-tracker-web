@@ -32,6 +32,7 @@ export const AccountsQuery = graphql(`
     $search: String
     $last: Int
     $before: String
+    $type: AccountType
   ) {
     accounts(
       orderBy: $orderBy
@@ -41,6 +42,7 @@ export const AccountsQuery = graphql(`
       search: $search
       last: $last
       before: $before
+      type: $type
     ) {
       edges {
         cursor

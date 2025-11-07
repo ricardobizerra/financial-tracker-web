@@ -26,7 +26,11 @@ export function InvestmentsTable({ regime }: { regime?: Regime }) {
       }}
       columns={investmentsTableColumns}
       initialPageSize={50}
-      actionButtons={<InvestmentCreateForm defaultRegime={regime} />}
+      actionButtons={
+        <InvestmentCreateForm
+          defaultRegime={regime ? (regime.toUpperCase() as Regime) : undefined}
+        />
+      }
     />
   );
 }
