@@ -38,7 +38,7 @@ const schema = z.object({
   institution: formFields.select.describe(
     'Instituição * // Insira a instituição',
   ),
-  balance: formFields.currency.describe(
+  initialBalance: formFields.currency.describe(
     'Saldo inicial * // Insira o saldo inicial da conta',
   ),
   isActive: formFields.switch.describe(
@@ -170,7 +170,7 @@ export function AccountCreateForm({
                   },
                   isActive: data.isActive,
                   description: data.description,
-                  balance: data.balance,
+                  initialBalance: data.initialBalance,
                 },
               },
               refetchQueries: [AccountsQuery],
