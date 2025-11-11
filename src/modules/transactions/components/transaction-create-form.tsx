@@ -164,6 +164,7 @@ export function TransactionCreateForm({
         </DialogHeader>
 
         <TsForm
+          form={form}
           schema={schema}
           defaultValues={
             !!accountId

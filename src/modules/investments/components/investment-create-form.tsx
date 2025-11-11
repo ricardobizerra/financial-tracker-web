@@ -201,6 +201,7 @@ export function InvestmentCreateForm({
         </DialogHeader>
 
         <TsForm
+          form={form}
           schema={schema}
           defaultValues={
             defaultRegime
