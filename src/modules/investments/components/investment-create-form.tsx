@@ -34,19 +34,32 @@ import { SelectLabel } from '@/components/ui/select';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-const schema = z.object({
-  amount: formFields.currency.describe('Valor // '),
-  duration: formFields.number.describe(
-    'Duração em dias // Insira aqui a duração em dias',
-  ),
-  regimeName: formFields.select.describe('Regime // '),
-  regimePercentage: formFields.number.describe('Percentual do regime // '),
-  startDate: formFields.date.describe('Data de início // '),
-  account: formFields.select.describe('Conta * // Insira a conta'),
-  connectAccount: formFields.select.describe(
-    'Conta de conexão * // Insira a conta',
-  ),
-});
+const schema = z
+  .object({
+    amount: formFields.currency.describe('Valor // '),
+    duration: formFields.number.describe(
+      'Duração em dias // Insira aqui a duração em dias',
+    ),
+    regimeName: formFields.select.describe('Regime // '),
+    regimePercentage: formFields.number.describe('Percentual do regime // '),
+    startDate: formFields.date.describe('Data de início // '),
+    account: formFields.select.describe('Conta * // Insira a conta'),
+    connectAccount: formFields.select
+      .describe('Conta de conexão * // Insira a conta')
+      .optional(),
+  })
+  .refine(
+    (data) => {
+      const accountType = data.account?.data?.type;
+      if (accountType === AccountType.Investment) return true;
+      return !!data.connectAccount;
+    },
+    {
+      message:
+        'Conta de conexão é obrigatória para contas que não são de investimento',
+      path: ['connectAccount'],
+    },
+  );
 
 export function InvestmentCreateForm({
   defaultRegime,
@@ -255,7 +268,12 @@ export function InvestmentCreateForm({
             },
             connectAccount: {
               options: connectAccountsOptions,
-              renderLabel: (option) => (
+              renderLabel: (option: {
+                value: string;
+                label: string;
+                data?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+                group?: string | undefined;
+              }) => (
                 <div className="flex items-center gap-3 px-2 py-1.5">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
                     <Image
@@ -279,7 +297,7 @@ export function InvestmentCreateForm({
               fetchMore: connectAccountsPaginate,
               networkStatus: connectAccountsQueryOptions.networkStatus,
               hasMore: connectAccountsPageInfo?.hasNextPage,
-            },
+            } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
           }}
           onSubmit={async (data) => {
             await createInvestment({
@@ -291,7 +309,7 @@ export function InvestmentCreateForm({
                   regimePercentage: data.regimePercentage,
                   startDate: data.startDate,
                   ...(data.account.data?.type !== AccountType.Investment && {
-                    sourceAccountId: data.connectAccount.value,
+                    sourceAccountId: data.connectAccount?.value,
                   }),
                   destinyAccountId: data.account.value,
                 },
