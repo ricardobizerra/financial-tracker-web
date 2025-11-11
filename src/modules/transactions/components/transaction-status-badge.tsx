@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { TransactionStatus } from '@/graphql/graphql';
 import { cn } from '@/lib/utils';
+import { transactionStatusLabel } from '../transactions-constants';
 
 export function TransactionStatusBadge({
   status,
@@ -27,12 +28,6 @@ export function TransactionStatusBadge({
       dot: 'bg-destructive',
     },
   } as const;
-
-  const transactionStatusLabel: Record<TransactionStatus, string> = {
-    PLANNED: 'Agendada',
-    COMPLETED: 'Concluída',
-    CANCELED: 'Cancelada',
-  };
 
   const colors = accountStatusColors[status];
   const label = transactionStatusLabel[status];

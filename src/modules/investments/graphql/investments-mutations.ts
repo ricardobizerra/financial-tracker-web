@@ -1,7 +1,7 @@
 import { graphql } from '@/graphql';
 
 export const CreateInvestmentMutation = graphql(`
-  mutation CreateInvestment($data: InvestmentCreateWithoutUserInput!) {
+  mutation CreateInvestment($data: CreateInvestmentInput!) {
     createInvestment(data: $data) {
       id
       amount

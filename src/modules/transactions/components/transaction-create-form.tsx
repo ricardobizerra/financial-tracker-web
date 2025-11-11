@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { PlusIcon } from 'lucide-react';
+import { ArrowRight, BriefcaseBusiness, PlusIcon } from 'lucide-react';
 import { z } from 'zod';
 import { useMutation, useQuery } from '@apollo/client';
 import {
@@ -31,6 +31,13 @@ import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { AccountsQuery } from '@/modules/accounts/graphql/accounts-queries';
 import { TransactionStatusBadge } from './transaction-status-badge';
+import { Separator } from '@/components/ui/separator';
+import {
+  transactionStatusLabel,
+  transactionTypeLabels,
+} from '../transactions-constants';
+import { useForm, useWatch } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const schema = z.object({
   date: formFields.date.describe('Data * // Insira a data da movimentação'),
@@ -41,7 +48,12 @@ const schema = z.object({
     'Descrição * // Insira a descrição da movimentação',
   ),
   type: formFields.select.describe('Tipo * // Insira o tipo da movimentação'),
-  account: formFields.select.describe('Conta * // Insira a conta'),
+  sourceAccount: formFields.select.describe(
+    'Conta de origem * // Insira a conta',
+  ),
+  destinyAccount: formFields.select.describe(
+    'Conta de destino * // Insira a conta',
+  ),
   status: formFields.select.describe(
     'Status * // Insira o status da movimentação',
   ),
@@ -59,15 +71,32 @@ export function TransactionCreateForm({
     CreateTransactionMutation,
   );
 
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
+    defaultValues: !!accountId
+      ? {
+          destinyAccount: {
+            value: accountId,
+            label: accountId,
+          },
+        }
+      : undefined,
+  });
+
+  const selectedType = useWatch({
+    control: form.control,
+    name: 'type',
+  });
+
   const accountTypeOptions = Object.values(TransactionType).map((type) => ({
     value: type,
-    label: type,
+    label: transactionTypeLabels[type],
   }));
 
   const accountStatusOptions = Object.values(TransactionStatus).map(
     (status) => ({
       value: status,
-      label: status,
+      label: transactionStatusLabel[status],
     }),
   );
 
@@ -126,7 +155,7 @@ export function TransactionCreateForm({
           Nova movimentação
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="min-w-fit max-w-[90vw] md:max-w-fit">
         <DialogHeader>
           <DialogTitle>Nova movimentação</DialogTitle>
           <DialogDescription>
@@ -139,7 +168,7 @@ export function TransactionCreateForm({
           defaultValues={
             !!accountId
               ? {
-                  account: {
+                  destinyAccount: {
                     value: accountId,
                     label: accountId,
                   },
@@ -161,18 +190,54 @@ export function TransactionCreateForm({
                 />
               ),
             },
-            account: {
+            sourceAccount: {
               options: institutionsOptions,
               renderLabel: (option) => (
-                <div className="flex items-center gap-2">
-                  <Image
-                    src={option.data.institution.logoUrl}
-                    alt={option.data.institution.name}
-                    width={20}
-                    height={20}
-                    className="rounded"
-                  />
-                  <p>{option.data.name}</p>
+                <div className="flex items-center gap-3 py-1.5">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
+                    <Image
+                      src={option.data.institution.logoUrl}
+                      alt={option.data.institution.name}
+                      width={20}
+                      height={20}
+                      className="h-5 w-5 object-contain"
+                    />
+                  </div>
+                  <div className="flex min-w-0 flex-1 flex-col items-start">
+                    <p className="truncate text-sm font-medium">
+                      {option.label}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {option.data?.institution?.name}
+                    </p>
+                  </div>
+                </div>
+              ),
+              fetchMore: paginate,
+              networkStatus: institutionsQueryOptions.networkStatus,
+              hasMore: institutionsPageInfo?.hasNextPage,
+            },
+            destinyAccount: {
+              options: institutionsOptions,
+              renderLabel: (option) => (
+                <div className="flex items-center gap-3 py-1.5">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
+                    <Image
+                      src={option.data.institution.logoUrl}
+                      alt={option.data.institution.name}
+                      width={20}
+                      height={20}
+                      className="h-5 w-5 object-contain"
+                    />
+                  </div>
+                  <div className="flex min-w-0 flex-1 flex-col items-start">
+                    <p className="truncate text-sm font-medium">
+                      {option.data.name}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {option.data.institution.name}
+                    </p>
+                  </div>
                 </div>
               ),
               fetchMore: paginate,
@@ -186,11 +251,22 @@ export function TransactionCreateForm({
                 data: {
                   date: data.date,
                   type: data.type.value as TransactionType,
-                  account: {
-                    connect: {
-                      id: data.account.value,
+                  ...((data.type.value === TransactionType.Expense ||
+                    data.type.value === TransactionType.BetweenAccounts) && {
+                    sourceAccount: {
+                      connect: {
+                        id: data.sourceAccount.value,
+                      },
                     },
-                  },
+                  }),
+                  ...((data.type.value === TransactionType.Income ||
+                    data.type.value === TransactionType.BetweenAccounts) && {
+                    destinyAccount: {
+                      connect: {
+                        id: data.destinyAccount.value,
+                      },
+                    },
+                  }),
                   status: data.status.value as TransactionStatus,
                   description: data.description,
                   amount: data.amount,
@@ -217,7 +293,41 @@ export function TransactionCreateForm({
               </Button>
             </DialogFooter>
           )}
-        />
+        >
+          {({
+            sourceAccount,
+            destinyAccount,
+            date,
+            status,
+            amount,
+            description,
+            type,
+          }) => (
+            <>
+              {type}
+              {selectedType?.value === TransactionType.Expense ? (
+                sourceAccount
+              ) : selectedType?.value === TransactionType.Income ? (
+                destinyAccount
+              ) : selectedType?.value === TransactionType.BetweenAccounts ? (
+                <div className="grid grid-cols-[1fr_20px_1fr] gap-4">
+                  {sourceAccount}
+                  <ArrowRight className="m-auto h-4 min-w-4 max-w-4" />
+                  {destinyAccount}
+                </div>
+              ) : (
+                <p className="text-center text-sm text-muted-foreground">
+                  Selecione um tipo para selecionar as contas
+                </p>
+              )}
+              <Separator />
+              {date}
+              {status}
+              {amount}
+              {description}
+            </>
+          )}
+        </TsForm>
       </DialogContent>
     </Dialog>
   );

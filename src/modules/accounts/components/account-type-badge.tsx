@@ -12,7 +12,13 @@ import { accountTypeLabels } from '../accounts-constants';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
-export function AccountTypeBadge({ type }: { type: AccountType }) {
+export function AccountTypeBadge({
+  type,
+  className,
+}: {
+  type: AccountType;
+  className?: string;
+}) {
   const accountTypeColors: Record<AccountType, string> = {
     [AccountType.Checking]: 'bg-blue-700 hover:bg-blue-800 text-white',
     [AccountType.Savings]: 'bg-emerald-700 hover:bg-emerald-800 text-white',
@@ -42,7 +48,11 @@ export function AccountTypeBadge({ type }: { type: AccountType }) {
 
   return (
     <Badge
-      className={cn('gap-1 whitespace-nowrap transition-colors', colors)}
+      className={cn(
+        'gap-1 whitespace-nowrap transition-colors',
+        colors,
+        className,
+      )}
       variant="secondary"
       size="sm"
     >

@@ -29,6 +29,10 @@ import { cn } from '@/lib/utils';
 import { investmentRegimeLabel } from '../investment-regime-label';
 import { AccountsQuery } from '@/modules/accounts/graphql/accounts-queries';
 import Image from 'next/image';
+import { AccountTypeBadge } from '@/modules/accounts/components/account-type-badge';
+import { SelectLabel } from '@/components/ui/select';
+import { useForm, useWatch } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const schema = z.object({
   amount: formFields.currency.describe('Valor // '),
@@ -39,6 +43,9 @@ const schema = z.object({
   regimePercentage: formFields.number.describe('Percentual do regime // '),
   startDate: formFields.date.describe('Data de início // '),
   account: formFields.select.describe('Conta * // Insira a conta'),
+  connectAccount: formFields.select.describe(
+    'Conta de conexão * // Insira a conta',
+  ),
 });
 
 export function InvestmentCreateForm({
@@ -51,37 +58,59 @@ export function InvestmentCreateForm({
   const [open, setOpen] = useState(false);
   const [createInvestment, { loading }] = useMutation(CreateInvestmentMutation);
 
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
+    defaultValues: defaultRegime
+      ? {
+          regimeName: {
+            value: defaultRegime,
+            label: investmentRegimeLabel[defaultRegime],
+          },
+        }
+      : undefined,
+  });
+
+  const selectedAccount = useWatch({
+    control: form.control,
+    name: 'account',
+  });
+
   const investmentRegimeOptions = Object.values(Regime).map((regime) => ({
     value: regime,
     label: investmentRegimeLabel[regime],
   }));
 
-  const institutionsQueryOptions = useQuery(AccountsQuery, {
+  const accountsQueryOptions = useQuery(AccountsQuery, {
     variables: {
       first: 50,
       orderBy: OrdenationAccountModel.Name,
       orderDirection: OrderDirection.Asc,
-      type: AccountType.Investment,
     },
     skip: !open,
     notifyOnNetworkStatusChange: true,
   });
 
-  const institutionsOptions =
-    institutionsQueryOptions.data?.accounts.edges?.map((edge) => ({
-      value: edge.node.id,
-      label: edge.node.name,
-      data: {
-        ...edge.node,
-      },
-    })) || [];
+  const accountsOptions =
+    accountsQueryOptions.data?.accounts.edges
+      ?.map((edge) => ({
+        value: edge.node.id,
+        label: edge.node.name,
+        data: {
+          ...edge.node,
+        },
+        group: edge.node.type,
+      }))
+      ?.sort((a, b) => {
+        if (a.group === b.group) return 0;
+        return a.group === AccountType.Investment ? -1 : 1;
+      }) || [];
 
-  const institutionsPageInfo = institutionsQueryOptions.data?.accounts.pageInfo;
+  const accountsPageInfo = accountsQueryOptions.data?.accounts.pageInfo;
 
   const paginate = useCallback(() => {
-    institutionsQueryOptions.fetchMore({
+    accountsQueryOptions.fetchMore({
       variables: {
-        after: institutionsPageInfo?.endCursor,
+        after: accountsPageInfo?.endCursor,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) return prev;
@@ -99,7 +128,58 @@ export function InvestmentCreateForm({
         };
       },
     });
-  }, [institutionsQueryOptions, institutionsPageInfo]);
+  }, [accountsQueryOptions, accountsPageInfo]);
+
+  const connectAccountsQueryOptions = useQuery(AccountsQuery, {
+    variables: {
+      first: 50,
+      orderBy: OrdenationAccountModel.Name,
+      orderDirection: OrderDirection.Asc,
+      type: AccountType.Investment,
+    },
+    skip:
+      !open ||
+      !(
+        !!selectedAccount &&
+        selectedAccount.data?.type !== AccountType.Investment
+      ),
+    notifyOnNetworkStatusChange: true,
+  });
+
+  const connectAccountsOptions =
+    connectAccountsQueryOptions.data?.accounts.edges?.map((edge) => ({
+      value: edge.node.id,
+      label: edge.node.name,
+      data: {
+        ...edge.node,
+      },
+    })) || [];
+
+  const connectAccountsPageInfo =
+    connectAccountsQueryOptions.data?.accounts.pageInfo;
+
+  const connectAccountsPaginate = useCallback(() => {
+    connectAccountsQueryOptions.fetchMore({
+      variables: {
+        after: connectAccountsPageInfo?.endCursor,
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev;
+
+        return {
+          ...prev,
+          accounts: {
+            ...prev.accounts,
+            ...fetchMoreResult.accounts,
+            edges: [
+              ...(prev.accounts.edges || []),
+              ...(fetchMoreResult.accounts.edges || []),
+            ],
+          },
+        };
+      },
+    });
+  }, [connectAccountsQueryOptions, connectAccountsPageInfo]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -138,22 +218,66 @@ export function InvestmentCreateForm({
               disabled: !!defaultRegime,
             },
             account: {
-              options: institutionsOptions,
+              options: accountsOptions,
               renderLabel: (option) => (
-                <div className="flex items-center gap-2">
-                  <Image
-                    src={option.data.institution.logoUrl}
-                    alt={option.data.institution.name}
-                    width={20}
-                    height={20}
-                    className="rounded"
-                  />
-                  <p>{option.data.name}</p>
+                <div className="flex items-center gap-3 px-2 py-1.5">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
+                    <Image
+                      src={option.data.institution.logoUrl}
+                      alt={option.data.institution.name}
+                      width={20}
+                      height={20}
+                      className="h-5 w-5 object-contain"
+                    />
+                  </div>
+                  <div className="flex min-w-0 flex-1 flex-col items-start">
+                    <p className="truncate text-sm font-medium">
+                      {option.data.name}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {option.data.institution.name}
+                    </p>
+                  </div>
                 </div>
               ),
+              renderGroup: (groupName) => (
+                <SelectLabel className="px-0">
+                  <AccountTypeBadge
+                    type={groupName as AccountType}
+                    className="flex w-full justify-center"
+                  />
+                </SelectLabel>
+              ),
               fetchMore: paginate,
-              networkStatus: institutionsQueryOptions.networkStatus,
-              hasMore: institutionsPageInfo?.hasNextPage,
+              networkStatus: accountsQueryOptions.networkStatus,
+              hasMore: accountsPageInfo?.hasNextPage,
+            },
+            connectAccount: {
+              options: connectAccountsOptions,
+              renderLabel: (option) => (
+                <div className="flex items-center gap-3 px-2 py-1.5">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
+                    <Image
+                      src={option.data.institution.logoUrl}
+                      alt={option.data.institution.name}
+                      width={20}
+                      height={20}
+                      className="h-5 w-5 object-contain"
+                    />
+                  </div>
+                  <div className="flex min-w-0 flex-1 flex-col items-start">
+                    <p className="truncate text-sm font-medium">
+                      {option.data.name}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {option.data.institution.name}
+                    </p>
+                  </div>
+                </div>
+              ),
+              fetchMore: connectAccountsPaginate,
+              networkStatus: connectAccountsQueryOptions.networkStatus,
+              hasMore: connectAccountsPageInfo?.hasNextPage,
             },
           }}
           onSubmit={async (data) => {
@@ -165,11 +289,10 @@ export function InvestmentCreateForm({
                   regimeName: data.regimeName?.value as Regime,
                   regimePercentage: data.regimePercentage,
                   startDate: data.startDate,
-                  account: {
-                    connect: {
-                      id: data.account.value,
-                    },
-                  },
+                  ...(data.account.data?.type !== AccountType.Investment && {
+                    sourceAccountId: data.connectAccount.value,
+                  }),
+                  destinyAccountId: data.account.value,
                 },
               },
               refetchQueries: [InvestmentsQuery, InvestmentRegimesQuery],
@@ -201,14 +324,18 @@ export function InvestmentCreateForm({
             regimePercentage,
             startDate,
             account,
+            connectAccount,
           }) => (
             <>
+              {account}
+              {!!selectedAccount &&
+                selectedAccount?.data?.type !== AccountType.Investment &&
+                connectAccount}
               {regimeName}
               {amount}
               {duration}
               {regimePercentage}
               {startDate}
-              {account}
             </>
           )}
         </TsForm>

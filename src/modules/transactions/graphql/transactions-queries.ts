@@ -9,8 +9,10 @@ export const TransactionsFragment = graphql(`
     type
     createdAt
     updatedAt
-    accountId
-    account {
+    sourceAccount {
+      id
+    }
+    destinyAccount {
       id
     }
     status
