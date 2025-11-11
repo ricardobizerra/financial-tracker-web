@@ -11,7 +11,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { ArrowRight, BriefcaseBusiness, PlusIcon } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowLeftRight,
+  ArrowRight,
+  ArrowUp,
+  BriefcaseBusiness,
+  PlusIcon,
+} from 'lucide-react';
 import { z } from 'zod';
 import { useMutation, useQuery } from '@apollo/client';
 import {
@@ -21,7 +28,7 @@ import {
   OrdenationAccountModel,
   TransactionStatus,
 } from '@/graphql/graphql';
-import { useCallback, useState } from 'react';
+import { PropsWithChildren, useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { CreateTransactionMutation } from '../graphql/transactions-mutations';
@@ -60,9 +67,11 @@ const schema = z.object({
 });
 
 export function TransactionCreateForm({
+  type,
   triggerClassName,
   accountId,
 }: {
+  type: TransactionType;
   triggerClassName?: string;
   accountId?: string;
 }) {
@@ -73,14 +82,18 @@ export function TransactionCreateForm({
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
-    defaultValues: !!accountId
-      ? {
-          destinyAccount: {
-            value: accountId,
-            label: accountId,
-          },
-        }
-      : undefined,
+    defaultValues: {
+      type: {
+        value: type,
+        label: transactionTypeLabels[type],
+      },
+      ...(!!accountId && {
+        destinyAccount: {
+          value: accountId,
+          label: accountId,
+        },
+      }),
+    },
   });
 
   const selectedType = useWatch({
@@ -150,9 +163,30 @@ export function TransactionCreateForm({
         <Button
           size="sm"
           className={cn('flex items-center gap-1', triggerClassName)}
+          variant={
+            type === TransactionType.Income
+              ? 'default'
+              : type === TransactionType.Expense
+                ? 'destructive'
+                : 'secondary'
+          }
         >
-          <PlusIcon />
-          Nova movimentação
+          {type === TransactionType.Income ? (
+            <>
+              <ArrowUp />
+              <p>Nova entrada</p>
+            </>
+          ) : type === TransactionType.Expense ? (
+            <>
+              <ArrowDown />
+              <p>Nova despesa</p>
+            </>
+          ) : type === TransactionType.BetweenAccounts ? (
+            <>
+              <ArrowLeftRight />
+              <p>Nova movimentação</p>
+            </>
+          ) : null}
         </Button>
       </DialogTrigger>
       <DialogContent className="min-w-fit max-w-[90vw] md:max-w-fit">
@@ -166,16 +200,6 @@ export function TransactionCreateForm({
         <TsForm
           form={form}
           schema={schema}
-          defaultValues={
-            !!accountId
-              ? {
-                  destinyAccount: {
-                    value: accountId,
-                    label: accountId,
-                  },
-                }
-              : undefined
-          }
           props={{
             type: {
               options: accountTypeOptions,
