@@ -308,10 +308,15 @@ export function InvestmentCreateForm({
                   regimeName: data.regimeName?.value as Regime,
                   regimePercentage: data.regimePercentage,
                   startDate: data.startDate,
-                  ...(data.account.data?.type !== AccountType.Investment && {
-                    sourceAccountId: data.connectAccount?.value,
-                  }),
-                  destinyAccountId: data.account.value,
+                  ...(data.account.data?.type === AccountType.Investment &&
+                  !!data.connectAccount
+                    ? {
+                        sourceAccountId: data.account.value,
+                        destinyAccountId: data.connectAccount?.value,
+                      }
+                    : {
+                        destinyAccountId: data.account.value,
+                      }),
                 },
               },
               refetchQueries: [InvestmentsQuery, InvestmentRegimesQuery],
