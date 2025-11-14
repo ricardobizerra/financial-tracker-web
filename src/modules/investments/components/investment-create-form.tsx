@@ -29,8 +29,6 @@ import { cn } from '@/lib/utils';
 import { investmentRegimeLabel } from '../investment-regime-label';
 import { AccountsQuery } from '@/modules/accounts/graphql/accounts-queries';
 import Image from 'next/image';
-import { AccountTypeBadge } from '@/modules/accounts/components/account-type-badge';
-import { SelectLabel } from '@/components/ui/select';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -44,20 +42,28 @@ const schema = z
     regimePercentage: formFields.number.describe('Percentual do regime // '),
     startDate: formFields.date.describe('Data de início // '),
     account: formFields.select.describe('Conta * // Insira a conta'),
-    connectAccount: formFields.select
-      .describe('Conta de conexão * // Insira a conta')
-      .optional(),
   })
   .refine(
     (data) => {
+      const regimeName = data.regimeName?.value;
       const accountType = data.account?.data?.type;
-      if (accountType === AccountType.Investment) return true;
-      return !!data.connectAccount;
+
+      return (
+        (regimeName === Regime.Poupanca &&
+          accountType === AccountType.Savings) ||
+        (regimeName !== Regime.Poupanca &&
+          accountType === AccountType.Investment)
+      );
     },
-    {
-      message:
-        'Conta de conexão é obrigatória para contas que não são de investimento',
-      path: ['connectAccount'],
+    (data) => {
+      const regimeName = data.regimeName?.value;
+      return {
+        message:
+          regimeName === Regime.Poupanca
+            ? 'Conta de poupança inválida'
+            : 'Conta de investimento inválida',
+        path: ['account'],
+      };
     },
   );
 
@@ -83,9 +89,9 @@ export function InvestmentCreateForm({
       : undefined,
   });
 
-  const selectedAccount = useWatch({
+  const selectedRegime = useWatch({
     control: form.control,
-    name: 'account',
+    name: 'regimeName',
   });
 
   const investmentRegimeOptions = Object.values(Regime).map((regime) => ({
@@ -98,25 +104,23 @@ export function InvestmentCreateForm({
       first: 50,
       orderBy: OrdenationAccountModel.Name,
       orderDirection: OrderDirection.Asc,
+      type:
+        selectedRegime?.value === Regime.Poupanca
+          ? AccountType.Savings
+          : AccountType.Investment,
     },
-    skip: !open,
+    skip: !open || !selectedRegime,
     notifyOnNetworkStatusChange: true,
   });
 
   const accountsOptions =
-    accountsQueryOptions.data?.accounts.edges
-      ?.map((edge) => ({
-        value: edge.node.id,
-        label: edge.node.name,
-        data: {
-          ...edge.node,
-        },
-        group: edge.node.type,
-      }))
-      ?.sort((a, b) => {
-        if (a.group === b.group) return 0;
-        return a.group === AccountType.Investment ? -1 : 1;
-      }) || [];
+    accountsQueryOptions.data?.accounts.edges?.map((edge) => ({
+      value: edge.node.id,
+      label: edge.node.name,
+      data: {
+        ...edge.node,
+      },
+    })) || [];
 
   const accountsPageInfo = accountsQueryOptions.data?.accounts.pageInfo;
 
@@ -142,57 +146,6 @@ export function InvestmentCreateForm({
       },
     });
   }, [accountsQueryOptions, accountsPageInfo]);
-
-  const connectAccountsQueryOptions = useQuery(AccountsQuery, {
-    variables: {
-      first: 50,
-      orderBy: OrdenationAccountModel.Name,
-      orderDirection: OrderDirection.Asc,
-      type: AccountType.Investment,
-    },
-    skip:
-      !open ||
-      !(
-        !!selectedAccount &&
-        selectedAccount.data?.type !== AccountType.Investment
-      ),
-    notifyOnNetworkStatusChange: true,
-  });
-
-  const connectAccountsOptions =
-    connectAccountsQueryOptions.data?.accounts.edges?.map((edge) => ({
-      value: edge.node.id,
-      label: edge.node.name,
-      data: {
-        ...edge.node,
-      },
-    })) || [];
-
-  const connectAccountsPageInfo =
-    connectAccountsQueryOptions.data?.accounts.pageInfo;
-
-  const connectAccountsPaginate = useCallback(() => {
-    connectAccountsQueryOptions.fetchMore({
-      variables: {
-        after: connectAccountsPageInfo?.endCursor,
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
-
-        return {
-          ...prev,
-          accounts: {
-            ...prev.accounts,
-            ...fetchMoreResult.accounts,
-            edges: [
-              ...(prev.accounts.edges || []),
-              ...(fetchMoreResult.accounts.edges || []),
-            ],
-          },
-        };
-      },
-    });
-  }, [connectAccountsQueryOptions, connectAccountsPageInfo]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -254,50 +207,13 @@ export function InvestmentCreateForm({
                   </div>
                 </div>
               ),
-              renderGroup: (groupName) => (
-                <SelectLabel className="px-0">
-                  <AccountTypeBadge
-                    type={groupName as AccountType}
-                    className="flex w-full justify-center"
-                  />
-                </SelectLabel>
-              ),
               fetchMore: paginate,
               networkStatus: accountsQueryOptions.networkStatus,
               hasMore: accountsPageInfo?.hasNextPage,
+              description: !selectedRegime?.value
+                ? 'Selecione o regime de investimento para visualizar as contas disponíveis'
+                : undefined,
             },
-            connectAccount: {
-              options: connectAccountsOptions,
-              renderLabel: (option: {
-                value: string;
-                label: string;
-                data?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-                group?: string | undefined;
-              }) => (
-                <div className="flex items-center gap-3 px-2 py-1.5">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
-                    <Image
-                      src={option.data.institution.logoUrl}
-                      alt={option.data.institution.name}
-                      width={20}
-                      height={20}
-                      className="h-5 w-5 object-contain"
-                    />
-                  </div>
-                  <div className="flex min-w-0 flex-1 flex-col items-start">
-                    <p className="truncate text-sm font-medium">
-                      {option.data.name}
-                    </p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {option.data.institution.name}
-                    </p>
-                  </div>
-                </div>
-              ),
-              fetchMore: connectAccountsPaginate,
-              networkStatus: connectAccountsQueryOptions.networkStatus,
-              hasMore: connectAccountsPageInfo?.hasNextPage,
-            } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
           }}
           onSubmit={async (data) => {
             await createInvestment({
@@ -308,15 +224,7 @@ export function InvestmentCreateForm({
                   regimeName: data.regimeName?.value as Regime,
                   regimePercentage: data.regimePercentage,
                   startDate: data.startDate,
-                  ...(data.account.data?.type === AccountType.Investment &&
-                  !!data.connectAccount
-                    ? {
-                        sourceAccountId: data.account.value,
-                        destinyAccountId: data.connectAccount?.value,
-                      }
-                    : {
-                        destinyAccountId: data.account.value,
-                      }),
+                  accountId: data.account.value,
                 },
               },
               refetchQueries: [InvestmentsQuery, InvestmentRegimesQuery],
@@ -348,14 +256,10 @@ export function InvestmentCreateForm({
             regimePercentage,
             startDate,
             account,
-            connectAccount,
           }) => (
             <>
-              {account}
-              {!!selectedAccount &&
-                selectedAccount?.data?.type !== AccountType.Investment &&
-                connectAccount}
               {regimeName}
+              {account}
               {amount}
               {duration}
               {regimePercentage}

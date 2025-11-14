@@ -380,17 +380,16 @@ export type BoolFilter = {
 };
 
 export type CreateInvestmentInput = {
+  accountId: Scalars['ID']['input'];
   amount: Scalars['Float']['input'];
   correctedAmount?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  destinyAccountId: Scalars['ID']['input'];
   duration?: InputMaybe<Scalars['Int']['input']>;
   finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   lastCorrectedAt?: InputMaybe<Scalars['DateTime']['input']>;
   regimeName: Regime;
   regimePercentage?: InputMaybe<Scalars['Float']['input']>;
-  sourceAccountId?: InputMaybe<Scalars['ID']['input']>;
   startDate: Scalars['DateTime']['input'];
   status?: InputMaybe<InvestmentStatus>;
   taxedAmount?: InputMaybe<Scalars['Float']['input']>;
