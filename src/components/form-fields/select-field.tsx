@@ -15,6 +15,7 @@ import {
 import { selectSchema } from './utils/select-schema';
 import { z } from 'zod';
 import { NetworkStatus } from '@apollo/client';
+import { ReactNode } from 'react';
 
 interface SelectFieldProps extends BaseFieldProps {
   options: z.infer<typeof selectSchema>[];
@@ -23,6 +24,7 @@ interface SelectFieldProps extends BaseFieldProps {
   networkStatus?: NetworkStatus;
   hasMore?: boolean;
   fetchMore?: () => void;
+  NoResultAction?: ReactNode;
 }
 
 export function SelectField({
@@ -32,6 +34,7 @@ export function SelectField({
   networkStatus,
   hasMore = false,
   fetchMore,
+  NoResultAction,
   ...baseProps
 }: SelectFieldProps) {
   const {
@@ -98,6 +101,16 @@ export function SelectField({
                 {renderLabel ? renderLabel(option) : option.label}
               </SelectItem>
             ))}
+        {options.length === 0 && !loading && (
+          <div
+            className="relative flex w-full cursor-default select-none flex-col items-center justify-center gap-2 rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground"
+            onClick={fetchMore}
+          >
+            <p>Sem resultados</p>
+
+            {NoResultAction}
+          </div>
+        )}
         {hasMore && (
           <div
             className="relative flex w-full cursor-default select-none items-center justify-center rounded-sm py-1.5 pl-2 pr-8 text-sm text-muted-foreground outline-none focus:bg-accent focus:text-accent-foreground"

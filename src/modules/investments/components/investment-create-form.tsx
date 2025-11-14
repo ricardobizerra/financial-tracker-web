@@ -31,6 +31,7 @@ import { AccountsQuery } from '@/modules/accounts/graphql/accounts-queries';
 import Image from 'next/image';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AccountCreateForm } from '@/modules/accounts/components/account-create-form';
 
 const schema = z
   .object({
@@ -213,6 +214,15 @@ export function InvestmentCreateForm({
               description: !selectedRegime?.value
                 ? 'Selecione o regime de investimento para visualizar as contas disponíveis'
                 : undefined,
+              NoResultAction: (
+                <AccountCreateForm
+                  type={
+                    selectedRegime?.value === Regime.Poupanca
+                      ? AccountType.Savings
+                      : AccountType.Investment
+                  }
+                />
+              ),
             },
           }}
           onSubmit={async (data) => {
