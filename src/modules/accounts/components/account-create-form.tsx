@@ -47,8 +47,10 @@ const schema = z.object({
 });
 
 export function AccountCreateForm({
+  type,
   triggerClassName,
 }: {
+  type?: AccountType;
   triggerClassName?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -127,6 +129,12 @@ export function AccountCreateForm({
           schema={schema}
           defaultValues={{
             isActive: true,
+            ...(!!type && {
+              type: {
+                value: type,
+                label: accountTypeLabels[type],
+              },
+            }),
           }}
           props={{
             type: {
