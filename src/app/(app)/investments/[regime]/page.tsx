@@ -6,7 +6,9 @@ import { useParams } from 'next/navigation';
 
 export default function InvestmentsPage() {
   const params = useParams();
-  const regime = params.regime as Regime;
+  const regime = params.regime as string;
 
-  return <InvestmentsTable regime={regime} />;
+  const regimeEnum = regime.toUpperCase() as Regime;
+
+  return <InvestmentsTable regime={regimeEnum} />;
 }

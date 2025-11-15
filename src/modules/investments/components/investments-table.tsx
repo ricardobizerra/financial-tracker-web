@@ -8,29 +8,23 @@ import { InvestmentsQuery } from '../graphql/investments-queries';
 import { InvestmentCreateForm } from './investment-create-form';
 import { investmentsTableColumns } from './investments-table-columns';
 
-export function InvestmentsTable({ regime }: { regime?: Regime }) {
+export function InvestmentsTable({ regime }: { regime: Regime }) {
   return (
     <DataTable
       mode="query"
       query={InvestmentsQuery}
-      variables={
-        regime
-          ? {
-              regime: regime.toUpperCase(),
-            }
-          : undefined
-      }
+      variables={{
+        regime: regime,
+      }}
       initialSorting={{
         key: OrdenationInvestmentModel.CorrectedAmount,
         direction: OrderDirection.Desc,
       }}
-      columns={investmentsTableColumns}
+      columns={investmentsTableColumns({
+        isPoupanca: regime === Regime.Poupanca,
+      })}
       initialPageSize={50}
-      actionButtons={
-        <InvestmentCreateForm
-          defaultRegime={regime ? (regime.toUpperCase() as Regime) : undefined}
-        />
-      }
+      actionButtons={<InvestmentCreateForm defaultRegime={regime} />}
     />
   );
 }
