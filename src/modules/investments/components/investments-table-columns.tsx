@@ -5,6 +5,7 @@ import { add } from 'date-fns';
 import { formatCurrency } from '@/lib/formatters/currency';
 import { formatDate } from '@/lib/formatters/date';
 import { InvestmentActions } from './investment-actions';
+import { InvestmentStatusBadge } from './investment-status-badge';
 
 export const investmentsTableColumns: ({
   isPoupanca,
@@ -71,6 +72,11 @@ export const investmentsTableColumns: ({
           subtitle: 'em dias',
         },
       ] as InitialColumnDef<InvestmentFragmentFragment>[])),
+  {
+    accessorKey: 'status',
+    title: 'Status',
+    cell: ({ row }) => <InvestmentStatusBadge status={row.original.status} />,
+  },
   {
     title: '',
     id: 'actions',

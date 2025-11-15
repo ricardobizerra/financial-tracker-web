@@ -11,6 +11,7 @@ export const InvestmentFragment = graphql(`
     taxedVariation
     startDate
     duration
+    status
   }
 `);
 

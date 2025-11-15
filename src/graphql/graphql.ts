@@ -2293,6 +2293,7 @@ export type InvestmentFragmentFragment = {
   taxedVariation: string;
   startDate: any;
   duration: number | null;
+  status: InvestmentStatus;
 };
 
 export type InvestmentsQueryVariables = Exact<{
@@ -2323,6 +2324,7 @@ export type InvestmentsQuery = {
         taxedVariation: string;
         startDate: any;
         duration: number | null;
+        status: InvestmentStatus;
       };
     }> | null;
     pageInfo: {
@@ -2595,6 +2597,7 @@ export const InvestmentFragmentFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'taxedVariation' } },
           { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'status' } },
         ],
       },
     },
@@ -3626,6 +3629,7 @@ export const InvestmentsDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'taxedVariation' } },
           { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'status' } },
         ],
       },
     },
