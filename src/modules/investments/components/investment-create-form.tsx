@@ -23,7 +23,7 @@ import {
   InvestmentRegimesQuery,
   InvestmentsQuery,
 } from '../graphql/investments-queries';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { investmentRegimeLabel } from '../investment-regime-label';
@@ -148,6 +148,13 @@ export function InvestmentCreateForm({
     });
   }, [accountsQueryOptions, accountsPageInfo]);
 
+  useEffect(() => {
+    if (selectedRegime?.value === Regime.Poupanca) {
+      form.setValue('regimePercentage', 100);
+      form.setValue('duration', 31);
+    }
+  }, [selectedRegime, form]);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -271,8 +278,8 @@ export function InvestmentCreateForm({
               {regimeName}
               {account}
               {amount}
-              {duration}
-              {regimePercentage}
+              {selectedRegime?.value !== Regime.Poupanca && duration}
+              {selectedRegime?.value !== Regime.Poupanca && regimePercentage}
               {startDate}
             </>
           )}
