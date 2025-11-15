@@ -40,7 +40,10 @@ const schema = z
       'Duração em dias // Insira aqui a duração em dias',
     ),
     regimeName: formFields.select.describe('Regime // '),
-    regimePercentage: formFields.number.describe('Percentual do regime // '),
+    regimePercentage: formFields.number
+      .describe('Percentual do regime // ')
+      .min(0, 'Percentual deve ser entre 0 e 100')
+      .max(100, 'Percentual deve ser entre 0 e 100'),
     startDate: formFields.date.describe('Data de início // '),
     account: formFields.select.describe('Conta * // Insira a conta'),
   })
