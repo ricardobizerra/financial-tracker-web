@@ -34,7 +34,7 @@ export function AccountCard({ account }: { account: AccountFragmentFragment }) {
                 <Image
                   src={account.institution.logoUrl}
                   alt={account.institution.name}
-                  className="rounded-full object-cover"
+                  className="rounded object-cover"
                   fill
                   sizes="32px"
                 />
