@@ -76,6 +76,7 @@ export const InstitutionsQuery = graphql(`
     $search: String
     $orderBy: OrdenationInstitutionModel
     $orderDirection: OrderDirection
+    $types: [AccountType!]
   ) {
     institutions(
       first: $first
@@ -83,6 +84,7 @@ export const InstitutionsQuery = graphql(`
       search: $search
       orderBy: $orderBy
       orderDirection: $orderDirection
+      types: $types
     ) {
       edges {
         cursor

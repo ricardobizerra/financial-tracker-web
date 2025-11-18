@@ -436,6 +436,14 @@ export type EnumAccountTypeFilter = {
   notIn?: InputMaybe<Array<AccountType>>;
 };
 
+export type EnumAccountTypeNullableListFilter = {
+  equals?: InputMaybe<Array<AccountType>>;
+  has?: InputMaybe<AccountType>;
+  hasEvery?: InputMaybe<Array<AccountType>>;
+  hasSome?: InputMaybe<Array<AccountType>>;
+  isEmpty?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type EnumInvestmentStatusFilter = {
   equals?: InputMaybe<InvestmentStatus>;
   in?: InputMaybe<Array<InvestmentStatus>>;
@@ -510,6 +518,7 @@ export type Institution = {
   id: Scalars['ID']['output'];
   logoUrl: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
+  types: Maybe<Array<AccountType>>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -533,6 +542,7 @@ export type InstitutionCountAggregate = {
   id: Scalars['Int']['output'];
   logoUrl: Scalars['Int']['output'];
   name: Scalars['Int']['output'];
+  types: Scalars['Int']['output'];
   updatedAt: Scalars['Int']['output'];
 };
 
@@ -554,7 +564,12 @@ export type InstitutionCreateWithoutAccountsInput = {
   id?: InputMaybe<Scalars['String']['input']>;
   logoUrl?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
+  types?: InputMaybe<InstitutionCreatetypesInput>;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type InstitutionCreatetypesInput = {
+  set: Array<AccountType>;
 };
 
 export type InstitutionMaxAggregate = {
@@ -588,6 +603,7 @@ export type InstitutionModel = {
   id: Scalars['ID']['output'];
   logoUrl: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
+  types: Maybe<Array<AccountType>>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -613,6 +629,7 @@ export type InstitutionWhereInput = {
   id?: InputMaybe<StringFilter>;
   logoUrl?: InputMaybe<StringNullableFilter>;
   name?: InputMaybe<StringFilter>;
+  types?: InputMaybe<EnumAccountTypeNullableListFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -621,12 +638,13 @@ export type InstitutionWhereUniqueInput = {
   NOT?: InputMaybe<Array<InstitutionWhereInput>>;
   OR?: InputMaybe<Array<InstitutionWhereInput>>;
   accounts?: InputMaybe<AccountListRelationFilter>;
-  code?: InputMaybe<Scalars['String']['input']>;
+  code?: InputMaybe<StringFilter>;
   color?: InputMaybe<StringNullableFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   logoUrl?: InputMaybe<StringNullableFilter>;
   name?: InputMaybe<StringFilter>;
+  types?: InputMaybe<EnumAccountTypeNullableListFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -1385,6 +1403,7 @@ export enum OrdenationInstitutionModel {
   Id = 'id',
   LogoUrl = 'logoUrl',
   Name = 'name',
+  Types = 'types',
   UpdatedAt = 'updatedAt',
 }
 
@@ -1483,6 +1502,7 @@ export type QueryInstitutionsArgs = {
   orderBy?: InputMaybe<OrdenationInstitutionModel>;
   orderDirection?: InputMaybe<OrderDirection>;
   search?: InputMaybe<Scalars['String']['input']>;
+  types?: InputMaybe<Array<AccountType>>;
 };
 
 export type QueryInvestmentsArgs = {
@@ -2171,6 +2191,7 @@ export type InstitutionsQueryVariables = Exact<{
   search?: InputMaybe<Scalars['String']['input']>;
   orderBy?: InputMaybe<OrdenationInstitutionModel>;
   orderDirection?: InputMaybe<OrderDirection>;
+  types?: InputMaybe<Array<AccountType> | AccountType>;
 }>;
 
 export type InstitutionsQuery = {
@@ -3038,6 +3059,23 @@ export const InstitutionsDocument = {
             name: { kind: 'Name', value: 'OrderDirection' },
           },
         },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'types' },
+          },
+          type: {
+            kind: 'ListType',
+            type: {
+              kind: 'NonNullType',
+              type: {
+                kind: 'NamedType',
+                name: { kind: 'Name', value: 'AccountType' },
+              },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: 'SelectionSet',
@@ -3084,6 +3122,14 @@ export const InstitutionsDocument = {
                 value: {
                   kind: 'Variable',
                   name: { kind: 'Name', value: 'orderDirection' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'types' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'types' },
                 },
               },
             ],
