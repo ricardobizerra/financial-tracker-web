@@ -9,9 +9,11 @@ import {
 import { TransactionsQuery } from '../graphql/transactions-queries';
 import { transactionsTableColumns } from './transactions-table-columns';
 import { useParams } from 'next/navigation';
-import { TransactionCreateForm } from './transaction-create-form';
-import { ArrowDown, ArrowLeftRight, ArrowUp } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import {
+  IncomeTransactionCreateForm,
+  ExpenseTransactionCreateForm,
+  BetweenAccountsTransactionCreateForm,
+} from './transaction-create-form';
 
 export function TransactionsTable() {
   const params = useParams();
@@ -36,15 +38,9 @@ export function TransactionsTable() {
       initialPageSize={50}
       actionButtons={
         <div className="flex items-center gap-2">
-          {Object.values(TransactionType)
-            .reverse()
-            .map((type) => (
-              <TransactionCreateForm
-                key={type}
-                type={type}
-                accountId={accountId}
-              />
-            ))}
+          <IncomeTransactionCreateForm accountId={accountId} />
+          <ExpenseTransactionCreateForm accountId={accountId} />
+          <BetweenAccountsTransactionCreateForm accountId={accountId} />
         </div>
       }
     />

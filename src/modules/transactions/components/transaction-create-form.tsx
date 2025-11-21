@@ -16,10 +16,13 @@ import {
   ArrowLeftRight,
   ArrowRight,
   ArrowUp,
+  Banknote,
   BriefcaseBusiness,
+  CreditCard,
   PlusIcon,
+  Receipt,
 } from 'lucide-react';
-import { z } from 'zod';
+import { BRAND, z } from 'zod';
 import { useMutation, useQuery } from '@apollo/client';
 import {
   TransactionType,
@@ -27,8 +30,15 @@ import {
   OrderDirection,
   OrdenationAccountModel,
   TransactionStatus,
+  PaymentMethod,
 } from '@/graphql/graphql';
-import { PropsWithChildren, useCallback, useState } from 'react';
+import {
+  PropsWithChildren,
+  useCallback,
+  useState,
+  useMemo,
+  useEffect,
+} from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { CreateTransactionMutation } from '../graphql/transactions-mutations';
@@ -40,13 +50,60 @@ import { AccountsQuery } from '@/modules/accounts/graphql/accounts-queries';
 import { TransactionStatusBadge } from './transaction-status-badge';
 import { Separator } from '@/components/ui/separator';
 import {
+  paymentMethodLabel,
   transactionStatusLabel,
   transactionTypeLabels,
 } from '../transactions-constants';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import PixIcon from '@/static/pix-icon.svg';
 
-const schema = z.object({
+interface TransactionCreateFormProps {
+  triggerClassName?: string;
+  accountId?: string;
+}
+
+const incomeSchema = z.object({
+  type: formFields.select.describe('Tipo * // Insira o tipo da movimentação'),
+  date: formFields.date.describe('Data * // Insira a data da movimentação'),
+  amount: formFields.currency.describe(
+    'Valor * // Insira o valor da movimentação',
+  ),
+  description: formFields.text.describe(
+    'Descrição * // Insira a descrição da movimentação',
+  ),
+  destinyAccount: formFields.select.describe(
+    'Conta de destino * // Insira a conta',
+  ),
+  status: formFields.select.describe(
+    'Status * // Insira o status da movimentação',
+  ),
+  paymentMethod: formFields.select.describe(
+    'Método de pagamento * // Insira o método de pagamento',
+  ),
+});
+
+const expenseSchema = z.object({
+  date: formFields.date.describe('Data * // Insira a data da movimentação'),
+  amount: formFields.currency.describe(
+    'Valor * // Insira o valor da movimentação',
+  ),
+  description: formFields.text.describe(
+    'Descrição * // Insira a descrição da movimentação',
+  ),
+  type: formFields.select.describe('Tipo * // Insira o tipo da movimentação'),
+  sourceAccount: formFields.select.describe(
+    'Conta de origem * // Insira a conta',
+  ),
+  status: formFields.select.describe(
+    'Status * // Insira o status da movimentação',
+  ),
+  paymentMethod: formFields.select.describe(
+    'Método de pagamento * // Insira o método de pagamento',
+  ),
+});
+
+const betweenAccountsSchema = z.object({
   date: formFields.date.describe('Data * // Insira a data da movimentação'),
   amount: formFields.currency.describe(
     'Valor * // Insira o valor da movimentação',
@@ -64,28 +121,26 @@ const schema = z.object({
   status: formFields.select.describe(
     'Status * // Insira o status da movimentação',
   ),
+  paymentMethod: formFields.select.describe(
+    'Método de pagamento * // Insira o método de pagamento',
+  ),
 });
 
-export function TransactionCreateForm({
-  type,
+export function IncomeTransactionCreateForm({
   triggerClassName,
   accountId,
-}: {
-  type: TransactionType;
-  triggerClassName?: string;
-  accountId?: string;
-}) {
+}: TransactionCreateFormProps) {
   const [open, setOpen] = useState(false);
   const [createTransaction, { loading }] = useMutation(
     CreateTransactionMutation,
   );
 
-  const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
+  const form = useForm<z.infer<typeof incomeSchema>>({
+    resolver: zodResolver(incomeSchema),
     defaultValues: {
       type: {
-        value: type,
-        label: transactionTypeLabels[type],
+        value: TransactionType.Income,
+        label: transactionTypeLabels[TransactionType.Income],
       },
       ...(!!accountId && {
         destinyAccount: {
@@ -94,11 +149,6 @@ export function TransactionCreateForm({
         },
       }),
     },
-  });
-
-  const selectedType = useWatch({
-    control: form.control,
-    name: 'type',
   });
 
   const accountTypeOptions = Object.values(TransactionType).map((type) => ({
@@ -123,16 +173,33 @@ export function TransactionCreateForm({
     notifyOnNetworkStatusChange: true,
   });
 
-  const institutionsOptions =
-    institutionsQueryOptions.data?.accounts.edges?.map((edge) => ({
-      value: edge.node.id,
-      label: edge.node.name,
-      data: {
-        ...edge.node,
-      },
-    })) || [];
+  const institutionsOptions = useMemo(
+    () =>
+      institutionsQueryOptions.data?.accounts.edges?.map((edge) => ({
+        value: edge.node.id,
+        label: edge.node.name,
+        data: {
+          ...edge.node,
+        },
+      })) || [],
+    [institutionsQueryOptions.data?.accounts.edges],
+  );
 
   const institutionsPageInfo = institutionsQueryOptions.data?.accounts.pageInfo;
+
+  const paymentMethodOptions = Object.values(PaymentMethod).map((method) => ({
+    value: method,
+    label: paymentMethodLabel[method],
+  }));
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const paymentMethodIcon: Record<PaymentMethod, any> = {
+    CASH: Banknote,
+    CREDIT_CARD: CreditCard,
+    DEBIT_CARD: CreditCard,
+    PIX: PixIcon,
+    BOLETO: Receipt,
+  };
 
   const paginate = useCallback(() => {
     institutionsQueryOptions.fetchMore({
@@ -163,43 +230,23 @@ export function TransactionCreateForm({
         <Button
           size="sm"
           className={cn('flex items-center gap-1', triggerClassName)}
-          variant={
-            type === TransactionType.Income
-              ? 'default'
-              : type === TransactionType.Expense
-                ? 'destructive'
-                : 'secondary'
-          }
+          variant={'default'}
         >
-          {type === TransactionType.Income ? (
-            <>
-              <ArrowUp />
-              <p>Nova entrada</p>
-            </>
-          ) : type === TransactionType.Expense ? (
-            <>
-              <ArrowDown />
-              <p>Nova despesa</p>
-            </>
-          ) : type === TransactionType.BetweenAccounts ? (
-            <>
-              <ArrowLeftRight />
-              <p>Nova movimentação</p>
-            </>
-          ) : null}
+          <ArrowUp />
+          <p>Nova entrada</p>
         </Button>
       </DialogTrigger>
       <DialogContent className="min-w-fit max-w-[90vw] md:max-w-fit">
         <DialogHeader>
-          <DialogTitle>Nova movimentação</DialogTitle>
+          <DialogTitle>Nova entrada</DialogTitle>
           <DialogDescription>
-            Preencha os campos abaixo para registrar uma nova movimentação.
+            Preencha os campos abaixo para registrar uma nova entrada.
           </DialogDescription>
         </DialogHeader>
 
         <TsForm
           form={form}
-          schema={schema}
+          schema={incomeSchema}
           props={{
             type: {
               options: accountTypeOptions,
@@ -214,6 +261,534 @@ export function TransactionCreateForm({
                   status={option.value as TransactionStatus}
                 />
               ),
+            },
+            paymentMethod: {
+              options: paymentMethodOptions,
+              renderLabel: (option) => {
+                const Icon = paymentMethodIcon[option.value as PaymentMethod];
+                return (
+                  <div className="flex items-center gap-2">
+                    <Icon className="h-5 w-5" />
+                    <p>{option.label}</p>
+                  </div>
+                );
+              },
+            },
+            destinyAccount: {
+              options: institutionsOptions,
+              renderLabel: (option) => (
+                <div className="flex items-center gap-3 py-1.5">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
+                    <Image
+                      src={option.data.institution.logoUrl}
+                      alt={option.data.institution.name}
+                      width={20}
+                      height={20}
+                      className="h-5 w-5 object-contain"
+                    />
+                  </div>
+                  <div className="flex min-w-0 flex-1 flex-col items-start">
+                    <p className="truncate text-sm font-medium">
+                      {option.data.name}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {option.data.institution.name}
+                    </p>
+                  </div>
+                </div>
+              ),
+              fetchMore: paginate,
+              networkStatus: institutionsQueryOptions.networkStatus,
+              hasMore: institutionsPageInfo?.hasNextPage,
+            },
+          }}
+          onSubmit={async (data) => {
+            await createTransaction({
+              variables: {
+                data: {
+                  date: data.date,
+                  type: data.type.value as TransactionType,
+                  destinyAccountId: data.destinyAccount.value,
+                  status: data.status.value as TransactionStatus,
+                  description: data.description,
+                  amount: data.amount,
+                  paymentMethod: data.paymentMethod.value as PaymentMethod,
+                },
+              },
+              refetchQueries: [TransactionsQuery],
+              onCompleted: () => {
+                toast.success('Movimentação criada!', {
+                  description: 'As informações foram salvas com sucesso.',
+                });
+                setOpen(false);
+              },
+              onError: (error) => {
+                toast.error('Erro ao criar movimentação', {
+                  description: error.message,
+                });
+              },
+            });
+          }}
+          renderAfter={() => (
+            <DialogFooter>
+              <Button type="submit" disabled={loading} loading={loading}>
+                Salvar
+              </Button>
+            </DialogFooter>
+          )}
+        >
+          {({ destinyAccount, date, status, amount, description }) => (
+            <>
+              {destinyAccount}
+              <Separator />
+              {date}
+              {status}
+              {amount}
+              {description}
+            </>
+          )}
+        </TsForm>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function ExpenseTransactionCreateForm({
+  triggerClassName,
+  accountId,
+}: TransactionCreateFormProps) {
+  const [open, setOpen] = useState(false);
+  const [createTransaction, { loading }] = useMutation(
+    CreateTransactionMutation,
+  );
+
+  const form = useForm<z.infer<typeof expenseSchema>>({
+    resolver: zodResolver(expenseSchema),
+    defaultValues: {
+      type: {
+        value: TransactionType.Expense,
+        label: transactionTypeLabels[TransactionType.Expense],
+      },
+      ...(!!accountId && {
+        destinyAccount: {
+          value: accountId,
+          label: accountId,
+        },
+      }),
+    },
+  });
+
+  const selectedAccount = useWatch({
+    control: form.control,
+    name: 'sourceAccount',
+  });
+
+  const paymentMethodOptions = Object.values(PaymentMethod).map((method) => ({
+    value: method,
+    label: paymentMethodLabel[method],
+  }));
+
+  const filteredPaymentMethodOptions = useMemo(() => {
+    if (selectedAccount?.data?.type === 'CREDIT_CARD') {
+      return paymentMethodOptions.filter((option) =>
+        ['CREDIT_CARD', 'DEBIT_CARD'].includes(option.value),
+      );
+    }
+    return paymentMethodOptions;
+  }, [selectedAccount?.data?.type, paymentMethodOptions]);
+
+  const accountTypeOptions = Object.values(TransactionType).map((type) => ({
+    value: type,
+    label: transactionTypeLabels[type],
+  }));
+
+  const accountStatusOptions = Object.values(TransactionStatus).map(
+    (status) => ({
+      value: status,
+      label: transactionStatusLabel[status],
+    }),
+  );
+
+  const institutionsQueryOptions = useQuery(AccountsQuery, {
+    variables: {
+      first: 50,
+      orderBy: OrdenationAccountModel.Name,
+      orderDirection: OrderDirection.Asc,
+    },
+    skip: !open,
+    notifyOnNetworkStatusChange: true,
+  });
+
+  const institutionsOptions = useMemo(
+    () =>
+      institutionsQueryOptions.data?.accounts.edges?.map((edge) => ({
+        value: edge.node.id,
+        label: edge.node.name,
+        data: {
+          ...edge.node,
+        },
+      })) || [],
+    [institutionsQueryOptions.data?.accounts.edges],
+  );
+
+  const institutionsPageInfo = institutionsQueryOptions.data?.accounts.pageInfo;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const paymentMethodIcon: Record<PaymentMethod, any> = {
+    CASH: Banknote,
+    CREDIT_CARD: CreditCard,
+    DEBIT_CARD: CreditCard,
+    PIX: PixIcon,
+    BOLETO: Receipt,
+  };
+
+  const paginate = useCallback(() => {
+    institutionsQueryOptions.fetchMore({
+      variables: {
+        after: institutionsPageInfo?.endCursor,
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev;
+
+        return {
+          ...prev,
+          accounts: {
+            ...prev.accounts,
+            ...fetchMoreResult.accounts,
+            edges: [
+              ...(prev.accounts.edges || []),
+              ...(fetchMoreResult.accounts.edges || []),
+            ],
+          },
+        };
+      },
+    });
+  }, [institutionsQueryOptions, institutionsPageInfo]);
+
+  useEffect(() => {
+    const currentPaymentMethod = form.getValues('paymentMethod');
+    if (
+      selectedAccount?.data?.type === 'CREDIT_CARD' &&
+      currentPaymentMethod?.value &&
+      !['CREDIT_CARD', 'DEBIT_CARD'].includes(currentPaymentMethod.value)
+    ) {
+      form.setValue('paymentMethod', {
+        value: '',
+        label: '',
+        [BRAND]: { select: true },
+      });
+    }
+  }, [selectedAccount, form]);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          size="sm"
+          className={cn('flex items-center gap-1', triggerClassName)}
+          variant={'destructive'}
+        >
+          <ArrowDown />
+          <p>Nova despesa</p>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="min-w-fit max-w-[90vw] md:max-w-fit">
+        <DialogHeader>
+          <DialogTitle>Nova despesa</DialogTitle>
+          <DialogDescription>
+            Preencha os campos abaixo para registrar uma nova despesa.
+          </DialogDescription>
+        </DialogHeader>
+
+        <TsForm
+          form={form}
+          schema={expenseSchema}
+          props={{
+            type: {
+              options: accountTypeOptions,
+              renderLabel: (option) => (
+                <TransactionTypeBadge type={option.value as TransactionType} />
+              ),
+            },
+            status: {
+              options: accountStatusOptions,
+              renderLabel: (option) => (
+                <TransactionStatusBadge
+                  status={option.value as TransactionStatus}
+                />
+              ),
+            },
+            paymentMethod: {
+              options: filteredPaymentMethodOptions,
+              renderLabel: (option) => {
+                const Icon = paymentMethodIcon[option.value as PaymentMethod];
+                return (
+                  <div className="flex items-center gap-2">
+                    <Icon className="h-5 w-5" />
+                    <p>{option.label}</p>
+                  </div>
+                );
+              },
+            },
+            sourceAccount: {
+              options: institutionsOptions,
+              renderLabel: (option) => (
+                <div className="flex items-center gap-3 py-1.5">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
+                    <Image
+                      src={option.data.institution.logoUrl}
+                      alt={option.data.institution.name}
+                      width={20}
+                      height={20}
+                      className="h-5 w-5 object-contain"
+                    />
+                  </div>
+                  <div className="flex min-w-0 flex-1 flex-col items-start">
+                    <p className="truncate text-sm font-medium">
+                      {option.label}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {option.data?.institution?.name}
+                    </p>
+                  </div>
+                </div>
+              ),
+              fetchMore: paginate,
+              networkStatus: institutionsQueryOptions.networkStatus,
+              hasMore: institutionsPageInfo?.hasNextPage,
+            },
+          }}
+          onSubmit={async (data) => {
+            await createTransaction({
+              variables: {
+                data: {
+                  date: data.date,
+                  type: data.type.value as TransactionType,
+                  sourceAccountId: data.sourceAccount.value,
+                  status: data.status.value as TransactionStatus,
+                  description: data.description,
+                  amount: data.amount,
+                  paymentMethod: data.paymentMethod.value as PaymentMethod,
+                },
+              },
+              refetchQueries: [TransactionsQuery],
+              onCompleted: () => {
+                toast.success('Movimentação criada!', {
+                  description: 'As informações foram salvas com sucesso.',
+                });
+                setOpen(false);
+              },
+              onError: (error) => {
+                toast.error('Erro ao criar movimentação', {
+                  description: error.message,
+                });
+              },
+            });
+          }}
+          renderAfter={() => (
+            <DialogFooter>
+              <Button type="submit" disabled={loading} loading={loading}>
+                Salvar
+              </Button>
+            </DialogFooter>
+          )}
+        >
+          {({
+            sourceAccount,
+            date,
+            status,
+            amount,
+            description,
+            paymentMethod,
+          }) => (
+            <>
+              {sourceAccount}
+              <Separator />
+              {date}
+              {status}
+              {amount}
+              {description}
+              {paymentMethod}
+            </>
+          )}
+        </TsForm>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function BetweenAccountsTransactionCreateForm({
+  triggerClassName,
+  accountId,
+}: TransactionCreateFormProps) {
+  const [open, setOpen] = useState(false);
+  const [createTransaction, { loading }] = useMutation(
+    CreateTransactionMutation,
+  );
+
+  const form = useForm<z.infer<typeof betweenAccountsSchema>>({
+    resolver: zodResolver(betweenAccountsSchema),
+    defaultValues: {
+      type: {
+        value: TransactionType.BetweenAccounts,
+        label: transactionTypeLabels[TransactionType.BetweenAccounts],
+      },
+      ...(!!accountId && {
+        destinyAccount: {
+          value: accountId,
+          label: accountId,
+        },
+      }),
+    },
+  });
+
+  const selectedAccount = useWatch({
+    control: form.control,
+    name: 'sourceAccount',
+  });
+
+  const paymentMethodOptions = Object.values(PaymentMethod)
+    .filter(
+      (option) =>
+        ![PaymentMethod.CreditCard, PaymentMethod.DebitCard].includes(option),
+    )
+    .map((method) => ({
+      value: method,
+      label: paymentMethodLabel[method],
+    }));
+
+  const accountTypeOptions = Object.values(TransactionType).map((type) => ({
+    value: type,
+    label: transactionTypeLabels[type],
+  }));
+
+  const accountStatusOptions = Object.values(TransactionStatus).map(
+    (status) => ({
+      value: status,
+      label: transactionStatusLabel[status],
+    }),
+  );
+
+  const institutionsQueryOptions = useQuery(AccountsQuery, {
+    variables: {
+      first: 50,
+      orderBy: OrdenationAccountModel.Name,
+      orderDirection: OrderDirection.Asc,
+    },
+    skip: !open,
+    notifyOnNetworkStatusChange: true,
+  });
+
+  const institutionsOptions = useMemo(
+    () =>
+      institutionsQueryOptions.data?.accounts.edges?.map((edge) => ({
+        value: edge.node.id,
+        label: edge.node.name,
+        data: {
+          ...edge.node,
+        },
+      })) || [],
+    [institutionsQueryOptions.data?.accounts.edges],
+  );
+
+  const institutionsPageInfo = institutionsQueryOptions.data?.accounts.pageInfo;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const paymentMethodIcon: Record<PaymentMethod, any> = {
+    CASH: Banknote,
+    CREDIT_CARD: CreditCard,
+    DEBIT_CARD: CreditCard,
+    PIX: PixIcon,
+    BOLETO: Receipt,
+  };
+
+  const paginate = useCallback(() => {
+    institutionsQueryOptions.fetchMore({
+      variables: {
+        after: institutionsPageInfo?.endCursor,
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev;
+
+        return {
+          ...prev,
+          accounts: {
+            ...prev.accounts,
+            ...fetchMoreResult.accounts,
+            edges: [
+              ...(prev.accounts.edges || []),
+              ...(fetchMoreResult.accounts.edges || []),
+            ],
+          },
+        };
+      },
+    });
+  }, [institutionsQueryOptions, institutionsPageInfo]);
+
+  useEffect(() => {
+    const currentPaymentMethod = form.getValues('paymentMethod');
+    if (
+      selectedAccount?.data?.type === 'CREDIT_CARD' &&
+      currentPaymentMethod?.value &&
+      !['CREDIT_CARD', 'DEBIT_CARD'].includes(currentPaymentMethod.value)
+    ) {
+      form.setValue('paymentMethod', {
+        value: '',
+        label: '',
+        [BRAND]: { select: true },
+      });
+    }
+  }, [selectedAccount, form]);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          size="sm"
+          className={cn('flex items-center gap-1', triggerClassName)}
+          variant={'secondary'}
+        >
+          <ArrowLeftRight />
+          <p>Nova movimentação</p>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="min-w-fit max-w-[90vw] md:max-w-fit">
+        <DialogHeader>
+          <DialogTitle>Nova movimentação</DialogTitle>
+          <DialogDescription>
+            Preencha os campos abaixo para registrar uma nova movimentação.
+          </DialogDescription>
+        </DialogHeader>
+
+        <TsForm
+          form={form}
+          schema={betweenAccountsSchema}
+          props={{
+            type: {
+              options: accountTypeOptions,
+              renderLabel: (option) => (
+                <TransactionTypeBadge type={option.value as TransactionType} />
+              ),
+            },
+            status: {
+              options: accountStatusOptions,
+              renderLabel: (option) => (
+                <TransactionStatusBadge
+                  status={option.value as TransactionStatus}
+                />
+              ),
+            },
+            paymentMethod: {
+              options: paymentMethodOptions,
+              renderLabel: (option) => {
+                const Icon = paymentMethodIcon[option.value as PaymentMethod];
+                return (
+                  <div className="flex items-center gap-2">
+                    <Icon className="h-5 w-5" />
+                    <p>{option.label}</p>
+                  </div>
+                );
+              },
             },
             sourceAccount: {
               options: institutionsOptions,
@@ -278,23 +853,16 @@ export function TransactionCreateForm({
                   type: data.type.value as TransactionType,
                   ...((data.type.value === TransactionType.Expense ||
                     data.type.value === TransactionType.BetweenAccounts) && {
-                    sourceAccount: {
-                      connect: {
-                        id: data.sourceAccount.value,
-                      },
-                    },
+                    sourceAccountId: data.sourceAccount.value,
                   }),
                   ...((data.type.value === TransactionType.Income ||
                     data.type.value === TransactionType.BetweenAccounts) && {
-                    destinyAccount: {
-                      connect: {
-                        id: data.destinyAccount.value,
-                      },
-                    },
+                    destinyAccountId: data.destinyAccount.value,
                   }),
                   status: data.status.value as TransactionStatus,
                   description: data.description,
                   amount: data.amount,
+                  paymentMethod: data.paymentMethod.value as PaymentMethod,
                 },
               },
               refetchQueries: [TransactionsQuery],
@@ -326,30 +894,22 @@ export function TransactionCreateForm({
             status,
             amount,
             description,
-            type,
+            paymentMethod,
           }) => (
             <>
-              {type}
-              {selectedType?.value === TransactionType.Expense ? (
-                sourceAccount
-              ) : selectedType?.value === TransactionType.Income ? (
-                destinyAccount
-              ) : selectedType?.value === TransactionType.BetweenAccounts ? (
+              {
                 <div className="grid grid-cols-[1fr_20px_1fr] gap-4">
                   {sourceAccount}
                   <ArrowRight className="m-auto h-4 min-w-4 max-w-4" />
                   {destinyAccount}
                 </div>
-              ) : (
-                <p className="text-center text-sm text-muted-foreground">
-                  Selecione um tipo para selecionar as contas
-                </p>
-              )}
+              }
               <Separator />
               {date}
               {status}
               {amount}
               {description}
+              {paymentMethod}
             </>
           )}
         </TsForm>
