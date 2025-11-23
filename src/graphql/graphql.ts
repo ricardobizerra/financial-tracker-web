@@ -1054,10 +1054,10 @@ export type CreateInvestmentInput = {
 export type CreateTransactionInput = {
   amount: Scalars['Decimal']['input'];
   billingPayment?: InputMaybe<CardBillingCreateNestedOneWithoutPaymentTransactionInput>;
-  canBePaid?: InputMaybe<Scalars['Boolean']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
   destinyAccountId?: InputMaybe<Scalars['ID']['input']>;
+  paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod: PaymentMethod;
   sourceAccountId?: InputMaybe<Scalars['ID']['input']>;
@@ -2168,7 +2168,6 @@ export enum OrdenationInvestmentModel {
 export enum OrdenationTransactionModel {
   Amount = 'amount',
   BillingPayment = 'billingPayment',
-  CanBePaid = 'canBePaid',
   CardBilling = 'cardBilling',
   CardBillingId = 'cardBillingId',
   CreatedAt = 'createdAt',
@@ -2176,6 +2175,7 @@ export enum OrdenationTransactionModel {
   Description = 'description',
   DestinyAccount = 'destinyAccount',
   DestinyAccountId = 'destinyAccountId',
+  PaymentEnabled = 'paymentEnabled',
   PaymentLimit = 'paymentLimit',
   PaymentMethod = 'paymentMethod',
   SourceAccount = 'sourceAccount',
@@ -2370,7 +2370,6 @@ export type Transaction = {
   __typename?: 'Transaction';
   amount: Scalars['Decimal']['output'];
   billingPayment: Maybe<CardBilling>;
-  canBePaid: Scalars['Boolean']['output'];
   cardBilling: Maybe<CardBilling>;
   cardBillingId: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
@@ -2379,6 +2378,7 @@ export type Transaction = {
   destinyAccount: Maybe<Account>;
   destinyAccountId: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  paymentEnabled: Scalars['Boolean']['output'];
   paymentLimit: Maybe<Scalars['DateTime']['output']>;
   paymentMethod: Maybe<PaymentMethod>;
   sourceAccount: Maybe<Account>;
@@ -2405,13 +2405,13 @@ export type TransactionCountAggregate = {
   __typename?: 'TransactionCountAggregate';
   _all: Scalars['Int']['output'];
   amount: Scalars['Int']['output'];
-  canBePaid: Scalars['Int']['output'];
   cardBillingId: Scalars['Int']['output'];
   createdAt: Scalars['Int']['output'];
   date: Scalars['Int']['output'];
   description: Scalars['Int']['output'];
   destinyAccountId: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
+  paymentEnabled: Scalars['Int']['output'];
   paymentLimit: Scalars['Int']['output'];
   paymentMethod: Scalars['Int']['output'];
   sourceAccountId: Scalars['Int']['output'];
@@ -2423,12 +2423,12 @@ export type TransactionCountAggregate = {
 
 export type TransactionCreateManyCardBillingInput = {
   amount: Scalars['Decimal']['input'];
-  canBePaid?: InputMaybe<Scalars['Boolean']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
   destinyAccountId?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
+  paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
@@ -2445,12 +2445,12 @@ export type TransactionCreateManyCardBillingInputEnvelope = {
 
 export type TransactionCreateManyDestinyAccountInput = {
   amount: Scalars['Decimal']['input'];
-  canBePaid?: InputMaybe<Scalars['Boolean']['input']>;
   cardBillingId?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
+  paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
@@ -2467,13 +2467,13 @@ export type TransactionCreateManyDestinyAccountInputEnvelope = {
 
 export type TransactionCreateManySourceAccountInput = {
   amount: Scalars['Decimal']['input'];
-  canBePaid?: InputMaybe<Scalars['Boolean']['input']>;
   cardBillingId?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
   destinyAccountId?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
+  paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   status: TransactionStatus;
@@ -2489,13 +2489,13 @@ export type TransactionCreateManySourceAccountInputEnvelope = {
 
 export type TransactionCreateManyUserInput = {
   amount: Scalars['Decimal']['input'];
-  canBePaid?: InputMaybe<Scalars['Boolean']['input']>;
   cardBillingId?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
   destinyAccountId?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
+  paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
@@ -2578,13 +2578,13 @@ export type TransactionCreateOrConnectWithoutUserInput = {
 
 export type TransactionCreateWithoutBillingPaymentInput = {
   amount: Scalars['Decimal']['input'];
-  canBePaid?: InputMaybe<Scalars['Boolean']['input']>;
   cardBilling?: InputMaybe<CardBillingCreateNestedOneWithoutTransactionsInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
   destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyTransactionsInput>;
   id?: InputMaybe<Scalars['String']['input']>;
+  paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
@@ -2597,12 +2597,12 @@ export type TransactionCreateWithoutBillingPaymentInput = {
 export type TransactionCreateWithoutCardBillingInput = {
   amount: Scalars['Decimal']['input'];
   billingPayment?: InputMaybe<CardBillingCreateNestedOneWithoutPaymentTransactionInput>;
-  canBePaid?: InputMaybe<Scalars['Boolean']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
   destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyTransactionsInput>;
   id?: InputMaybe<Scalars['String']['input']>;
+  paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
@@ -2615,12 +2615,12 @@ export type TransactionCreateWithoutCardBillingInput = {
 export type TransactionCreateWithoutDestinyAccountInput = {
   amount: Scalars['Decimal']['input'];
   billingPayment?: InputMaybe<CardBillingCreateNestedOneWithoutPaymentTransactionInput>;
-  canBePaid?: InputMaybe<Scalars['Boolean']['input']>;
   cardBilling?: InputMaybe<CardBillingCreateNestedOneWithoutTransactionsInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
+  paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
@@ -2633,13 +2633,13 @@ export type TransactionCreateWithoutDestinyAccountInput = {
 export type TransactionCreateWithoutSourceAccountInput = {
   amount: Scalars['Decimal']['input'];
   billingPayment?: InputMaybe<CardBillingCreateNestedOneWithoutPaymentTransactionInput>;
-  canBePaid?: InputMaybe<Scalars['Boolean']['input']>;
   cardBilling?: InputMaybe<CardBillingCreateNestedOneWithoutTransactionsInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
   destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyTransactionsInput>;
   id?: InputMaybe<Scalars['String']['input']>;
+  paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   status: TransactionStatus;
@@ -2651,13 +2651,13 @@ export type TransactionCreateWithoutSourceAccountInput = {
 export type TransactionCreateWithoutUserInput = {
   amount: Scalars['Decimal']['input'];
   billingPayment?: InputMaybe<CardBillingCreateNestedOneWithoutPaymentTransactionInput>;
-  canBePaid?: InputMaybe<Scalars['Boolean']['input']>;
   cardBilling?: InputMaybe<CardBillingCreateNestedOneWithoutTransactionsInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
   destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyTransactionsInput>;
   id?: InputMaybe<Scalars['String']['input']>;
+  paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
@@ -2675,13 +2675,13 @@ export type TransactionListRelationFilter = {
 export type TransactionMaxAggregate = {
   __typename?: 'TransactionMaxAggregate';
   amount: Maybe<Scalars['Decimal']['output']>;
-  canBePaid: Maybe<Scalars['Boolean']['output']>;
   cardBillingId: Maybe<Scalars['String']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   date: Maybe<Scalars['DateTime']['output']>;
   description: Maybe<Scalars['String']['output']>;
   destinyAccountId: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['String']['output']>;
+  paymentEnabled: Maybe<Scalars['Boolean']['output']>;
   paymentLimit: Maybe<Scalars['DateTime']['output']>;
   paymentMethod: Maybe<PaymentMethod>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
@@ -2694,13 +2694,13 @@ export type TransactionMaxAggregate = {
 export type TransactionMinAggregate = {
   __typename?: 'TransactionMinAggregate';
   amount: Maybe<Scalars['Decimal']['output']>;
-  canBePaid: Maybe<Scalars['Boolean']['output']>;
   cardBillingId: Maybe<Scalars['String']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   date: Maybe<Scalars['DateTime']['output']>;
   description: Maybe<Scalars['String']['output']>;
   destinyAccountId: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['String']['output']>;
+  paymentEnabled: Maybe<Scalars['Boolean']['output']>;
   paymentLimit: Maybe<Scalars['DateTime']['output']>;
   paymentMethod: Maybe<PaymentMethod>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
@@ -2714,7 +2714,6 @@ export type TransactionModel = {
   __typename?: 'TransactionModel';
   amount: Scalars['Decimal']['output'];
   billingPayment: Maybe<CardBilling>;
-  canBePaid: Scalars['Boolean']['output'];
   cardBilling: Maybe<CardBilling>;
   cardBillingId: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
@@ -2723,6 +2722,7 @@ export type TransactionModel = {
   destinyAccount: Maybe<Account>;
   destinyAccountId: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  paymentEnabled: Scalars['Boolean']['output'];
   paymentLimit: Maybe<Scalars['DateTime']['output']>;
   paymentMethod: Maybe<PaymentMethod>;
   sourceAccount: Maybe<Account>;
@@ -2767,7 +2767,6 @@ export type TransactionWhereInput = {
   OR?: InputMaybe<Array<TransactionWhereInput>>;
   amount?: InputMaybe<DecimalFilter>;
   billingPayment?: InputMaybe<CardBillingNullableRelationFilter>;
-  canBePaid?: InputMaybe<BoolFilter>;
   cardBilling?: InputMaybe<CardBillingNullableRelationFilter>;
   cardBillingId?: InputMaybe<StringNullableFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
@@ -2776,6 +2775,7 @@ export type TransactionWhereInput = {
   destinyAccount?: InputMaybe<AccountNullableRelationFilter>;
   destinyAccountId?: InputMaybe<StringNullableFilter>;
   id?: InputMaybe<StringFilter>;
+  paymentEnabled?: InputMaybe<BoolFilter>;
   paymentLimit?: InputMaybe<DateTimeNullableFilter>;
   paymentMethod?: InputMaybe<EnumPaymentMethodNullableFilter>;
   sourceAccount?: InputMaybe<AccountNullableRelationFilter>;
@@ -2793,7 +2793,6 @@ export type TransactionWhereUniqueInput = {
   OR?: InputMaybe<Array<TransactionWhereInput>>;
   amount?: InputMaybe<DecimalFilter>;
   billingPayment?: InputMaybe<CardBillingNullableRelationFilter>;
-  canBePaid?: InputMaybe<BoolFilter>;
   cardBilling?: InputMaybe<CardBillingNullableRelationFilter>;
   cardBillingId?: InputMaybe<StringNullableFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
@@ -2802,6 +2801,7 @@ export type TransactionWhereUniqueInput = {
   destinyAccount?: InputMaybe<AccountNullableRelationFilter>;
   destinyAccountId?: InputMaybe<StringNullableFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
+  paymentEnabled?: InputMaybe<BoolFilter>;
   paymentLimit?: InputMaybe<DateTimeNullableFilter>;
   paymentMethod?: InputMaybe<EnumPaymentMethodNullableFilter>;
   sourceAccount?: InputMaybe<AccountNullableRelationFilter>;
