@@ -14,6 +14,7 @@ export const transactionStatusLabel: Record<TransactionStatus, string> = {
   PLANNED: 'Agendada',
   COMPLETED: 'Concluída',
   CANCELED: 'Cancelada',
+  OVERDUE: 'Vencida',
 };
 
 export const paymentMethodLabel: Record<PaymentMethod, string> = {
