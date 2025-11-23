@@ -16,6 +16,7 @@ import { z } from 'zod';
 import { useMutation, useQuery } from '@apollo/client';
 import {
   AccountType,
+  CardType,
   OrdenationInstitutionModel,
   OrderDirection,
 } from '@/graphql/graphql';
@@ -24,29 +25,70 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { CreateAccountMutation } from '../graphql/accounts-mutations';
 import { AccountsQuery, InstitutionsQuery } from '../graphql/accounts-queries';
-import { accountTypeLabels } from '../accounts-constants';
+import { accountTypeLabels, cardTypeLabels } from '../accounts-constants';
 import { AccountTypeBadge } from './account-type-badge';
 import Image from 'next/image';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Separator } from '@/components/ui/separator';
 
-const schema = z.object({
-  name: formFields.text.describe('Nome * // Insira o nome da conta'),
-  description: formFields.text
-    .describe('Descrição // Insira a descrição da conta')
-    .optional(),
-  type: formFields.select.describe('Tipo * // Insira o tipo da conta'),
-  institution: formFields.select.describe(
-    'Instituição * // Insira a instituição',
-  ),
-  initialBalance: formFields.currency.describe(
-    'Saldo inicial * // Insira o saldo inicial da conta',
-  ),
-  isActive: formFields.switch.describe(
-    'Conta ativa? // Indica se a conta está ativa e visível no sistema',
-  ),
-});
+const schema = z
+  .object({
+    name: formFields.text.describe('Nome * // Insira o nome da conta'),
+    description: formFields.text
+      .describe('Descrição // Insira a descrição da conta')
+      .optional(),
+    type: formFields.select.describe('Tipo * // Insira o tipo da conta'),
+    institution: formFields.select.describe(
+      'Instituição * // Insira a instituição',
+    ),
+    initialBalance: formFields.currency.describe(
+      'Saldo inicial * // Insira o saldo inicial da conta',
+    ),
+    isActive: formFields.switch.describe(
+      'Conta ativa? // Indica se a conta está ativa e visível no sistema',
+    ),
+    cardType: formFields.select
+      .describe('Tipo de cartão * // Insira o tipo de cartão')
+      .optional(),
+    billingCycleDay: formFields.number
+      .describe(
+        'Dia do ciclo de faturamento * // Insira o dia do ciclo de faturamento',
+      )
+      .min(1)
+      .max(31)
+      .optional(),
+    defaultLimit: formFields.currency
+      .describe('Limite do cartão * // Insira o limite do cartão')
+      .optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.type.value === AccountType.CreditCard) {
+      if (data.cardType?.value === undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['cardType'],
+          message: 'Tipo de cartão é obrigatório',
+        });
+      }
+
+      if (data.billingCycleDay === undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['billingCycleDay'],
+          message: 'Dia do ciclo de faturamento é obrigatório',
+        });
+      }
+
+      if (data.defaultLimit === undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['defaultLimit'],
+          message: 'Limite do cartão é obrigatório',
+        });
+      }
+    }
+  });
 
 export function AccountCreateForm({
   type,
@@ -126,6 +168,11 @@ export function AccountCreateForm({
     });
   }, [institutionsQueryOptions, institutionsPageInfo]);
 
+  const cardTypeOptions = Object.values(CardType).map((type) => ({
+    value: type,
+    label: cardTypeLabels[type],
+  }));
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -137,7 +184,7 @@ export function AccountCreateForm({
           Nova conta
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Nova conta</DialogTitle>
           <DialogDescription>
@@ -202,6 +249,9 @@ export function AccountCreateForm({
                   'Selecione um tipo de conta para selecionar a instituição',
               }),
             },
+            cardType: {
+              options: cardTypeOptions,
+            } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
           }}
           onSubmit={async (data) => {
             await createAccount({
@@ -209,14 +259,15 @@ export function AccountCreateForm({
                 data: {
                   name: data.name,
                   type: data.type.value as AccountType,
-                  institution: {
-                    connect: {
-                      id: data.institution.value,
-                    },
-                  },
+                  institutionId: data.institution.value,
                   isActive: data.isActive,
                   description: data.description,
                   initialBalance: data.initialBalance,
+                  ...(data.type.value === AccountType.CreditCard && {
+                    cardType: data.cardType?.value as CardType,
+                    billingCycleDay: data.billingCycleDay,
+                    defaultLimit: data.defaultLimit,
+                  }),
                 },
               },
               refetchQueries: [AccountsQuery],
@@ -248,6 +299,9 @@ export function AccountCreateForm({
             description,
             initialBalance,
             isActive,
+            cardType,
+            billingCycleDay,
+            defaultLimit,
           }) => (
             <>
               {type}
@@ -257,6 +311,15 @@ export function AccountCreateForm({
               {description}
               {initialBalance}
               {isActive}
+              {selectedType?.value === AccountType.CreditCard && (
+                <>
+                  <Separator />
+                  <p className="font-semibold">Informações do cartão</p>
+                  {cardType}
+                  {billingCycleDay}
+                  {defaultLimit}
+                </>
+              )}
             </>
           )}
         </TsForm>

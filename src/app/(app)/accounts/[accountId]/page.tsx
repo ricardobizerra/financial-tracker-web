@@ -1,10 +1,5 @@
-import { TransactionsTable } from '@/modules/transactions/components/transactions-table';
+import { AccountTracking } from '@/modules/accounts/components/pages/account-tracking';
 
 export default function Page() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold">Movimentações</h1>
-      <TransactionsTable />
-    </div>
-  );
+  return <AccountTracking />;
 }

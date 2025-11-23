@@ -29,6 +29,7 @@ export const TransactionsQuery = graphql(`
     $orderBy: OrdenationTransactionModel
     $orderDirection: OrderDirection
     $accountId: ID
+    $cardBillingId: ID
   ) {
     transactions(
       first: $first
@@ -39,6 +40,7 @@ export const TransactionsQuery = graphql(`
       orderBy: $orderBy
       orderDirection: $orderDirection
       accountId: $accountId
+      cardBillingId: $cardBillingId
     ) {
       edges {
         cursor

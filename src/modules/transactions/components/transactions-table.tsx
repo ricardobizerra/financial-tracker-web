@@ -15,7 +15,11 @@ import {
   BetweenAccountsTransactionCreateForm,
 } from './transaction-create-form';
 
-export function TransactionsTable() {
+export function TransactionsTable({
+  cardBillingId,
+}: {
+  cardBillingId?: string;
+}) {
   const params = useParams();
   const accountId = params.accountId as string | undefined;
 
@@ -27,6 +31,7 @@ export function TransactionsTable() {
         !!accountId
           ? {
               accountId,
+              cardBillingId,
             }
           : undefined
       }

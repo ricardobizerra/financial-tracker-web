@@ -1,4 +1,4 @@
-import { AccountType } from '@/graphql/graphql';
+import { AccountType, CardType } from '@/graphql/graphql';
 
 export const accountTypeLabels: Record<AccountType, string> = {
   CHECKING: 'Conta Corrente',
@@ -7,4 +7,9 @@ export const accountTypeLabels: Record<AccountType, string> = {
   CREDIT_CARD: 'Cartão de Crédito',
   WALLET: 'Carteira Digital',
   OTHER: 'Outro',
+} as const;
+
+export const cardTypeLabels: Record<CardType, string> = {
+  CREDIT: 'Crédito',
+  DEBIT: 'Débito',
 } as const;

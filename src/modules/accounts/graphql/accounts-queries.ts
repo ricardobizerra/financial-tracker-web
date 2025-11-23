@@ -57,6 +57,14 @@ export const AccountsQuery = graphql(`
   }
 `);
 
+export const AccountQuery = graphql(`
+  query Account($id: ID!) {
+    account(id: $id) {
+      ...AccountFragment
+    }
+  }
+`);
+
 export const InstitutionFragment = graphql(`
   fragment InstitutionFragment on InstitutionModel {
     id
@@ -95,6 +103,51 @@ export const InstitutionsQuery = graphql(`
       pageInfo {
         ...PageInfoFragment
       }
+    }
+  }
+`);
+
+export const BillingQuery = graphql(`
+  query Billing($accountId: ID!, $id: ID) {
+    billing(accountId: $accountId, id: $id) {
+      billing {
+        id
+        periodStart
+        periodEnd
+        paymentDate
+        totalAmount
+        limit
+        status
+        accountCardId
+        createdAt
+        updatedAt
+        accountCard {
+          id
+          lastFourDigits
+          billingCycleDay
+          type
+          accountId
+          createdAt
+          updatedAt
+        }
+        paymentTransaction {
+          id
+          description
+          amount
+          date
+          status
+          type
+          paymentMethod
+          sourceAccountId
+          destinyAccountId
+          cardBillingId
+          userId
+          createdAt
+          updatedAt
+        }
+      }
+      nextBillingId
+      previousBillingId
     }
   }
 `);
