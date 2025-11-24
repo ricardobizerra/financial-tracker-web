@@ -17,6 +17,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import {
   AccountType,
   CardType,
+  CreateAccountInput,
   OrdenationInstitutionModel,
   OrderDirection,
 } from '@/graphql/graphql';
@@ -58,6 +59,11 @@ const schema = z
       .min(1)
       .max(31)
       .optional(),
+    billingPaymentDay: formFields.number
+      .describe('Dia do pagamento * // Insira o dia do pagamento')
+      .min(1)
+      .max(31)
+      .optional(),
     defaultLimit: formFields.currency
       .describe('Limite do cartão * // Insira o limite do cartão')
       .optional(),
@@ -80,11 +86,27 @@ const schema = z
         });
       }
 
+      if (data.billingPaymentDay === undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['billingPaymentDay'],
+          message: 'Dia do pagamento é obrigatório',
+        });
+      }
+
       if (data.defaultLimit === undefined) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['defaultLimit'],
           message: 'Limite do cartão é obrigatório',
+        });
+      }
+
+      if (data.defaultLimit && data.defaultLimit === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['defaultLimit'],
+          message: 'Limite do cartão não pode ser zero',
         });
       }
     }
@@ -102,14 +124,17 @@ export function AccountCreateForm({
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
-    defaultValues: !!type
-      ? {
-          type: {
+    defaultValues: {
+      type: !!type
+        ? {
             value: type,
             label: accountTypeLabels[type],
-          },
-        }
-      : undefined,
+          }
+        : undefined,
+      isActive: true,
+      initialBalance: 0,
+      defaultLimit: 10000,
+    },
   });
 
   const selectedType = useWatch({
@@ -195,15 +220,6 @@ export function AccountCreateForm({
         <TsForm
           form={form}
           schema={schema}
-          defaultValues={{
-            isActive: true,
-            ...(!!type && {
-              type: {
-                value: type,
-                label: accountTypeLabels[type],
-              },
-            }),
-          }}
           props={{
             type: {
               options: accountTypeOptions,
@@ -264,9 +280,12 @@ export function AccountCreateForm({
                   description: data.description,
                   initialBalance: data.initialBalance,
                   ...(data.type.value === AccountType.CreditCard && {
-                    cardType: data.cardType?.value as CardType,
-                    billingCycleDay: data.billingCycleDay,
-                    defaultLimit: data.defaultLimit,
+                    cardInfos: {
+                      type: data.cardType?.value as CardType,
+                      billingCycleDay: data.billingCycleDay,
+                      billingPaymentDay: data.billingPaymentDay,
+                      defaultLimit: data.defaultLimit,
+                    } as CreateAccountInput['cardInfos'],
                   }),
                 },
               },
@@ -301,6 +320,7 @@ export function AccountCreateForm({
             isActive,
             cardType,
             billingCycleDay,
+            billingPaymentDay,
             defaultLimit,
           }) => (
             <>
@@ -309,7 +329,7 @@ export function AccountCreateForm({
               <Separator />
               {name}
               {description}
-              {initialBalance}
+              {selectedType?.value !== AccountType.CreditCard && initialBalance}
               {isActive}
               {selectedType?.value === AccountType.CreditCard && (
                 <>
@@ -317,6 +337,7 @@ export function AccountCreateForm({
                   <p className="font-semibold">Informações do cartão</p>
                   {cardType}
                   {billingCycleDay}
+                  {billingPaymentDay}
                   {defaultLimit}
                 </>
               )}
