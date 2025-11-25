@@ -46,7 +46,10 @@ import { TransactionsQuery } from '../graphql/transactions-queries';
 import { TransactionTypeBadge } from './transaction-type-badge';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
-import { AccountsQuery } from '@/modules/accounts/graphql/accounts-queries';
+import {
+  AccountsQuery,
+  BillingQuery,
+} from '@/modules/accounts/graphql/accounts-queries';
 import { TransactionStatusBadge } from './transaction-status-badge';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -571,7 +574,7 @@ export function ExpenseTransactionCreateForm({
                   paymentMethod: data.paymentMethod.value as PaymentMethod,
                 },
               },
-              refetchQueries: [TransactionsQuery],
+              refetchQueries: [TransactionsQuery, BillingQuery],
               onCompleted: () => {
                 toast.success('Movimentação criada!', {
                   description: 'As informações foram salvas com sucesso.',
