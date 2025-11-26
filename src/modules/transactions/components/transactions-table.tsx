@@ -17,8 +17,12 @@ import {
 
 export function TransactionsTable({
   cardBillingId,
+  hiddenActions = [],
+  hiddenColumns = [],
 }: {
   cardBillingId?: string;
+  hiddenActions?: TransactionType[];
+  hiddenColumns?: string[];
 }) {
   const params = useParams();
   const accountId = params.accountId as string | undefined;
@@ -39,13 +43,21 @@ export function TransactionsTable({
         key: OrdenationTransactionModel.Date,
         direction: OrderDirection.Desc,
       }}
-      columns={transactionsTableColumns}
+      columns={transactionsTableColumns.filter(
+        (column) => !hiddenColumns.includes(column.accessorKey as string),
+      )}
       initialPageSize={50}
       actionButtons={
         <div className="flex items-center gap-2">
-          <IncomeTransactionCreateForm accountId={accountId} />
-          <ExpenseTransactionCreateForm accountId={accountId} />
-          <BetweenAccountsTransactionCreateForm accountId={accountId} />
+          {!hiddenActions.includes(TransactionType.Income) && (
+            <IncomeTransactionCreateForm accountId={accountId} />
+          )}
+          {!hiddenActions.includes(TransactionType.Expense) && (
+            <ExpenseTransactionCreateForm accountId={accountId} />
+          )}
+          {!hiddenActions.includes(TransactionType.BetweenAccounts) && (
+            <BetweenAccountsTransactionCreateForm accountId={accountId} />
+          )}
         </div>
       }
     />
