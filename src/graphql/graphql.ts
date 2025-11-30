@@ -1907,6 +1907,7 @@ export type Mutation = {
   createTransaction: TransactionModel;
   createUser: SignIn;
   deleteInvestment: Scalars['ID']['output'];
+  payBilling: Transaction;
 };
 
 export type MutationAuthSignInArgs = {
@@ -1935,6 +1936,13 @@ export type MutationCreateUserArgs = {
 
 export type MutationDeleteInvestmentArgs = {
   id: Scalars['ID']['input'];
+};
+
+export type MutationPayBillingArgs = {
+  billingId: Scalars['String']['input'];
+  date?: InputMaybe<Scalars['DateTime']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  sourceAccountId: Scalars['ID']['input'];
 };
 
 export type NestedBoolFilter = {
@@ -3055,6 +3063,27 @@ export type CreateAccountMutation = {
   createAccount: { __typename?: 'AccountModel'; id: string };
 };
 
+export type CloseBillingMutationVariables = Exact<{
+  billingId: Scalars['String']['input'];
+}>;
+
+export type CloseBillingMutation = {
+  __typename?: 'Mutation';
+  closeBilling: {
+    __typename?: 'CardBilling';
+    id: string;
+    periodStart: any;
+    periodEnd: any | null;
+    paymentDate: any | null;
+    limit: any;
+    status: CardBillingStatus;
+    accountCardId: string;
+    paymentTransactionId: string | null;
+    createdAt: any;
+    updatedAt: any;
+  };
+};
+
 export type AccountFragmentFragment = {
   __typename?: 'AccountModel';
   id: string;
@@ -3791,6 +3820,75 @@ export const CreateAccountDocument = {
 } as unknown as DocumentNode<
   CreateAccountMutation,
   CreateAccountMutationVariables
+>;
+export const CloseBillingDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CloseBilling' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'billingId' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'closeBilling' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'billingId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'billingId' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'periodStart' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'periodEnd' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'paymentDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'accountCardId' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'paymentTransactionId' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CloseBillingMutation,
+  CloseBillingMutationVariables
 >;
 export const AccountsDocument = {
   kind: 'Document',

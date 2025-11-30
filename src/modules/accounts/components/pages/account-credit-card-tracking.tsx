@@ -9,8 +9,9 @@ import {
   TransactionType,
 } from '@/graphql/graphql';
 import { TransactionsTable } from '@/modules/transactions/components/transactions-table';
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { BillingQuery } from '../../graphql/accounts-queries';
+import { CloseBillingMutation } from '../../graphql/accounts-mutations';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -72,6 +73,8 @@ export function AccountCreditCardTracking({
     fetchPolicy: 'cache-and-network',
   });
 
+  const [closeBillingMutation] = useMutation(CloseBillingMutation);
+
   const billing = data?.billing?.billing;
   const nextBillingId = data?.billing?.nextBillingId;
   const previousBillingId = data?.billing?.previousBillingId;
@@ -102,7 +105,11 @@ export function AccountCreditCardTracking({
 
     try {
       setIsProcessing(true);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await closeBillingMutation({
+        variables: {
+          billingId: billing.id,
+        },
+      });
       await refetch();
       toast.success('Sucesso', {
         description: 'Fatura fechada com sucesso',

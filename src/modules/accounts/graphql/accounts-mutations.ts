@@ -7,3 +7,20 @@ export const CreateAccountMutation = graphql(`
     }
   }
 `);
+
+export const CloseBillingMutation = graphql(`
+  mutation CloseBilling($billingId: String!) {
+    closeBilling(billingId: $billingId) {
+      id
+      periodStart
+      periodEnd
+      paymentDate
+      limit
+      status
+      accountCardId
+      paymentTransactionId
+      createdAt
+      updatedAt
+    }
+  }
+`);
