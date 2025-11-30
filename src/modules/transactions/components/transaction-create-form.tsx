@@ -1,7 +1,7 @@
 'use client';
 
 import { formFields, TsForm } from '@/components/ts-form';
-import { Button } from '@/components/ui/button';
+import { Button, ButtonProps } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -62,8 +62,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import PixIcon from '@/static/pix-icon.svg';
 
 interface TransactionCreateFormProps {
-  triggerClassName?: string;
   accountId?: string;
+  triggerClassName?: string;
+  triggerSize?: ButtonProps['size'];
 }
 
 const incomeSchema = z.object({
@@ -132,6 +133,7 @@ const betweenAccountsSchema = z.object({
 export function IncomeTransactionCreateForm({
   triggerClassName,
   accountId,
+  triggerSize,
 }: TransactionCreateFormProps) {
   const [open, setOpen] = useState(false);
   const [createTransaction, { loading }] = useMutation(
@@ -231,7 +233,7 @@ export function IncomeTransactionCreateForm({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          size="sm"
+          size={triggerSize ?? 'sm'}
           className={cn('flex items-center gap-1', triggerClassName)}
           variant={'default'}
         >
@@ -359,7 +361,19 @@ export function IncomeTransactionCreateForm({
 export function ExpenseTransactionCreateForm({
   triggerClassName,
   accountId,
-}: TransactionCreateFormProps) {
+  triggerSize,
+  hiddenFields = [],
+  minDate,
+  maxDate,
+  status,
+  paymentMethod,
+}: TransactionCreateFormProps & {
+  hiddenFields?: Array<keyof typeof expenseSchema.shape>;
+  minDate?: Date;
+  maxDate?: Date;
+  status?: TransactionStatus;
+  paymentMethod?: PaymentMethod;
+}) {
   const [open, setOpen] = useState(false);
   const [createTransaction, { loading }] = useMutation(
     CreateTransactionMutation,
@@ -373,11 +387,23 @@ export function ExpenseTransactionCreateForm({
         label: transactionTypeLabels[TransactionType.Expense],
       },
       ...(!!accountId && {
-        destinyAccount: {
+        sourceAccount: {
           value: accountId,
           label: accountId,
         },
       }),
+      status: !!status
+        ? {
+            value: status,
+            label: transactionStatusLabel[status],
+          }
+        : undefined,
+      paymentMethod: !!paymentMethod
+        ? {
+            value: paymentMethod,
+            label: paymentMethodLabel[paymentMethod],
+          }
+        : undefined,
     },
   });
 
@@ -487,7 +513,7 @@ export function ExpenseTransactionCreateForm({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          size="sm"
+          size={triggerSize ?? 'sm'}
           className={cn('flex items-center gap-1', triggerClassName)}
           variant={'destructive'}
         >
@@ -512,6 +538,10 @@ export function ExpenseTransactionCreateForm({
               renderLabel: (option) => (
                 <TransactionTypeBadge type={option.value as TransactionType} />
               ),
+            },
+            date: {
+              minDate,
+              maxDate,
             },
             status: {
               options: accountStatusOptions,
@@ -605,13 +635,17 @@ export function ExpenseTransactionCreateForm({
             paymentMethod,
           }) => (
             <>
-              {sourceAccount}
-              <Separator />
-              {date}
-              {status}
-              {amount}
-              {description}
-              {paymentMethod}
+              {!hiddenFields.includes('sourceAccount') && (
+                <>
+                  {sourceAccount}
+                  <Separator />
+                </>
+              )}
+              {!hiddenFields.includes('date') && date}
+              {!hiddenFields.includes('status') && status}
+              {!hiddenFields.includes('amount') && amount}
+              {!hiddenFields.includes('description') && description}
+              {!hiddenFields.includes('paymentMethod') && paymentMethod}
             </>
           )}
         </TsForm>
@@ -623,6 +657,7 @@ export function ExpenseTransactionCreateForm({
 export function BetweenAccountsTransactionCreateForm({
   triggerClassName,
   accountId,
+  triggerSize,
 }: TransactionCreateFormProps) {
   const [open, setOpen] = useState(false);
   const [createTransaction, { loading }] = useMutation(
@@ -747,7 +782,7 @@ export function BetweenAccountsTransactionCreateForm({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          size="sm"
+          size={triggerSize ?? 'sm'}
           className={cn('flex items-center gap-1', triggerClassName)}
           variant={'secondary'}
         >

@@ -117,6 +117,7 @@ export const BillingQuery = graphql(`
         paymentDate
         totalAmount
         limit
+        usagePercentage
         status
         accountCardId
         createdAt

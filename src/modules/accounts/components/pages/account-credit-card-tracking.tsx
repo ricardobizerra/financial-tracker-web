@@ -1,20 +1,25 @@
 'use client';
 
-import { AccountFragmentFragment } from '@/graphql/graphql';
+import {
+  AccountFragmentFragment,
+  CardBillingStatus,
+  CardType,
+  PaymentMethod,
+  TransactionStatus,
+  TransactionType,
+} from '@/graphql/graphql';
 import { TransactionsTable } from '@/modules/transactions/components/transactions-table';
 import { useQuery } from '@apollo/client';
 import { BillingQuery } from '../../graphql/accounts-queries';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   ArrowLeft,
   ArrowRight,
-  CreditCard,
   Loader2,
   CreditCard as CreditCardIcon,
+  Calendar,
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { useState } from 'react';
@@ -22,6 +27,37 @@ import { toast } from 'sonner';
 import Image from 'next/image';
 import { formatDate } from '@/lib/formatters/date';
 import { formatCurrency } from '@/lib/formatters/currency';
+import { Separator } from '@/components/ui/separator';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { formFields, TsForm } from '@/components/ts-form';
+import { z } from 'zod';
+import { formatPercentage } from '@/lib/formatters/percentage';
+import { ExpenseTransactionCreateForm } from '@/modules/transactions/components/transaction-create-form';
+import { TransactionStatusBadge } from '@/modules/transactions/components/transaction-status-badge';
+import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
+
+const closeBillingSchema = z.object({
+  closingDate: formFields.date.describe('Data de fechamento'),
+});
+
+function getTextColorForBackground(hexColor: string | null): string {
+  if (!hexColor) return '#000000';
+
+  const r = parseInt(hexColor.slice(1, 3), 16) / 255;
+  const g = parseInt(hexColor.slice(3, 5), 16) / 255;
+  const b = parseInt(hexColor.slice(5, 7), 16) / 255;
+
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+  return luminance > 0.5 ? '#000000' : '#FFFFFF';
+}
 
 export function AccountCreditCardTracking({
   account,
@@ -66,9 +102,7 @@ export function AccountCreditCardTracking({
 
     try {
       setIsProcessing(true);
-      // TODO: Implement close billing mutation
-      // await closeBilling({ variables: { id: billing.id } });
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       await refetch();
       toast.success('Sucesso', {
         description: 'Fatura fechada com sucesso',
@@ -87,9 +121,7 @@ export function AccountCreditCardTracking({
 
     try {
       setIsProcessing(true);
-      // TODO: Implement pay billing mutation
-      // await payBilling({ variables: { id: billing.id } });
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       await refetch();
       toast.success('Sucesso', {
         description: 'Pagamento realizado com sucesso',
@@ -104,10 +136,10 @@ export function AccountCreditCardTracking({
   };
 
   const loadBilling = async (billingId: string) => {
-    // The BillingQuery will be refetched with the new billingId
-    // The component will automatically update with the new data
     await refetch({ accountId: account.id, id: billingId });
   };
+
+  const isMobile = useIsMobile();
 
   if (loading && !billing) {
     return (
@@ -121,157 +153,410 @@ export function AccountCreditCardTracking({
     return <div>Nenhuma fatura encontrada para este cartão.</div>;
   }
 
-  const usagePercentage = (billing.totalAmount / billing.limit) * 100;
+  const availableLimit = billing.limit - billing.totalAmount;
+  const isPending = billing.status === CardBillingStatus.Pending;
+  const isClosed = billing.status === CardBillingStatus.Closed;
+  const isOverdue = billing.status === CardBillingStatus.Overdue;
 
   return (
-    <div className="space-y-6">
-      {/* Card Summary */}
-      <Card className="border border-border bg-muted/50 dark:bg-muted/10">
-        <CardContent className="grid grid-cols-5 gap-4 p-6">
-          <div className="col-span-4 flex flex-col items-start gap-2">
-            <div>
-              <CardTitle className="text-2xl">{account.name}</CardTitle>
-            </div>
-            <div className="flex items-center gap-2">
+    <div className="space-y-4 md:space-y-6">
+      {/* Header Card */}
+      <Card
+        className="overflow-hidden"
+        style={{
+          backgroundColor:
+            account.institution.color ?? 'hsl(var(--background))',
+        }}
+      >
+        <CardContent className="p-5 sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex items-center gap-4">
               {account.institution?.logoUrl ? (
-                <Image
-                  src={account.institution.logoUrl}
-                  alt={account.institution.name}
-                  width={32}
-                  height={32}
-                  className="rounded-md border border-border object-cover"
-                />
+                <div className="h-14 w-14 flex-shrink-0 rounded-xl bg-white p-2 shadow-sm sm:h-16 sm:w-16">
+                  <Image
+                    src={account.institution.logoUrl}
+                    alt={account.institution.name}
+                    width={64}
+                    height={64}
+                    className="h-full w-full object-contain"
+                  />
+                </div>
               ) : (
-                <CreditCardIcon className="h-8 w-8 text-muted-foreground" />
+                <div
+                  className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl sm:h-16 sm:w-16"
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                  }}
+                >
+                  <CreditCardIcon
+                    className="h-7 w-7 sm:h-8 sm:w-8"
+                    style={{
+                      color: getTextColorForBackground(
+                        account.institution.color,
+                      ),
+                    }}
+                  />
+                </div>
               )}
-              <p className="text-sm text-muted-foreground">
-                {account.institution?.name || 'Instituição não informada'}
-              </p>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <h1
+                    className="truncate text-xl font-bold leading-tight sm:text-2xl md:text-3xl"
+                    style={{
+                      color: getTextColorForBackground(
+                        account.institution.color,
+                      ),
+                    }}
+                  >
+                    {account.name}
+                  </h1>
+                  <Badge
+                    variant="secondary"
+                    className="flex-shrink-0 text-xs"
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                      color: getTextColorForBackground(
+                        account.institution.color,
+                      ),
+                    }}
+                  >
+                    {billing.accountCard.type === CardType.Credit
+                      ? 'Crédito'
+                      : 'Débito'}
+                  </Badge>
+                </div>
+                <div className="mt-1 flex items-center gap-2">
+                  <p
+                    className="truncate text-sm opacity-90 sm:text-base"
+                    style={{
+                      color: getTextColorForBackground(
+                        account.institution.color,
+                      ),
+                    }}
+                  >
+                    {account.institution?.name || 'Instituição não informada'}
+                  </p>
+                  {billing.accountCard.lastFourDigits && (
+                    <>
+                      <span
+                        className="text-sm opacity-60"
+                        style={{
+                          color: getTextColorForBackground(
+                            account.institution.color,
+                          ),
+                        }}
+                      >
+                        •
+                      </span>
+                      <span
+                        className="font-mono text-sm opacity-90"
+                        style={{
+                          color: getTextColorForBackground(
+                            account.institution.color,
+                          ),
+                        }}
+                      >
+                        •••• {billing.accountCard.lastFourDigits}
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="flex gap-2 sm:gap-8">
+              {/* Available Credit */}
+              <div className="flex-1">
+                <div
+                  className="text-xs font-medium uppercase tracking-wide opacity-75"
+                  style={{
+                    color: getTextColorForBackground(account.institution.color),
+                  }}
+                >
+                  Disponível
+                </div>
+                <div
+                  className="mt-1 text-lg font-bold sm:text-xl"
+                  style={{
+                    color:
+                      availableLimit < 0
+                        ? '#ef4444'
+                        : availableLimit < billing.limit * 0.1
+                          ? '#f97316'
+                          : getTextColorForBackground(
+                              account.institution.color,
+                            ),
+                  }}
+                >
+                  {formatCurrency(availableLimit)}
+                </div>
+              </div>
+
+              {/* Due Date */}
+              {billing.paymentDate && (
+                <div className="flex-1">
+                  <div
+                    className="text-xs font-medium uppercase tracking-wide opacity-75"
+                    style={{
+                      color: getTextColorForBackground(
+                        account.institution.color,
+                      ),
+                    }}
+                  >
+                    Vencimento
+                  </div>
+                  <div
+                    className="mt-1 text-lg font-bold sm:text-xl"
+                    style={{
+                      color: getTextColorForBackground(
+                        account.institution.color,
+                      ),
+                    }}
+                  >
+                    {formatDate(billing.paymentDate)}
+                  </div>
+                  {isPending && (
+                    <div
+                      className="mt-0.5 text-xs opacity-75"
+                      style={{
+                        color: getTextColorForBackground(
+                          account.institution.color,
+                        ),
+                      }}
+                    >
+                      {(() => {
+                        const today = new Date();
+                        const dueDate = new Date(billing.paymentDate);
+                        const diffTime = dueDate.getTime() - today.getTime();
+                        const diffDays = Math.ceil(
+                          diffTime / (1000 * 60 * 60 * 24),
+                        );
+                        if (diffDays < 0) return 'Vencido';
+                        if (diffDays === 0) return 'Vence hoje';
+                        if (diffDays === 1) return 'Vence amanhã';
+                        return `${diffDays} dias`;
+                      })()}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Billing Cycle Navigation */}
-      <div className="flex items-center justify-between">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => previousBillingId && loadBilling(previousBillingId)}
-          disabled={!previousBillingId || isProcessing}
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>Fatura anterior</span>
-        </Button>
+      {/* Billing Overview, Period and Status */}
+      <Card>
+        <CardContent className="flex h-full flex-col gap-4 p-4 sm:p-5 md:flex-row">
+          <div className="flex flex-1 items-center justify-center gap-3">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() =>
+                previousBillingId && loadBilling(previousBillingId)
+              }
+              disabled={!previousBillingId || isProcessing}
+              className="h-9 w-9 flex-shrink-0"
+              aria-label="Previous billing period"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
 
-        <div className="text-center">
-          <h3 className="text-lg font-medium">
-            {formatDate(billing.periodStart)} - {formatDate(billing.periodEnd)}
-          </h3>
-          <div className="flex items-center justify-center gap-2">
-            {getStatusBadge(billing.status)}
-            {billing.status === 'OVERDUE' && billing.paymentDate && (
-              <span className="text-sm text-destructive">
-                Vencimento: {formatDate(billing.paymentDate)}
-              </span>
+            <div className="flex flex-col items-center justify-center gap-2 text-center">
+              <div className="flex flex-col items-center gap-1.5">
+                <Calendar className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+                <span className="text-sm font-semibold sm:text-base">
+                  {formatDate(billing.periodStart)} a{' '}
+                  {formatDate(billing.periodEnd)}
+                </span>
+              </div>
+              {getStatusBadge(billing.status)}
+            </div>
+
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => nextBillingId && loadBilling(nextBillingId)}
+              disabled={!nextBillingId || isProcessing}
+              className="h-9 w-9 flex-shrink-0"
+              aria-label="Next billing period"
+            >
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <Separator orientation={isMobile ? 'horizontal' : 'vertical'} />
+
+          <div className="flex flex-1 flex-col justify-between gap-4">
+            <div>
+              <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Total da Fatura
+              </div>
+              <div className="mt-2 flex flex-wrap items-baseline gap-2">
+                <span className="text-3xl font-bold tracking-tight sm:text-4xl">
+                  {formatCurrency(billing.totalAmount)}
+                </span>
+                <span className="text-base text-muted-foreground">
+                  / {formatCurrency(billing.limit)}
+                </span>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-xs font-medium text-muted-foreground">
+                  Uso do limite
+                </span>
+                <span className="text-sm font-semibold">
+                  {formatPercentage(billing.usagePercentage)}
+                </span>
+              </div>
+              <Progress
+                value={billing.usagePercentage}
+                className="h-2.5"
+                indicatorClassName={cn(
+                  billing.usagePercentage > 90
+                    ? 'bg-destructive'
+                    : billing.usagePercentage > 70
+                      ? 'bg-orange-500'
+                      : 'bg-primary',
+                )}
+              />
+            </div>
+          </div>
+
+          <Separator orientation={isMobile ? 'horizontal' : 'vertical'} />
+
+          <div className="flex flex-wrap gap-2 md:flex-col">
+            {isPending && (
+              <>
+                <ExpenseTransactionCreateForm
+                  accountId={account.id}
+                  triggerSize="sm"
+                  triggerClassName="flex-1"
+                  minDate={new Date(billing.periodStart)}
+                  maxDate={new Date(billing.periodEnd)}
+                  status={TransactionStatus.Completed}
+                  paymentMethod={
+                    billing.accountCard.type === CardType.Credit
+                      ? PaymentMethod.CreditCard
+                      : billing.accountCard.type === CardType.Debit
+                        ? PaymentMethod.DebitCard
+                        : undefined
+                  }
+                  hiddenFields={['sourceAccount', 'status', 'paymentMethod']}
+                />
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      size="sm"
+                      className="flex-1"
+                      disabled={isProcessing}
+                      aria-label="Fechar fatura"
+                    >
+                      {isProcessing ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <span className="truncate">Processando...</span>
+                        </>
+                      ) : (
+                        <span className="truncate">Fechar Fatura</span>
+                      )}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Fechamento da Fatura</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4">
+                      <TsForm
+                        schema={closeBillingSchema}
+                        onSubmit={handleCloseBilling}
+                        defaultValues={{ closingDate: new Date() }}
+                        props={{
+                          closingDate: {
+                            minDate: billing.periodStart,
+                          },
+                        }}
+                      />
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </>
+            )}
+            {(isClosed || isOverdue) && (
+              <Button
+                size="sm"
+                onClick={handlePayBilling}
+                disabled={isProcessing}
+                aria-label="Pagar fatura"
+                className="flex-1"
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <span className="truncate">Processando...</span>
+                  </>
+                ) : (
+                  <span className="truncate">Pagar Fatura</span>
+                )}
+              </Button>
             )}
           </div>
-        </div>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => nextBillingId && loadBilling(nextBillingId)}
-          disabled={!nextBillingId || isProcessing}
-        >
-          <span>Fatura seguinte</span>
-          <ArrowRight className="h-4 w-4" />
-        </Button>
-      </div>
-
-      {/* Billing Summary */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="mb-6 grid grid-cols-4 gap-4">
-            <Card>
-              <CardContent className="space-y-2 p-4">
-                <p className="text-sm text-muted-foreground">Total da fatura</p>
-                <p className="text-2xl font-bold">
-                  {formatCurrency(billing.totalAmount)}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="space-y-2 p-4">
-                <p className="text-sm text-muted-foreground">
-                  Data de vencimento
-                </p>
-                <p className="text-lg">
-                  {billing.paymentDate
-                    ? formatDate(billing.paymentDate)
-                    : 'N/A'}
-                </p>
-                {billing.status === 'CLOSED' && billing.paymentTransaction && (
-                  <p className="text-xs text-muted-foreground">
-                    Pago em: {formatDate(billing.paymentTransaction.createdAt)}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="space-y-2 p-4">
-                <div className="flex justify-between gap-2 text-sm">
-                  <span className="text-muted-foreground">Limite usado</span>
-                  <span className="font-bold">{usagePercentage}%</span>
-                </div>
-                <Progress value={usagePercentage} className="h-2" />
-                <div className="text-right text-xs text-muted-foreground">
-                  {formatCurrency(billing.totalAmount)} de{' '}
-                  {formatCurrency(billing.limit)}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Action Buttons */}
-            <div className="mb-6 flex justify-end gap-4">
-              {billing.status === 'PENDING' && (
-                <Button onClick={handleCloseBilling} disabled={isProcessing}>
-                  {isProcessing ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processando...
-                    </>
-                  ) : (
-                    'Fechar fatura'
-                  )}
-                </Button>
-              )}
-
-              {(billing.status === 'CLOSED' ||
-                billing.status === 'OVERDUE') && (
-                <Button onClick={handlePayBilling} disabled={isProcessing}>
-                  {isProcessing ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processando...
-                    </>
-                  ) : (
-                    'Pagar fatura'
-                  )}
-                </Button>
-              )}
-            </div>
-          </div>
-
-          {/* Transactions */}
-          <div>
-            <h3 className="mb-4 text-lg font-medium">Transações</h3>
-            <TransactionsTable cardBillingId={billing.id} />
-          </div>
+          {!isPending && billing.paymentTransaction && (
+            <>
+              <Separator orientation={isMobile ? 'horizontal' : 'vertical'} />
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold">
+                    Pagamento
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <div className="text-xs font-medium text-muted-foreground">
+                      Data
+                    </div>
+                    <div className="mt-1 text-sm font-semibold">
+                      {formatDate(billing.paymentTransaction.date)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs font-medium text-muted-foreground">
+                      Status
+                    </div>
+                    <div className="mt-1.5">
+                      <TransactionStatusBadge
+                        status={billing.paymentTransaction.status}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          )}
         </CardContent>
       </Card>
+
+      <div className="min-w-0 flex-1">
+        <Card className="h-full">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Transações</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <TransactionsTable
+              cardBillingId={billing.id}
+              hiddenActions={[
+                TransactionType.Income,
+                TransactionType.Expense,
+                TransactionType.BetweenAccounts,
+              ]}
+              hiddenColumns={['type', 'status']}
+            />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -939,6 +939,7 @@ export type CardBillingModel = {
   totalAmount: Scalars['Decimal']['output'];
   transactions: Maybe<Array<Transaction>>;
   updatedAt: Scalars['DateTime']['output'];
+  usagePercentage: Scalars['Float']['output'];
 };
 
 export type CardBillingNullableRelationFilter = {
@@ -3225,6 +3226,7 @@ export type BillingQuery = {
       paymentDate: any | null;
       totalAmount: any;
       limit: any;
+      usagePercentage: number;
       status: CardBillingStatus;
       accountCardId: string;
       createdAt: any;
@@ -4423,6 +4425,10 @@ export const BillingDocument = {
                         name: { kind: 'Name', value: 'totalAmount' },
                       },
                       { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'usagePercentage' },
+                      },
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'status' },
