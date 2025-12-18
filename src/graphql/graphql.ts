@@ -1908,6 +1908,7 @@ export type Mutation = {
   createUser: SignIn;
   deleteInvestment: Scalars['ID']['output'];
   payBilling: Transaction;
+  updateAccountCard: AccountCard;
 };
 
 export type MutationAuthSignInArgs = {
@@ -1943,6 +1944,13 @@ export type MutationPayBillingArgs = {
   date?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   sourceAccountId: Scalars['ID']['input'];
+};
+
+export type MutationUpdateAccountCardArgs = {
+  billingCycleDay?: InputMaybe<Scalars['Float']['input']>;
+  billingPaymentDay?: InputMaybe<Scalars['Float']['input']>;
+  cardId: Scalars['ID']['input'];
+  defaultLimit?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type NestedBoolFilter = {
@@ -3113,6 +3121,29 @@ export type PayBillingMutation = {
   };
 };
 
+export type UpdateAccountCardMutationVariables = Exact<{
+  cardId: Scalars['ID']['input'];
+  billingCycleDay?: InputMaybe<Scalars['Float']['input']>;
+  billingPaymentDay?: InputMaybe<Scalars['Float']['input']>;
+  defaultLimit?: InputMaybe<Scalars['Float']['input']>;
+}>;
+
+export type UpdateAccountCardMutation = {
+  __typename?: 'Mutation';
+  updateAccountCard: {
+    __typename?: 'AccountCard';
+    id: string;
+    lastFourDigits: string | null;
+    billingCycleDay: number;
+    billingPaymentDay: number;
+    type: CardType;
+    defaultLimit: any;
+    accountId: string;
+    createdAt: any;
+    updatedAt: any;
+  };
+};
+
 export type AccountFragmentFragment = {
   __typename?: 'AccountModel';
   id: string;
@@ -3294,6 +3325,8 @@ export type BillingQuery = {
         id: string;
         lastFourDigits: string | null;
         billingCycleDay: number;
+        billingPaymentDay: number;
+        defaultLimit: any;
         type: CardType;
         accountId: string;
         createdAt: any;
@@ -4053,6 +4086,125 @@ export const PayBillingDocument = {
     },
   ],
 } as unknown as DocumentNode<PayBillingMutation, PayBillingMutationVariables>;
+export const UpdateAccountCardDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateAccountCard' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'cardId' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'billingCycleDay' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Float' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'billingPaymentDay' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Float' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'defaultLimit' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Float' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateAccountCard' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'cardId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'cardId' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'billingCycleDay' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'billingCycleDay' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'billingPaymentDay' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'billingPaymentDay' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'defaultLimit' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'defaultLimit' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'lastFourDigits' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'billingCycleDay' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'billingPaymentDay' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'defaultLimit' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'accountId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  UpdateAccountCardMutation,
+  UpdateAccountCardMutationVariables
+>;
 export const AccountsDocument = {
   kind: 'Document',
   definitions: [
@@ -4723,6 +4875,17 @@ export const BillingDocument = {
                             {
                               kind: 'Field',
                               name: { kind: 'Name', value: 'billingCycleDay' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: {
+                                kind: 'Name',
+                                value: 'billingPaymentDay',
+                              },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'defaultLimit' },
                             },
                             {
                               kind: 'Field',

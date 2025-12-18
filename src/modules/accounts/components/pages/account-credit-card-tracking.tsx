@@ -50,6 +50,7 @@ import { TransactionStatusBadge } from '@/modules/transactions/components/transa
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useCallback, useMemo } from 'react';
+import { CardSettingsEditDialog } from '../card-settings-edit-dialog';
 
 const closeBillingSchema = z.object({
   closingDate: formFields.date.describe('Data de fechamento'),
@@ -659,6 +660,15 @@ export function AccountCreditCardTracking({
                 onSubmit={handlePayBilling}
               />
             )}
+            <CardSettingsEditDialog
+              cardId={billing.accountCard.id}
+              accountId={account.id}
+              currentSettings={{
+                billingCycleDay: billing.accountCard.billingCycleDay,
+                billingPaymentDay: billing.accountCard.billingPaymentDay,
+                defaultLimit: Number(billing.accountCard.defaultLimit),
+              }}
+            />
           </div>
 
           {!isPending && billing.paymentTransaction && (

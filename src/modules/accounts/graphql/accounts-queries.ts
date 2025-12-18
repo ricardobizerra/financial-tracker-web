@@ -126,6 +126,8 @@ export const BillingQuery = graphql(`
           id
           lastFourDigits
           billingCycleDay
+          billingPaymentDay
+          defaultLimit
           type
           accountId
           createdAt

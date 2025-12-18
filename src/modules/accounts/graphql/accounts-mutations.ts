@@ -56,3 +56,29 @@ export const PayBillingMutation = graphql(`
     }
   }
 `);
+
+export const UpdateAccountCardMutation = graphql(`
+  mutation UpdateAccountCard(
+    $cardId: ID!
+    $billingCycleDay: Float
+    $billingPaymentDay: Float
+    $defaultLimit: Float
+  ) {
+    updateAccountCard(
+      cardId: $cardId
+      billingCycleDay: $billingCycleDay
+      billingPaymentDay: $billingPaymentDay
+      defaultLimit: $defaultLimit
+    ) {
+      id
+      lastFourDigits
+      billingCycleDay
+      billingPaymentDay
+      type
+      defaultLimit
+      accountId
+      createdAt
+      updatedAt
+    }
+  }
+`);
