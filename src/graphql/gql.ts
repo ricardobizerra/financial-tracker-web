@@ -15,7 +15,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 type Documents = {
   '\n  mutation CreateAccount($data: CreateAccountInput!) {\n    createAccount(data: $data) {\n      id\n    }\n  }\n': typeof types.CreateAccountDocument;
-  '\n  mutation CloseBilling($billingId: String!) {\n    closeBilling(billingId: $billingId) {\n      id\n      periodStart\n      periodEnd\n      paymentDate\n      limit\n      status\n      accountCardId\n      paymentTransactionId\n      createdAt\n      updatedAt\n    }\n  }\n': typeof types.CloseBillingDocument;
+  '\n  mutation CloseBilling($billingId: String!, $closingDate: DateTime) {\n    closeBilling(billingId: $billingId, closingDate: $closingDate) {\n      id\n      periodStart\n      periodEnd\n      paymentDate\n      limit\n      status\n      accountCardId\n      paymentTransactionId\n      createdAt\n      updatedAt\n    }\n  }\n': typeof types.CloseBillingDocument;
   '\n  mutation PayBilling(\n    $billingId: String!\n    $sourceAccountId: ID!\n    $date: DateTime\n    $description: String\n  ) {\n    payBilling(\n      billingId: $billingId\n      sourceAccountId: $sourceAccountId\n      date: $date\n      description: $description\n    ) {\n      id\n      description\n      amount\n      date\n      status\n      type\n      paymentMethod\n      paymentEnabled\n      paymentLimit\n      sourceAccountId\n      destinyAccountId\n      cardBillingId\n      userId\n      createdAt\n      updatedAt\n    }\n  }\n': typeof types.PayBillingDocument;
   '\n  mutation UpdateAccountCard(\n    $cardId: ID!\n    $billingCycleDay: Float\n    $billingPaymentDay: Float\n    $defaultLimit: Float\n  ) {\n    updateAccountCard(\n      cardId: $cardId\n      billingCycleDay: $billingCycleDay\n      billingPaymentDay: $billingPaymentDay\n      defaultLimit: $defaultLimit\n    ) {\n      id\n      lastFourDigits\n      billingCycleDay\n      billingPaymentDay\n      type\n      defaultLimit\n      accountId\n      createdAt\n      updatedAt\n    }\n  }\n': typeof types.UpdateAccountCardDocument;
   '\n  fragment AccountFragment on AccountModel {\n    id\n    name\n    type\n    balance\n    description\n    isActive\n    institutionId\n    createdAt\n    updatedAt\n    institution {\n      id\n      code\n      name\n      logoUrl\n      color\n      createdAt\n      updatedAt\n    }\n  }\n': typeof types.AccountFragmentFragmentDoc;
@@ -43,7 +43,7 @@ type Documents = {
 const documents: Documents = {
   '\n  mutation CreateAccount($data: CreateAccountInput!) {\n    createAccount(data: $data) {\n      id\n    }\n  }\n':
     types.CreateAccountDocument,
-  '\n  mutation CloseBilling($billingId: String!) {\n    closeBilling(billingId: $billingId) {\n      id\n      periodStart\n      periodEnd\n      paymentDate\n      limit\n      status\n      accountCardId\n      paymentTransactionId\n      createdAt\n      updatedAt\n    }\n  }\n':
+  '\n  mutation CloseBilling($billingId: String!, $closingDate: DateTime) {\n    closeBilling(billingId: $billingId, closingDate: $closingDate) {\n      id\n      periodStart\n      periodEnd\n      paymentDate\n      limit\n      status\n      accountCardId\n      paymentTransactionId\n      createdAt\n      updatedAt\n    }\n  }\n':
     types.CloseBillingDocument,
   '\n  mutation PayBilling(\n    $billingId: String!\n    $sourceAccountId: ID!\n    $date: DateTime\n    $description: String\n  ) {\n    payBilling(\n      billingId: $billingId\n      sourceAccountId: $sourceAccountId\n      date: $date\n      description: $description\n    ) {\n      id\n      description\n      amount\n      date\n      status\n      type\n      paymentMethod\n      paymentEnabled\n      paymentLimit\n      sourceAccountId\n      destinyAccountId\n      cardBillingId\n      userId\n      createdAt\n      updatedAt\n    }\n  }\n':
     types.PayBillingDocument,
@@ -117,8 +117,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n  mutation CloseBilling($billingId: String!) {\n    closeBilling(billingId: $billingId) {\n      id\n      periodStart\n      periodEnd\n      paymentDate\n      limit\n      status\n      accountCardId\n      paymentTransactionId\n      createdAt\n      updatedAt\n    }\n  }\n',
-): (typeof documents)['\n  mutation CloseBilling($billingId: String!) {\n    closeBilling(billingId: $billingId) {\n      id\n      periodStart\n      periodEnd\n      paymentDate\n      limit\n      status\n      accountCardId\n      paymentTransactionId\n      createdAt\n      updatedAt\n    }\n  }\n'];
+  source: '\n  mutation CloseBilling($billingId: String!, $closingDate: DateTime) {\n    closeBilling(billingId: $billingId, closingDate: $closingDate) {\n      id\n      periodStart\n      periodEnd\n      paymentDate\n      limit\n      status\n      accountCardId\n      paymentTransactionId\n      createdAt\n      updatedAt\n    }\n  }\n',
+): (typeof documents)['\n  mutation CloseBilling($billingId: String!, $closingDate: DateTime) {\n    closeBilling(billingId: $billingId, closingDate: $closingDate) {\n      id\n      periodStart\n      periodEnd\n      paymentDate\n      limit\n      status\n      accountCardId\n      paymentTransactionId\n      createdAt\n      updatedAt\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

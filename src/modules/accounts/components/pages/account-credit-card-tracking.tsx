@@ -195,6 +195,16 @@ function PayBillingDialog({
                 hasMore: accountsPageInfo?.hasNextPage,
               },
             }}
+            renderAfter={() => (
+              <Button
+                type="submit"
+                className="mt-4 w-full"
+                disabled={isProcessing}
+                loading={isProcessing}
+              >
+                Pagar Fatura
+              </Button>
+            )}
           />
         </div>
       </DialogContent>
@@ -255,7 +265,9 @@ export function AccountCreditCardTracking({
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
-  const handleCloseBilling = async () => {
+  const handleCloseBilling = async (
+    data: z.infer<typeof closeBillingSchema>,
+  ) => {
     if (!billing) return;
 
     try {
@@ -263,6 +275,7 @@ export function AccountCreditCardTracking({
       await closeBillingMutation({
         variables: {
           billingId: billing.id,
+          closingDate: data.closingDate,
         },
       });
       await refetch();
@@ -647,6 +660,16 @@ export function AccountCreditCardTracking({
                             minDate: billing.periodStart,
                           },
                         }}
+                        renderAfter={() => (
+                          <Button
+                            type="submit"
+                            className="mt-4 w-full"
+                            disabled={isProcessing}
+                            loading={isProcessing}
+                          >
+                            Fechar Fatura
+                          </Button>
+                        )}
                       />
                     </div>
                   </DialogContent>

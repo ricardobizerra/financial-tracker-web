@@ -9,8 +9,8 @@ export const CreateAccountMutation = graphql(`
 `);
 
 export const CloseBillingMutation = graphql(`
-  mutation CloseBilling($billingId: String!) {
-    closeBilling(billingId: $billingId) {
+  mutation CloseBilling($billingId: String!, $closingDate: DateTime) {
+    closeBilling(billingId: $billingId, closingDate: $closingDate) {
       id
       periodStart
       periodEnd

@@ -1917,6 +1917,7 @@ export type MutationAuthSignInArgs = {
 
 export type MutationCloseBillingArgs = {
   billingId: Scalars['String']['input'];
+  closingDate?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type MutationCreateAccountArgs = {
@@ -3073,6 +3074,7 @@ export type CreateAccountMutation = {
 
 export type CloseBillingMutationVariables = Exact<{
   billingId: Scalars['String']['input'];
+  closingDate?: InputMaybe<Scalars['DateTime']['input']>;
 }>;
 
 export type CloseBillingMutation = {
@@ -3905,6 +3907,17 @@ export const CloseBillingDocument = {
             },
           },
         },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'closingDate' },
+          },
+          type: {
+            kind: 'NamedType',
+            name: { kind: 'Name', value: 'DateTime' },
+          },
+        },
       ],
       selectionSet: {
         kind: 'SelectionSet',
@@ -3919,6 +3932,14 @@ export const CloseBillingDocument = {
                 value: {
                   kind: 'Variable',
                   name: { kind: 'Name', value: 'billingId' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'closingDate' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'closingDate' },
                 },
               },
             ],
