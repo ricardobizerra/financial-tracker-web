@@ -35,6 +35,15 @@ type Documents = {
   '\n  query TotalInvestments {\n    totalInvestments {\n      initialAmount\n      currentAmount\n      currentVariation\n      taxedAmount\n      taxedVariation\n    }\n  }\n': typeof types.TotalInvestmentsDocument;
   '\n  fragment InvestmentRegimeSummaryFragment on InvestmentRegimeSummary {\n    name\n    quantity\n    totalInvested\n    currentInvested\n    currentInvestedPercentage\n    taxedInvested\n    taxedInvestedPercentage\n  }\n': typeof types.InvestmentRegimeSummaryFragmentFragmentDoc;
   '\n  query InvestmentRegimes {\n    investmentRegimes {\n      edges {\n        cursor\n        node {\n          ...InvestmentRegimeSummaryFragment\n        }\n      }\n    }\n  }\n': typeof types.InvestmentRegimesDocument;
+  '\n  mutation CreateRecurringTransaction(\n    $data: CreateRecurringTransactionInput!\n  ) {\n    createRecurringTransaction(data: $data) {\n      id\n    }\n  }\n': typeof types.CreateRecurringTransactionDocument;
+  '\n  mutation UpdateRecurringTransactionFromDate(\n    $id: String!\n    $fromDate: DateTime!\n    $data: UpdateRecurringTransactionInput!\n  ) {\n    updateRecurringTransactionFromDate(id: $id, fromDate: $fromDate, data: $data) {\n      id\n    }\n  }\n': typeof types.UpdateRecurringTransactionFromDateDocument;
+  '\n  mutation PauseRecurringTransaction($id: String!) {\n    pauseRecurringTransaction(id: $id) {\n      id\n      isActive\n    }\n  }\n': typeof types.PauseRecurringTransactionDocument;
+  '\n  mutation ResumeRecurringTransaction($id: String!) {\n    resumeRecurringTransaction(id: $id) {\n      id\n      isActive\n    }\n  }\n': typeof types.ResumeRecurringTransactionDocument;
+  '\n  mutation EndRecurringTransaction($id: String!, $endDate: DateTime!) {\n    endRecurringTransaction(id: $id, endDate: $endDate) {\n      id\n      endDate\n      isActive\n    }\n  }\n': typeof types.EndRecurringTransactionDocument;
+  '\n  mutation DeleteRecurringTransaction($id: String!) {\n    deleteRecurringTransaction(id: $id) {\n      id\n    }\n  }\n': typeof types.DeleteRecurringTransactionDocument;
+  '\n  fragment RecurringTransactionFragment on RecurringTransactionModel {\n    id\n    description\n    estimatedAmount\n    type\n    paymentMethod\n    frequency\n    dayOfMonth\n    monthOfYear\n    startDate\n    endDate\n    isActive\n    sourceAccount {\n      id\n      name\n      institution {\n        name\n        logoUrl\n      }\n    }\n    destinyAccount {\n      id\n      name\n      institution {\n        name\n        logoUrl\n      }\n    }\n    createdAt\n    updatedAt\n  }\n': typeof types.RecurringTransactionFragmentFragmentDoc;
+  '\n  query RecurringTransactions(\n    $first: Int\n    $after: String\n    $last: Int\n    $before: String\n    $search: String\n    $orderBy: OrdenationRecurringTransactionModel\n    $orderDirection: OrderDirection\n    $accountId: ID\n    $isActive: Boolean\n  ) {\n    recurringTransactions(\n      first: $first\n      after: $after\n      last: $last\n      before: $before\n      search: $search\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      accountId: $accountId\n      isActive: $isActive\n    ) {\n      edges {\n        cursor\n        node {\n          ...RecurringTransactionFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n': typeof types.RecurringTransactionsDocument;
+  '\n  query RecurringTransaction($id: String!) {\n    recurringTransaction(id: $id) {\n      ...RecurringTransactionFragment\n    }\n  }\n': typeof types.RecurringTransactionDocument;
   '\n  mutation CreateTransaction($data: CreateTransactionInput!) {\n    createTransaction(data: $data) {\n      id\n    }\n  }\n': typeof types.CreateTransactionDocument;
   '\n  fragment TransactionFragment on TransactionModel {\n    id\n    description\n    amount\n    date\n    type\n    createdAt\n    updatedAt\n    sourceAccount {\n      id\n    }\n    destinyAccount {\n      id\n    }\n    status\n  }\n': typeof types.TransactionFragmentFragmentDoc;
   '\n  query Transactions(\n    $first: Int\n    $after: String\n    $last: Int\n    $before: String\n    $search: String\n    $orderBy: OrdenationTransactionModel\n    $orderDirection: OrderDirection\n    $accountId: ID\n    $cardBillingId: ID\n  ) {\n    transactions(\n      first: $first\n      after: $after\n      last: $last\n      before: $before\n      search: $search\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      accountId: $accountId\n      cardBillingId: $cardBillingId\n    ) {\n      edges {\n        cursor\n        node {\n          ...TransactionFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n': typeof types.TransactionsDocument;
@@ -83,6 +92,24 @@ const documents: Documents = {
     types.InvestmentRegimeSummaryFragmentFragmentDoc,
   '\n  query InvestmentRegimes {\n    investmentRegimes {\n      edges {\n        cursor\n        node {\n          ...InvestmentRegimeSummaryFragment\n        }\n      }\n    }\n  }\n':
     types.InvestmentRegimesDocument,
+  '\n  mutation CreateRecurringTransaction(\n    $data: CreateRecurringTransactionInput!\n  ) {\n    createRecurringTransaction(data: $data) {\n      id\n    }\n  }\n':
+    types.CreateRecurringTransactionDocument,
+  '\n  mutation UpdateRecurringTransactionFromDate(\n    $id: String!\n    $fromDate: DateTime!\n    $data: UpdateRecurringTransactionInput!\n  ) {\n    updateRecurringTransactionFromDate(id: $id, fromDate: $fromDate, data: $data) {\n      id\n    }\n  }\n':
+    types.UpdateRecurringTransactionFromDateDocument,
+  '\n  mutation PauseRecurringTransaction($id: String!) {\n    pauseRecurringTransaction(id: $id) {\n      id\n      isActive\n    }\n  }\n':
+    types.PauseRecurringTransactionDocument,
+  '\n  mutation ResumeRecurringTransaction($id: String!) {\n    resumeRecurringTransaction(id: $id) {\n      id\n      isActive\n    }\n  }\n':
+    types.ResumeRecurringTransactionDocument,
+  '\n  mutation EndRecurringTransaction($id: String!, $endDate: DateTime!) {\n    endRecurringTransaction(id: $id, endDate: $endDate) {\n      id\n      endDate\n      isActive\n    }\n  }\n':
+    types.EndRecurringTransactionDocument,
+  '\n  mutation DeleteRecurringTransaction($id: String!) {\n    deleteRecurringTransaction(id: $id) {\n      id\n    }\n  }\n':
+    types.DeleteRecurringTransactionDocument,
+  '\n  fragment RecurringTransactionFragment on RecurringTransactionModel {\n    id\n    description\n    estimatedAmount\n    type\n    paymentMethod\n    frequency\n    dayOfMonth\n    monthOfYear\n    startDate\n    endDate\n    isActive\n    sourceAccount {\n      id\n      name\n      institution {\n        name\n        logoUrl\n      }\n    }\n    destinyAccount {\n      id\n      name\n      institution {\n        name\n        logoUrl\n      }\n    }\n    createdAt\n    updatedAt\n  }\n':
+    types.RecurringTransactionFragmentFragmentDoc,
+  '\n  query RecurringTransactions(\n    $first: Int\n    $after: String\n    $last: Int\n    $before: String\n    $search: String\n    $orderBy: OrdenationRecurringTransactionModel\n    $orderDirection: OrderDirection\n    $accountId: ID\n    $isActive: Boolean\n  ) {\n    recurringTransactions(\n      first: $first\n      after: $after\n      last: $last\n      before: $before\n      search: $search\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      accountId: $accountId\n      isActive: $isActive\n    ) {\n      edges {\n        cursor\n        node {\n          ...RecurringTransactionFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n':
+    types.RecurringTransactionsDocument,
+  '\n  query RecurringTransaction($id: String!) {\n    recurringTransaction(id: $id) {\n      ...RecurringTransactionFragment\n    }\n  }\n':
+    types.RecurringTransactionDocument,
   '\n  mutation CreateTransaction($data: CreateTransactionInput!) {\n    createTransaction(data: $data) {\n      id\n    }\n  }\n':
     types.CreateTransactionDocument,
   '\n  fragment TransactionFragment on TransactionModel {\n    id\n    description\n    amount\n    date\n    type\n    createdAt\n    updatedAt\n    sourceAccount {\n      id\n    }\n    destinyAccount {\n      id\n    }\n    status\n  }\n':
@@ -233,6 +260,60 @@ export function graphql(
 export function graphql(
   source: '\n  query InvestmentRegimes {\n    investmentRegimes {\n      edges {\n        cursor\n        node {\n          ...InvestmentRegimeSummaryFragment\n        }\n      }\n    }\n  }\n',
 ): (typeof documents)['\n  query InvestmentRegimes {\n    investmentRegimes {\n      edges {\n        cursor\n        node {\n          ...InvestmentRegimeSummaryFragment\n        }\n      }\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  mutation CreateRecurringTransaction(\n    $data: CreateRecurringTransactionInput!\n  ) {\n    createRecurringTransaction(data: $data) {\n      id\n    }\n  }\n',
+): (typeof documents)['\n  mutation CreateRecurringTransaction(\n    $data: CreateRecurringTransactionInput!\n  ) {\n    createRecurringTransaction(data: $data) {\n      id\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  mutation UpdateRecurringTransactionFromDate(\n    $id: String!\n    $fromDate: DateTime!\n    $data: UpdateRecurringTransactionInput!\n  ) {\n    updateRecurringTransactionFromDate(id: $id, fromDate: $fromDate, data: $data) {\n      id\n    }\n  }\n',
+): (typeof documents)['\n  mutation UpdateRecurringTransactionFromDate(\n    $id: String!\n    $fromDate: DateTime!\n    $data: UpdateRecurringTransactionInput!\n  ) {\n    updateRecurringTransactionFromDate(id: $id, fromDate: $fromDate, data: $data) {\n      id\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  mutation PauseRecurringTransaction($id: String!) {\n    pauseRecurringTransaction(id: $id) {\n      id\n      isActive\n    }\n  }\n',
+): (typeof documents)['\n  mutation PauseRecurringTransaction($id: String!) {\n    pauseRecurringTransaction(id: $id) {\n      id\n      isActive\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  mutation ResumeRecurringTransaction($id: String!) {\n    resumeRecurringTransaction(id: $id) {\n      id\n      isActive\n    }\n  }\n',
+): (typeof documents)['\n  mutation ResumeRecurringTransaction($id: String!) {\n    resumeRecurringTransaction(id: $id) {\n      id\n      isActive\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  mutation EndRecurringTransaction($id: String!, $endDate: DateTime!) {\n    endRecurringTransaction(id: $id, endDate: $endDate) {\n      id\n      endDate\n      isActive\n    }\n  }\n',
+): (typeof documents)['\n  mutation EndRecurringTransaction($id: String!, $endDate: DateTime!) {\n    endRecurringTransaction(id: $id, endDate: $endDate) {\n      id\n      endDate\n      isActive\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  mutation DeleteRecurringTransaction($id: String!) {\n    deleteRecurringTransaction(id: $id) {\n      id\n    }\n  }\n',
+): (typeof documents)['\n  mutation DeleteRecurringTransaction($id: String!) {\n    deleteRecurringTransaction(id: $id) {\n      id\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  fragment RecurringTransactionFragment on RecurringTransactionModel {\n    id\n    description\n    estimatedAmount\n    type\n    paymentMethod\n    frequency\n    dayOfMonth\n    monthOfYear\n    startDate\n    endDate\n    isActive\n    sourceAccount {\n      id\n      name\n      institution {\n        name\n        logoUrl\n      }\n    }\n    destinyAccount {\n      id\n      name\n      institution {\n        name\n        logoUrl\n      }\n    }\n    createdAt\n    updatedAt\n  }\n',
+): (typeof documents)['\n  fragment RecurringTransactionFragment on RecurringTransactionModel {\n    id\n    description\n    estimatedAmount\n    type\n    paymentMethod\n    frequency\n    dayOfMonth\n    monthOfYear\n    startDate\n    endDate\n    isActive\n    sourceAccount {\n      id\n      name\n      institution {\n        name\n        logoUrl\n      }\n    }\n    destinyAccount {\n      id\n      name\n      institution {\n        name\n        logoUrl\n      }\n    }\n    createdAt\n    updatedAt\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  query RecurringTransactions(\n    $first: Int\n    $after: String\n    $last: Int\n    $before: String\n    $search: String\n    $orderBy: OrdenationRecurringTransactionModel\n    $orderDirection: OrderDirection\n    $accountId: ID\n    $isActive: Boolean\n  ) {\n    recurringTransactions(\n      first: $first\n      after: $after\n      last: $last\n      before: $before\n      search: $search\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      accountId: $accountId\n      isActive: $isActive\n    ) {\n      edges {\n        cursor\n        node {\n          ...RecurringTransactionFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n',
+): (typeof documents)['\n  query RecurringTransactions(\n    $first: Int\n    $after: String\n    $last: Int\n    $before: String\n    $search: String\n    $orderBy: OrdenationRecurringTransactionModel\n    $orderDirection: OrderDirection\n    $accountId: ID\n    $isActive: Boolean\n  ) {\n    recurringTransactions(\n      first: $first\n      after: $after\n      last: $last\n      before: $before\n      search: $search\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      accountId: $accountId\n      isActive: $isActive\n    ) {\n      edges {\n        cursor\n        node {\n          ...RecurringTransactionFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  query RecurringTransaction($id: String!) {\n    recurringTransaction(id: $id) {\n      ...RecurringTransactionFragment\n    }\n  }\n',
+): (typeof documents)['\n  query RecurringTransaction($id: String!) {\n    recurringTransaction(id: $id) {\n      ...RecurringTransactionFragment\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

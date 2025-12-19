@@ -14,6 +14,11 @@ import {
   ExpenseTransactionCreateForm,
   BetweenAccountsTransactionCreateForm,
 } from './transaction-create-form';
+import {
+  IncomeRecurringTransactionCreateForm,
+  ExpenseRecurringTransactionCreateForm,
+} from '@/modules/recurring-transactions';
+import { Separator } from '@/components/ui/separator';
 
 export function TransactionsTable({
   cardBillingId,
@@ -57,6 +62,13 @@ export function TransactionsTable({
           )}
           {!hiddenActions.includes(TransactionType.BetweenAccounts) && (
             <BetweenAccountsTransactionCreateForm accountId={accountId} />
+          )}
+          <Separator orientation="vertical" className="h-6" />
+          {!hiddenActions.includes(TransactionType.Income) && (
+            <IncomeRecurringTransactionCreateForm accountId={accountId} />
+          )}
+          {!hiddenActions.includes(TransactionType.Expense) && (
+            <ExpenseRecurringTransactionCreateForm accountId={accountId} />
           )}
         </div>
       }

@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeftRight, Landmark, PiggyBank } from 'lucide-react';
+import { ArrowLeftRight, Landmark, PiggyBank, Repeat } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -40,6 +40,11 @@ const items = [
     title: 'Movimentações',
     url: '/transactions',
     icon: ArrowLeftRight,
+  },
+  {
+    title: 'Recorrências',
+    url: '/recurring-transactions',
+    icon: Repeat,
   },
 ];
 

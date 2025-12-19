@@ -39,6 +39,7 @@ export type Account = {
   accountCard: Maybe<AccountCard>;
   createdAt: Scalars['DateTime']['output'];
   description: Maybe<Scalars['String']['output']>;
+  destinyRecurringTransactions: Maybe<Array<RecurringTransaction>>;
   destinyTransactions: Maybe<Array<Transaction>>;
   id: Scalars['ID']['output'];
   initialBalance: Scalars['Decimal']['output'];
@@ -48,6 +49,7 @@ export type Account = {
   investments: Maybe<Array<Investment>>;
   isActive: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
+  sourceRecurringTransactions: Maybe<Array<RecurringTransaction>>;
   sourceTransactions: Maybe<Array<Transaction>>;
   type: AccountType;
   updatedAt: Scalars['DateTime']['output'];
@@ -233,9 +235,11 @@ export type AccountConnection = {
 
 export type AccountCount = {
   __typename?: 'AccountCount';
+  destinyRecurringTransactions: Scalars['Int']['output'];
   destinyTransactions: Scalars['Int']['output'];
   investmentTransactions: Scalars['Int']['output'];
   investments: Scalars['Int']['output'];
+  sourceRecurringTransactions: Scalars['Int']['output'];
   sourceTransactions: Scalars['Int']['output'];
 };
 
@@ -284,6 +288,12 @@ export type AccountCreateNestedOneWithoutAccountCardInput = {
   create?: InputMaybe<AccountCreateWithoutAccountCardInput>;
 };
 
+export type AccountCreateNestedOneWithoutDestinyRecurringTransactionsInput = {
+  connect?: InputMaybe<AccountWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<AccountCreateOrConnectWithoutDestinyRecurringTransactionsInput>;
+  create?: InputMaybe<AccountCreateWithoutDestinyRecurringTransactionsInput>;
+};
+
 export type AccountCreateNestedOneWithoutDestinyTransactionsInput = {
   connect?: InputMaybe<AccountWhereUniqueInput>;
   connectOrCreate?: InputMaybe<AccountCreateOrConnectWithoutDestinyTransactionsInput>;
@@ -302,6 +312,12 @@ export type AccountCreateNestedOneWithoutInvestmentsInput = {
   create?: InputMaybe<AccountCreateWithoutInvestmentsInput>;
 };
 
+export type AccountCreateNestedOneWithoutSourceRecurringTransactionsInput = {
+  connect?: InputMaybe<AccountWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<AccountCreateOrConnectWithoutSourceRecurringTransactionsInput>;
+  create?: InputMaybe<AccountCreateWithoutSourceRecurringTransactionsInput>;
+};
+
 export type AccountCreateNestedOneWithoutSourceTransactionsInput = {
   connect?: InputMaybe<AccountWhereUniqueInput>;
   connectOrCreate?: InputMaybe<AccountCreateOrConnectWithoutSourceTransactionsInput>;
@@ -310,6 +326,11 @@ export type AccountCreateNestedOneWithoutSourceTransactionsInput = {
 
 export type AccountCreateOrConnectWithoutAccountCardInput = {
   create: AccountCreateWithoutAccountCardInput;
+  where: AccountWhereUniqueInput;
+};
+
+export type AccountCreateOrConnectWithoutDestinyRecurringTransactionsInput = {
+  create: AccountCreateWithoutDestinyRecurringTransactionsInput;
   where: AccountWhereUniqueInput;
 };
 
@@ -328,6 +349,11 @@ export type AccountCreateOrConnectWithoutInvestmentsInput = {
   where: AccountWhereUniqueInput;
 };
 
+export type AccountCreateOrConnectWithoutSourceRecurringTransactionsInput = {
+  create: AccountCreateWithoutSourceRecurringTransactionsInput;
+  where: AccountWhereUniqueInput;
+};
+
 export type AccountCreateOrConnectWithoutSourceTransactionsInput = {
   create: AccountCreateWithoutSourceTransactionsInput;
   where: AccountWhereUniqueInput;
@@ -341,6 +367,7 @@ export type AccountCreateOrConnectWithoutUserInput = {
 export type AccountCreateWithoutAccountCardInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
   destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
   id?: InputMaybe<Scalars['String']['input']>;
   initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
@@ -349,6 +376,26 @@ export type AccountCreateWithoutAccountCardInput = {
   investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
+  sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
+  sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
+  type: AccountType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutAccountsInput;
+};
+
+export type AccountCreateWithoutDestinyRecurringTransactionsInput = {
+  accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
+  institution: InstitutionCreateNestedOneWithoutAccountsInput;
+  investmentTransactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutAccountInput>;
+  investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  name: Scalars['String']['input'];
+  sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
   sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
   type: AccountType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -359,6 +406,7 @@ export type AccountCreateWithoutDestinyTransactionsInput = {
   accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
   id?: InputMaybe<Scalars['String']['input']>;
   initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
   institution: InstitutionCreateNestedOneWithoutAccountsInput;
@@ -366,6 +414,7 @@ export type AccountCreateWithoutDestinyTransactionsInput = {
   investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
+  sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
   sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
   type: AccountType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -376,6 +425,7 @@ export type AccountCreateWithoutInvestmentTransactionsInput = {
   accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
   destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
   id?: InputMaybe<Scalars['String']['input']>;
   initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
@@ -383,6 +433,7 @@ export type AccountCreateWithoutInvestmentTransactionsInput = {
   investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
+  sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
   sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
   type: AccountType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -393,11 +444,32 @@ export type AccountCreateWithoutInvestmentsInput = {
   accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
   destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
   id?: InputMaybe<Scalars['String']['input']>;
   initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
   institution: InstitutionCreateNestedOneWithoutAccountsInput;
   investmentTransactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutAccountInput>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  name: Scalars['String']['input'];
+  sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
+  sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
+  type: AccountType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutAccountsInput;
+};
+
+export type AccountCreateWithoutSourceRecurringTransactionsInput = {
+  accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
+  destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
+  institution: InstitutionCreateNestedOneWithoutAccountsInput;
+  investmentTransactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutAccountInput>;
+  investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
@@ -410,6 +482,7 @@ export type AccountCreateWithoutSourceTransactionsInput = {
   accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
   destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
   id?: InputMaybe<Scalars['String']['input']>;
   initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
@@ -418,6 +491,7 @@ export type AccountCreateWithoutSourceTransactionsInput = {
   investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
+  sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
   type: AccountType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
   user: UserCreateNestedOneWithoutAccountsInput;
@@ -427,6 +501,7 @@ export type AccountCreateWithoutUserInput = {
   accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
   destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
   id?: InputMaybe<Scalars['String']['input']>;
   initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
@@ -435,6 +510,7 @@ export type AccountCreateWithoutUserInput = {
   investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
+  sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
   sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
   type: AccountType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -481,6 +557,7 @@ export type AccountModel = {
   balance: Maybe<Scalars['Decimal']['output']>;
   createdAt: Scalars['DateTime']['output'];
   description: Maybe<Scalars['String']['output']>;
+  destinyRecurringTransactions: Maybe<Array<RecurringTransaction>>;
   destinyTransactions: Maybe<Array<Transaction>>;
   id: Scalars['ID']['output'];
   initialBalance: Scalars['Decimal']['output'];
@@ -490,6 +567,7 @@ export type AccountModel = {
   investments: Maybe<Array<Investment>>;
   isActive: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
+  sourceRecurringTransactions: Maybe<Array<RecurringTransaction>>;
   sourceTransactions: Maybe<Array<Transaction>>;
   type: AccountType;
   updatedAt: Scalars['DateTime']['output'];
@@ -532,6 +610,7 @@ export type AccountWhereInput = {
   accountCard?: InputMaybe<AccountCardNullableRelationFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringNullableFilter>;
+  destinyRecurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
   destinyTransactions?: InputMaybe<TransactionListRelationFilter>;
   id?: InputMaybe<StringFilter>;
   initialBalance?: InputMaybe<DecimalFilter>;
@@ -541,6 +620,7 @@ export type AccountWhereInput = {
   investments?: InputMaybe<InvestmentListRelationFilter>;
   isActive?: InputMaybe<BoolFilter>;
   name?: InputMaybe<StringFilter>;
+  sourceRecurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
   sourceTransactions?: InputMaybe<TransactionListRelationFilter>;
   type?: InputMaybe<EnumAccountTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
@@ -555,6 +635,7 @@ export type AccountWhereUniqueInput = {
   accountCard?: InputMaybe<AccountCardNullableRelationFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringNullableFilter>;
+  destinyRecurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
   destinyTransactions?: InputMaybe<TransactionListRelationFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   initialBalance?: InputMaybe<DecimalFilter>;
@@ -564,6 +645,7 @@ export type AccountWhereUniqueInput = {
   investments?: InputMaybe<InvestmentListRelationFilter>;
   isActive?: InputMaybe<BoolFilter>;
   name?: InputMaybe<StringFilter>;
+  sourceRecurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
   sourceTransactions?: InputMaybe<TransactionListRelationFilter>;
   type?: InputMaybe<EnumAccountTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
@@ -1052,6 +1134,20 @@ export type CreateInvestmentInput = {
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+export type CreateRecurringTransactionInput = {
+  dayOfMonth: Scalars['Int']['input'];
+  description: Scalars['String']['input'];
+  destinyAccountId?: InputMaybe<Scalars['ID']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  estimatedAmount: Scalars['Float']['input'];
+  frequency: RecurrenceFrequency;
+  monthOfYear?: InputMaybe<Scalars['Int']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  sourceAccountId?: InputMaybe<Scalars['ID']['input']>;
+  startDate: Scalars['DateTime']['input'];
+  type: TransactionType;
+};
+
 export type CreateTransactionInput = {
   amount: Scalars['Decimal']['input'];
   billingPayment?: InputMaybe<CardBillingCreateNestedOneWithoutPaymentTransactionInput>;
@@ -1061,6 +1157,7 @@ export type CreateTransactionInput = {
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod: PaymentMethod;
+  recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccountId?: InputMaybe<Scalars['ID']['input']>;
   status: TransactionStatus;
   type: TransactionType;
@@ -1147,6 +1244,13 @@ export type EnumPaymentMethodNullableFilter = {
   in?: InputMaybe<Array<PaymentMethod>>;
   not?: InputMaybe<NestedEnumPaymentMethodNullableFilter>;
   notIn?: InputMaybe<Array<PaymentMethod>>;
+};
+
+export type EnumRecurrenceFrequencyFilter = {
+  equals?: InputMaybe<RecurrenceFrequency>;
+  in?: InputMaybe<Array<RecurrenceFrequency>>;
+  not?: InputMaybe<NestedEnumRecurrenceFrequencyFilter>;
+  notIn?: InputMaybe<Array<RecurrenceFrequency>>;
 };
 
 export type EnumRegimeFilter = {
@@ -1904,11 +2008,17 @@ export type Mutation = {
   closeBilling: CardBilling;
   createAccount: AccountModel;
   createInvestment: Investment;
+  createRecurringTransaction: RecurringTransactionModel;
   createTransaction: TransactionModel;
   createUser: SignIn;
   deleteInvestment: Scalars['ID']['output'];
+  deleteRecurringTransaction: RecurringTransactionModel;
+  endRecurringTransaction: RecurringTransactionModel;
+  pauseRecurringTransaction: RecurringTransactionModel;
   payBilling: Transaction;
+  resumeRecurringTransaction: RecurringTransactionModel;
   updateAccountCard: AccountCard;
+  updateRecurringTransactionFromDate: RecurringTransactionModel;
 };
 
 export type MutationAuthSignInArgs = {
@@ -1928,6 +2038,10 @@ export type MutationCreateInvestmentArgs = {
   data: CreateInvestmentInput;
 };
 
+export type MutationCreateRecurringTransactionArgs = {
+  data: CreateRecurringTransactionInput;
+};
+
 export type MutationCreateTransactionArgs = {
   data: CreateTransactionInput;
 };
@@ -1940,6 +2054,19 @@ export type MutationDeleteInvestmentArgs = {
   id: Scalars['ID']['input'];
 };
 
+export type MutationDeleteRecurringTransactionArgs = {
+  id: Scalars['String']['input'];
+};
+
+export type MutationEndRecurringTransactionArgs = {
+  endDate: Scalars['DateTime']['input'];
+  id: Scalars['String']['input'];
+};
+
+export type MutationPauseRecurringTransactionArgs = {
+  id: Scalars['String']['input'];
+};
+
 export type MutationPayBillingArgs = {
   billingId: Scalars['String']['input'];
   date?: InputMaybe<Scalars['DateTime']['input']>;
@@ -1947,11 +2074,21 @@ export type MutationPayBillingArgs = {
   sourceAccountId: Scalars['ID']['input'];
 };
 
+export type MutationResumeRecurringTransactionArgs = {
+  id: Scalars['String']['input'];
+};
+
 export type MutationUpdateAccountCardArgs = {
   billingCycleDay?: InputMaybe<Scalars['Float']['input']>;
   billingPaymentDay?: InputMaybe<Scalars['Float']['input']>;
   cardId: Scalars['ID']['input'];
   defaultLimit?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type MutationUpdateRecurringTransactionFromDateArgs = {
+  data: UpdateRecurringTransactionInput;
+  fromDate: Scalars['DateTime']['input'];
+  id: Scalars['String']['input'];
 };
 
 export type NestedBoolFilter = {
@@ -2032,6 +2169,13 @@ export type NestedEnumPaymentMethodNullableFilter = {
   in?: InputMaybe<Array<PaymentMethod>>;
   not?: InputMaybe<NestedEnumPaymentMethodNullableFilter>;
   notIn?: InputMaybe<Array<PaymentMethod>>;
+};
+
+export type NestedEnumRecurrenceFrequencyFilter = {
+  equals?: InputMaybe<RecurrenceFrequency>;
+  in?: InputMaybe<Array<RecurrenceFrequency>>;
+  not?: InputMaybe<NestedEnumRecurrenceFrequencyFilter>;
+  notIn?: InputMaybe<Array<RecurrenceFrequency>>;
 };
 
 export type NestedEnumRegimeFilter = {
@@ -2139,6 +2283,7 @@ export enum OrdenationAccountModel {
   AccountCard = 'accountCard',
   Balance = 'balance',
   CreatedAt = 'createdAt',
+  DestinyRecurringTransactions = 'destinyRecurringTransactions',
   DestinyTransactions = 'destinyTransactions',
   InitialBalance = 'initialBalance',
   Institution = 'institution',
@@ -2147,6 +2292,7 @@ export enum OrdenationAccountModel {
   Investments = 'investments',
   IsActive = 'isActive',
   Name = 'name',
+  SourceRecurringTransactions = 'sourceRecurringTransactions',
   SourceTransactions = 'sourceTransactions',
   Type = 'type',
   UpdatedAt = 'updatedAt',
@@ -2183,6 +2329,27 @@ export enum OrdenationInvestmentModel {
   UpdatedAt = 'updatedAt',
 }
 
+export enum OrdenationRecurringTransactionModel {
+  Count = '_count',
+  CreatedAt = 'createdAt',
+  DayOfMonth = 'dayOfMonth',
+  Description = 'description',
+  DestinyAccount = 'destinyAccount',
+  DestinyAccountId = 'destinyAccountId',
+  EndDate = 'endDate',
+  EstimatedAmount = 'estimatedAmount',
+  Frequency = 'frequency',
+  IsActive = 'isActive',
+  MonthOfYear = 'monthOfYear',
+  PaymentMethod = 'paymentMethod',
+  SourceAccount = 'sourceAccount',
+  SourceAccountId = 'sourceAccountId',
+  StartDate = 'startDate',
+  Transactions = 'transactions',
+  Type = 'type',
+  UpdatedAt = 'updatedAt',
+}
+
 export enum OrdenationTransactionModel {
   Amount = 'amount',
   BillingPayment = 'billingPayment',
@@ -2196,6 +2363,8 @@ export enum OrdenationTransactionModel {
   PaymentEnabled = 'paymentEnabled',
   PaymentLimit = 'paymentLimit',
   PaymentMethod = 'paymentMethod',
+  RecurringTransaction = 'recurringTransaction',
+  RecurringTransactionId = 'recurringTransactionId',
   SourceAccount = 'sourceAccount',
   SourceAccountId = 'sourceAccountId',
   Status = 'status',
@@ -2242,6 +2411,8 @@ export type Query = {
   institutions: InstitutionConnection;
   investmentRegimes: InvestmentRegimeSummaryConnection;
   investments: InvestmentConnection;
+  recurringTransaction: Maybe<RecurringTransactionModel>;
+  recurringTransactions: RecurringTransactionConnection;
   totalInvestments: TotalInvestmentsModel;
   transactions: TransactionConnection;
   user: UserModel;
@@ -2297,6 +2468,22 @@ export type QueryInvestmentsArgs = {
   regime?: InputMaybe<Regime>;
 };
 
+export type QueryRecurringTransactionArgs = {
+  id: Scalars['String']['input'];
+};
+
+export type QueryRecurringTransactionsArgs = {
+  accountId?: InputMaybe<Scalars['ID']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<OrdenationRecurringTransactionModel>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  search?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type QueryTransactionsArgs = {
   accountId?: InputMaybe<Scalars['ID']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
@@ -2323,6 +2510,416 @@ export enum QueryMode {
   Default = 'default',
   Insensitive = 'insensitive',
 }
+
+export enum RecurrenceFrequency {
+  Monthly = 'MONTHLY',
+  Yearly = 'YEARLY',
+}
+
+export type RecurringTransaction = {
+  __typename?: 'RecurringTransaction';
+  _count: RecurringTransactionCount;
+  createdAt: Scalars['DateTime']['output'];
+  dayOfMonth: Scalars['Int']['output'];
+  description: Scalars['String']['output'];
+  destinyAccount: Maybe<Account>;
+  destinyAccountId: Maybe<Scalars['String']['output']>;
+  endDate: Maybe<Scalars['DateTime']['output']>;
+  estimatedAmount: Scalars['Decimal']['output'];
+  frequency: RecurrenceFrequency;
+  id: Scalars['ID']['output'];
+  isActive: Scalars['Boolean']['output'];
+  monthOfYear: Maybe<Scalars['Int']['output']>;
+  paymentMethod: Maybe<PaymentMethod>;
+  sourceAccount: Maybe<Account>;
+  sourceAccountId: Maybe<Scalars['String']['output']>;
+  startDate: Scalars['DateTime']['output'];
+  transactions: Maybe<Array<Transaction>>;
+  type: TransactionType;
+  updatedAt: Scalars['DateTime']['output'];
+  user: User;
+  userId: Scalars['String']['output'];
+};
+
+export type RecurringTransactionAvgAggregate = {
+  __typename?: 'RecurringTransactionAvgAggregate';
+  dayOfMonth: Maybe<Scalars['Float']['output']>;
+  estimatedAmount: Maybe<Scalars['Decimal']['output']>;
+  monthOfYear: Maybe<Scalars['Float']['output']>;
+};
+
+export type RecurringTransactionConnection = {
+  __typename?: 'RecurringTransactionConnection';
+  edges: Maybe<Array<RecurringTransactionModelEdge>>;
+  pageInfo: Maybe<PageInfo>;
+};
+
+export type RecurringTransactionCount = {
+  __typename?: 'RecurringTransactionCount';
+  transactions: Scalars['Int']['output'];
+};
+
+export type RecurringTransactionCountAggregate = {
+  __typename?: 'RecurringTransactionCountAggregate';
+  _all: Scalars['Int']['output'];
+  createdAt: Scalars['Int']['output'];
+  dayOfMonth: Scalars['Int']['output'];
+  description: Scalars['Int']['output'];
+  destinyAccountId: Scalars['Int']['output'];
+  endDate: Scalars['Int']['output'];
+  estimatedAmount: Scalars['Int']['output'];
+  frequency: Scalars['Int']['output'];
+  id: Scalars['Int']['output'];
+  isActive: Scalars['Int']['output'];
+  monthOfYear: Scalars['Int']['output'];
+  paymentMethod: Scalars['Int']['output'];
+  sourceAccountId: Scalars['Int']['output'];
+  startDate: Scalars['Int']['output'];
+  type: Scalars['Int']['output'];
+  updatedAt: Scalars['Int']['output'];
+  userId: Scalars['Int']['output'];
+};
+
+export type RecurringTransactionCreateManyDestinyAccountInput = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  dayOfMonth: Scalars['Int']['input'];
+  description: Scalars['String']['input'];
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  estimatedAmount: Scalars['Decimal']['input'];
+  frequency: RecurrenceFrequency;
+  id?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  monthOfYear?: InputMaybe<Scalars['Int']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  sourceAccountId?: InputMaybe<Scalars['String']['input']>;
+  startDate: Scalars['DateTime']['input'];
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  userId: Scalars['String']['input'];
+};
+
+export type RecurringTransactionCreateManyDestinyAccountInputEnvelope = {
+  data: Array<RecurringTransactionCreateManyDestinyAccountInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type RecurringTransactionCreateManySourceAccountInput = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  dayOfMonth: Scalars['Int']['input'];
+  description: Scalars['String']['input'];
+  destinyAccountId?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  estimatedAmount: Scalars['Decimal']['input'];
+  frequency: RecurrenceFrequency;
+  id?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  monthOfYear?: InputMaybe<Scalars['Int']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  startDate: Scalars['DateTime']['input'];
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  userId: Scalars['String']['input'];
+};
+
+export type RecurringTransactionCreateManySourceAccountInputEnvelope = {
+  data: Array<RecurringTransactionCreateManySourceAccountInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type RecurringTransactionCreateManyUserInput = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  dayOfMonth: Scalars['Int']['input'];
+  description: Scalars['String']['input'];
+  destinyAccountId?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  estimatedAmount: Scalars['Decimal']['input'];
+  frequency: RecurrenceFrequency;
+  id?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  monthOfYear?: InputMaybe<Scalars['Int']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  sourceAccountId?: InputMaybe<Scalars['String']['input']>;
+  startDate: Scalars['DateTime']['input'];
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type RecurringTransactionCreateManyUserInputEnvelope = {
+  data: Array<RecurringTransactionCreateManyUserInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type RecurringTransactionCreateNestedManyWithoutDestinyAccountInput = {
+  connect?: InputMaybe<Array<RecurringTransactionWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<
+    Array<RecurringTransactionCreateOrConnectWithoutDestinyAccountInput>
+  >;
+  create?: InputMaybe<
+    Array<RecurringTransactionCreateWithoutDestinyAccountInput>
+  >;
+  createMany?: InputMaybe<RecurringTransactionCreateManyDestinyAccountInputEnvelope>;
+};
+
+export type RecurringTransactionCreateNestedManyWithoutSourceAccountInput = {
+  connect?: InputMaybe<Array<RecurringTransactionWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<
+    Array<RecurringTransactionCreateOrConnectWithoutSourceAccountInput>
+  >;
+  create?: InputMaybe<
+    Array<RecurringTransactionCreateWithoutSourceAccountInput>
+  >;
+  createMany?: InputMaybe<RecurringTransactionCreateManySourceAccountInputEnvelope>;
+};
+
+export type RecurringTransactionCreateNestedManyWithoutUserInput = {
+  connect?: InputMaybe<Array<RecurringTransactionWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<
+    Array<RecurringTransactionCreateOrConnectWithoutUserInput>
+  >;
+  create?: InputMaybe<Array<RecurringTransactionCreateWithoutUserInput>>;
+  createMany?: InputMaybe<RecurringTransactionCreateManyUserInputEnvelope>;
+};
+
+export type RecurringTransactionCreateNestedOneWithoutTransactionsInput = {
+  connect?: InputMaybe<RecurringTransactionWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<RecurringTransactionCreateOrConnectWithoutTransactionsInput>;
+  create?: InputMaybe<RecurringTransactionCreateWithoutTransactionsInput>;
+};
+
+export type RecurringTransactionCreateOrConnectWithoutDestinyAccountInput = {
+  create: RecurringTransactionCreateWithoutDestinyAccountInput;
+  where: RecurringTransactionWhereUniqueInput;
+};
+
+export type RecurringTransactionCreateOrConnectWithoutSourceAccountInput = {
+  create: RecurringTransactionCreateWithoutSourceAccountInput;
+  where: RecurringTransactionWhereUniqueInput;
+};
+
+export type RecurringTransactionCreateOrConnectWithoutTransactionsInput = {
+  create: RecurringTransactionCreateWithoutTransactionsInput;
+  where: RecurringTransactionWhereUniqueInput;
+};
+
+export type RecurringTransactionCreateOrConnectWithoutUserInput = {
+  create: RecurringTransactionCreateWithoutUserInput;
+  where: RecurringTransactionWhereUniqueInput;
+};
+
+export type RecurringTransactionCreateWithoutDestinyAccountInput = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  dayOfMonth: Scalars['Int']['input'];
+  description: Scalars['String']['input'];
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  estimatedAmount: Scalars['Decimal']['input'];
+  frequency: RecurrenceFrequency;
+  id?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  monthOfYear?: InputMaybe<Scalars['Int']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceRecurringTransactionsInput>;
+  startDate: Scalars['DateTime']['input'];
+  transactions?: InputMaybe<TransactionCreateNestedManyWithoutRecurringTransactionInput>;
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutRecurringTransactionsInput;
+};
+
+export type RecurringTransactionCreateWithoutSourceAccountInput = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  dayOfMonth: Scalars['Int']['input'];
+  description: Scalars['String']['input'];
+  destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyRecurringTransactionsInput>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  estimatedAmount: Scalars['Decimal']['input'];
+  frequency: RecurrenceFrequency;
+  id?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  monthOfYear?: InputMaybe<Scalars['Int']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  startDate: Scalars['DateTime']['input'];
+  transactions?: InputMaybe<TransactionCreateNestedManyWithoutRecurringTransactionInput>;
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutRecurringTransactionsInput;
+};
+
+export type RecurringTransactionCreateWithoutTransactionsInput = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  dayOfMonth: Scalars['Int']['input'];
+  description: Scalars['String']['input'];
+  destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyRecurringTransactionsInput>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  estimatedAmount: Scalars['Decimal']['input'];
+  frequency: RecurrenceFrequency;
+  id?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  monthOfYear?: InputMaybe<Scalars['Int']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceRecurringTransactionsInput>;
+  startDate: Scalars['DateTime']['input'];
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutRecurringTransactionsInput;
+};
+
+export type RecurringTransactionCreateWithoutUserInput = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  dayOfMonth: Scalars['Int']['input'];
+  description: Scalars['String']['input'];
+  destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyRecurringTransactionsInput>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  estimatedAmount: Scalars['Decimal']['input'];
+  frequency: RecurrenceFrequency;
+  id?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  monthOfYear?: InputMaybe<Scalars['Int']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceRecurringTransactionsInput>;
+  startDate: Scalars['DateTime']['input'];
+  transactions?: InputMaybe<TransactionCreateNestedManyWithoutRecurringTransactionInput>;
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type RecurringTransactionListRelationFilter = {
+  every?: InputMaybe<RecurringTransactionWhereInput>;
+  none?: InputMaybe<RecurringTransactionWhereInput>;
+  some?: InputMaybe<RecurringTransactionWhereInput>;
+};
+
+export type RecurringTransactionMaxAggregate = {
+  __typename?: 'RecurringTransactionMaxAggregate';
+  createdAt: Maybe<Scalars['DateTime']['output']>;
+  dayOfMonth: Maybe<Scalars['Int']['output']>;
+  description: Maybe<Scalars['String']['output']>;
+  destinyAccountId: Maybe<Scalars['String']['output']>;
+  endDate: Maybe<Scalars['DateTime']['output']>;
+  estimatedAmount: Maybe<Scalars['Decimal']['output']>;
+  frequency: Maybe<RecurrenceFrequency>;
+  id: Maybe<Scalars['String']['output']>;
+  isActive: Maybe<Scalars['Boolean']['output']>;
+  monthOfYear: Maybe<Scalars['Int']['output']>;
+  paymentMethod: Maybe<PaymentMethod>;
+  sourceAccountId: Maybe<Scalars['String']['output']>;
+  startDate: Maybe<Scalars['DateTime']['output']>;
+  type: Maybe<TransactionType>;
+  updatedAt: Maybe<Scalars['DateTime']['output']>;
+  userId: Maybe<Scalars['String']['output']>;
+};
+
+export type RecurringTransactionMinAggregate = {
+  __typename?: 'RecurringTransactionMinAggregate';
+  createdAt: Maybe<Scalars['DateTime']['output']>;
+  dayOfMonth: Maybe<Scalars['Int']['output']>;
+  description: Maybe<Scalars['String']['output']>;
+  destinyAccountId: Maybe<Scalars['String']['output']>;
+  endDate: Maybe<Scalars['DateTime']['output']>;
+  estimatedAmount: Maybe<Scalars['Decimal']['output']>;
+  frequency: Maybe<RecurrenceFrequency>;
+  id: Maybe<Scalars['String']['output']>;
+  isActive: Maybe<Scalars['Boolean']['output']>;
+  monthOfYear: Maybe<Scalars['Int']['output']>;
+  paymentMethod: Maybe<PaymentMethod>;
+  sourceAccountId: Maybe<Scalars['String']['output']>;
+  startDate: Maybe<Scalars['DateTime']['output']>;
+  type: Maybe<TransactionType>;
+  updatedAt: Maybe<Scalars['DateTime']['output']>;
+  userId: Maybe<Scalars['String']['output']>;
+};
+
+export type RecurringTransactionModel = {
+  __typename?: 'RecurringTransactionModel';
+  _count: RecurringTransactionCount;
+  createdAt: Scalars['DateTime']['output'];
+  dayOfMonth: Scalars['Int']['output'];
+  description: Scalars['String']['output'];
+  destinyAccount: Maybe<Account>;
+  destinyAccountId: Maybe<Scalars['String']['output']>;
+  endDate: Maybe<Scalars['DateTime']['output']>;
+  estimatedAmount: Scalars['Decimal']['output'];
+  frequency: RecurrenceFrequency;
+  id: Scalars['ID']['output'];
+  isActive: Scalars['Boolean']['output'];
+  monthOfYear: Maybe<Scalars['Int']['output']>;
+  paymentMethod: Maybe<PaymentMethod>;
+  sourceAccount: Maybe<Account>;
+  sourceAccountId: Maybe<Scalars['String']['output']>;
+  startDate: Scalars['DateTime']['output'];
+  transactions: Maybe<Array<Transaction>>;
+  type: TransactionType;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type RecurringTransactionModelEdge = {
+  __typename?: 'RecurringTransactionModelEdge';
+  cursor: Scalars['String']['output'];
+  node: RecurringTransactionModel;
+};
+
+export type RecurringTransactionNullableRelationFilter = {
+  is?: InputMaybe<RecurringTransactionWhereInput>;
+  isNot?: InputMaybe<RecurringTransactionWhereInput>;
+};
+
+export type RecurringTransactionSumAggregate = {
+  __typename?: 'RecurringTransactionSumAggregate';
+  dayOfMonth: Maybe<Scalars['Int']['output']>;
+  estimatedAmount: Maybe<Scalars['Decimal']['output']>;
+  monthOfYear: Maybe<Scalars['Int']['output']>;
+};
+
+export type RecurringTransactionWhereInput = {
+  AND?: InputMaybe<Array<RecurringTransactionWhereInput>>;
+  NOT?: InputMaybe<Array<RecurringTransactionWhereInput>>;
+  OR?: InputMaybe<Array<RecurringTransactionWhereInput>>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  dayOfMonth?: InputMaybe<IntFilter>;
+  description?: InputMaybe<StringFilter>;
+  destinyAccount?: InputMaybe<AccountNullableRelationFilter>;
+  destinyAccountId?: InputMaybe<StringNullableFilter>;
+  endDate?: InputMaybe<DateTimeNullableFilter>;
+  estimatedAmount?: InputMaybe<DecimalFilter>;
+  frequency?: InputMaybe<EnumRecurrenceFrequencyFilter>;
+  id?: InputMaybe<StringFilter>;
+  isActive?: InputMaybe<BoolFilter>;
+  monthOfYear?: InputMaybe<IntNullableFilter>;
+  paymentMethod?: InputMaybe<EnumPaymentMethodNullableFilter>;
+  sourceAccount?: InputMaybe<AccountNullableRelationFilter>;
+  sourceAccountId?: InputMaybe<StringNullableFilter>;
+  startDate?: InputMaybe<DateTimeFilter>;
+  transactions?: InputMaybe<TransactionListRelationFilter>;
+  type?: InputMaybe<EnumTransactionTypeFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+  user?: InputMaybe<UserRelationFilter>;
+  userId?: InputMaybe<StringFilter>;
+};
+
+export type RecurringTransactionWhereUniqueInput = {
+  AND?: InputMaybe<Array<RecurringTransactionWhereInput>>;
+  NOT?: InputMaybe<Array<RecurringTransactionWhereInput>>;
+  OR?: InputMaybe<Array<RecurringTransactionWhereInput>>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  dayOfMonth?: InputMaybe<IntFilter>;
+  description?: InputMaybe<StringFilter>;
+  destinyAccount?: InputMaybe<AccountNullableRelationFilter>;
+  destinyAccountId?: InputMaybe<StringNullableFilter>;
+  endDate?: InputMaybe<DateTimeNullableFilter>;
+  estimatedAmount?: InputMaybe<DecimalFilter>;
+  frequency?: InputMaybe<EnumRecurrenceFrequencyFilter>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<BoolFilter>;
+  monthOfYear?: InputMaybe<IntNullableFilter>;
+  paymentMethod?: InputMaybe<EnumPaymentMethodNullableFilter>;
+  sourceAccount?: InputMaybe<AccountNullableRelationFilter>;
+  sourceAccountId?: InputMaybe<StringNullableFilter>;
+  startDate?: InputMaybe<DateTimeFilter>;
+  transactions?: InputMaybe<TransactionListRelationFilter>;
+  type?: InputMaybe<EnumTransactionTypeFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+  user?: InputMaybe<UserRelationFilter>;
+  userId?: InputMaybe<StringFilter>;
+};
 
 export enum Regime {
   Cdi = 'CDI',
@@ -2399,6 +2996,8 @@ export type Transaction = {
   paymentEnabled: Scalars['Boolean']['output'];
   paymentLimit: Maybe<Scalars['DateTime']['output']>;
   paymentMethod: Maybe<PaymentMethod>;
+  recurringTransaction: Maybe<RecurringTransaction>;
+  recurringTransactionId: Maybe<Scalars['String']['output']>;
   sourceAccount: Maybe<Account>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
   status: TransactionStatus;
@@ -2432,6 +3031,7 @@ export type TransactionCountAggregate = {
   paymentEnabled: Scalars['Int']['output'];
   paymentLimit: Scalars['Int']['output'];
   paymentMethod: Scalars['Int']['output'];
+  recurringTransactionId: Scalars['Int']['output'];
   sourceAccountId: Scalars['Int']['output'];
   status: Scalars['Int']['output'];
   type: Scalars['Int']['output'];
@@ -2449,6 +3049,7 @@ export type TransactionCreateManyCardBillingInput = {
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
+  recurringTransactionId?: InputMaybe<Scalars['String']['input']>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
   status: TransactionStatus;
   type: TransactionType;
@@ -2471,6 +3072,7 @@ export type TransactionCreateManyDestinyAccountInput = {
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
+  recurringTransactionId?: InputMaybe<Scalars['String']['input']>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
   status: TransactionStatus;
   type: TransactionType;
@@ -2480,6 +3082,29 @@ export type TransactionCreateManyDestinyAccountInput = {
 
 export type TransactionCreateManyDestinyAccountInputEnvelope = {
   data: Array<TransactionCreateManyDestinyAccountInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type TransactionCreateManyRecurringTransactionInput = {
+  amount: Scalars['Decimal']['input'];
+  cardBillingId?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  date: Scalars['DateTime']['input'];
+  description: Scalars['String']['input'];
+  destinyAccountId?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  sourceAccountId?: InputMaybe<Scalars['String']['input']>;
+  status: TransactionStatus;
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  userId: Scalars['String']['input'];
+};
+
+export type TransactionCreateManyRecurringTransactionInputEnvelope = {
+  data: Array<TransactionCreateManyRecurringTransactionInput>;
   skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -2494,6 +3119,7 @@ export type TransactionCreateManySourceAccountInput = {
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
+  recurringTransactionId?: InputMaybe<Scalars['String']['input']>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -2516,6 +3142,7 @@ export type TransactionCreateManyUserInput = {
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
+  recurringTransactionId?: InputMaybe<Scalars['String']['input']>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
   status: TransactionStatus;
   type: TransactionType;
@@ -2543,6 +3170,15 @@ export type TransactionCreateNestedManyWithoutDestinyAccountInput = {
   >;
   create?: InputMaybe<Array<TransactionCreateWithoutDestinyAccountInput>>;
   createMany?: InputMaybe<TransactionCreateManyDestinyAccountInputEnvelope>;
+};
+
+export type TransactionCreateNestedManyWithoutRecurringTransactionInput = {
+  connect?: InputMaybe<Array<TransactionWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<
+    Array<TransactionCreateOrConnectWithoutRecurringTransactionInput>
+  >;
+  create?: InputMaybe<Array<TransactionCreateWithoutRecurringTransactionInput>>;
+  createMany?: InputMaybe<TransactionCreateManyRecurringTransactionInputEnvelope>;
 };
 
 export type TransactionCreateNestedManyWithoutSourceAccountInput = {
@@ -2584,6 +3220,11 @@ export type TransactionCreateOrConnectWithoutDestinyAccountInput = {
   where: TransactionWhereUniqueInput;
 };
 
+export type TransactionCreateOrConnectWithoutRecurringTransactionInput = {
+  create: TransactionCreateWithoutRecurringTransactionInput;
+  where: TransactionWhereUniqueInput;
+};
+
 export type TransactionCreateOrConnectWithoutSourceAccountInput = {
   create: TransactionCreateWithoutSourceAccountInput;
   where: TransactionWhereUniqueInput;
@@ -2605,6 +3246,7 @@ export type TransactionCreateWithoutBillingPaymentInput = {
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
+  recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
   type: TransactionType;
@@ -2623,6 +3265,7 @@ export type TransactionCreateWithoutCardBillingInput = {
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
+  recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
   type: TransactionType;
@@ -2637,6 +3280,26 @@ export type TransactionCreateWithoutDestinyAccountInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
+  sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
+  status: TransactionStatus;
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutTransactionsInput;
+};
+
+export type TransactionCreateWithoutRecurringTransactionInput = {
+  amount: Scalars['Decimal']['input'];
+  billingPayment?: InputMaybe<CardBillingCreateNestedOneWithoutPaymentTransactionInput>;
+  cardBilling?: InputMaybe<CardBillingCreateNestedOneWithoutTransactionsInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  date: Scalars['DateTime']['input'];
+  description: Scalars['String']['input'];
+  destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyTransactionsInput>;
   id?: InputMaybe<Scalars['String']['input']>;
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
@@ -2660,6 +3323,7 @@ export type TransactionCreateWithoutSourceAccountInput = {
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
+  recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -2678,6 +3342,7 @@ export type TransactionCreateWithoutUserInput = {
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
+  recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
   type: TransactionType;
@@ -2702,6 +3367,7 @@ export type TransactionMaxAggregate = {
   paymentEnabled: Maybe<Scalars['Boolean']['output']>;
   paymentLimit: Maybe<Scalars['DateTime']['output']>;
   paymentMethod: Maybe<PaymentMethod>;
+  recurringTransactionId: Maybe<Scalars['String']['output']>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
   status: Maybe<TransactionStatus>;
   type: Maybe<TransactionType>;
@@ -2721,6 +3387,7 @@ export type TransactionMinAggregate = {
   paymentEnabled: Maybe<Scalars['Boolean']['output']>;
   paymentLimit: Maybe<Scalars['DateTime']['output']>;
   paymentMethod: Maybe<PaymentMethod>;
+  recurringTransactionId: Maybe<Scalars['String']['output']>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
   status: Maybe<TransactionStatus>;
   type: Maybe<TransactionType>;
@@ -2743,6 +3410,8 @@ export type TransactionModel = {
   paymentEnabled: Scalars['Boolean']['output'];
   paymentLimit: Maybe<Scalars['DateTime']['output']>;
   paymentMethod: Maybe<PaymentMethod>;
+  recurringTransaction: Maybe<RecurringTransaction>;
+  recurringTransactionId: Maybe<Scalars['String']['output']>;
   sourceAccount: Maybe<Account>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
   status: TransactionStatus;
@@ -2796,6 +3465,8 @@ export type TransactionWhereInput = {
   paymentEnabled?: InputMaybe<BoolFilter>;
   paymentLimit?: InputMaybe<DateTimeNullableFilter>;
   paymentMethod?: InputMaybe<EnumPaymentMethodNullableFilter>;
+  recurringTransaction?: InputMaybe<RecurringTransactionNullableRelationFilter>;
+  recurringTransactionId?: InputMaybe<StringNullableFilter>;
   sourceAccount?: InputMaybe<AccountNullableRelationFilter>;
   sourceAccountId?: InputMaybe<StringNullableFilter>;
   status?: InputMaybe<EnumTransactionStatusFilter>;
@@ -2822,6 +3493,8 @@ export type TransactionWhereUniqueInput = {
   paymentEnabled?: InputMaybe<BoolFilter>;
   paymentLimit?: InputMaybe<DateTimeNullableFilter>;
   paymentMethod?: InputMaybe<EnumPaymentMethodNullableFilter>;
+  recurringTransaction?: InputMaybe<RecurringTransactionNullableRelationFilter>;
+  recurringTransactionId?: InputMaybe<StringNullableFilter>;
   sourceAccount?: InputMaybe<AccountNullableRelationFilter>;
   sourceAccountId?: InputMaybe<StringNullableFilter>;
   status?: InputMaybe<EnumTransactionStatusFilter>;
@@ -2829,6 +3502,18 @@ export type TransactionWhereUniqueInput = {
   updatedAt?: InputMaybe<DateTimeFilter>;
   user?: InputMaybe<UserRelationFilter>;
   userId?: InputMaybe<StringFilter>;
+};
+
+export type UpdateRecurringTransactionInput = {
+  dayOfMonth?: InputMaybe<Scalars['Int']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  destinyAccountId?: InputMaybe<Scalars['ID']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  estimatedAmount?: InputMaybe<Scalars['Float']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  monthOfYear?: InputMaybe<Scalars['Int']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  sourceAccountId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type User = {
@@ -2842,6 +3527,7 @@ export type User = {
   investments: Maybe<Array<Investment>>;
   name: Scalars['String']['output'];
   password: Scalars['String']['output'];
+  recurringTransactions: Maybe<Array<RecurringTransaction>>;
   role: Role;
   transactions: Maybe<Array<Transaction>>;
   updatedAt: Scalars['DateTime']['output'];
@@ -2858,6 +3544,7 @@ export type UserCount = {
   accounts: Scalars['Int']['output'];
   cardBillingStatusHistories: Scalars['Int']['output'];
   investments: Scalars['Int']['output'];
+  recurringTransactions: Scalars['Int']['output'];
   transactions: Scalars['Int']['output'];
 };
 
@@ -2882,6 +3569,7 @@ export type UserCreateInput = {
   investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
+  recurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutUserInput>;
   role: Role;
   transactions?: InputMaybe<TransactionCreateNestedManyWithoutUserInput>;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -2905,6 +3593,12 @@ export type UserCreateNestedOneWithoutInvestmentsInput = {
   create?: InputMaybe<UserCreateWithoutInvestmentsInput>;
 };
 
+export type UserCreateNestedOneWithoutRecurringTransactionsInput = {
+  connect?: InputMaybe<UserWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutRecurringTransactionsInput>;
+  create?: InputMaybe<UserCreateWithoutRecurringTransactionsInput>;
+};
+
 export type UserCreateNestedOneWithoutTransactionsInput = {
   connect?: InputMaybe<UserWhereUniqueInput>;
   connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutTransactionsInput>;
@@ -2926,6 +3620,11 @@ export type UserCreateOrConnectWithoutInvestmentsInput = {
   where: UserWhereUniqueInput;
 };
 
+export type UserCreateOrConnectWithoutRecurringTransactionsInput = {
+  create: UserCreateWithoutRecurringTransactionsInput;
+  where: UserWhereUniqueInput;
+};
+
 export type UserCreateOrConnectWithoutTransactionsInput = {
   create: UserCreateWithoutTransactionsInput;
   where: UserWhereUniqueInput;
@@ -2939,6 +3638,7 @@ export type UserCreateWithoutAccountsInput = {
   investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
+  recurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutUserInput>;
   role: Role;
   transactions?: InputMaybe<TransactionCreateNestedManyWithoutUserInput>;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -2952,6 +3652,7 @@ export type UserCreateWithoutCardBillingStatusHistoriesInput = {
   investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
+  recurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutUserInput>;
   role: Role;
   transactions?: InputMaybe<TransactionCreateNestedManyWithoutUserInput>;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -2963,6 +3664,21 @@ export type UserCreateWithoutInvestmentsInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   email: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  recurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutUserInput>;
+  role: Role;
+  transactions?: InputMaybe<TransactionCreateNestedManyWithoutUserInput>;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type UserCreateWithoutRecurringTransactionsInput = {
+  accounts?: InputMaybe<AccountCreateNestedManyWithoutUserInput>;
+  cardBillingStatusHistories?: InputMaybe<CardBillingHistoryCreateNestedManyWithoutChangedByInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  email: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
   role: Role;
@@ -2979,6 +3695,7 @@ export type UserCreateWithoutTransactionsInput = {
   investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
+  recurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutUserInput>;
   role: Role;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
@@ -3041,6 +3758,7 @@ export type UserWhereInput = {
   investments?: InputMaybe<InvestmentListRelationFilter>;
   name?: InputMaybe<StringFilter>;
   password?: InputMaybe<StringFilter>;
+  recurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
   role?: InputMaybe<EnumRoleFilter>;
   transactions?: InputMaybe<TransactionListRelationFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
@@ -3058,6 +3776,7 @@ export type UserWhereUniqueInput = {
   investments?: InputMaybe<InvestmentListRelationFilter>;
   name?: InputMaybe<StringFilter>;
   password?: InputMaybe<StringFilter>;
+  recurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
   role?: InputMaybe<EnumRoleFilter>;
   transactions?: InputMaybe<TransactionListRelationFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
@@ -3539,6 +4258,232 @@ export type InvestmentRegimesQuery = {
   };
 };
 
+export type CreateRecurringTransactionMutationVariables = Exact<{
+  data: CreateRecurringTransactionInput;
+}>;
+
+export type CreateRecurringTransactionMutation = {
+  __typename?: 'Mutation';
+  createRecurringTransaction: {
+    __typename?: 'RecurringTransactionModel';
+    id: string;
+  };
+};
+
+export type UpdateRecurringTransactionFromDateMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  fromDate: Scalars['DateTime']['input'];
+  data: UpdateRecurringTransactionInput;
+}>;
+
+export type UpdateRecurringTransactionFromDateMutation = {
+  __typename?: 'Mutation';
+  updateRecurringTransactionFromDate: {
+    __typename?: 'RecurringTransactionModel';
+    id: string;
+  };
+};
+
+export type PauseRecurringTransactionMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+export type PauseRecurringTransactionMutation = {
+  __typename?: 'Mutation';
+  pauseRecurringTransaction: {
+    __typename?: 'RecurringTransactionModel';
+    id: string;
+    isActive: boolean;
+  };
+};
+
+export type ResumeRecurringTransactionMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+export type ResumeRecurringTransactionMutation = {
+  __typename?: 'Mutation';
+  resumeRecurringTransaction: {
+    __typename?: 'RecurringTransactionModel';
+    id: string;
+    isActive: boolean;
+  };
+};
+
+export type EndRecurringTransactionMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  endDate: Scalars['DateTime']['input'];
+}>;
+
+export type EndRecurringTransactionMutation = {
+  __typename?: 'Mutation';
+  endRecurringTransaction: {
+    __typename?: 'RecurringTransactionModel';
+    id: string;
+    endDate: any | null;
+    isActive: boolean;
+  };
+};
+
+export type DeleteRecurringTransactionMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+export type DeleteRecurringTransactionMutation = {
+  __typename?: 'Mutation';
+  deleteRecurringTransaction: {
+    __typename?: 'RecurringTransactionModel';
+    id: string;
+  };
+};
+
+export type RecurringTransactionFragmentFragment = {
+  __typename?: 'RecurringTransactionModel';
+  id: string;
+  description: string;
+  estimatedAmount: any;
+  type: TransactionType;
+  paymentMethod: PaymentMethod | null;
+  frequency: RecurrenceFrequency;
+  dayOfMonth: number;
+  monthOfYear: number | null;
+  startDate: any;
+  endDate: any | null;
+  isActive: boolean;
+  createdAt: any;
+  updatedAt: any;
+  sourceAccount: {
+    __typename?: 'Account';
+    id: string;
+    name: string;
+    institution: {
+      __typename?: 'Institution';
+      name: string;
+      logoUrl: string | null;
+    };
+  } | null;
+  destinyAccount: {
+    __typename?: 'Account';
+    id: string;
+    name: string;
+    institution: {
+      __typename?: 'Institution';
+      name: string;
+      logoUrl: string | null;
+    };
+  } | null;
+};
+
+export type RecurringTransactionsQueryVariables = Exact<{
+  first?: InputMaybe<Scalars['Int']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  orderBy?: InputMaybe<OrdenationRecurringTransactionModel>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  accountId?: InputMaybe<Scalars['ID']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+}>;
+
+export type RecurringTransactionsQuery = {
+  __typename?: 'Query';
+  recurringTransactions: {
+    __typename?: 'RecurringTransactionConnection';
+    edges: Array<{
+      __typename?: 'RecurringTransactionModelEdge';
+      cursor: string;
+      node: {
+        __typename?: 'RecurringTransactionModel';
+        id: string;
+        description: string;
+        estimatedAmount: any;
+        type: TransactionType;
+        paymentMethod: PaymentMethod | null;
+        frequency: RecurrenceFrequency;
+        dayOfMonth: number;
+        monthOfYear: number | null;
+        startDate: any;
+        endDate: any | null;
+        isActive: boolean;
+        createdAt: any;
+        updatedAt: any;
+        sourceAccount: {
+          __typename?: 'Account';
+          id: string;
+          name: string;
+          institution: {
+            __typename?: 'Institution';
+            name: string;
+            logoUrl: string | null;
+          };
+        } | null;
+        destinyAccount: {
+          __typename?: 'Account';
+          id: string;
+          name: string;
+          institution: {
+            __typename?: 'Institution';
+            name: string;
+            logoUrl: string | null;
+          };
+        } | null;
+      };
+    }> | null;
+    pageInfo: {
+      __typename?: 'PageInfo';
+      startCursor: string | null;
+      endCursor: string | null;
+      hasPreviousPage: boolean;
+      hasNextPage: boolean;
+    } | null;
+  };
+};
+
+export type RecurringTransactionQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+export type RecurringTransactionQuery = {
+  __typename?: 'Query';
+  recurringTransaction: {
+    __typename?: 'RecurringTransactionModel';
+    id: string;
+    description: string;
+    estimatedAmount: any;
+    type: TransactionType;
+    paymentMethod: PaymentMethod | null;
+    frequency: RecurrenceFrequency;
+    dayOfMonth: number;
+    monthOfYear: number | null;
+    startDate: any;
+    endDate: any | null;
+    isActive: boolean;
+    createdAt: any;
+    updatedAt: any;
+    sourceAccount: {
+      __typename?: 'Account';
+      id: string;
+      name: string;
+      institution: {
+        __typename?: 'Institution';
+        name: string;
+        logoUrl: string | null;
+      };
+    } | null;
+    destinyAccount: {
+      __typename?: 'Account';
+      id: string;
+      name: string;
+      institution: {
+        __typename?: 'Institution';
+        name: string;
+        logoUrl: string | null;
+      };
+    } | null;
+  } | null;
+};
+
 export type CreateTransactionMutationVariables = Exact<{
   data: CreateTransactionInput;
 }>;
@@ -3789,6 +4734,87 @@ export const InvestmentRegimeSummaryFragmentFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<InvestmentRegimeSummaryFragmentFragment, unknown>;
+export const RecurringTransactionFragmentFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'RecurringTransactionFragment' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'RecurringTransactionModel' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'estimatedAmount' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'frequency' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dayOfMonth' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'monthOfYear' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'sourceAccount' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institution' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'logoUrl' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'destinyAccount' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institution' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'logoUrl' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<RecurringTransactionFragmentFragment, unknown>;
 export const TransactionFragmentFragmentDoc = {
   kind: 'Document',
   definitions: [
@@ -5621,6 +6647,825 @@ export const InvestmentRegimesDocument = {
 } as unknown as DocumentNode<
   InvestmentRegimesQuery,
   InvestmentRegimesQueryVariables
+>;
+export const CreateRecurringTransactionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CreateRecurringTransaction' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'CreateRecurringTransactionInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createRecurringTransaction' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'data' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'data' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreateRecurringTransactionMutation,
+  CreateRecurringTransactionMutationVariables
+>;
+export const UpdateRecurringTransactionFromDateDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateRecurringTransactionFromDate' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'fromDate' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'DateTime' },
+            },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'UpdateRecurringTransactionInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateRecurringTransactionFromDate' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'fromDate' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'fromDate' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'data' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'data' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  UpdateRecurringTransactionFromDateMutation,
+  UpdateRecurringTransactionFromDateMutationVariables
+>;
+export const PauseRecurringTransactionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'PauseRecurringTransaction' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'pauseRecurringTransaction' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  PauseRecurringTransactionMutation,
+  PauseRecurringTransactionMutationVariables
+>;
+export const ResumeRecurringTransactionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'ResumeRecurringTransaction' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'resumeRecurringTransaction' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ResumeRecurringTransactionMutation,
+  ResumeRecurringTransactionMutationVariables
+>;
+export const EndRecurringTransactionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'EndRecurringTransaction' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'endDate' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'DateTime' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'endRecurringTransaction' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'endDate' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'endDate' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  EndRecurringTransactionMutation,
+  EndRecurringTransactionMutationVariables
+>;
+export const DeleteRecurringTransactionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'DeleteRecurringTransaction' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'deleteRecurringTransaction' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  DeleteRecurringTransactionMutation,
+  DeleteRecurringTransactionMutationVariables
+>;
+export const RecurringTransactionsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'RecurringTransactions' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'first' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'after' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'last' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'before' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'search' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'orderBy' },
+          },
+          type: {
+            kind: 'NamedType',
+            name: {
+              kind: 'Name',
+              value: 'OrdenationRecurringTransactionModel',
+            },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'orderDirection' },
+          },
+          type: {
+            kind: 'NamedType',
+            name: { kind: 'Name', value: 'OrderDirection' },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'accountId' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'isActive' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Boolean' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'recurringTransactions' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'first' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'first' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'after' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'after' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'last' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'last' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'before' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'before' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'search' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'search' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderBy' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'orderBy' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderDirection' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'orderDirection' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'accountId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'accountId' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'isActive' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'isActive' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'edges' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'cursor' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'node' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'FragmentSpread',
+                              name: {
+                                kind: 'Name',
+                                value: 'RecurringTransactionFragment',
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'pageInfo' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'PageInfoFragment' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'RecurringTransactionFragment' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'RecurringTransactionModel' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'estimatedAmount' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'frequency' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dayOfMonth' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'monthOfYear' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'sourceAccount' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institution' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'logoUrl' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'destinyAccount' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institution' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'logoUrl' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'PageInfoFragment' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'PageInfo' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'startCursor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'endCursor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'hasPreviousPage' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'hasNextPage' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  RecurringTransactionsQuery,
+  RecurringTransactionsQueryVariables
+>;
+export const RecurringTransactionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'RecurringTransaction' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'recurringTransaction' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'FragmentSpread',
+                  name: { kind: 'Name', value: 'RecurringTransactionFragment' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'RecurringTransactionFragment' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'RecurringTransactionModel' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'estimatedAmount' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'frequency' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dayOfMonth' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'monthOfYear' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'sourceAccount' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institution' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'logoUrl' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'destinyAccount' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institution' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'logoUrl' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  RecurringTransactionQuery,
+  RecurringTransactionQueryVariables
 >;
 export const CreateTransactionDocument = {
   kind: 'Document',
