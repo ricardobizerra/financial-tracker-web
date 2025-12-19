@@ -39,12 +39,26 @@ interface CardSettingsEditDialogProps {
     billingPaymentDay: number;
     defaultLimit: number;
   };
+  institutionColor?: string | null;
+}
+
+function getTextColorForBackground(hexColor: string | null): string {
+  if (!hexColor) return '#000000';
+
+  const r = parseInt(hexColor.slice(1, 3), 16) / 255;
+  const g = parseInt(hexColor.slice(3, 5), 16) / 255;
+  const b = parseInt(hexColor.slice(5, 7), 16) / 255;
+
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+  return luminance > 0.5 ? '#000000' : '#FFFFFF';
 }
 
 export function CardSettingsEditDialog({
   cardId,
   accountId,
   currentSettings,
+  institutionColor,
 }: CardSettingsEditDialogProps) {
   const [open, setOpen] = useState(false);
   const [updateAccountCard, { loading }] = useMutation(
@@ -55,13 +69,16 @@ export function CardSettingsEditDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          variant="outline"
-          size="sm"
-          className="flex-1"
+          variant="ghost"
+          size="icon"
+          className="h-10 w-10 rounded-full"
           aria-label="Configurações do cartão"
+          style={{
+            backgroundColor: 'rgba(255, 255, 255, 0.15)',
+            color: getTextColorForBackground(institutionColor ?? null),
+          }}
         >
-          <Settings className="mr-2 h-4 w-4" />
-          <span className="truncate">Configurações</span>
+          <Settings className="h-5 w-5" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">

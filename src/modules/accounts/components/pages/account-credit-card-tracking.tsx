@@ -446,83 +446,59 @@ export function AccountCreditCardTracking({
               </div>
             </div>
 
-            {/* Quick Stats */}
-            <div className="flex gap-2 sm:gap-8">
-              {/* Available Credit */}
-              <div className="flex-1">
+            {/* Card Settings Info */}
+            <div className="flex items-center gap-4 sm:gap-6">
+              {/* Billing Cycle Day */}
+              <div className="text-center">
                 <div
                   className="text-xs font-medium uppercase tracking-wide opacity-75"
                   style={{
                     color: getTextColorForBackground(account.institution.color),
                   }}
                 >
-                  Disponível
+                  Fechamento
                 </div>
                 <div
                   className="mt-1 text-lg font-bold sm:text-xl"
                   style={{
-                    color:
-                      availableLimit < 0
-                        ? '#ef4444'
-                        : availableLimit < billing.limit * 0.1
-                          ? '#f97316'
-                          : getTextColorForBackground(
-                              account.institution.color,
-                            ),
+                    color: getTextColorForBackground(account.institution.color),
                   }}
                 >
-                  {formatCurrency(availableLimit)}
+                  Dia {billing.accountCard.billingCycleDay}
                 </div>
               </div>
 
-              {/* Due Date */}
-              {billing.paymentDate && (
-                <div className="flex-1">
-                  <div
-                    className="text-xs font-medium uppercase tracking-wide opacity-75"
-                    style={{
-                      color: getTextColorForBackground(
-                        account.institution.color,
-                      ),
-                    }}
-                  >
-                    Vencimento
-                  </div>
-                  <div
-                    className="mt-1 text-lg font-bold sm:text-xl"
-                    style={{
-                      color: getTextColorForBackground(
-                        account.institution.color,
-                      ),
-                    }}
-                  >
-                    {formatDate(billing.paymentDate)}
-                  </div>
-                  {isPending && (
-                    <div
-                      className="mt-0.5 text-xs opacity-75"
-                      style={{
-                        color: getTextColorForBackground(
-                          account.institution.color,
-                        ),
-                      }}
-                    >
-                      {(() => {
-                        const today = new Date();
-                        const dueDate = new Date(billing.paymentDate);
-                        const diffTime = dueDate.getTime() - today.getTime();
-                        const diffDays = Math.ceil(
-                          diffTime / (1000 * 60 * 60 * 24),
-                        );
-                        if (diffDays < 0) return 'Vencido';
-                        if (diffDays === 0) return 'Vence hoje';
-                        if (diffDays === 1) return 'Vence amanhã';
-                        return `${diffDays} dias`;
-                      })()}
-                    </div>
-                  )}
+              {/* Payment Day */}
+              <div className="text-center">
+                <div
+                  className="text-xs font-medium uppercase tracking-wide opacity-75"
+                  style={{
+                    color: getTextColorForBackground(account.institution.color),
+                  }}
+                >
+                  Vencimento
                 </div>
-              )}
+                <div
+                  className="mt-1 text-lg font-bold sm:text-xl"
+                  style={{
+                    color: getTextColorForBackground(account.institution.color),
+                  }}
+                >
+                  Dia {billing.accountCard.billingPaymentDay}
+                </div>
+              </div>
+
+              {/* Settings Button */}
+              <CardSettingsEditDialog
+                cardId={billing.accountCard.id}
+                accountId={account.id}
+                currentSettings={{
+                  billingCycleDay: billing.accountCard.billingCycleDay,
+                  billingPaymentDay: billing.accountCard.billingPaymentDay,
+                  defaultLimit: Number(billing.accountCard.defaultLimit),
+                }}
+                institutionColor={account.institution.color}
+              />
             </div>
           </div>
         </CardContent>
@@ -683,15 +659,6 @@ export function AccountCreditCardTracking({
                 onSubmit={handlePayBilling}
               />
             )}
-            <CardSettingsEditDialog
-              cardId={billing.accountCard.id}
-              accountId={account.id}
-              currentSettings={{
-                billingCycleDay: billing.accountCard.billingCycleDay,
-                billingPaymentDay: billing.accountCard.billingPaymentDay,
-                defaultLimit: Number(billing.accountCard.defaultLimit),
-              }}
-            />
           </div>
 
           {!isPending && billing.paymentTransaction && (
