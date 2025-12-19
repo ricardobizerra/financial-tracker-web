@@ -339,6 +339,7 @@ export function AccountCreditCardTracking({
   const isPending = billing.status === CardBillingStatus.Pending;
   const isClosed = billing.status === CardBillingStatus.Closed;
   const isOverdue = billing.status === CardBillingStatus.Overdue;
+  const isPaid = billing.status === CardBillingStatus.Paid;
 
   return (
     <div className="space-y-4 md:space-y-6">
@@ -504,26 +505,27 @@ export function AccountCreditCardTracking({
         </CardContent>
       </Card>
 
-      {/* Billing Overview, Period and Status */}
+      {/* Billing Overview */}
       <Card>
-        <CardContent className="flex h-full flex-col gap-4 p-4 sm:p-5 md:flex-row">
-          <div className="flex flex-1 items-center justify-center gap-3">
+        <CardContent className="p-4 sm:p-6">
+          {/* Period Navigation */}
+          <div className="mb-6 flex items-center justify-between">
             <Button
-              variant="outline"
-              size="icon"
+              variant="ghost"
+              size="sm"
               onClick={() =>
                 previousBillingId && loadBilling(previousBillingId)
               }
               disabled={!previousBillingId || isProcessing}
-              className="h-9 w-9 flex-shrink-0"
-              aria-label="Previous billing period"
+              className="gap-1"
             >
               <ArrowLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Anterior</span>
             </Button>
 
-            <div className="flex flex-col items-center justify-center gap-2 text-center">
-              <div className="flex flex-col items-center gap-1.5">
-                <Calendar className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+            <div className="flex flex-col items-center gap-1.5">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm font-semibold sm:text-base">
                   {formatDate(billing.periodStart)} a{' '}
                   {formatDate(billing.periodEnd)}
@@ -533,45 +535,140 @@ export function AccountCreditCardTracking({
             </div>
 
             <Button
-              variant="outline"
-              size="icon"
+              variant="ghost"
+              size="sm"
               onClick={() => nextBillingId && loadBilling(nextBillingId)}
               disabled={!nextBillingId || isProcessing}
-              className="h-9 w-9 flex-shrink-0"
-              aria-label="Next billing period"
+              className="gap-1"
             >
+              <span className="hidden sm:inline">Próxima</span>
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
 
-          <Separator orientation={isMobile ? 'horizontal' : 'vertical'} />
+          <Separator className="my-4" />
 
-          <div className="flex flex-1 flex-col justify-between gap-4">
-            <div>
+          {/* Stats Grid */}
+          <div className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+            {/* Total / A Pagar - label changes by status */}
+            <div className="rounded-lg border bg-card p-3 sm:p-4">
               <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                Total da Fatura
+                {isPending ? 'Total' : isPaid ? 'Valor Pago' : 'A Pagar'}
               </div>
-              <div className="mt-2 flex flex-wrap items-baseline gap-2">
-                <span className="text-3xl font-bold tracking-tight sm:text-4xl">
-                  {formatCurrency(billing.totalAmount)}
-                </span>
-                <span className="text-base text-muted-foreground">
-                  / {formatCurrency(billing.limit)}
-                </span>
+              <div
+                className={cn(
+                  'mt-1 text-xl font-bold tracking-tight sm:text-2xl',
+                  isOverdue ? 'text-destructive' : isPaid ? 'text-emerald-500' : '',
+                )}
+              >
+                {formatCurrency(billing.totalAmount)}
               </div>
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-xs font-medium text-muted-foreground">
-                  Uso do limite
-                </span>
-                <span className="text-sm font-semibold">
+
+            {/* Second Card - Context-dependent */}
+            <div className="rounded-lg border bg-card p-3 sm:p-4">
+              {isPending ? (
+                <>
+                  <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    Disponível
+                  </div>
+                  <div
+                    className={cn(
+                      'mt-1 text-xl font-bold tracking-tight sm:text-2xl',
+                      availableLimit < 0
+                        ? 'text-destructive'
+                        : availableLimit < billing.limit * 0.1
+                          ? 'text-orange-500'
+                          : 'text-emerald-500',
+                    )}
+                  >
+                    {formatCurrency(availableLimit)}
+                  </div>
+                </>
+              ) : isPaid && billing.paymentTransaction ? (
+                <>
+                  <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    Pago em
+                  </div>
+                  <div className="mt-1 text-xl font-bold tracking-tight text-emerald-500 sm:text-2xl">
+                    {formatDate(billing.paymentTransaction.date)}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    Vencimento
+                  </div>
+                  <div className="mt-1 flex flex-wrap items-baseline gap-x-2">
+                    <span
+                      className={cn(
+                        'text-xl font-bold tracking-tight sm:text-2xl',
+                        isOverdue ? 'text-destructive' : '',
+                      )}
+                    >
+                      {billing.paymentDate ? formatDate(billing.paymentDate) : '-'}
+                    </span>
+                    {billing.paymentDate && (
+                      <span className="text-sm text-muted-foreground">
+                        {(() => {
+                          const today = new Date();
+                          const dueDate = new Date(billing.paymentDate);
+                          const diffTime = dueDate.getTime() - today.getTime();
+                          const diffDays = Math.ceil(
+                            diffTime / (1000 * 60 * 60 * 24),
+                          );
+                          if (diffDays < 0)
+                            return (
+                              <span className="text-destructive">
+                                ({Math.abs(diffDays)}d atraso)
+                              </span>
+                            );
+                          if (diffDays === 0)
+                            return (
+                              <span className="text-orange-500">(hoje)</span>
+                            );
+                          if (diffDays === 1) return '(amanhã)';
+                          return `(${diffDays} dias)`;
+                        })()}
+                      </span>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Transaction Count */}
+            <div className="rounded-lg border bg-card p-3 sm:p-4">
+              <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Transações
+              </div>
+              <div className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">
+                {billing.transactions?.length ?? 0}
+              </div>
+            </div>
+
+            {/* Usage */}
+            <div className="flex flex-col overflow-hidden rounded-lg border bg-card">
+              <div className="flex-1 p-3 sm:p-4">
+                <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Uso do Limite
+                </div>
+                <div
+                  className={cn(
+                    'mt-1 text-xl font-bold tracking-tight sm:text-2xl',
+                    billing.usagePercentage > 90
+                      ? 'text-destructive'
+                      : billing.usagePercentage > 70
+                        ? 'text-orange-500'
+                        : '',
+                  )}
+                >
                   {formatPercentage(billing.usagePercentage)}
-                </span>
+                </div>
               </div>
               <Progress
                 value={billing.usagePercentage}
-                className="h-2.5"
+                className="h-2 rounded-none"
                 indicatorClassName={cn(
                   billing.usagePercentage > 90
                     ? 'bg-destructive'
@@ -583,116 +680,81 @@ export function AccountCreditCardTracking({
             </div>
           </div>
 
-          <Separator orientation={isMobile ? 'horizontal' : 'vertical'} />
-
-          <div className="flex flex-wrap gap-2 md:flex-col">
-            {isPending && (
-              <>
-                <ExpenseTransactionCreateForm
-                  accountId={account.id}
-                  triggerSize="sm"
-                  triggerClassName="flex-1"
-                  minDate={new Date(billing.periodStart)}
-                  maxDate={new Date(billing.periodEnd)}
-                  status={TransactionStatus.Completed}
-                  paymentMethod={
-                    billing.accountCard.type === CardType.Credit
-                      ? PaymentMethod.CreditCard
-                      : billing.accountCard.type === CardType.Debit
-                        ? PaymentMethod.DebitCard
-                        : undefined
-                  }
-                  hiddenFields={['sourceAccount', 'status', 'paymentMethod']}
-                />
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      size="sm"
-                      className="flex-1"
-                      disabled={isProcessing}
-                      aria-label="Fechar fatura"
-                    >
-                      {isProcessing ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          <span className="truncate">Processando...</span>
-                        </>
-                      ) : (
-                        <span className="truncate">Fechar Fatura</span>
-                      )}
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>Fechamento da Fatura</DialogTitle>
-                    </DialogHeader>
-                    <div className="py-4">
-                      <TsForm
-                        schema={closeBillingSchema}
-                        onSubmit={handleCloseBilling}
-                        defaultValues={{ closingDate: new Date() }}
-                        props={{
-                          closingDate: {
-                            minDate: billing.periodStart,
-                          },
-                        }}
-                        renderAfter={() => (
-                          <Button
-                            type="submit"
-                            className="mt-4 w-full"
-                            disabled={isProcessing}
-                            loading={isProcessing}
-                          >
-                            Fechar Fatura
-                          </Button>
+          {/* Actions */}
+          <div className="flex flex-wrap justify-end gap-2">
+              {isPending && (
+                <>
+                  <ExpenseTransactionCreateForm
+                    accountId={account.id}
+                    triggerSize="sm"
+                    triggerClassName="flex-1 sm:flex-none"
+                    minDate={new Date(billing.periodStart)}
+                    maxDate={new Date(billing.periodEnd)}
+                    status={TransactionStatus.Completed}
+                    paymentMethod={
+                      billing.accountCard.type === CardType.Credit
+                        ? PaymentMethod.CreditCard
+                        : billing.accountCard.type === CardType.Debit
+                          ? PaymentMethod.DebitCard
+                          : undefined
+                    }
+                    hiddenFields={['sourceAccount', 'status', 'paymentMethod']}
+                  />
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        size="sm"
+                        className="flex-1 sm:flex-none"
+                        disabled={isProcessing}
+                      >
+                        {isProcessing ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Processando...
+                          </>
+                        ) : (
+                          'Fechar Fatura'
                         )}
-                      />
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </>
-            )}
-            {(isClosed || isOverdue) && (
-              <PayBillingDialog
-                billing={billing}
-                isProcessing={isProcessing}
-                onSubmit={handlePayBilling}
-              />
-            )}
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Fechamento da Fatura</DialogTitle>
+                      </DialogHeader>
+                      <div className="py-4">
+                        <TsForm
+                          schema={closeBillingSchema}
+                          onSubmit={handleCloseBilling}
+                          defaultValues={{ closingDate: new Date() }}
+                          props={{
+                            closingDate: {
+                              minDate: billing.periodStart,
+                            },
+                          }}
+                          renderAfter={() => (
+                            <Button
+                              type="submit"
+                              className="mt-4 w-full"
+                              disabled={isProcessing}
+                              loading={isProcessing}
+                            >
+                              Fechar Fatura
+                            </Button>
+                          )}
+                        />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </>
+              )}
+              {(isClosed || isOverdue) && (
+                <PayBillingDialog
+                  billing={billing}
+                  isProcessing={isProcessing}
+                  onSubmit={handlePayBilling}
+                />
+              )}
           </div>
-
-          {!isPending && billing.paymentTransaction && (
-            <>
-              <Separator orientation={isMobile ? 'horizontal' : 'vertical'} />
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-semibold">
-                    Pagamento
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div>
-                    <div className="text-xs font-medium text-muted-foreground">
-                      Data
-                    </div>
-                    <div className="mt-1 text-sm font-semibold">
-                      {formatDate(billing.paymentTransaction.date)}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-xs font-medium text-muted-foreground">
-                      Status
-                    </div>
-                    <div className="mt-1.5">
-                      <TransactionStatusBadge
-                        status={billing.paymentTransaction.status}
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </>
-          )}
         </CardContent>
       </Card>
 

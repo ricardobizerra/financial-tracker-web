@@ -3350,6 +3350,7 @@ export type BillingQuery = {
         createdAt: any;
         updatedAt: any;
       } | null;
+      transactions: Array<{ __typename?: 'Transaction'; id: string }> | null;
     } | null;
   };
 };
@@ -4984,6 +4985,19 @@ export const BillingDocument = {
                             {
                               kind: 'Field',
                               name: { kind: 'Name', value: 'updatedAt' },
+                            },
+                          ],
+                        },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'transactions' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
                             },
                           ],
                         },

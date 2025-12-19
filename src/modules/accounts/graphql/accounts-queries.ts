@@ -148,6 +148,9 @@ export const BillingQuery = graphql(`
           createdAt
           updatedAt
         }
+        transactions {
+          id
+        }
       }
       nextBillingId
       previousBillingId
