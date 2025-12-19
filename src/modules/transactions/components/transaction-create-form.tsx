@@ -161,12 +161,12 @@ export function IncomeTransactionCreateForm({
     label: transactionTypeLabels[type],
   }));
 
-  const accountStatusOptions = Object.values(TransactionStatus).map(
-    (status) => ({
+  const accountStatusOptions = Object.values(TransactionStatus)
+    .filter((status) => status !== TransactionStatus.Overdue)
+    .map((status) => ({
       value: status,
       label: transactionStatusLabel[status],
-    }),
-  );
+    }));
 
   const institutionsQueryOptions = useQuery(AccountsQuery, {
     variables: {
@@ -431,12 +431,12 @@ export function ExpenseTransactionCreateForm({
     label: transactionTypeLabels[type],
   }));
 
-  const accountStatusOptions = Object.values(TransactionStatus).map(
-    (status) => ({
+  const accountStatusOptions = Object.values(TransactionStatus)
+    .filter((status) => status !== TransactionStatus.Overdue)
+    .map((status) => ({
       value: status,
       label: transactionStatusLabel[status],
-    }),
-  );
+    }));
 
   const institutionsQueryOptions = useQuery(AccountsQuery, {
     variables: {
@@ -700,12 +700,12 @@ export function BetweenAccountsTransactionCreateForm({
     label: transactionTypeLabels[type],
   }));
 
-  const accountStatusOptions = Object.values(TransactionStatus).map(
-    (status) => ({
+  const accountStatusOptions = Object.values(TransactionStatus)
+    .filter((status) => status !== TransactionStatus.Overdue)
+    .map((status) => ({
       value: status,
       label: transactionStatusLabel[status],
-    }),
-  );
+    }));
 
   const institutionsQueryOptions = useQuery(AccountsQuery, {
     variables: {
