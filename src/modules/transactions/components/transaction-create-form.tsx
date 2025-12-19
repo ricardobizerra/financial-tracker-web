@@ -156,6 +156,11 @@ export function IncomeTransactionCreateForm({
     },
   });
 
+  const selectedAccount = useWatch({
+    control: form.control,
+    name: 'destinyAccount',
+  });
+
   const accountTypeOptions = Object.values(TransactionType).map((type) => ({
     value: type,
     label: transactionTypeLabels[type],
@@ -196,6 +201,15 @@ export function IncomeTransactionCreateForm({
     value: method,
     label: paymentMethodLabel[method],
   }));
+
+  const filteredPaymentMethodOptions = useMemo(() => {
+    if (selectedAccount?.data?.type !== 'CREDIT_CARD') {
+      return paymentMethodOptions.filter(
+        (option) => !['CREDIT_CARD', 'DEBIT_CARD'].includes(option.value),
+      );
+    }
+    return paymentMethodOptions;
+  }, [selectedAccount?.data?.type, paymentMethodOptions]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const paymentMethodIcon: Record<PaymentMethod, any> = {
@@ -268,7 +282,7 @@ export function IncomeTransactionCreateForm({
               ),
             },
             paymentMethod: {
-              options: paymentMethodOptions,
+              options: filteredPaymentMethodOptions,
               renderLabel: (option) => {
                 const Icon = paymentMethodIcon[option.value as PaymentMethod];
                 return (
@@ -418,9 +432,9 @@ export function ExpenseTransactionCreateForm({
   }));
 
   const filteredPaymentMethodOptions = useMemo(() => {
-    if (selectedAccount?.data?.type === 'CREDIT_CARD') {
-      return paymentMethodOptions.filter((option) =>
-        ['CREDIT_CARD', 'DEBIT_CARD'].includes(option.value),
+    if (selectedAccount?.data?.type !== 'CREDIT_CARD') {
+      return paymentMethodOptions.filter(
+        (option) => !['CREDIT_CARD', 'DEBIT_CARD'].includes(option.value),
       );
     }
     return paymentMethodOptions;
