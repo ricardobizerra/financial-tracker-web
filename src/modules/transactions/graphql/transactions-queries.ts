@@ -11,9 +11,35 @@ export const TransactionsFragment = graphql(`
     updatedAt
     sourceAccount {
       id
+      name
+      institution {
+        id
+        name
+        logoUrl
+      }
     }
     destinyAccount {
       id
+      name
+      institution {
+        id
+        name
+        logoUrl
+      }
+    }
+    billingPayment {
+      id
+      accountCard {
+        account {
+          id
+          name
+          institution {
+            id
+            name
+            logoUrl
+          }
+        }
+      }
     }
     status
   }
@@ -30,6 +56,10 @@ export const TransactionsQuery = graphql(`
     $orderDirection: OrderDirection
     $accountId: ID
     $cardBillingId: ID
+    $startDate: DateTime
+    $endDate: DateTime
+    $types: [TransactionType!]
+    $statuses: [TransactionStatus!]
   ) {
     transactions(
       first: $first
@@ -41,6 +71,10 @@ export const TransactionsQuery = graphql(`
       orderDirection: $orderDirection
       accountId: $accountId
       cardBillingId: $cardBillingId
+      startDate: $startDate
+      endDate: $endDate
+      types: $types
+      statuses: $statuses
     ) {
       edges {
         cursor
@@ -51,6 +85,33 @@ export const TransactionsQuery = graphql(`
       pageInfo {
         ...PageInfoFragment
       }
+    }
+  }
+`);
+
+export const TransactionsSummaryQuery = graphql(`
+  query TransactionsSummary(
+    $search: String
+    $accountId: ID
+    $cardBillingId: ID
+    $startDate: DateTime
+    $endDate: DateTime
+    $types: [TransactionType!]
+    $statuses: [TransactionStatus!]
+  ) {
+    transactionsSummary(
+      search: $search
+      accountId: $accountId
+      cardBillingId: $cardBillingId
+      startDate: $startDate
+      endDate: $endDate
+      types: $types
+      statuses: $statuses
+    ) {
+      totalIncome
+      totalExpense
+      balance
+      transactionCount
     }
   }
 `);
