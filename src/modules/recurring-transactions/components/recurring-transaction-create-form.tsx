@@ -28,6 +28,7 @@ import {
   OrderDirection,
   PaymentMethod,
   RecurrenceFrequency,
+  AccountType,
 } from '@/graphql/graphql';
 import { useCallback, useState, useMemo } from 'react';
 import { toast } from 'sonner';
@@ -142,6 +143,7 @@ export function IncomeRecurringTransactionCreateForm({
       first: 50,
       orderBy: OrdenationAccountModel.Name,
       orderDirection: OrderDirection.Asc,
+      types: Object.values(AccountType).filter(t => t !== AccountType.CreditCard),
     },
     skip: !open,
     notifyOnNetworkStatusChange: true,
@@ -242,7 +244,7 @@ export function IncomeRecurringTransactionCreateForm({
             },
             monthOfYear: {
               options: monthOptions,
-            },
+            } as any,
             paymentMethod: {
               options: paymentMethodOptions,
               renderLabel: (option) => {
@@ -513,7 +515,7 @@ export function ExpenseRecurringTransactionCreateForm({
             },
             monthOfYear: {
               options: monthOptions,
-            },
+            } as any,
             paymentMethod: {
               options: paymentMethodOptions,
               renderLabel: (option) => {

@@ -31,6 +31,7 @@ import {
   OrdenationAccountModel,
   TransactionStatus,
   PaymentMethod,
+  AccountType,
 } from '@/graphql/graphql';
 import {
   PropsWithChildren,
@@ -178,6 +179,7 @@ export function IncomeTransactionCreateForm({
       first: 50,
       orderBy: OrdenationAccountModel.Name,
       orderDirection: OrderDirection.Asc,
+      types: Object.values(AccountType).filter(t => t !== AccountType.CreditCard),
     },
     skip: !open,
     notifyOnNetworkStatusChange: true,

@@ -2435,7 +2435,7 @@ export type QueryAccountsArgs = {
   orderBy?: InputMaybe<OrdenationAccountModel>;
   orderDirection?: InputMaybe<OrderDirection>;
   search?: InputMaybe<Scalars['String']['input']>;
-  type?: InputMaybe<AccountType>;
+  types?: InputMaybe<Array<AccountType>>;
 };
 
 export type QueryBillingArgs = {
@@ -3896,7 +3896,7 @@ export type AccountsQueryVariables = Exact<{
   search?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  type?: InputMaybe<AccountType>;
+  types?: InputMaybe<Array<AccountType> | AccountType>;
 }>;
 
 export type AccountsQuery = {
@@ -5322,10 +5322,19 @@ export const AccountsDocument = {
         },
         {
           kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'type' } },
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'types' },
+          },
           type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'AccountType' },
+            kind: 'ListType',
+            type: {
+              kind: 'NonNullType',
+              type: {
+                kind: 'NamedType',
+                name: { kind: 'Name', value: 'AccountType' },
+              },
+            },
           },
         },
       ],
@@ -5394,10 +5403,10 @@ export const AccountsDocument = {
               },
               {
                 kind: 'Argument',
-                name: { kind: 'Name', value: 'type' },
+                name: { kind: 'Name', value: 'types' },
                 value: {
                   kind: 'Variable',
-                  name: { kind: 'Name', value: 'type' },
+                  name: { kind: 'Name', value: 'types' },
                 },
               },
             ],
