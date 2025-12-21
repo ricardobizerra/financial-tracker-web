@@ -3,7 +3,7 @@
 import { useQuery } from '@apollo/client';
 import { AccountQuery } from '../../graphql/accounts-queries';
 import { useParams } from 'next/navigation';
-import { TransactionsTable } from '@/modules/transactions/components/transactions-table';
+import { TransactionsViews } from '@/modules/transactions/components/transactions-views';
 import { AccountType } from '@/graphql/graphql';
 import { AccountCreditCardTracking } from './account-credit-card-tracking';
 import { Card, CardContent } from '@/components/ui/card';
@@ -97,8 +97,12 @@ export function AccountTracking() {
         </CardContent>
       </Card>
 
-      {/* Transactions Table with Summary - hide account column since we're in account page */}
-      <TransactionsTable hiddenColumns={['account']} />
+      {/* Transaction Views with multiple visualization options */}
+      <TransactionsViews
+        accountId={accountId}
+        initialBalance={balance}
+        hiddenColumns={['account']}
+      />
     </div>
   );
 }

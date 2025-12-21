@@ -76,9 +76,7 @@ export const transactionsTableColumns: InitialColumnDef<TransactionFragmentFragm
           status === TransactionStatus.Planned &&
           !sourceAccount
         ) {
-          return (
-            <AccountCell account={billingPayment.accountCard?.account} />
-          );
+          return <AccountCell account={billingPayment.accountCard?.account} />;
         }
 
         if (type === TransactionType.BetweenAccounts) {

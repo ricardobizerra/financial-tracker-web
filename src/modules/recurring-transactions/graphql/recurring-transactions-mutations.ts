@@ -1,9 +1,7 @@
 import { graphql } from '@/graphql';
 
 export const CreateRecurringTransactionMutation = graphql(`
-  mutation CreateRecurringTransaction(
-    $data: CreateRecurringTransactionInput!
-  ) {
+  mutation CreateRecurringTransaction($data: CreateRecurringTransactionInput!) {
     createRecurringTransaction(data: $data) {
       id
     }
@@ -16,7 +14,11 @@ export const UpdateRecurringTransactionFromDateMutation = graphql(`
     $fromDate: DateTime!
     $data: UpdateRecurringTransactionInput!
   ) {
-    updateRecurringTransactionFromDate(id: $id, fromDate: $fromDate, data: $data) {
+    updateRecurringTransactionFromDate(
+      id: $id
+      fromDate: $fromDate
+      data: $data
+    ) {
       id
     }
   }

@@ -558,7 +558,11 @@ export function AccountCreditCardTracking({
               <div
                 className={cn(
                   'mt-1 text-xl font-bold tracking-tight sm:text-2xl',
-                  isOverdue ? 'text-destructive' : isPaid ? 'text-emerald-500' : '',
+                  isOverdue
+                    ? 'text-destructive'
+                    : isPaid
+                      ? 'text-emerald-500'
+                      : '',
                 )}
               >
                 {formatCurrency(billing.totalAmount)}
@@ -606,7 +610,9 @@ export function AccountCreditCardTracking({
                         isOverdue ? 'text-destructive' : '',
                       )}
                     >
-                      {billing.paymentDate ? formatDate(billing.paymentDate) : '-'}
+                      {billing.paymentDate
+                        ? formatDate(billing.paymentDate)
+                        : '-'}
                     </span>
                     {billing.paymentDate && (
                       <span className="text-sm text-muted-foreground">
@@ -682,78 +688,78 @@ export function AccountCreditCardTracking({
 
           {/* Actions */}
           <div className="flex flex-wrap justify-end gap-2">
-              {isPending && (
-                <>
-                  <ExpenseTransactionCreateForm
-                    accountId={account.id}
-                    triggerSize="sm"
-                    triggerClassName="flex-1 sm:flex-none"
-                    minDate={new Date(billing.periodStart)}
-                    maxDate={new Date(billing.periodEnd)}
-                    status={TransactionStatus.Completed}
-                    paymentMethod={
-                      billing.accountCard.type === CardType.Credit
-                        ? PaymentMethod.CreditCard
-                        : billing.accountCard.type === CardType.Debit
-                          ? PaymentMethod.DebitCard
-                          : undefined
-                    }
-                    hiddenFields={['sourceAccount', 'status', 'paymentMethod']}
-                  />
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        size="sm"
-                        className="flex-1 sm:flex-none"
-                        disabled={isProcessing}
-                      >
-                        {isProcessing ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Processando...
-                          </>
-                        ) : (
-                          'Fechar Fatura'
-                        )}
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-md">
-                      <DialogHeader>
-                        <DialogTitle>Fechamento da Fatura</DialogTitle>
-                      </DialogHeader>
-                      <div className="py-4">
-                        <TsForm
-                          schema={closeBillingSchema}
-                          onSubmit={handleCloseBilling}
-                          defaultValues={{ closingDate: new Date() }}
-                          props={{
-                            closingDate: {
-                              minDate: billing.periodStart,
-                            },
-                          }}
-                          renderAfter={() => (
-                            <Button
-                              type="submit"
-                              className="mt-4 w-full"
-                              disabled={isProcessing}
-                              loading={isProcessing}
-                            >
-                              Fechar Fatura
-                            </Button>
-                          )}
-                        />
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </>
-              )}
-              {(isClosed || isOverdue) && (
-                <PayBillingDialog
-                  billing={billing}
-                  isProcessing={isProcessing}
-                  onSubmit={handlePayBilling}
+            {isPending && (
+              <>
+                <ExpenseTransactionCreateForm
+                  accountId={account.id}
+                  triggerSize="sm"
+                  triggerClassName="flex-1 sm:flex-none"
+                  minDate={new Date(billing.periodStart)}
+                  maxDate={new Date(billing.periodEnd)}
+                  status={TransactionStatus.Completed}
+                  paymentMethod={
+                    billing.accountCard.type === CardType.Credit
+                      ? PaymentMethod.CreditCard
+                      : billing.accountCard.type === CardType.Debit
+                        ? PaymentMethod.DebitCard
+                        : undefined
+                  }
+                  hiddenFields={['sourceAccount', 'status', 'paymentMethod']}
                 />
-              )}
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      size="sm"
+                      className="flex-1 sm:flex-none"
+                      disabled={isProcessing}
+                    >
+                      {isProcessing ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Processando...
+                        </>
+                      ) : (
+                        'Fechar Fatura'
+                      )}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Fechamento da Fatura</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4">
+                      <TsForm
+                        schema={closeBillingSchema}
+                        onSubmit={handleCloseBilling}
+                        defaultValues={{ closingDate: new Date() }}
+                        props={{
+                          closingDate: {
+                            minDate: billing.periodStart,
+                          },
+                        }}
+                        renderAfter={() => (
+                          <Button
+                            type="submit"
+                            className="mt-4 w-full"
+                            disabled={isProcessing}
+                            loading={isProcessing}
+                          >
+                            Fechar Fatura
+                          </Button>
+                        )}
+                      />
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </>
+            )}
+            {(isClosed || isOverdue) && (
+              <PayBillingDialog
+                billing={billing}
+                isProcessing={isProcessing}
+                onSubmit={handlePayBilling}
+              />
+            )}
           </div>
         </CardContent>
       </Card>

@@ -71,7 +71,9 @@ const incomeRecurringSchema = z.object({
     'Método de pagamento * // Como será recebido',
   ),
   frequency: formFields.select.describe('Frequência * // Com que frequência'),
-  dayOfMonth: formFields.number.describe('Dia do mês * // Dia do recebimento (1-28)'),
+  dayOfMonth: formFields.number.describe(
+    'Dia do mês * // Dia do recebimento (1-28)',
+  ),
   monthOfYear: formFields.select
     .optional()
     .describe('Mês do ano // Para recorrências anuais'),
@@ -93,7 +95,9 @@ const expenseRecurringSchema = z.object({
     'Método de pagamento * // Como será pago',
   ),
   frequency: formFields.select.describe('Frequência * // Com que frequência'),
-  dayOfMonth: formFields.number.describe('Dia do mês * // Dia do vencimento (1-28)'),
+  dayOfMonth: formFields.number.describe(
+    'Dia do mês * // Dia do vencimento (1-28)',
+  ),
   monthOfYear: formFields.select
     .optional()
     .describe('Mês do ano // Para recorrências anuais'),
@@ -143,7 +147,9 @@ export function IncomeRecurringTransactionCreateForm({
       first: 50,
       orderBy: OrdenationAccountModel.Name,
       orderDirection: OrderDirection.Asc,
-      types: Object.values(AccountType).filter(t => t !== AccountType.CreditCard),
+      types: Object.values(AccountType).filter(
+        (t) => t !== AccountType.CreditCard,
+      ),
     },
     skip: !open,
     notifyOnNetworkStatusChange: true,
