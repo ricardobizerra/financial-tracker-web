@@ -653,6 +653,24 @@ export type AccountWhereUniqueInput = {
   userId?: InputMaybe<StringFilter>;
 };
 
+export type AgendaGroupModel = {
+  __typename?: 'AgendaGroupModel';
+  label: Scalars['String']['output'];
+  transactions: Array<AgendaTransactionModel>;
+};
+
+export type AgendaTransactionModel = {
+  __typename?: 'AgendaTransactionModel';
+  amount: Scalars['Float']['output'];
+  date: Scalars['DateTime']['output'];
+  daysUntilDue: Scalars['Int']['output'];
+  description: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  isOverdue: Scalars['Boolean']['output'];
+  status: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+};
+
 export type AuthSignInInput = {
   password: Scalars['String']['input'];
   username: Scalars['String']['input'];
@@ -701,6 +719,24 @@ export type BalanceForecastTransactionModel = {
 export type BoolFilter = {
   equals?: InputMaybe<Scalars['Boolean']['input']>;
   not?: InputMaybe<NestedBoolFilter>;
+};
+
+export type CalendarDayModel = {
+  __typename?: 'CalendarDayModel';
+  date: Scalars['DateTime']['output'];
+  totalExpense: Scalars['Float']['output'];
+  totalIncome: Scalars['Float']['output'];
+  transactionCount: Scalars['Int']['output'];
+  transactions: Array<CalendarDayTransactionModel>;
+};
+
+export type CalendarDayTransactionModel = {
+  __typename?: 'CalendarDayTransactionModel';
+  amount: Scalars['Float']['output'];
+  description: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  type: Scalars['String']['output'];
 };
 
 export type CardBilling = {
@@ -1319,6 +1355,15 @@ export type EnumTransactionTypeFilter = {
   in?: InputMaybe<Array<TransactionType>>;
   not?: InputMaybe<NestedEnumTransactionTypeFilter>;
   notIn?: InputMaybe<Array<TransactionType>>;
+};
+
+export type FinancialAgendaModel = {
+  __typename?: 'FinancialAgendaModel';
+  balance: Scalars['Float']['output'];
+  groups: Array<AgendaGroupModel>;
+  pendingCount: Scalars['Int']['output'];
+  totalExpense: Scalars['Float']['output'];
+  totalIncome: Scalars['Float']['output'];
 };
 
 export type FloatFilter = {
@@ -2447,6 +2492,7 @@ export type Query = {
   accounts: AccountConnection;
   balanceForecast: BalanceForecastModel;
   billing: CardBillingOnDate;
+  financialAgenda: FinancialAgendaModel;
   health: Scalars['String']['output'];
   institution: InstitutionModel;
   institutions: InstitutionConnection;
@@ -2456,6 +2502,7 @@ export type Query = {
   recurringTransactions: RecurringTransactionConnection;
   totalInvestments: TotalInvestmentsModel;
   transactions: TransactionConnection;
+  transactionsCalendar: TransactionsCalendarModel;
   transactionsSummary: TransactionsSummaryModel;
   user: UserModel;
   users: UserConnection;
@@ -2490,6 +2537,11 @@ export type QueryBalanceForecastArgs = {
 export type QueryBillingArgs = {
   accountId: Scalars['ID']['input'];
   id?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type QueryFinancialAgendaArgs = {
+  accountId?: InputMaybe<Scalars['String']['input']>;
+  daysAhead?: Scalars['Int']['input'];
 };
 
 export type QueryInstitutionArgs = {
@@ -2547,6 +2599,12 @@ export type QueryTransactionsArgs = {
   startDate?: InputMaybe<Scalars['DateTime']['input']>;
   statuses?: InputMaybe<Array<TransactionStatus>>;
   types?: InputMaybe<Array<TransactionType>>;
+};
+
+export type QueryTransactionsCalendarArgs = {
+  accountId?: InputMaybe<Scalars['String']['input']>;
+  month: Scalars['Int']['input'];
+  year: Scalars['Int']['input'];
 };
 
 export type QueryTransactionsSummaryArgs = {
@@ -3567,6 +3625,14 @@ export type TransactionWhereUniqueInput = {
   userId?: InputMaybe<StringFilter>;
 };
 
+export type TransactionsCalendarModel = {
+  __typename?: 'TransactionsCalendarModel';
+  days: Array<CalendarDayModel>;
+  monthBalance: Scalars['Float']['output'];
+  monthTotalExpense: Scalars['Float']['output'];
+  monthTotalIncome: Scalars['Float']['output'];
+};
+
 export type TransactionsSummaryModel = {
   __typename?: 'TransactionsSummaryModel';
   balance: Scalars['Decimal']['output'];
@@ -4585,6 +4651,68 @@ export type BalanceForecastQuery = {
         description: string;
         amount: number;
         isIncome: boolean;
+      }>;
+    }>;
+  };
+};
+
+export type TransactionsCalendarQueryVariables = Exact<{
+  accountId?: InputMaybe<Scalars['String']['input']>;
+  year: Scalars['Int']['input'];
+  month: Scalars['Int']['input'];
+}>;
+
+export type TransactionsCalendarQuery = {
+  __typename?: 'Query';
+  transactionsCalendar: {
+    __typename?: 'TransactionsCalendarModel';
+    monthTotalIncome: number;
+    monthTotalExpense: number;
+    monthBalance: number;
+    days: Array<{
+      __typename?: 'CalendarDayModel';
+      date: any;
+      totalIncome: number;
+      totalExpense: number;
+      transactionCount: number;
+      transactions: Array<{
+        __typename?: 'CalendarDayTransactionModel';
+        id: string;
+        description: string;
+        amount: number;
+        type: string;
+        status: string;
+      }>;
+    }>;
+  };
+};
+
+export type FinancialAgendaQueryVariables = Exact<{
+  accountId?: InputMaybe<Scalars['String']['input']>;
+  daysAhead: Scalars['Int']['input'];
+}>;
+
+export type FinancialAgendaQuery = {
+  __typename?: 'Query';
+  financialAgenda: {
+    __typename?: 'FinancialAgendaModel';
+    totalIncome: number;
+    totalExpense: number;
+    balance: number;
+    pendingCount: number;
+    groups: Array<{
+      __typename?: 'AgendaGroupModel';
+      label: string;
+      transactions: Array<{
+        __typename?: 'AgendaTransactionModel';
+        id: string;
+        description: string;
+        amount: number;
+        type: string;
+        status: string;
+        date: any;
+        daysUntilDue: number;
+        isOverdue: boolean;
       }>;
     }>;
   };
@@ -7947,6 +8075,278 @@ export const BalanceForecastDocument = {
 } as unknown as DocumentNode<
   BalanceForecastQuery,
   BalanceForecastQueryVariables
+>;
+export const TransactionsCalendarDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'TransactionsCalendar' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'accountId' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'year' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'month' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'transactionsCalendar' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'accountId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'accountId' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'year' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'year' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'month' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'month' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'days' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'date' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'totalIncome' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'totalExpense' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'transactionCount' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'transactions' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'description' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'amount' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'type' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'status' },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'monthTotalIncome' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'monthTotalExpense' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'monthBalance' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  TransactionsCalendarQuery,
+  TransactionsCalendarQueryVariables
+>;
+export const FinancialAgendaDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'FinancialAgenda' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'accountId' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'daysAhead' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'financialAgenda' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'accountId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'accountId' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'daysAhead' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'daysAhead' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'groups' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'label' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'transactions' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'description' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'amount' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'type' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'status' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'date' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'daysUntilDue' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'isOverdue' },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'totalIncome' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'totalExpense' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'balance' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'pendingCount' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  FinancialAgendaQuery,
+  FinancialAgendaQueryVariables
 >;
 export const CreateTransactionDocument = {
   kind: 'Document',

@@ -2,45 +2,25 @@
 
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  TransactionFragmentFragment,
-  TransactionStatus,
-  TransactionType,
-} from '@/graphql/graphql';
 import { TransactionsTable } from './transactions-table';
 import { BalanceForecastChart } from './balance-forecast-chart';
 import { TransactionsCalendar } from './transactions-calendar';
 import { FinancialAgenda } from './financial-agenda';
 import { TableIcon, LineChart, Calendar, ClipboardList } from 'lucide-react';
-import { useQuery } from '@apollo/client';
-import { TransactionsQuery } from '../graphql/transactions-queries';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 
 interface TransactionsViewsProps {
   accountId?: string;
-  initialBalance?: number;
   hiddenColumns?: string[];
 }
 
 export function TransactionsViews({
   accountId,
-  initialBalance = 0,
   hiddenColumns = [],
 }: TransactionsViewsProps) {
   const [activeTab, setActiveTab] = useState('table');
   const params = useParams<{ accountId?: string }>();
   const effectiveAccountId = accountId || params.accountId;
-
-  // Query para obter todas as transações (para visualizações que precisam de dados completos)
-  const { data, loading } = useQuery(TransactionsQuery, {
-    variables: {
-      first: 500, // Buscar mais transações para as visualizações
-      accountId: effectiveAccountId,
-    },
-  });
-
-  const transactions =
-    data?.transactions?.edges?.map((edge) => edge.node) || [];
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -76,11 +56,11 @@ export function TransactionsViews({
       </TabsContent>
 
       <TabsContent value="calendar" className="mt-0">
-        <TransactionsCalendar transactions={transactions} />
+        <TransactionsCalendar accountId={effectiveAccountId} />
       </TabsContent>
 
       <TabsContent value="agenda" className="mt-0">
-        <FinancialAgenda transactions={transactions} daysAhead={60} />
+        <FinancialAgenda accountId={effectiveAccountId} daysAhead={60} />
       </TabsContent>
     </Tabs>
   );

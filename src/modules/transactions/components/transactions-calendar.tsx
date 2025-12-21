@@ -1,11 +1,9 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import {
-  TransactionFragmentFragment,
-  TransactionStatus,
-  TransactionType,
-} from '@/graphql/graphql';
+import { useState } from 'react';
+import { useQuery } from '@apollo/client';
+import { TransactionType, TransactionStatus } from '@/graphql/graphql';
+import { TransactionsCalendarQuery } from '../graphql/calendar-agenda-queries';
 import { formatCurrency } from '@/lib/formatters/currency';
 import {
   format,
@@ -13,7 +11,6 @@ import {
   endOfMonth,
   eachDayOfInterval,
   isSameDay,
-  isSameMonth,
   addMonths,
   subMonths,
 } from 'date-fns';
@@ -30,79 +27,44 @@ import {
   ChevronRight,
   TrendingUp,
   TrendingDown,
-  ArrowLeftRight,
+  Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TransactionTypeBadge } from './transaction-type-badge';
 import { TransactionStatusBadge } from './transaction-status-badge';
 
 interface TransactionsCalendarProps {
-  transactions: TransactionFragmentFragment[];
+  accountId?: string;
 }
 
-interface DayData {
-  date: Date;
-  transactions: TransactionFragmentFragment[];
-  totalIncome: number;
-  totalExpense: number;
-  hasTransactions: boolean;
-}
-
-export function TransactionsCalendar({
-  transactions,
-}: TransactionsCalendarProps) {
+export function TransactionsCalendar({ accountId }: TransactionsCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedDay, setSelectedDay] = useState<DayData | null>(null);
 
-  const calendarData = useMemo(() => {
-    const start = startOfMonth(currentMonth);
-    const end = endOfMonth(currentMonth);
-    const days = eachDayOfInterval({ start, end });
+  const { data, loading } = useQuery(TransactionsCalendarQuery, {
+    variables: {
+      accountId,
+      year: currentMonth.getFullYear(),
+      month: currentMonth.getMonth() + 1,
+    },
+  });
 
-    return days.map((date) => {
-      const dayTransactions = transactions.filter((tx) =>
-        isSameDay(new Date(tx.date), date),
-      );
+  const calendar = data?.transactionsCalendar;
 
-      let totalIncome = 0;
-      let totalExpense = 0;
+  // Criar mapa de dias com transações
+  type CalendarDay = NonNullable<typeof calendar>['days'][0];
+  const daysMap = new Map<string, CalendarDay>();
+  calendar?.days?.forEach((day) => {
+    const dateKey = new Date(day.date).toISOString().split('T')[0];
+    daysMap.set(dateKey, day);
+  });
 
-      dayTransactions.forEach((tx) => {
-        if (tx.status === TransactionStatus.Canceled) return;
-        const amount = Number(tx.amount);
-        if (tx.type === TransactionType.Income) {
-          totalIncome += amount;
-        } else if (tx.type === TransactionType.Expense) {
-          totalExpense += amount;
-        }
-      });
-
-      return {
-        date,
-        transactions: dayTransactions,
-        totalIncome,
-        totalExpense,
-        hasTransactions: dayTransactions.length > 0,
-      };
-    });
-  }, [transactions, currentMonth]);
-
-  const monthStats = useMemo(() => {
-    let income = 0;
-    let expense = 0;
-
-    calendarData.forEach((day) => {
-      income += day.totalIncome;
-      expense += day.totalExpense;
-    });
-
-    return { income, expense, balance: income - expense };
-  }, [calendarData]);
+  // Gerar todos os dias do mês
+  const start = startOfMonth(currentMonth);
+  const end = endOfMonth(currentMonth);
+  const allDays = eachDayOfInterval({ start, end });
 
   const weekDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-
-  // Adicionar dias vazios no início para alinhar com o dia da semana correto
-  const firstDayOfMonth = startOfMonth(currentMonth).getDay();
+  const firstDayOfMonth = start.getDay();
   const emptyDays = Array(firstDayOfMonth).fill(null);
 
   return (
@@ -130,149 +92,172 @@ export function TransactionsCalendar({
             </Button>
           </div>
         </div>
-        <div className="mt-2 flex gap-4 text-sm">
-          <div className="flex items-center gap-1">
-            <TrendingUp className="h-4 w-4 text-emerald-500" />
-            <span className="text-muted-foreground">
-              {formatCurrency(monthStats.income)}
-            </span>
+        {!loading && calendar && (
+          <div className="mt-2 flex gap-4 text-sm">
+            <div className="flex items-center gap-1">
+              <TrendingUp className="h-4 w-4 text-emerald-500" />
+              <span className="text-muted-foreground">
+                {formatCurrency(calendar.monthTotalIncome)}
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <TrendingDown className="h-4 w-4 text-red-500" />
+              <span className="text-muted-foreground">
+                {formatCurrency(calendar.monthTotalExpense)}
+              </span>
+            </div>
+            <div
+              className={cn(
+                'font-medium',
+                calendar.monthBalance >= 0
+                  ? 'text-emerald-600'
+                  : 'text-red-600',
+              )}
+            >
+              {calendar.monthBalance >= 0 ? '+' : ''}
+              {formatCurrency(calendar.monthBalance)}
+            </div>
           </div>
-          <div className="flex items-center gap-1">
-            <TrendingDown className="h-4 w-4 text-red-500" />
-            <span className="text-muted-foreground">
-              {formatCurrency(monthStats.expense)}
-            </span>
-          </div>
-          <div
-            className={cn(
-              'font-medium',
-              monthStats.balance >= 0 ? 'text-emerald-600' : 'text-red-600',
-            )}
-          >
-            {monthStats.balance >= 0 ? '+' : ''}
-            {formatCurrency(monthStats.balance)}
-          </div>
-        </div>
+        )}
       </CardHeader>
       <CardContent>
-        {/* Week days header */}
-        <div className="mb-2 grid grid-cols-7 gap-1">
-          {weekDays.map((day) => (
-            <div
-              key={day}
-              className="py-2 text-center text-xs font-medium text-muted-foreground"
-            >
-              {day}
+        {loading ? (
+          <div className="flex h-[300px] items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <>
+            {/* Week days header */}
+            <div className="mb-2 grid grid-cols-7 gap-1">
+              {weekDays.map((day) => (
+                <div
+                  key={day}
+                  className="py-2 text-center text-xs font-medium text-muted-foreground"
+                >
+                  {day}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {/* Calendar grid */}
-        <div className="grid grid-cols-7 gap-1">
-          {/* Empty days */}
-          {emptyDays.map((_, index) => (
-            <div key={`empty-${index}`} className="aspect-square" />
-          ))}
+            {/* Calendar grid */}
+            <div className="grid grid-cols-7 gap-1">
+              {/* Empty days */}
+              {emptyDays.map((_, index) => (
+                <div key={`empty-${index}`} className="aspect-square" />
+              ))}
 
-          {/* Days with transactions */}
-          {calendarData.map((day) => {
-            const isToday = isSameDay(day.date, new Date());
-            const hasIncome = day.totalIncome > 0;
-            const hasExpense = day.totalExpense > 0;
+              {/* Days */}
+              {allDays.map((date) => {
+                const dateKey = date.toISOString().split('T')[0];
+                const dayData = daysMap.get(dateKey);
+                const isToday = isSameDay(date, new Date());
+                const hasTransactions =
+                  !!dayData && dayData.transactionCount > 0;
+                const hasIncome = (dayData?.totalIncome || 0) > 0;
+                const hasExpense = (dayData?.totalExpense || 0) > 0;
 
-            return (
-              <Popover key={day.date.toISOString()}>
-                <PopoverTrigger asChild>
-                  <button
-                    className={cn(
-                      'relative flex aspect-square flex-col items-center justify-center rounded-md p-1 text-sm transition-colors hover:bg-accent',
-                      isToday && 'ring-2 ring-primary',
-                      day.hasTransactions && 'cursor-pointer',
-                      !day.hasTransactions && 'opacity-60',
-                    )}
-                    disabled={!day.hasTransactions}
-                  >
-                    <span
-                      className={cn('font-medium', isToday && 'text-primary')}
-                    >
-                      {format(day.date, 'd')}
-                    </span>
-
-                    {day.hasTransactions && (
-                      <div className="mt-0.5 flex gap-0.5">
-                        {hasIncome && (
-                          <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                return (
+                  <Popover key={dateKey}>
+                    <PopoverTrigger asChild>
+                      <button
+                        className={cn(
+                          'relative flex aspect-square flex-col items-center justify-center rounded-md p-1 text-sm transition-colors hover:bg-accent',
+                          isToday && 'ring-2 ring-primary',
+                          hasTransactions && 'cursor-pointer',
+                          !hasTransactions && 'opacity-60',
                         )}
-                        {hasExpense && (
-                          <div className="h-1.5 w-1.5 rounded-full bg-red-500" />
-                        )}
-                      </div>
-                    )}
-                  </button>
-                </PopoverTrigger>
-
-                {day.hasTransactions && (
-                  <PopoverContent className="w-80 p-0" align="start">
-                    <div className="border-b p-3">
-                      <p className="font-medium capitalize">
-                        {format(day.date, "EEEE, dd 'de' MMMM", {
-                          locale: ptBR,
-                        })}
-                      </p>
-                      <div className="mt-1 flex gap-4 text-sm">
-                        {hasIncome && (
-                          <span className="text-emerald-600">
-                            +{formatCurrency(day.totalIncome)}
-                          </span>
-                        )}
-                        {hasExpense && (
-                          <span className="text-red-600">
-                            -{formatCurrency(day.totalExpense)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="max-h-64 overflow-y-auto p-2">
-                      {day.transactions.map((tx) => (
-                        <div
-                          key={tx.id}
-                          className="flex items-center justify-between rounded-md p-2 hover:bg-accent"
+                        disabled={!hasTransactions}
+                      >
+                        <span
+                          className={cn(
+                            'font-medium',
+                            isToday && 'text-primary',
+                          )}
                         >
-                          <div className="flex-1">
-                            <p className="text-sm font-medium">
-                              {tx.description}
-                            </p>
-                            <div className="flex items-center gap-2">
-                              <TransactionTypeBadge type={tx.type} />
-                              <TransactionStatusBadge status={tx.status} />
-                            </div>
-                          </div>
-                          <span
-                            className={cn(
-                              'text-sm font-medium',
-                              tx.type === TransactionType.Income
-                                ? 'text-emerald-600'
-                                : tx.type === TransactionType.Expense
-                                  ? 'text-red-600'
-                                  : 'text-blue-600',
+                          {format(date, 'd')}
+                        </span>
+
+                        {hasTransactions && (
+                          <div className="mt-0.5 flex gap-0.5">
+                            {hasIncome && (
+                              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                             )}
-                          >
-                            {tx.type === TransactionType.Income
-                              ? '+'
-                              : tx.type === TransactionType.Expense
-                                ? '-'
-                                : ''}
-                            {formatCurrency(Number(tx.amount))}
-                          </span>
+                            {hasExpense && (
+                              <div className="h-1.5 w-1.5 rounded-full bg-red-500" />
+                            )}
+                          </div>
+                        )}
+                      </button>
+                    </PopoverTrigger>
+
+                    {hasTransactions && dayData && (
+                      <PopoverContent className="w-80 p-0" align="start">
+                        <div className="border-b p-3">
+                          <p className="font-medium capitalize">
+                            {format(date, "EEEE, dd 'de' MMMM", {
+                              locale: ptBR,
+                            })}
+                          </p>
+                          <div className="mt-1 flex gap-4 text-sm">
+                            {hasIncome && (
+                              <span className="text-emerald-600">
+                                +{formatCurrency(dayData.totalIncome)}
+                              </span>
+                            )}
+                            {hasExpense && (
+                              <span className="text-red-600">
+                                -{formatCurrency(dayData.totalExpense)}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  </PopoverContent>
-                )}
-              </Popover>
-            );
-          })}
-        </div>
+                        <div className="max-h-64 overflow-y-auto p-2">
+                          {dayData.transactions.map((tx) => (
+                            <div
+                              key={tx.id}
+                              className="flex items-center justify-between rounded-md p-2 hover:bg-accent"
+                            >
+                              <div className="flex-1">
+                                <p className="text-sm font-medium">
+                                  {tx.description}
+                                </p>
+                                <div className="flex items-center gap-2">
+                                  <TransactionTypeBadge
+                                    type={tx.type as TransactionType}
+                                  />
+                                  <TransactionStatusBadge
+                                    status={tx.status as TransactionStatus}
+                                  />
+                                </div>
+                              </div>
+                              <span
+                                className={cn(
+                                  'text-sm font-medium',
+                                  tx.type === 'INCOME'
+                                    ? 'text-emerald-600'
+                                    : tx.type === 'EXPENSE'
+                                      ? 'text-red-600'
+                                      : 'text-blue-600',
+                                )}
+                              >
+                                {tx.type === 'INCOME'
+                                  ? '+'
+                                  : tx.type === 'EXPENSE'
+                                    ? '-'
+                                    : ''}
+                                {formatCurrency(tx.amount)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    )}
+                  </Popover>
+                );
+              })}
+            </div>
+          </>
+        )}
       </CardContent>
     </Card>
   );

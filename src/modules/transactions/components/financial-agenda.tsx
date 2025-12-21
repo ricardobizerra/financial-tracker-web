@@ -1,20 +1,10 @@
 'use client';
 
-import { useMemo } from 'react';
-import {
-  TransactionFragmentFragment,
-  TransactionStatus,
-  TransactionType,
-} from '@/graphql/graphql';
+import { useQuery } from '@apollo/client';
+import { TransactionType, TransactionStatus } from '@/graphql/graphql';
+import { FinancialAgendaQuery } from '../graphql/calendar-agenda-queries';
 import { formatCurrency } from '@/lib/formatters/currency';
-import {
-  format,
-  differenceInDays,
-  startOfDay,
-  isAfter,
-  isBefore,
-  addDays,
-} from 'date-fns';
+import { format, startOfDay, differenceInDays, isBefore } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -25,129 +15,66 @@ import {
   Calendar,
   Clock,
   AlertCircle,
+  Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TransactionStatusBadge } from './transaction-status-badge';
 
 interface FinancialAgendaProps {
-  transactions: TransactionFragmentFragment[];
+  accountId?: string;
   daysAhead?: number;
 }
 
-interface GroupedTransactions {
-  label: string;
-  transactions: TransactionFragmentFragment[];
-}
-
 export function FinancialAgenda({
-  transactions,
-  daysAhead = 30,
+  accountId,
+  daysAhead = 60,
 }: FinancialAgendaProps) {
-  const upcomingTransactions = useMemo(() => {
-    const today = startOfDay(new Date());
-    const endDate = addDays(today, daysAhead);
+  const { data, loading } = useQuery(FinancialAgendaQuery, {
+    variables: {
+      accountId,
+      daysAhead,
+    },
+  });
 
-    return transactions
-      .filter((tx) => {
-        const txDate = new Date(tx.date);
-        // Apenas transações não completadas e não canceladas
-        if (
-          tx.status === TransactionStatus.Completed ||
-          tx.status === TransactionStatus.Canceled
-        ) {
-          return false;
-        }
-        // Entre hoje e o período futuro
-        return !isBefore(txDate, today) && !isAfter(txDate, endDate);
-      })
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, [transactions, daysAhead]);
+  const agenda = data?.financialAgenda;
 
-  const groupedTransactions = useMemo(() => {
-    const today = startOfDay(new Date());
-    const groups: GroupedTransactions[] = [];
-
-    // Agrupar por período
-    const thisWeek: TransactionFragmentFragment[] = [];
-    const nextWeek: TransactionFragmentFragment[] = [];
-    const thisMonth: TransactionFragmentFragment[] = [];
-    const later: TransactionFragmentFragment[] = [];
-
-    upcomingTransactions.forEach((tx) => {
-      const txDate = new Date(tx.date);
-      const daysUntil = differenceInDays(txDate, today);
-
-      if (daysUntil <= 7) {
-        thisWeek.push(tx);
-      } else if (daysUntil <= 14) {
-        nextWeek.push(tx);
-      } else if (daysUntil <= 30) {
-        thisMonth.push(tx);
-      } else {
-        later.push(tx);
-      }
-    });
-
-    if (thisWeek.length > 0) {
-      groups.push({ label: 'Esta semana', transactions: thisWeek });
-    }
-    if (nextWeek.length > 0) {
-      groups.push({ label: 'Próxima semana', transactions: nextWeek });
-    }
-    if (thisMonth.length > 0) {
-      groups.push({ label: 'Este mês', transactions: thisMonth });
-    }
-    if (later.length > 0) {
-      groups.push({ label: 'Mais tarde', transactions: later });
-    }
-
-    return groups;
-  }, [upcomingTransactions]);
-
-  const summary = useMemo(() => {
-    let totalIncome = 0;
-    let totalExpense = 0;
-
-    upcomingTransactions.forEach((tx) => {
-      const amount = Number(tx.amount);
-      if (tx.type === TransactionType.Income) {
-        totalIncome += amount;
-      } else if (tx.type === TransactionType.Expense) {
-        totalExpense += amount;
-      }
-    });
-
-    return {
-      totalIncome,
-      totalExpense,
-      balance: totalIncome - totalExpense,
-      count: upcomingTransactions.length,
-    };
-  }, [upcomingTransactions]);
-
-  const getTypeIcon = (type: TransactionType) => {
+  const getTypeIcon = (type: string) => {
     switch (type) {
-      case TransactionType.Income:
+      case 'INCOME':
         return <TrendingUp className="h-4 w-4 text-emerald-500" />;
-      case TransactionType.Expense:
+      case 'EXPENSE':
         return <TrendingDown className="h-4 w-4 text-red-500" />;
-      case TransactionType.BetweenAccounts:
+      case 'BETWEEN_ACCOUNTS':
         return <ArrowLeftRight className="h-4 w-4 text-blue-500" />;
+      default:
+        return null;
     }
   };
 
-  const getDaysLabel = (date: Date) => {
-    const today = startOfDay(new Date());
-    const txDate = startOfDay(date);
-    const days = differenceInDays(txDate, today);
-
-    if (days === 0) return 'Hoje';
-    if (days === 1) return 'Amanhã';
-    if (days < 7) return `Em ${days} dias`;
-    return format(date, "dd 'de' MMM", { locale: ptBR });
+  const getDaysLabel = (daysUntil: number) => {
+    if (daysUntil === 0) return 'Hoje';
+    if (daysUntil === 1) return 'Amanhã';
+    if (daysUntil < 0) return `${Math.abs(daysUntil)} dias atrás`;
+    if (daysUntil < 7) return `Em ${daysUntil} dias`;
+    return null;
   };
 
-  if (upcomingTransactions.length === 0) {
+  if (loading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Agenda Financeira</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex h-[200px] items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!agenda || agenda.pendingCount === 0) {
     return (
       <Card>
         <CardHeader>
@@ -170,34 +97,34 @@ export function FinancialAgenda({
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg">Agenda Financeira</CardTitle>
-          <Badge variant="secondary">{summary.count} pendentes</Badge>
+          <Badge variant="secondary">{agenda.pendingCount} pendentes</Badge>
         </div>
         <div className="mt-2 flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-1">
             <TrendingUp className="h-4 w-4 text-emerald-500" />
             <span className="text-muted-foreground">
-              A receber: {formatCurrency(summary.totalIncome)}
+              A receber: {formatCurrency(agenda.totalIncome)}
             </span>
           </div>
           <div className="flex items-center gap-1">
             <TrendingDown className="h-4 w-4 text-red-500" />
             <span className="text-muted-foreground">
-              A pagar: {formatCurrency(summary.totalExpense)}
+              A pagar: {formatCurrency(agenda.totalExpense)}
             </span>
           </div>
           <div
             className={cn(
               'font-medium',
-              summary.balance >= 0 ? 'text-emerald-600' : 'text-red-600',
+              agenda.balance >= 0 ? 'text-emerald-600' : 'text-red-600',
             )}
           >
-            Saldo previsto: {summary.balance >= 0 ? '+' : ''}
-            {formatCurrency(summary.balance)}
+            Saldo previsto: {agenda.balance >= 0 ? '+' : ''}
+            {formatCurrency(agenda.balance)}
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        {groupedTransactions.map((group) => (
+        {agenda.groups.map((group) => (
           <div key={group.label}>
             <h3 className="mb-3 text-sm font-medium text-muted-foreground">
               {group.label}
@@ -205,9 +132,9 @@ export function FinancialAgenda({
             <div className="space-y-2">
               {group.transactions.map((tx) => {
                 const txDate = new Date(tx.date);
-                const today = startOfDay(new Date());
-                const isOverdue = isBefore(txDate, today);
-                const isUrgent = differenceInDays(txDate, today) <= 2;
+                const isOverdue = tx.isOverdue;
+                const isUrgent = tx.daysUntilDue <= 2 && !isOverdue;
+                const daysLabel = getDaysLabel(tx.daysUntilDue);
 
                 return (
                   <div
@@ -216,7 +143,7 @@ export function FinancialAgenda({
                       'flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-accent',
                       isOverdue &&
                         'border-red-500/50 bg-red-50 dark:bg-red-950/20',
-                      isUrgent && !isOverdue && 'border-amber-500/50',
+                      isUrgent && 'border-amber-500/50',
                     )}
                   >
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
@@ -233,9 +160,14 @@ export function FinancialAgenda({
                       <div className="flex items-center gap-2 text-sm">
                         <div className="flex items-center gap-1 text-muted-foreground">
                           <Clock className="h-3 w-3" />
-                          <span>{getDaysLabel(txDate)}</span>
+                          <span>
+                            {daysLabel ||
+                              format(txDate, "dd 'de' MMM", { locale: ptBR })}
+                          </span>
                         </div>
-                        <TransactionStatusBadge status={tx.status} />
+                        <TransactionStatusBadge
+                          status={tx.status as TransactionStatus}
+                        />
                       </div>
                     </div>
 
@@ -243,19 +175,19 @@ export function FinancialAgenda({
                       <p
                         className={cn(
                           'text-lg font-semibold',
-                          tx.type === TransactionType.Income
+                          tx.type === 'INCOME'
                             ? 'text-emerald-600'
-                            : tx.type === TransactionType.Expense
+                            : tx.type === 'EXPENSE'
                               ? 'text-red-600'
                               : 'text-blue-600',
                         )}
                       >
-                        {tx.type === TransactionType.Income
+                        {tx.type === 'INCOME'
                           ? '+'
-                          : tx.type === TransactionType.Expense
+                          : tx.type === 'EXPENSE'
                             ? '-'
                             : ''}
-                        {formatCurrency(Number(tx.amount))}
+                        {formatCurrency(tx.amount)}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {format(txDate, 'dd/MM', { locale: ptBR })}

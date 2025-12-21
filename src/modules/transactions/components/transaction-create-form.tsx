@@ -45,6 +45,10 @@ import { cn } from '@/lib/utils';
 import { CreateTransactionMutation } from '../graphql/transactions-mutations';
 import { TransactionsQuery } from '../graphql/transactions-queries';
 import { BalanceForecastQuery } from '../graphql/balance-forecast-queries';
+import {
+  TransactionsCalendarQuery,
+  FinancialAgendaQuery,
+} from '../graphql/calendar-agenda-queries';
 import { TransactionTypeBadge } from './transaction-type-badge';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
@@ -339,7 +343,12 @@ export function IncomeTransactionCreateForm({
                   paymentMethod: data.paymentMethod.value as PaymentMethod,
                 },
               },
-              refetchQueries: [TransactionsQuery, BalanceForecastQuery],
+              refetchQueries: [
+                TransactionsQuery,
+                BalanceForecastQuery,
+                TransactionsCalendarQuery,
+                FinancialAgendaQuery,
+              ],
               onCompleted: () => {
                 toast.success('Movimentação criada!', {
                   description: 'As informações foram salvas com sucesso.',
@@ -634,6 +643,8 @@ export function ExpenseTransactionCreateForm({
               refetchQueries: [
                 TransactionsQuery,
                 BalanceForecastQuery,
+                TransactionsCalendarQuery,
+                FinancialAgendaQuery,
                 BillingQuery,
               ],
               onCompleted: () => {
@@ -934,7 +945,12 @@ export function BetweenAccountsTransactionCreateForm({
                   paymentMethod: data.paymentMethod.value as PaymentMethod,
                 },
               },
-              refetchQueries: [TransactionsQuery, BalanceForecastQuery],
+              refetchQueries: [
+                TransactionsQuery,
+                BalanceForecastQuery,
+                TransactionsCalendarQuery,
+                FinancialAgendaQuery,
+              ],
               onCompleted: () => {
                 toast.success('Movimentação criada!', {
                   description: 'As informações foram salvas com sucesso.',
