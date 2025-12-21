@@ -20,6 +20,12 @@ export const BalanceForecastQuery = graphql(`
         incomeAmount
         expenseAmount
         transactionCount
+        transactions {
+          id
+          description
+          amount
+          isIncome
+        }
       }
       currentBalance
       projectedBalance

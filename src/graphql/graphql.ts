@@ -686,6 +686,16 @@ export type BalanceForecastPointModel = {
   incomeAmount: Scalars['Float']['output'];
   isProjected: Scalars['Boolean']['output'];
   transactionCount: Scalars['Float']['output'];
+  transactions: Array<BalanceForecastTransactionModel>;
+};
+
+export type BalanceForecastTransactionModel = {
+  __typename?: 'BalanceForecastTransactionModel';
+  amount: Scalars['Float']['output'];
+  description: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  isIncome: Scalars['Boolean']['output'];
+  type: Scalars['String']['output'];
 };
 
 export type BoolFilter = {
@@ -4569,6 +4579,13 @@ export type BalanceForecastQuery = {
       incomeAmount: number;
       expenseAmount: number;
       transactionCount: number;
+      transactions: Array<{
+        __typename?: 'BalanceForecastTransactionModel';
+        id: string;
+        description: string;
+        amount: number;
+        isIncome: boolean;
+      }>;
     }>;
   };
 };
@@ -7877,6 +7894,31 @@ export const BalanceForecastDocument = {
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'transactionCount' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'transactions' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'description' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'amount' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'isIncome' },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },

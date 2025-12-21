@@ -79,14 +79,19 @@ export function BalanceForecastChart({ accountId }: BalanceForecastChartProps) {
       incomeAmount: point.incomeAmount,
       expenseAmount: point.expenseAmount,
       transactionCount: point.transactionCount,
+      transactions: point.transactions,
     })) || [];
 
   const minBalance =
     chartData.length > 0 ? Math.min(...chartData.map((d) => d.balance)) : 0;
   const maxBalance =
     chartData.length > 0 ? Math.max(...chartData.map((d) => d.balance)) : 0;
+  const hasNegativeBalance = minBalance < 0;
+
+  // Se todos os valores são positivos, começar do 0
+  // Se há negativos, dar margem de 10%
   const yDomain = [
-    Math.floor(minBalance * (minBalance < 0 ? 1.1 : 0.9)),
+    hasNegativeBalance ? Math.floor(minBalance * 1.1) : 0,
     Math.ceil(maxBalance * 1.1),
   ];
 
@@ -278,7 +283,7 @@ export function BalanceForecastChart({ accountId }: BalanceForecastChartProps) {
                     if (!active || !payload?.[0]) return null;
                     const point = payload[0].payload as (typeof chartData)[0];
                     return (
-                      <div className="rounded-lg border bg-background p-3 shadow-lg">
+                      <div className="max-w-xs rounded-lg border bg-background p-3 shadow-lg">
                         <p className="font-medium">
                           {format(point.date, "dd 'de' MMMM", { locale: ptBR })}
                         </p>
@@ -292,25 +297,44 @@ export function BalanceForecastChart({ accountId }: BalanceForecastChartProps) {
                             Saldo projetado
                           </p>
                         )}
-                        {(point.incomeAmount > 0 ||
-                          point.expenseAmount > 0) && (
-                          <div className="mt-2 border-t pt-2 text-sm">
-                            {point.incomeAmount > 0 && (
-                              <p className="text-emerald-600">
-                                +{formatCurrency(point.incomeAmount)}
-                              </p>
-                            )}
-                            {point.expenseAmount > 0 && (
-                              <p className="text-red-600">
-                                -{formatCurrency(point.expenseAmount)}
-                              </p>
-                            )}
-                          </div>
-                        )}
+                        {point.transactions &&
+                          point.transactions.length > 0 && (
+                            <div className="mt-2 space-y-1 border-t pt-2">
+                              {point.transactions.map((tx) => (
+                                <div
+                                  key={tx.id}
+                                  className="flex items-center justify-between gap-3 text-sm"
+                                >
+                                  <span className="truncate text-muted-foreground">
+                                    {tx.description}
+                                  </span>
+                                  <span
+                                    className={`shrink-0 font-medium ${
+                                      tx.isIncome
+                                        ? 'text-emerald-600'
+                                        : 'text-red-600'
+                                    }`}
+                                  >
+                                    {tx.isIncome ? '+' : '-'}
+                                    {formatCurrency(tx.amount)}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                       </div>
                     );
                   }}
                 />
+                {/* Linha de referência Y=0 quando há valores negativos */}
+                {hasNegativeBalance && (
+                  <ReferenceLine
+                    y={0}
+                    stroke="hsl(var(--muted-foreground))"
+                    strokeDasharray="3 3"
+                    strokeWidth={1}
+                  />
+                )}
                 <ReferenceLine
                   x={format(new Date(), 'dd/MM', { locale: ptBR })}
                   stroke="hsl(var(--primary))"
