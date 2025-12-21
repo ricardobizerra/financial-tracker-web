@@ -44,6 +44,7 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { CreateTransactionMutation } from '../graphql/transactions-mutations';
 import { TransactionsQuery } from '../graphql/transactions-queries';
+import { BalanceForecastQuery } from '../graphql/balance-forecast-queries';
 import { TransactionTypeBadge } from './transaction-type-badge';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
@@ -338,7 +339,7 @@ export function IncomeTransactionCreateForm({
                   paymentMethod: data.paymentMethod.value as PaymentMethod,
                 },
               },
-              refetchQueries: [TransactionsQuery],
+              refetchQueries: [TransactionsQuery, BalanceForecastQuery],
               onCompleted: () => {
                 toast.success('Movimentação criada!', {
                   description: 'As informações foram salvas com sucesso.',
@@ -360,7 +361,14 @@ export function IncomeTransactionCreateForm({
             </DialogFooter>
           )}
         >
-          {({ destinyAccount, date, status, amount, description, paymentMethod }) => (
+          {({
+            destinyAccount,
+            date,
+            status,
+            amount,
+            description,
+            paymentMethod,
+          }) => (
             <>
               {destinyAccount}
               <Separator />
@@ -623,7 +631,11 @@ export function ExpenseTransactionCreateForm({
                   paymentMethod: data.paymentMethod.value as PaymentMethod,
                 },
               },
-              refetchQueries: [TransactionsQuery, BillingQuery],
+              refetchQueries: [
+                TransactionsQuery,
+                BalanceForecastQuery,
+                BillingQuery,
+              ],
               onCompleted: () => {
                 toast.success('Movimentação criada!', {
                   description: 'As informações foram salvas com sucesso.',
@@ -922,7 +934,7 @@ export function BetweenAccountsTransactionCreateForm({
                   paymentMethod: data.paymentMethod.value as PaymentMethod,
                 },
               },
-              refetchQueries: [TransactionsQuery],
+              refetchQueries: [TransactionsQuery, BalanceForecastQuery],
               onCompleted: () => {
                 toast.success('Movimentação criada!', {
                   description: 'As informações foram salvas com sucesso.',

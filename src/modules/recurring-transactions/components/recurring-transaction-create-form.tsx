@@ -35,6 +35,8 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { CreateRecurringTransactionMutation } from '../graphql/recurring-transactions-mutations';
 import { RecurringTransactionsQuery } from '../graphql/recurring-transactions-queries';
+import { TransactionsQuery } from '@/modules/transactions/graphql/transactions-queries';
+import { BalanceForecastQuery } from '@/modules/transactions/graphql/balance-forecast-queries';
 import { TransactionTypeBadge } from '@/modules/transactions/components/transaction-type-badge';
 import Image from 'next/image';
 import { AccountsQuery } from '@/modules/accounts/graphql/accounts-queries';
@@ -309,7 +311,11 @@ export function IncomeRecurringTransactionCreateForm({
                   endDate: data.endDate,
                 },
               },
-              refetchQueries: [RecurringTransactionsQuery],
+              refetchQueries: [
+                RecurringTransactionsQuery,
+                TransactionsQuery,
+                BalanceForecastQuery,
+              ],
               onCompleted: () => {
                 toast.success('Recorrência criada!', {
                   description: 'As transações foram geradas automaticamente.',
@@ -580,7 +586,11 @@ export function ExpenseRecurringTransactionCreateForm({
                   endDate: data.endDate,
                 },
               },
-              refetchQueries: [RecurringTransactionsQuery],
+              refetchQueries: [
+                RecurringTransactionsQuery,
+                TransactionsQuery,
+                BalanceForecastQuery,
+              ],
               onCompleted: () => {
                 toast.success('Recorrência criada!', {
                   description: 'As transações foram geradas automaticamente.',
