@@ -247,8 +247,6 @@ export function IncomeTransactionCreateForm({
     });
   }, [institutionsQueryOptions, institutionsPageInfo]);
 
-  console.log(form.formState.errors);
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -362,13 +360,14 @@ export function IncomeTransactionCreateForm({
             </DialogFooter>
           )}
         >
-          {({ destinyAccount, date, status, amount, description }) => (
+          {({ destinyAccount, date, status, amount, description, paymentMethod }) => (
             <>
               {destinyAccount}
               <Separator />
               {date}
               {status}
               {amount}
+              {paymentMethod}
               {description}
             </>
           )}
