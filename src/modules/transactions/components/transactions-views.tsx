@@ -72,12 +72,7 @@ export function TransactionsViews({
       </TabsContent>
 
       <TabsContent value="forecast" className="mt-0">
-        <BalanceForecastChart
-          transactions={transactions}
-          initialBalance={initialBalance}
-          daysBack={90}
-          daysForward={90}
-        />
+        <BalanceForecastChart accountId={effectiveAccountId} />
       </TabsContent>
 
       <TabsContent value="calendar" className="mt-0">

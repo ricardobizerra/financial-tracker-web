@@ -247,6 +247,8 @@ export function IncomeTransactionCreateForm({
     });
   }, [institutionsQueryOptions, institutionsPageInfo]);
 
+  console.log(form.formState.errors);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
