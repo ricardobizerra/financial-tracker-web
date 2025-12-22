@@ -83,3 +83,25 @@ export const InvestmentRegimesQuery = graphql(`
     }
   }
 `);
+
+export const InvestmentEvolutionQuery = graphql(`
+  query InvestmentEvolution(
+    $period: InvestmentEvolutionPeriod
+    $accountId: String
+  ) {
+    investmentEvolution(period: $period, accountId: $accountId) {
+      dataPoints {
+        date
+        invested
+        currentAmount
+        taxedAmount
+        profit
+      }
+      totalInvested
+      totalCurrentAmount
+      totalTaxedAmount
+      totalProfit
+      totalProfitPercentage
+    }
+  }
+`);

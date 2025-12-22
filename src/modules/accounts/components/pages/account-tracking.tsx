@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { AccountType } from '@/graphql/graphql';
 import { AccountCreditCardTracking } from './account-credit-card-tracking';
 import { AccountWalletTracking } from './account-wallet-tracking';
+import { AccountInvestmentTracking } from './account-investment-tracking';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -14,6 +15,8 @@ const WALLET_ACCOUNT_TYPES = [
   AccountType.Wallet,
   AccountType.Other,
 ];
+
+const INVESTMENT_ACCOUNT_TYPES = [AccountType.Investment, AccountType.Savings];
 
 export function AccountTracking() {
   const { accountId } = useParams<{ accountId: string }>();
@@ -53,6 +56,10 @@ export function AccountTracking() {
 
   if (accountType === AccountType.CreditCard) {
     return <AccountCreditCardTracking account={account} />;
+  }
+
+  if (accountType && INVESTMENT_ACCOUNT_TYPES.includes(accountType)) {
+    return <AccountInvestmentTracking account={account} />;
   }
 
   if (accountType && WALLET_ACCOUNT_TYPES.includes(accountType)) {

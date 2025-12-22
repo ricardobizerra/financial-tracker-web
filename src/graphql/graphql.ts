@@ -1750,6 +1750,33 @@ export type InvestmentCreateWithoutUserInput = {
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+export type InvestmentEvolutionModel = {
+  __typename?: 'InvestmentEvolutionModel';
+  dataPoints: Array<InvestmentEvolutionPointModel>;
+  totalCurrentAmount: Scalars['Float']['output'];
+  totalInvested: Scalars['Float']['output'];
+  totalProfit: Scalars['String']['output'];
+  totalProfitPercentage: Scalars['String']['output'];
+  totalTaxedAmount: Scalars['Float']['output'];
+};
+
+export enum InvestmentEvolutionPeriod {
+  All = 'ALL',
+  Month = 'MONTH',
+  SixMonths = 'SIX_MONTHS',
+  ThreeMonths = 'THREE_MONTHS',
+  Year = 'YEAR',
+}
+
+export type InvestmentEvolutionPointModel = {
+  __typename?: 'InvestmentEvolutionPointModel';
+  currentAmount: Scalars['Float']['output'];
+  date: Scalars['DateTime']['output'];
+  invested: Scalars['Float']['output'];
+  profit: Scalars['Float']['output'];
+  taxedAmount: Scalars['Float']['output'];
+};
+
 export type InvestmentListRelationFilter = {
   every?: InputMaybe<InvestmentWhereInput>;
   none?: InputMaybe<InvestmentWhereInput>;
@@ -2496,6 +2523,7 @@ export type Query = {
   health: Scalars['String']['output'];
   institution: InstitutionModel;
   institutions: InstitutionConnection;
+  investmentEvolution: InvestmentEvolutionModel;
   investmentRegimes: InvestmentRegimeSummaryConnection;
   investments: InvestmentConnection;
   recurringTransaction: Maybe<RecurringTransactionModel>;
@@ -2557,6 +2585,11 @@ export type QueryInstitutionsArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   search?: InputMaybe<Scalars['String']['input']>;
   types?: InputMaybe<Array<AccountType>>;
+};
+
+export type QueryInvestmentEvolutionArgs = {
+  accountId?: InputMaybe<Scalars['String']['input']>;
+  period?: InvestmentEvolutionPeriod;
 };
 
 export type QueryInvestmentsArgs = {
@@ -4392,6 +4425,31 @@ export type InvestmentRegimesQuery = {
         taxedInvestedPercentage: string;
       };
     }> | null;
+  };
+};
+
+export type InvestmentEvolutionQueryVariables = Exact<{
+  period?: InputMaybe<InvestmentEvolutionPeriod>;
+  accountId?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+export type InvestmentEvolutionQuery = {
+  __typename?: 'Query';
+  investmentEvolution: {
+    __typename?: 'InvestmentEvolutionModel';
+    totalInvested: number;
+    totalCurrentAmount: number;
+    totalTaxedAmount: number;
+    totalProfit: string;
+    totalProfitPercentage: string;
+    dataPoints: Array<{
+      __typename?: 'InvestmentEvolutionPointModel';
+      date: any;
+      invested: number;
+      currentAmount: number;
+      taxedAmount: number;
+      profit: number;
+    }>;
   };
 };
 
@@ -7080,6 +7138,115 @@ export const InvestmentRegimesDocument = {
 } as unknown as DocumentNode<
   InvestmentRegimesQuery,
   InvestmentRegimesQueryVariables
+>;
+export const InvestmentEvolutionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'InvestmentEvolution' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'period' },
+          },
+          type: {
+            kind: 'NamedType',
+            name: { kind: 'Name', value: 'InvestmentEvolutionPeriod' },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'accountId' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'investmentEvolution' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'period' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'period' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'accountId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'accountId' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'dataPoints' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'date' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'invested' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'currentAmount' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'taxedAmount' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'profit' },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'totalInvested' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'totalCurrentAmount' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'totalTaxedAmount' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'totalProfit' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'totalProfitPercentage' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  InvestmentEvolutionQuery,
+  InvestmentEvolutionQueryVariables
 >;
 export const CreateRecurringTransactionDocument = {
   kind: 'Document',
