@@ -19,6 +19,7 @@ import { VariationBadge } from '@/components/variation-badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { InvestmentCreateForm } from '@/modules/investments/components/investment-create-form';
 import { InvestmentRegimeCardsGrid } from '@/modules/investments/components/investment-regime-cards';
+import { InvestmentsTable } from '@/modules/investments/components/investments-table';
 import { investmentRegimeLabel } from '@/modules/investments/investment-regime-label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useState } from 'react';
@@ -134,6 +135,7 @@ export function AccountInvestmentTracking({
 
   const defaultRegime =
     account.type === 'SAVINGS' ? Regime.Poupanca : undefined;
+  const isSavings = account.type === 'SAVINGS';
 
   return (
     <div className="space-y-6">
@@ -208,7 +210,12 @@ export function AccountInvestmentTracking({
               <Skeleton className="h-28" />
             </div>
           ) : evolution ? (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div
+              className={cn(
+                'grid grid-cols-2 gap-4',
+                isSavings ? 'md:grid-cols-3' : 'md:grid-cols-4',
+              )}
+            >
               <Card className="border-l-4 border-l-muted-foreground">
                 <CardContent className="p-4">
                   <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -248,16 +255,18 @@ export function AccountInvestmentTracking({
                 </CardContent>
               </Card>
 
-              <Card className="border-l-4 border-l-amber-500">
-                <CardContent className="p-4">
-                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    Após IRPF
-                  </p>
-                  <p className="mt-1 text-2xl font-bold text-amber-600">
-                    {formatCurrency(evolution.totalTaxedAmount)}
-                  </p>
-                </CardContent>
-              </Card>
+              {!isSavings && (
+                <Card className="border-l-4 border-l-amber-500">
+                  <CardContent className="p-4">
+                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                      Após IRPF
+                    </p>
+                    <p className="mt-1 text-2xl font-bold text-amber-600">
+                      {formatCurrency(evolution.totalTaxedAmount)}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           ) : null}
 
@@ -528,14 +537,18 @@ export function AccountInvestmentTracking({
           </div>
         </TabsContent>
 
-        {/* Investments Tab - Cards de Regimes */}
+        {/* Investments Tab - Cards de Regimes ou Tabela para Savings */}
         <TabsContent value="investments" className="mt-0">
-          <InvestmentRegimeCardsGrid
-            regimes={investmentsRegimes}
-            loading={investmentsLoading}
-            emptyMessage="Nenhum investimento registrado nesta conta"
-            columns={3}
-          />
+          {isSavings ? (
+            <InvestmentsTable regime={Regime.Poupanca} />
+          ) : (
+            <InvestmentRegimeCardsGrid
+              regimes={investmentsRegimes}
+              loading={investmentsLoading}
+              emptyMessage="Nenhum investimento registrado nesta conta"
+              columns={3}
+            />
+          )}
         </TabsContent>
       </Tabs>
     </div>
