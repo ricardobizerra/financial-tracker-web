@@ -18,7 +18,7 @@ import {
 import { VariationBadge } from '@/components/variation-badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { InvestmentCreateForm } from '@/modules/investments/components/investment-create-form';
-import { InvestmentsTable } from '@/modules/investments/components/investments-table';
+import { InvestmentRegimeCardsGrid } from '@/modules/investments/components/investment-regime-cards';
 import { investmentRegimeLabel } from '@/modules/investments/investment-regime-label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useState } from 'react';
@@ -83,26 +83,34 @@ export function AccountInvestmentTracking({
   );
   const balance = Number(account.balance || 0);
 
-  // Query para evolução (overview)
+  // Query para evolução (overview) - filtrada por conta
   const { data: evolutionData, loading: evolutionLoading } = useQuery(
     InvestmentEvolutionQuery,
     {
-      variables: { period, accountId: undefined },
+      variables: { period, accountId: account.id },
       skip: activeTab !== 'overview',
     },
   );
 
-  // Query para regimes (distribuição e investimentos)
-  const { data: regimesData, loading: regimesLoading } = useQuery(
-    InvestmentRegimesQuery,
-    {
-      skip: activeTab === 'overview',
-    },
-  );
+  // Query para regimes na distribuição - filtrada por conta
+  const { data: distributionRegimesData, loading: distributionLoading } =
+    useQuery(InvestmentRegimesQuery, {
+      variables: { accountId: account.id },
+      skip: activeTab !== 'distribution',
+    });
+
+  // Query para regimes na tab investimentos - filtrada por conta
+  const { data: investmentsRegimesData, loading: investmentsLoading } =
+    useQuery(InvestmentRegimesQuery, {
+      variables: { accountId: account.id },
+      skip: activeTab !== 'investments',
+    });
 
   const evolution = evolutionData?.investmentEvolution;
-  const regimes =
-    regimesData?.investmentRegimes?.edges?.map((e) => e.node) || [];
+  const distributionRegimes =
+    distributionRegimesData?.investmentRegimes?.edges?.map((e) => e.node) || [];
+  const investmentsRegimes =
+    investmentsRegimesData?.investmentRegimes?.edges?.map((e) => e.node) || [];
 
   // Data para gráfico de linha (evolução temporal)
   const chartData =
@@ -114,7 +122,7 @@ export function AccountInvestmentTracking({
     })) || [];
 
   // Data para gráfico de pizza (distribuição por regime)
-  const pieData = regimes.map((regime, index) => ({
+  const pieData = distributionRegimes.map((regime, index) => ({
     name:
       investmentRegimeLabel[
         regime.name as keyof typeof investmentRegimeLabel
@@ -393,7 +401,7 @@ export function AccountInvestmentTracking({
                 <div className="flex h-[300px] flex-col items-center justify-center gap-4">
                   <PiggyBank className="h-12 w-12 text-muted-foreground" />
                   <p className="text-muted-foreground">
-                    Nenhum investimento registrado
+                    Nenhum investimento registrado nesta conta
                   </p>
                   <InvestmentCreateForm defaultRegime={defaultRegime} />
                 </div>
@@ -406,7 +414,7 @@ export function AccountInvestmentTracking({
         <TabsContent value="distribution" className="mt-0 space-y-6">
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Pie Chart */}
-            {regimesLoading ? (
+            {distributionLoading ? (
               <Card>
                 <CardContent className="flex h-[350px] items-center justify-center">
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -461,14 +469,14 @@ export function AccountInvestmentTracking({
                 <CardTitle className="text-lg">Detalhes por Regime</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {regimesLoading ? (
+                {distributionLoading ? (
                   <div className="space-y-3">
                     <Skeleton className="h-20" />
                     <Skeleton className="h-20" />
                     <Skeleton className="h-20" />
                   </div>
-                ) : regimes.length > 0 ? (
-                  regimes.map((regime, index) => (
+                ) : distributionRegimes.length > 0 ? (
+                  distributionRegimes.map((regime, index) => (
                     <div
                       key={regime.name}
                       className="flex items-center gap-4 rounded-lg border p-4"
@@ -511,7 +519,7 @@ export function AccountInvestmentTracking({
                 ) : (
                   <div className="flex flex-col items-center justify-center py-8">
                     <p className="text-muted-foreground">
-                      Nenhum investimento registrado
+                      Nenhum investimento registrado nesta conta
                     </p>
                   </div>
                 )}
@@ -520,45 +528,14 @@ export function AccountInvestmentTracking({
           </div>
         </TabsContent>
 
-        {/* Investments Tab */}
+        {/* Investments Tab - Cards de Regimes */}
         <TabsContent value="investments" className="mt-0">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-lg">
-                {account.type === 'SAVINGS'
-                  ? 'Poupança'
-                  : 'Todos os Investimentos'}
-              </CardTitle>
-              <InvestmentCreateForm defaultRegime={defaultRegime} />
-            </CardHeader>
-            <CardContent>
-              {account.type === 'SAVINGS' ? (
-                <InvestmentsTable regime={Regime.Poupanca} />
-              ) : (
-                <div className="space-y-4">
-                  {regimes.length > 0 ? (
-                    regimes.map((regime) => (
-                      <div key={regime.name}>
-                        <h3 className="mb-2 font-semibold">
-                          {investmentRegimeLabel[
-                            regime.name as keyof typeof investmentRegimeLabel
-                          ] || regime.name}
-                        </h3>
-                        <InvestmentsTable regime={regime.name as Regime} />
-                      </div>
-                    ))
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-12">
-                      <PiggyBank className="mb-4 h-12 w-12 text-muted-foreground" />
-                      <p className="text-muted-foreground">
-                        Nenhum investimento registrado
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <InvestmentRegimeCardsGrid
+            regimes={investmentsRegimes}
+            loading={investmentsLoading}
+            emptyMessage="Nenhum investimento registrado nesta conta"
+            columns={3}
+          />
         </TabsContent>
       </Tabs>
     </div>

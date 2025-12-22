@@ -72,8 +72,8 @@ export const InvestmentRegimeSummaryFragment = graphql(`
 `);
 
 export const InvestmentRegimesQuery = graphql(`
-  query InvestmentRegimes {
-    investmentRegimes {
+  query InvestmentRegimes($accountId: String) {
+    investmentRegimes(accountId: $accountId) {
       edges {
         cursor
         node {

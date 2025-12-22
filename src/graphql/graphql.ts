@@ -2592,6 +2592,10 @@ export type QueryInvestmentEvolutionArgs = {
   period?: InvestmentEvolutionPeriod;
 };
 
+export type QueryInvestmentRegimesArgs = {
+  accountId?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type QueryInvestmentsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -4405,7 +4409,9 @@ export type InvestmentRegimeSummaryFragmentFragment = {
   taxedInvestedPercentage: string;
 };
 
-export type InvestmentRegimesQueryVariables = Exact<{ [key: string]: never }>;
+export type InvestmentRegimesQueryVariables = Exact<{
+  accountId?: InputMaybe<Scalars['String']['input']>;
+}>;
 
 export type InvestmentRegimesQuery = {
   __typename?: 'Query';
@@ -7064,12 +7070,32 @@ export const InvestmentRegimesDocument = {
       kind: 'OperationDefinition',
       operation: 'query',
       name: { kind: 'Name', value: 'InvestmentRegimes' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'accountId' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+      ],
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'investmentRegimes' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'accountId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'accountId' },
+                },
+              },
+            ],
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
