@@ -82,14 +82,12 @@ export function AccountInvestmentTracking({
   const [period, setPeriod] = useState<InvestmentEvolutionPeriod>(
     InvestmentEvolutionPeriod.Year,
   );
-  const balance = Number(account.balance || 0);
 
-  // Query para evolução (overview) - filtrada por conta
+  // Query para evolução - sempre ativa para exibir cards
   const { data: evolutionData, loading: evolutionLoading } = useQuery(
     InvestmentEvolutionQuery,
     {
       variables: { period, accountId: account.id },
-      skip: activeTab !== 'overview',
     },
   );
 
@@ -166,21 +164,82 @@ export function AccountInvestmentTracking({
               {account.description && ` • ${account.description}`}
             </p>
           </div>
-          <div className="text-right">
-            <p className="text-sm text-muted-foreground">Saldo disponível</p>
-            <p
-              className={cn(
-                'text-2xl font-bold',
-                balance >= 0
-                  ? 'text-emerald-600 dark:text-emerald-400'
-                  : 'text-red-600 dark:text-red-400',
-              )}
-            >
-              {formatCurrency(balance)}
-            </p>
-          </div>
         </CardContent>
       </Card>
+
+      {/* Summary Cards - sempre visíveis */}
+      {evolutionLoading ? (
+        <div
+          className={cn(
+            'grid grid-cols-2 gap-4',
+            isSavings ? 'md:grid-cols-3' : 'md:grid-cols-4',
+          )}
+        >
+          <Skeleton className="h-28" />
+          <Skeleton className="h-28" />
+          <Skeleton className="h-28" />
+          {!isSavings && <Skeleton className="h-28" />}
+        </div>
+      ) : evolution ? (
+        <div
+          className={cn(
+            'grid grid-cols-2 gap-4',
+            isSavings ? 'md:grid-cols-3' : 'md:grid-cols-4',
+          )}
+        >
+          <Card className="border-l-4 border-l-muted-foreground">
+            <CardContent className="p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Total Investido
+              </p>
+              <p className="mt-1 text-2xl font-bold">
+                {formatCurrency(evolution.totalInvested)}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-primary">
+            <CardContent className="p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Montante Atual
+              </p>
+              <p className="mt-1 text-2xl font-bold text-primary">
+                {formatCurrency(evolution.totalCurrentAmount)}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-emerald-500">
+            <CardContent className="p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Ganho Total
+              </p>
+              <div className="mt-1 flex items-center gap-2">
+                <p className="text-2xl font-bold text-emerald-600">
+                  {formatCurrency(Number(evolution.totalProfit))}
+                </p>
+                <VariationBadge
+                  variation={evolution.totalProfitPercentage}
+                  size="sm"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {!isSavings && (
+            <Card className="border-l-4 border-l-amber-500">
+              <CardContent className="p-4">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Após IRPF
+                </p>
+                <p className="mt-1 text-2xl font-bold text-amber-600">
+                  {formatCurrency(evolution.totalTaxedAmount)}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      ) : null}
 
       {/* Tabs for different views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -201,75 +260,6 @@ export function AccountInvestmentTracking({
 
         {/* Overview Tab - Evolução */}
         <TabsContent value="overview" className="mt-0 space-y-6">
-          {/* Summary Cards */}
-          {evolutionLoading ? (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-              <Skeleton className="h-28" />
-              <Skeleton className="h-28" />
-              <Skeleton className="h-28" />
-              <Skeleton className="h-28" />
-            </div>
-          ) : evolution ? (
-            <div
-              className={cn(
-                'grid grid-cols-2 gap-4',
-                isSavings ? 'md:grid-cols-3' : 'md:grid-cols-4',
-              )}
-            >
-              <Card className="border-l-4 border-l-muted-foreground">
-                <CardContent className="p-4">
-                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    Total Investido
-                  </p>
-                  <p className="mt-1 text-2xl font-bold">
-                    {formatCurrency(evolution.totalInvested)}
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-l-4 border-l-primary">
-                <CardContent className="p-4">
-                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    Montante Atual
-                  </p>
-                  <p className="mt-1 text-2xl font-bold text-primary">
-                    {formatCurrency(evolution.totalCurrentAmount)}
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-l-4 border-l-emerald-500">
-                <CardContent className="p-4">
-                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    Ganho Total
-                  </p>
-                  <div className="mt-1 flex items-center gap-2">
-                    <p className="text-2xl font-bold text-emerald-600">
-                      {formatCurrency(Number(evolution.totalProfit))}
-                    </p>
-                    <VariationBadge
-                      variation={evolution.totalProfitPercentage}
-                      size="sm"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
-              {!isSavings && (
-                <Card className="border-l-4 border-l-amber-500">
-                  <CardContent className="p-4">
-                    <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                      Após IRPF
-                    </p>
-                    <p className="mt-1 text-2xl font-bold text-amber-600">
-                      {formatCurrency(evolution.totalTaxedAmount)}
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-          ) : null}
-
           {/* Evolution Line Chart */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
