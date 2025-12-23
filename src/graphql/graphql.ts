@@ -2597,7 +2597,7 @@ export type QueryInvestmentRegimesArgs = {
 };
 
 export type QueryInvestmentsArgs = {
-  accountId?: InputMaybe<Scalars['String']['input']>;
+  accountIds?: InputMaybe<Array<Scalars['String']['input']>>;
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -4352,7 +4352,9 @@ export type InvestmentsQueryVariables = Exact<{
   last?: InputMaybe<Scalars['Int']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   regime?: InputMaybe<Regime>;
-  accountId?: InputMaybe<Scalars['String']['input']>;
+  accountIds?: InputMaybe<
+    Array<Scalars['String']['input']> | Scalars['String']['input']
+  >;
 }>;
 
 export type InvestmentsQuery = {
@@ -6867,9 +6869,18 @@ export const InvestmentsDocument = {
           kind: 'VariableDefinition',
           variable: {
             kind: 'Variable',
-            name: { kind: 'Name', value: 'accountId' },
+            name: { kind: 'Name', value: 'accountIds' },
           },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+          type: {
+            kind: 'ListType',
+            type: {
+              kind: 'NonNullType',
+              type: {
+                kind: 'NamedType',
+                name: { kind: 'Name', value: 'String' },
+              },
+            },
+          },
         },
       ],
       selectionSet: {
@@ -6937,10 +6948,10 @@ export const InvestmentsDocument = {
               },
               {
                 kind: 'Argument',
-                name: { kind: 'Name', value: 'accountId' },
+                name: { kind: 'Name', value: 'accountIds' },
                 value: {
                   kind: 'Variable',
-                  name: { kind: 'Name', value: 'accountId' },
+                  name: { kind: 'Name', value: 'accountIds' },
                 },
               },
             ],

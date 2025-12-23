@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { formatCurrency } from '@/lib/formatters/currency';
 import { cn } from '@/lib/utils';
-import { EyeIcon, Loader2, PiggyBank } from 'lucide-react';
+import { EyeIcon, PiggyBank } from 'lucide-react';
 import { VariationBadge } from '@/components/variation-badge';
 import { investmentRegimeLabel } from '../investment-regime-label';
 import { InvestmentCreateForm } from './investment-create-form';
@@ -24,9 +24,17 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 interface InvestmentRegimeCardProps {
   regime: InvestmentRegimeSummaryFragmentFragment;
+  accountId?: string;
 }
 
-export function InvestmentRegimeCard({ regime }: InvestmentRegimeCardProps) {
+export function InvestmentRegimeCard({
+  regime,
+  accountId,
+}: InvestmentRegimeCardProps) {
+  const href = accountId
+    ? `/investments/${regime.name.toLowerCase()}?accountId=${accountId}`
+    : `/investments/${regime.name.toLowerCase()}`;
+
   return (
     <Card className={cn(regime.quantity === 0 && 'opacity-50')}>
       <CardContent>
@@ -87,10 +95,7 @@ export function InvestmentRegimeCard({ regime }: InvestmentRegimeCardProps) {
             className="flex-1"
             asChild
           >
-            <Link
-              href={`/investments/${regime.name.toLowerCase()}`}
-              className="flex items-center gap-1"
-            >
+            <Link href={href} className="flex items-center gap-1">
               <EyeIcon className="h-4 w-4" />
               Ver investimentos
             </Link>
@@ -111,6 +116,7 @@ interface InvestmentRegimeCardsGridProps {
   loading?: boolean;
   emptyMessage?: string;
   columns?: 2 | 3 | 4;
+  accountId?: string;
 }
 
 export function InvestmentRegimeCardsGrid({
@@ -118,6 +124,7 @@ export function InvestmentRegimeCardsGrid({
   loading = false,
   emptyMessage = 'Nenhum investimento registrado',
   columns = 4,
+  accountId,
 }: InvestmentRegimeCardsGridProps) {
   const gridCols = {
     2: 'md:grid-cols-2',
@@ -149,7 +156,11 @@ export function InvestmentRegimeCardsGrid({
   return (
     <div className={cn('grid grid-cols-1 gap-4', gridCols[columns])}>
       {regimes.map((regime) => (
-        <InvestmentRegimeCard key={regime.name} regime={regime} />
+        <InvestmentRegimeCard
+          key={regime.name}
+          regime={regime}
+          accountId={accountId}
+        />
       ))}
     </div>
   );

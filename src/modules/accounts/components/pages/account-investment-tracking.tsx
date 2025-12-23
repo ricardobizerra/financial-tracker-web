@@ -536,13 +536,18 @@ export function AccountInvestmentTracking({
         {/* Investments Tab - Cards de Regimes ou Tabela para Savings */}
         <TabsContent value="investments" className="mt-0">
           {isSavings ? (
-            <InvestmentsTable regime={Regime.Poupanca} accountId={account.id} />
+            <InvestmentsTable
+              regime={Regime.Poupanca}
+              accountIds={[account.id]}
+              showFilters={false}
+            />
           ) : (
             <InvestmentRegimeCardsGrid
               regimes={investmentsRegimes}
               loading={investmentsLoading}
               emptyMessage="Nenhum investimento registrado nesta conta"
               columns={3}
+              accountId={account.id}
             />
           )}
         </TabsContent>
