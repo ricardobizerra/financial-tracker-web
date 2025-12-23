@@ -30,7 +30,11 @@ export function InvestmentsTable({
   return (
     <div className="space-y-4">
       {showFilters && (
-        <InvestmentsFilters filters={filters} onFiltersChange={setFilters} />
+        <InvestmentsFilters
+          filters={filters}
+          onFiltersChange={setFilters}
+          regime={regime}
+        />
       )}
 
       <DataTable

@@ -2,7 +2,7 @@
 
 import { useQuery } from '@apollo/client';
 import { AccountsQuery } from '@/modules/accounts/graphql/accounts-queries';
-import { AccountType } from '@/graphql/graphql';
+import { AccountType, Regime } from '@/graphql/graphql';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -22,15 +22,21 @@ export interface InvestmentFilters {
 interface InvestmentsFiltersProps {
   filters: InvestmentFilters;
   onFiltersChange: (filters: InvestmentFilters) => void;
+  regime: Regime;
 }
 
 export function InvestmentsFilters({
   filters,
   onFiltersChange,
+  regime,
 }: InvestmentsFiltersProps) {
+  // Regime Poupança = contas Savings, outros regimes = contas Investment
+  const accountType =
+    regime === Regime.Poupanca ? AccountType.Savings : AccountType.Investment;
+
   const { data } = useQuery(AccountsQuery, {
     variables: {
-      types: [AccountType.Investment, AccountType.Savings],
+      types: [accountType],
     },
   });
 
@@ -80,7 +86,7 @@ export function InvestmentsFilters({
           <div className="space-y-3">
             {accounts.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                Nenhuma conta de investimento encontrada
+                Nenhuma conta encontrada
               </p>
             ) : (
               accounts.map((account) => (
@@ -94,20 +100,17 @@ export function InvestmentsFilters({
                   />
                   <Label
                     htmlFor={`account-${account.id}`}
-                    className="cursor-pointer text-sm flex items-center gap-2"
+                    className="flex cursor-pointer items-center gap-2 text-sm"
                   >
-                    <Image
-                      src={account.institution.logoUrl!}
-                      alt={account.institution.name}
-                      width={24}
-                      height={24}
-                    />
+                    {account.institution?.logoUrl && (
+                      <Image
+                        src={account.institution.logoUrl}
+                        alt={account.institution.name}
+                        width={24}
+                        height={24}
+                      />
+                    )}
                     <span>{account.name}</span>
-                    <span className="ml-1 text-xs text-muted-foreground">
-                      (
-                      {account.type === 'SAVINGS' ? 'Poupança' : 'Investimento'}
-                      )
-                    </span>
                   </Label>
                 </div>
               ))
