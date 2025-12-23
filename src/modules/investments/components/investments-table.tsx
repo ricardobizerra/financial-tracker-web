@@ -8,13 +8,19 @@ import { InvestmentsQuery } from '../graphql/investments-queries';
 import { InvestmentCreateForm } from './investment-create-form';
 import { investmentsTableColumns } from './investments-table-columns';
 
-export function InvestmentsTable({ regime }: { regime: Regime }) {
+interface InvestmentsTableProps {
+  regime: Regime;
+  accountId?: string;
+}
+
+export function InvestmentsTable({ regime, accountId }: InvestmentsTableProps) {
   return (
     <DataTable
       mode="query"
       query={InvestmentsQuery}
       variables={{
         regime: regime,
+        accountId: accountId,
       }}
       initialSorting={{
         key: OrdenationInvestmentModel.CorrectedAmount,

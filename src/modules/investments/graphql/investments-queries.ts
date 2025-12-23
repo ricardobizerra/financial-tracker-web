@@ -24,6 +24,7 @@ export const InvestmentsQuery = graphql(`
     $last: Int
     $before: String
     $regime: Regime
+    $accountId: String
   ) {
     investments(
       first: $first
@@ -33,6 +34,7 @@ export const InvestmentsQuery = graphql(`
       last: $last
       before: $before
       regime: $regime
+      accountId: $accountId
     ) {
       edges {
         cursor

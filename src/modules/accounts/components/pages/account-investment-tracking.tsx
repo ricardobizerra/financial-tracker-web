@@ -397,11 +397,17 @@ export function AccountInvestmentTracking({
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <div className="flex h-[300px] flex-col items-center justify-center gap-4">
+                <div className="flex h-[300px] flex-col items-center justify-center gap-4 text-center">
                   <PiggyBank className="h-12 w-12 text-muted-foreground" />
-                  <p className="text-muted-foreground">
-                    Nenhum investimento registrado nesta conta
-                  </p>
+                  <div>
+                    <p className="font-medium text-muted-foreground">
+                      Sem dados históricos para exibir
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Os dados de evolução aparecerão aqui após o primeiro mês
+                      com investimentos registrados.
+                    </p>
+                  </div>
                   <InvestmentCreateForm defaultRegime={defaultRegime} />
                 </div>
               )}
@@ -530,7 +536,7 @@ export function AccountInvestmentTracking({
         {/* Investments Tab - Cards de Regimes ou Tabela para Savings */}
         <TabsContent value="investments" className="mt-0">
           {isSavings ? (
-            <InvestmentsTable regime={Regime.Poupanca} />
+            <InvestmentsTable regime={Regime.Poupanca} accountId={account.id} />
           ) : (
             <InvestmentRegimeCardsGrid
               regimes={investmentsRegimes}
