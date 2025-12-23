@@ -28,7 +28,7 @@ import { CreateAccountMutation } from '../graphql/accounts-mutations';
 import { AccountsQuery, InstitutionsQuery } from '../graphql/accounts-queries';
 import { accountTypeLabels, cardTypeLabels } from '../accounts-constants';
 import { AccountTypeBadge } from './account-type-badge';
-import Image from 'next/image';
+import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Separator } from '@/components/ui/separator';
@@ -231,24 +231,12 @@ export function AccountCreateForm({
               options: institutionsOptions,
               renderLabel: (option) => (
                 <div className="flex items-center gap-2">
-                  <div className="relative flex h-5 w-5 items-center justify-center">
-                    <Image
-                      src={option.data.logoUrl}
-                      alt={option.data.name}
-                      width={20}
-                      height={20}
-                      className="aspect-square rounded object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                        target.nextElementSibling?.classList.remove('hidden');
-                        target.nextElementSibling?.classList.add('flex');
-                      }}
-                    />
-                    <div className="absolute inset-0 hidden items-center justify-center rounded bg-muted text-xs font-medium text-muted-foreground">
-                      {option.data.name.charAt(0).toUpperCase()}
-                    </div>
-                  </div>
+                  <InstitutionLogo
+                    logoUrl={option.data.logoUrl}
+                    name={option.data.name}
+                    color={option.data.color}
+                    size="sm"
+                  />
                   <div
                     className="h-5 w-1 rounded"
                     style={{ backgroundColor: option.data.color }}

@@ -9,13 +9,13 @@ import {
 } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/formatters/currency';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
 import { AccountTypeBadge } from './account-type-badge';
 import { AccountStatusBadge } from './account-status-badge';
 import { LastUpdatedLabel } from '@/components/last-updated-label';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { EyeIcon } from 'lucide-react';
+import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
 
 export function AccountCard({ account }: { account: AccountFragmentFragment }) {
   return (
@@ -29,28 +29,11 @@ export function AccountCard({ account }: { account: AccountFragmentFragment }) {
       <CardContent className="p-4">
         <CardHeader className="mb-4 flex flex-row items-center justify-between gap-4 p-0">
           <div className="flex items-center gap-3">
-            {account.institution?.logoUrl ? (
-              <div className="relative h-8 w-8">
-                <Image
-                  src={account.institution.logoUrl}
-                  alt={account.institution.name}
-                  className="rounded object-cover"
-                  fill
-                  sizes="32px"
-                />
-              </div>
-            ) : (
-              <div
-                className="flex h-8 w-8 items-center justify-center rounded-full"
-                style={{
-                  backgroundColor: account.institution?.color || '#e5e7eb',
-                }}
-              >
-                <span className="text-xs font-medium text-white">
-                  {account.institution?.name.substring(0, 2).toUpperCase()}
-                </span>
-              </div>
-            )}
+            <InstitutionLogo
+              logoUrl={account.institution?.logoUrl}
+              name={account.institution?.name || 'Sem instituição'}
+              color={account.institution?.color}
+            />
             <div>
               <CardTitle className="text-base">{account.name}</CardTitle>
               <CardDescription className="text-xs">

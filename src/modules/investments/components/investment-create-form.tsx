@@ -28,7 +28,7 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { investmentRegimeLabel } from '../investment-regime-label';
 import { AccountsQuery } from '@/modules/accounts/graphql/accounts-queries';
-import Image from 'next/image';
+import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AccountCreateForm } from '@/modules/accounts/components/account-create-form';
@@ -200,12 +200,10 @@ export function InvestmentCreateForm({
               renderLabel: (option) => (
                 <div className="flex items-center gap-3 px-2 py-1.5">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
-                    <Image
-                      src={option.data.institution.logoUrl}
-                      alt={option.data.institution.name}
-                      width={20}
-                      height={20}
-                      className="h-5 w-5 object-contain"
+                    <InstitutionLogo
+                      logoUrl={option.data.institution.logoUrl}
+                      name={option.data.institution.name}
+                      size="sm"
                     />
                   </div>
                   <div className="flex min-w-0 flex-1 flex-col items-start">

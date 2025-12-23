@@ -38,7 +38,7 @@ import { RecurringTransactionsQuery } from '../graphql/recurring-transactions-qu
 import { TransactionsQuery } from '@/modules/transactions/graphql/transactions-queries';
 import { BalanceForecastQuery } from '@/modules/transactions/graphql/balance-forecast-queries';
 import { TransactionTypeBadge } from '@/modules/transactions/components/transaction-type-badge';
-import Image from 'next/image';
+import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
 import { AccountsQuery } from '@/modules/accounts/graphql/accounts-queries';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -270,12 +270,10 @@ export function IncomeRecurringTransactionCreateForm({
               renderLabel: (option) => (
                 <div className="flex items-center gap-3 py-1.5">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
-                    <Image
-                      src={option.data.institution.logoUrl}
-                      alt={option.data.institution.name}
-                      width={20}
-                      height={20}
-                      className="h-5 w-5 object-contain"
+                    <InstitutionLogo
+                      logoUrl={option.data.institution.logoUrl}
+                      name={option.data.institution.name}
+                      size="sm"
                     />
                   </div>
                   <div className="flex min-w-0 flex-1 flex-col items-start">
@@ -545,12 +543,10 @@ export function ExpenseRecurringTransactionCreateForm({
               renderLabel: (option) => (
                 <div className="flex items-center gap-3 py-1.5">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
-                    <Image
-                      src={option.data.institution.logoUrl}
-                      alt={option.data.institution.name}
-                      width={20}
-                      height={20}
-                      className="h-5 w-5 object-contain"
+                    <InstitutionLogo
+                      logoUrl={option.data.institution.logoUrl}
+                      name={option.data.institution.name}
+                      size="sm"
                     />
                   </div>
                   <div className="flex min-w-0 flex-1 flex-col items-start">

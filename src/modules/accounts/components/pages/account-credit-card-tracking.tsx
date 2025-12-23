@@ -31,7 +31,7 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import Image from 'next/image';
+import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
 import { formatDate } from '@/lib/formatters/date';
 import { formatCurrency } from '@/lib/formatters/currency';
 import { Separator } from '@/components/ui/separator';
@@ -172,12 +172,10 @@ function PayBillingDialog({
                 renderLabel: (option) => (
                   <div className="flex items-center gap-3 py-1.5">
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
-                      <Image
-                        src={option.data.institution.logoUrl}
-                        alt={option.data.institution.name}
-                        width={20}
-                        height={20}
-                        className="h-5 w-5 object-contain"
+                      <InstitutionLogo
+                        logoUrl={option.data.institution.logoUrl}
+                        name={option.data.institution.name}
+                        size="sm"
                       />
                     </div>
                     <div className="flex min-w-0 flex-1 flex-col items-start">
@@ -356,12 +354,11 @@ export function AccountCreditCardTracking({
             <div className="flex items-center gap-4">
               {account.institution?.logoUrl ? (
                 <div className="h-14 w-14 flex-shrink-0 rounded-xl bg-white p-2 shadow-sm sm:h-16 sm:w-16">
-                  <Image
-                    src={account.institution.logoUrl}
-                    alt={account.institution.name}
-                    width={64}
-                    height={64}
-                    className="h-full w-full object-contain"
+                  <InstitutionLogo
+                    logoUrl={account.institution.logoUrl}
+                    name={account.institution.name}
+                    size="lg"
+                    className="h-full w-full bg-transparent"
                   />
                 </div>
               ) : (

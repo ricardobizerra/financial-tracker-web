@@ -40,7 +40,7 @@ import {
 import { formatCurrency } from '@/lib/formatters/currency';
 import { toast } from 'sonner';
 import { monthLabels } from '../recurring-transactions-constants';
-import Image from 'next/image';
+import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   AlertDialog,
@@ -186,15 +186,11 @@ export function RecurringTransactionsList() {
               <TableCell>
                 {account && (
                   <div className="flex items-center gap-2">
-                    {account.institution?.logoUrl && (
-                      <Image
-                        src={account.institution.logoUrl}
-                        alt={account.institution.name}
-                        width={20}
-                        height={20}
-                        className="h-5 w-5"
-                      />
-                    )}
+                    <InstitutionLogo
+                      logoUrl={account.institution?.logoUrl}
+                      name={account.institution?.name || account.name}
+                      size="sm"
+                    />
                     <span className="text-sm">{account.name}</span>
                   </div>
                 )}

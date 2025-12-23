@@ -8,8 +8,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/formatters/currency';
-import Image from 'next/image';
 import { AccountTypeBadge } from '../account-type-badge';
+import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
 import { useQuery } from '@apollo/client';
 import {
   InvestmentEvolutionQuery,
@@ -140,19 +140,12 @@ export function AccountInvestmentTracking({
       {/* Account Header Card */}
       <Card>
         <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-muted">
-            {account.institution?.logoUrl ? (
-              <Image
-                src={account.institution.logoUrl}
-                alt={account.institution.name}
-                width={40}
-                height={40}
-                className="h-10 w-10 object-contain"
-              />
-            ) : (
-              <PiggyBank className="h-8 w-8 text-muted-foreground" />
-            )}
-          </div>
+          <InstitutionLogo
+            logoUrl={account.institution?.logoUrl}
+            name={account.institution?.name || 'Sem instituição'}
+            color={account.institution?.color}
+            size="xl"
+          />
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold">{account.name}</h1>

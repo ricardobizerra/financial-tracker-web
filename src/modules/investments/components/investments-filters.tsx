@@ -12,9 +12,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Building2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
 import { InvestmentAccountsQuery } from '../graphql/investments-queries';
 import { Badge } from '@/components/ui/badge';
+import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
 
 export interface InvestmentFilters {
   accountIds?: string[];
@@ -97,17 +97,14 @@ export function InvestmentsFilters({
                   />
                   <Label
                     htmlFor={`account-${account.id}`}
-                    className="flex cursor-pointer items-center gap-2 justify-between w-full text-sm"
+                    className="flex w-full cursor-pointer items-center justify-between gap-2 text-sm"
                   >
                     <div className="flex items-center gap-2">
-                      {account.institutionLogoUrl && (
-                        <Image
-                          src={account.institutionLogoUrl}
-                          alt={account.institutionName || ''}
-                          width={24}
-                          height={24}
-                        />
-                      )}
+                      <InstitutionLogo
+                        logoUrl={account.institutionLogoUrl}
+                        name={account.institutionName || account.name}
+                        size="sm"
+                      />
                       <span>{account.name}</span>
                     </div>
                     <Badge variant="secondary" size="sm">
