@@ -36,6 +36,7 @@ type Documents = {
   '\n  fragment InvestmentRegimeSummaryFragment on InvestmentRegimeSummary {\n    name\n    quantity\n    totalInvested\n    currentInvested\n    currentInvestedPercentage\n    taxedInvested\n    taxedInvestedPercentage\n  }\n': typeof types.InvestmentRegimeSummaryFragmentFragmentDoc;
   '\n  query InvestmentRegimes($accountId: String) {\n    investmentRegimes(accountId: $accountId) {\n      edges {\n        cursor\n        node {\n          ...InvestmentRegimeSummaryFragment\n        }\n      }\n    }\n  }\n': typeof types.InvestmentRegimesDocument;
   '\n  query InvestmentEvolution(\n    $period: InvestmentEvolutionPeriod\n    $accountId: String\n  ) {\n    investmentEvolution(period: $period, accountId: $accountId) {\n      dataPoints {\n        date\n        invested\n        currentAmount\n        taxedAmount\n        profit\n      }\n      totalInvested\n      totalCurrentAmount\n      totalTaxedAmount\n      totalProfit\n      totalProfitPercentage\n    }\n  }\n': typeof types.InvestmentEvolutionDocument;
+  '\n  query InvestmentAccounts($regime: Regime!) {\n    investmentAccounts(regime: $regime) {\n      id\n      name\n      institutionName\n      institutionLogoUrl\n      investmentCount\n    }\n  }\n': typeof types.InvestmentAccountsDocument;
   '\n  mutation CreateRecurringTransaction($data: CreateRecurringTransactionInput!) {\n    createRecurringTransaction(data: $data) {\n      id\n    }\n  }\n': typeof types.CreateRecurringTransactionDocument;
   '\n  mutation UpdateRecurringTransactionFromDate(\n    $id: String!\n    $fromDate: DateTime!\n    $data: UpdateRecurringTransactionInput!\n  ) {\n    updateRecurringTransactionFromDate(\n      id: $id\n      fromDate: $fromDate\n      data: $data\n    ) {\n      id\n    }\n  }\n': typeof types.UpdateRecurringTransactionFromDateDocument;
   '\n  mutation PauseRecurringTransaction($id: String!) {\n    pauseRecurringTransaction(id: $id) {\n      id\n      isActive\n    }\n  }\n': typeof types.PauseRecurringTransactionDocument;
@@ -99,6 +100,8 @@ const documents: Documents = {
     types.InvestmentRegimesDocument,
   '\n  query InvestmentEvolution(\n    $period: InvestmentEvolutionPeriod\n    $accountId: String\n  ) {\n    investmentEvolution(period: $period, accountId: $accountId) {\n      dataPoints {\n        date\n        invested\n        currentAmount\n        taxedAmount\n        profit\n      }\n      totalInvested\n      totalCurrentAmount\n      totalTaxedAmount\n      totalProfit\n      totalProfitPercentage\n    }\n  }\n':
     types.InvestmentEvolutionDocument,
+  '\n  query InvestmentAccounts($regime: Regime!) {\n    investmentAccounts(regime: $regime) {\n      id\n      name\n      institutionName\n      institutionLogoUrl\n      investmentCount\n    }\n  }\n':
+    types.InvestmentAccountsDocument,
   '\n  mutation CreateRecurringTransaction($data: CreateRecurringTransactionInput!) {\n    createRecurringTransaction(data: $data) {\n      id\n    }\n  }\n':
     types.CreateRecurringTransactionDocument,
   '\n  mutation UpdateRecurringTransactionFromDate(\n    $id: String!\n    $fromDate: DateTime!\n    $data: UpdateRecurringTransactionInput!\n  ) {\n    updateRecurringTransactionFromDate(\n      id: $id\n      fromDate: $fromDate\n      data: $data\n    ) {\n      id\n    }\n  }\n':
@@ -281,6 +284,12 @@ export function graphql(
 export function graphql(
   source: '\n  query InvestmentEvolution(\n    $period: InvestmentEvolutionPeriod\n    $accountId: String\n  ) {\n    investmentEvolution(period: $period, accountId: $accountId) {\n      dataPoints {\n        date\n        invested\n        currentAmount\n        taxedAmount\n        profit\n      }\n      totalInvested\n      totalCurrentAmount\n      totalTaxedAmount\n      totalProfit\n      totalProfitPercentage\n    }\n  }\n',
 ): (typeof documents)['\n  query InvestmentEvolution(\n    $period: InvestmentEvolutionPeriod\n    $accountId: String\n  ) {\n    investmentEvolution(period: $period, accountId: $accountId) {\n      dataPoints {\n        date\n        invested\n        currentAmount\n        taxedAmount\n        profit\n      }\n      totalInvested\n      totalCurrentAmount\n      totalTaxedAmount\n      totalProfit\n      totalProfitPercentage\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  query InvestmentAccounts($regime: Regime!) {\n    investmentAccounts(regime: $regime) {\n      id\n      name\n      institutionName\n      institutionLogoUrl\n      investmentCount\n    }\n  }\n',
+): (typeof documents)['\n  query InvestmentAccounts($regime: Regime!) {\n    investmentAccounts(regime: $regime) {\n      id\n      name\n      institutionName\n      institutionLogoUrl\n      investmentCount\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

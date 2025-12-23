@@ -653,6 +653,15 @@ export type AccountWhereUniqueInput = {
   userId?: InputMaybe<StringFilter>;
 };
 
+export type AccountWithInvestmentCount = {
+  __typename?: 'AccountWithInvestmentCount';
+  id: Scalars['String']['output'];
+  institutionLogoUrl: Maybe<Scalars['String']['output']>;
+  institutionName: Maybe<Scalars['String']['output']>;
+  investmentCount: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+};
+
 export type AgendaGroupModel = {
   __typename?: 'AgendaGroupModel';
   label: Scalars['String']['output'];
@@ -2523,6 +2532,7 @@ export type Query = {
   health: Scalars['String']['output'];
   institution: InstitutionModel;
   institutions: InstitutionConnection;
+  investmentAccounts: Array<AccountWithInvestmentCount>;
   investmentEvolution: InvestmentEvolutionModel;
   investmentRegimes: InvestmentRegimeSummaryConnection;
   investments: InvestmentConnection;
@@ -2585,6 +2595,10 @@ export type QueryInstitutionsArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   search?: InputMaybe<Scalars['String']['input']>;
   types?: InputMaybe<Array<AccountType>>;
+};
+
+export type QueryInvestmentAccountsArgs = {
+  regime: Regime;
 };
 
 export type QueryInvestmentEvolutionArgs = {
@@ -4461,6 +4475,22 @@ export type InvestmentEvolutionQuery = {
       profit: number;
     }>;
   };
+};
+
+export type InvestmentAccountsQueryVariables = Exact<{
+  regime: Regime;
+}>;
+
+export type InvestmentAccountsQuery = {
+  __typename?: 'Query';
+  investmentAccounts: Array<{
+    __typename?: 'AccountWithInvestmentCount';
+    id: string;
+    name: string;
+    institutionName: string | null;
+    institutionLogoUrl: string | null;
+    investmentCount: number;
+  }>;
 };
 
 export type CreateRecurringTransactionMutationVariables = Exact<{
@@ -7302,6 +7332,73 @@ export const InvestmentEvolutionDocument = {
 } as unknown as DocumentNode<
   InvestmentEvolutionQuery,
   InvestmentEvolutionQueryVariables
+>;
+export const InvestmentAccountsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'InvestmentAccounts' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'regime' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'Regime' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'investmentAccounts' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'regime' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'regime' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institutionName' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institutionLogoUrl' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'investmentCount' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  InvestmentAccountsQuery,
+  InvestmentAccountsQueryVariables
 >;
 export const CreateRecurringTransactionDocument = {
   kind: 'Document',

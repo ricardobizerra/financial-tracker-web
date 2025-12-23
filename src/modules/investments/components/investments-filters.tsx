@@ -1,8 +1,7 @@
 'use client';
 
 import { useQuery } from '@apollo/client';
-import { AccountsQuery } from '@/modules/accounts/graphql/accounts-queries';
-import { AccountType, Regime } from '@/graphql/graphql';
+import { Regime } from '@/graphql/graphql';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -14,6 +13,8 @@ import { Label } from '@/components/ui/label';
 import { Building2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { InvestmentAccountsQuery } from '../graphql/investments-queries';
+import { Badge } from '@/components/ui/badge';
 
 export interface InvestmentFilters {
   accountIds?: string[];
@@ -30,17 +31,13 @@ export function InvestmentsFilters({
   onFiltersChange,
   regime,
 }: InvestmentsFiltersProps) {
-  // Regime Poupança = contas Savings, outros regimes = contas Investment
-  const accountType =
-    regime === Regime.Poupanca ? AccountType.Savings : AccountType.Investment;
-
-  const { data } = useQuery(AccountsQuery, {
+  const { data } = useQuery(InvestmentAccountsQuery, {
     variables: {
-      types: [accountType],
+      regime,
     },
   });
 
-  const accounts = data?.accounts?.edges?.map((e) => e.node) || [];
+  const accounts = data?.investmentAccounts || [];
 
   const hasActiveFilters = filters.accountIds && filters.accountIds.length > 0;
 
@@ -100,17 +97,22 @@ export function InvestmentsFilters({
                   />
                   <Label
                     htmlFor={`account-${account.id}`}
-                    className="flex cursor-pointer items-center gap-2 text-sm"
+                    className="flex cursor-pointer items-center gap-2 justify-between w-full text-sm"
                   >
-                    {account.institution?.logoUrl && (
-                      <Image
-                        src={account.institution.logoUrl}
-                        alt={account.institution.name}
-                        width={24}
-                        height={24}
-                      />
-                    )}
-                    <span>{account.name}</span>
+                    <div className="flex items-center gap-2">
+                      {account.institutionLogoUrl && (
+                        <Image
+                          src={account.institutionLogoUrl}
+                          alt={account.institutionName || ''}
+                          width={24}
+                          height={24}
+                        />
+                      )}
+                      <span>{account.name}</span>
+                    </div>
+                    <Badge variant="secondary" size="sm">
+                      {account.investmentCount}
+                    </Badge>
                   </Label>
                 </div>
               ))

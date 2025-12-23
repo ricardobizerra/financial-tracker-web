@@ -107,3 +107,15 @@ export const InvestmentEvolutionQuery = graphql(`
     }
   }
 `);
+
+export const InvestmentAccountsQuery = graphql(`
+  query InvestmentAccounts($regime: Regime!) {
+    investmentAccounts(regime: $regime) {
+      id
+      name
+      institutionName
+      institutionLogoUrl
+      investmentCount
+    }
+  }
+`);
