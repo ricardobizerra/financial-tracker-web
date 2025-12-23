@@ -556,6 +556,7 @@ export type AccountModel = {
   accountCard: Maybe<AccountCard>;
   balance: Maybe<Scalars['Decimal']['output']>;
   createdAt: Scalars['DateTime']['output'];
+  currentBillingAmount: Maybe<Scalars['Decimal']['output']>;
   description: Maybe<Scalars['String']['output']>;
   destinyRecurringTransactions: Maybe<Array<RecurringTransaction>>;
   destinyTransactions: Maybe<Array<Transaction>>;
@@ -569,6 +570,7 @@ export type AccountModel = {
   name: Scalars['String']['output'];
   sourceRecurringTransactions: Maybe<Array<RecurringTransaction>>;
   sourceTransactions: Maybe<Array<Transaction>>;
+  totalInvested: Maybe<Scalars['Decimal']['output']>;
   type: AccountType;
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -2404,6 +2406,7 @@ export enum OrdenationAccountModel {
   AccountCard = 'accountCard',
   Balance = 'balance',
   CreatedAt = 'createdAt',
+  CurrentBillingAmount = 'currentBillingAmount',
   DestinyRecurringTransactions = 'destinyRecurringTransactions',
   DestinyTransactions = 'destinyTransactions',
   InitialBalance = 'initialBalance',
@@ -2415,6 +2418,7 @@ export enum OrdenationAccountModel {
   Name = 'name',
   SourceRecurringTransactions = 'sourceRecurringTransactions',
   SourceTransactions = 'sourceTransactions',
+  TotalInvested = 'totalInvested',
   Type = 'type',
   UpdatedAt = 'updatedAt',
 }
@@ -4060,6 +4064,8 @@ export type AccountFragmentFragment = {
   name: string;
   type: AccountType;
   balance: any | null;
+  currentBillingAmount: any | null;
+  totalInvested: any | null;
   description: string | null;
   isActive: boolean;
   institutionId: string;
@@ -4101,6 +4107,8 @@ export type AccountsQuery = {
         name: string;
         type: AccountType;
         balance: any | null;
+        currentBillingAmount: any | null;
+        totalInvested: any | null;
         description: string | null;
         isActive: boolean;
         institutionId: string;
@@ -4140,6 +4148,8 @@ export type AccountQuery = {
     name: string;
     type: AccountType;
     balance: any | null;
+    currentBillingAmount: any | null;
+    totalInvested: any | null;
     description: string | null;
     isActive: boolean;
     institutionId: string;
@@ -5035,6 +5045,11 @@ export const AccountFragmentFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'name' } },
           { kind: 'Field', name: { kind: 'Name', value: 'type' } },
           { kind: 'Field', name: { kind: 'Name', value: 'balance' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentBillingAmount' },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'totalInvested' } },
           { kind: 'Field', name: { kind: 'Name', value: 'description' } },
           { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
           { kind: 'Field', name: { kind: 'Name', value: 'institutionId' } },
@@ -5994,6 +6009,11 @@ export const AccountsDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'name' } },
           { kind: 'Field', name: { kind: 'Name', value: 'type' } },
           { kind: 'Field', name: { kind: 'Name', value: 'balance' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentBillingAmount' },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'totalInvested' } },
           { kind: 'Field', name: { kind: 'Name', value: 'description' } },
           { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
           { kind: 'Field', name: { kind: 'Name', value: 'institutionId' } },
@@ -6097,6 +6117,11 @@ export const AccountDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'name' } },
           { kind: 'Field', name: { kind: 'Name', value: 'type' } },
           { kind: 'Field', name: { kind: 'Name', value: 'balance' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'currentBillingAmount' },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'totalInvested' } },
           { kind: 'Field', name: { kind: 'Name', value: 'description' } },
           { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
           { kind: 'Field', name: { kind: 'Name', value: 'institutionId' } },

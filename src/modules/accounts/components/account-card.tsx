@@ -1,4 +1,4 @@
-import { AccountFragmentFragment } from '@/graphql/graphql';
+import { AccountFragmentFragment, AccountType } from '@/graphql/graphql';
 import {
   Card,
   CardContent,
@@ -17,7 +17,52 @@ import Link from 'next/link';
 import { EyeIcon } from 'lucide-react';
 import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
 
+function getDisplayInfo(account: AccountFragmentFragment): {
+  label: string;
+  value: number;
+  colorClasses: string;
+} {
+  switch (account.type) {
+    case AccountType.CreditCard: {
+      const value = Number(account.currentBillingAmount ?? 0);
+      return {
+        label: 'Fatura atual',
+        value,
+        colorClasses:
+          value > 0
+            ? 'text-red-700 dark:text-red-500'
+            : 'text-muted-foreground',
+      };
+    }
+    case AccountType.Investment:
+    case AccountType.Savings: {
+      const value = Number(account.totalInvested ?? 0);
+      return {
+        label: 'Total investido',
+        value,
+        colorClasses:
+          value >= 0
+            ? 'text-green-700 dark:text-green-500'
+            : 'text-red-700 dark:text-red-500',
+      };
+    }
+    default: {
+      const value = Number(account.balance ?? 0);
+      return {
+        label: 'Saldo',
+        value,
+        colorClasses:
+          value >= 0
+            ? 'text-green-700 dark:text-green-500'
+            : 'text-red-700 dark:text-red-500',
+      };
+    }
+  }
+}
+
 export function AccountCard({ account }: { account: AccountFragmentFragment }) {
+  const { label, value, colorClasses } = getDisplayInfo(account);
+
   return (
     <Card
       key={account.id}
@@ -42,15 +87,9 @@ export function AccountCard({ account }: { account: AccountFragmentFragment }) {
             </div>
           </div>
           <div className="flex flex-col items-end">
-            <span
-              className={cn(
-                'text-lg font-semibold',
-                account.balance >= 0
-                  ? 'text-green-700 dark:text-green-500'
-                  : 'text-red-700 dark:text-red-500',
-              )}
-            >
-              {formatCurrency(account.balance)}
+            <span className="text-xs text-muted-foreground">{label}</span>
+            <span className={cn('text-lg font-semibold', colorClasses)}>
+              {formatCurrency(value)}
             </span>
           </div>
         </CardHeader>

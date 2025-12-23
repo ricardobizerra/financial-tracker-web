@@ -6,6 +6,8 @@ export const AccountFragment = graphql(`
     name
     type
     balance
+    currentBillingAmount
+    totalInvested
     description
     isActive
     institutionId
