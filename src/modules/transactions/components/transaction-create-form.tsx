@@ -42,7 +42,6 @@ import {
 } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { CreateTransactionMutation } from '../graphql/transactions-mutations';
 import { TransactionsQuery } from '../graphql/transactions-queries';
 import { BalanceForecastQuery } from '../graphql/balance-forecast-queries';
 import {
@@ -66,11 +65,22 @@ import {
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import PixIcon from '@/static/pix-icon.svg';
+import {
+  CreateTransactionMutation,
+  UpdateTransactionMutation,
+} from '../graphql/transactions-mutations';
+import { TransactionFragmentFragment } from '@/graphql/graphql';
 
 interface TransactionCreateFormProps {
   accountId?: string;
   triggerClassName?: string;
   triggerSize?: ButtonProps['size'];
+  /** Para modo de edição: transação a ser editada */
+  editTransaction?: TransactionFragmentFragment;
+  /** Para modo de edição: controle externo do Dialog */
+  open?: boolean;
+  /** Para modo de edição: callback de mudança do Dialog */
+  onOpenChange?: (open: boolean) => void;
 }
 
 const incomeSchema = z.object({
@@ -140,26 +150,66 @@ export function IncomeTransactionCreateForm({
   triggerClassName,
   accountId,
   triggerSize,
+  editTransaction,
+  open: externalOpen,
+  onOpenChange: externalOnOpenChange,
 }: TransactionCreateFormProps) {
-  const [open, setOpen] = useState(false);
-  const [createTransaction, { loading }] = useMutation(
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = externalOpen ?? internalOpen;
+  const setOpen = externalOnOpenChange ?? setInternalOpen;
+  const isEditMode = !!editTransaction;
+
+  const [createTransaction, { loading: createLoading }] = useMutation(
     CreateTransactionMutation,
   );
+  const [updateTransaction, { loading: updateLoading }] = useMutation(
+    UpdateTransactionMutation,
+  );
+  const loading = isEditMode ? updateLoading : createLoading;
 
   const form = useForm<z.infer<typeof incomeSchema>>({
     resolver: zodResolver(incomeSchema),
-    defaultValues: {
-      type: {
-        value: TransactionType.Income,
-        label: transactionTypeLabels[TransactionType.Income],
-      },
-      ...(!!accountId && {
-        destinyAccount: {
-          value: accountId,
-          label: accountId,
+    defaultValues: isEditMode
+      ? {
+          type: {
+            value: editTransaction.type,
+            label: transactionTypeLabels[editTransaction.type],
+          },
+          date: new Date(editTransaction.date),
+          amount: Number(editTransaction.amount ?? 0),
+          description: editTransaction.description ?? '',
+          status: editTransaction.status
+            ? {
+                value: editTransaction.status,
+                label: transactionStatusLabel[editTransaction.status],
+              }
+            : undefined,
+          paymentMethod: editTransaction.paymentMethod
+            ? {
+                value: editTransaction.paymentMethod,
+                label: paymentMethodLabel[editTransaction.paymentMethod],
+              }
+            : undefined,
+          destinyAccount: editTransaction.destinyAccount
+            ? {
+                value: editTransaction.destinyAccount.id,
+                label: editTransaction.destinyAccount.name,
+                data: editTransaction.destinyAccount,
+              }
+            : undefined,
+        }
+      : {
+          type: {
+            value: TransactionType.Income,
+            label: transactionTypeLabels[TransactionType.Income],
+          },
+          ...(!!accountId && {
+            destinyAccount: {
+              value: accountId,
+              label: accountId,
+            },
+          }),
         },
-      }),
-    },
   });
 
   const selectedAccount = useWatch({
@@ -254,21 +304,27 @@ export function IncomeTransactionCreateForm({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          size={triggerSize ?? 'sm'}
-          className={cn('flex items-center gap-1', triggerClassName)}
-          variant={'default'}
-        >
-          <ArrowUp />
-          <p>Nova entrada</p>
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="min-w-fit max-w-[90vw] md:max-w-fit">
+      {!isEditMode && (
+        <DialogTrigger asChild>
+          <Button
+            size={triggerSize ?? 'sm'}
+            className={cn('flex items-center gap-1', triggerClassName)}
+            variant={'default'}
+          >
+            <ArrowUp />
+            <p>Nova entrada</p>
+          </Button>
+        </DialogTrigger>
+      )}
+      <DialogContent className="min-w-[500px] max-w-[90vw] md:max-w-fit">
         <DialogHeader>
-          <DialogTitle>Nova entrada</DialogTitle>
+          <DialogTitle>
+            {isEditMode ? 'Editar entrada' : 'Nova entrada'}
+          </DialogTitle>
           <DialogDescription>
-            Preencha os campos abaixo para registrar uma nova entrada.
+            {isEditMode
+              ? 'Edite os campos da entrada abaixo.'
+              : 'Preencha os campos abaixo para registrar uma nova entrada.'}
           </DialogDescription>
         </DialogHeader>
 
@@ -329,36 +385,68 @@ export function IncomeTransactionCreateForm({
             },
           }}
           onSubmit={async (data) => {
-            await createTransaction({
-              variables: {
-                data: {
-                  date: data.date,
-                  type: data.type.value as TransactionType,
-                  destinyAccountId: data.destinyAccount.value,
-                  status: data.status.value as TransactionStatus,
-                  description: data.description,
-                  amount: data.amount,
-                  paymentMethod: data.paymentMethod.value as PaymentMethod,
+            if (isEditMode) {
+              await updateTransaction({
+                variables: {
+                  data: {
+                    id: editTransaction.id,
+                    date: data.date,
+                    description: data.description,
+                    amount: data.amount,
+                    status: data.status.value as TransactionStatus,
+                    paymentMethod: data.paymentMethod.value as PaymentMethod,
+                  },
                 },
-              },
-              refetchQueries: [
-                TransactionsQuery,
-                BalanceForecastQuery,
-                TransactionsCalendarQuery,
-                FinancialAgendaQuery,
-              ],
-              onCompleted: () => {
-                toast.success('Movimentação criada!', {
-                  description: 'As informações foram salvas com sucesso.',
-                });
-                setOpen(false);
-              },
-              onError: (error) => {
-                toast.error('Erro ao criar movimentação', {
-                  description: error.message,
-                });
-              },
-            });
+                refetchQueries: [
+                  TransactionsQuery,
+                  BalanceForecastQuery,
+                  TransactionsCalendarQuery,
+                  FinancialAgendaQuery,
+                ],
+                onCompleted: () => {
+                  toast.success('Movimentação atualizada!', {
+                    description: 'As informações foram salvas com sucesso.',
+                  });
+                  setOpen(false);
+                },
+                onError: (error) => {
+                  toast.error('Erro ao atualizar movimentação', {
+                    description: error.message,
+                  });
+                },
+              });
+            } else {
+              await createTransaction({
+                variables: {
+                  data: {
+                    date: data.date,
+                    type: data.type.value as TransactionType,
+                    destinyAccountId: data.destinyAccount.value,
+                    status: data.status.value as TransactionStatus,
+                    description: data.description,
+                    amount: data.amount,
+                    paymentMethod: data.paymentMethod.value as PaymentMethod,
+                  },
+                },
+                refetchQueries: [
+                  TransactionsQuery,
+                  BalanceForecastQuery,
+                  TransactionsCalendarQuery,
+                  FinancialAgendaQuery,
+                ],
+                onCompleted: () => {
+                  toast.success('Movimentação criada!', {
+                    description: 'As informações foram salvas com sucesso.',
+                  });
+                  setOpen(false);
+                },
+                onError: (error) => {
+                  toast.error('Erro ao criar movimentação', {
+                    description: error.message,
+                  });
+                },
+              });
+            }
           }}
           renderAfter={() => (
             <DialogFooter>
@@ -401,6 +489,9 @@ export function ExpenseTransactionCreateForm({
   maxDate,
   status,
   paymentMethod,
+  editTransaction,
+  open: externalOpen,
+  onOpenChange: externalOnOpenChange,
 }: TransactionCreateFormProps & {
   hiddenFields?: Array<keyof typeof expenseSchema.shape>;
   minDate?: Date;
@@ -408,37 +499,74 @@ export function ExpenseTransactionCreateForm({
   status?: TransactionStatus;
   paymentMethod?: PaymentMethod;
 }) {
-  const [open, setOpen] = useState(false);
-  const [createTransaction, { loading }] = useMutation(
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = externalOpen ?? internalOpen;
+  const setOpen = externalOnOpenChange ?? setInternalOpen;
+  const isEditMode = !!editTransaction;
+
+  const [createTransaction, { loading: createLoading }] = useMutation(
     CreateTransactionMutation,
   );
+  const [updateTransaction, { loading: updateLoading }] = useMutation(
+    UpdateTransactionMutation,
+  );
+  const loading = isEditMode ? updateLoading : createLoading;
 
   const form = useForm<z.infer<typeof expenseSchema>>({
     resolver: zodResolver(expenseSchema),
-    defaultValues: {
-      type: {
-        value: TransactionType.Expense,
-        label: transactionTypeLabels[TransactionType.Expense],
-      },
-      ...(!!accountId && {
-        sourceAccount: {
-          value: accountId,
-          label: accountId,
+    defaultValues: isEditMode
+      ? {
+          type: {
+            value: editTransaction.type,
+            label: transactionTypeLabels[editTransaction.type],
+          },
+          date: new Date(editTransaction.date),
+          amount: Number(editTransaction.amount ?? 0),
+          description: editTransaction.description ?? '',
+          status: editTransaction.status
+            ? {
+                value: editTransaction.status,
+                label: transactionStatusLabel[editTransaction.status],
+              }
+            : undefined,
+          paymentMethod: editTransaction.paymentMethod
+            ? {
+                value: editTransaction.paymentMethod,
+                label: paymentMethodLabel[editTransaction.paymentMethod],
+              }
+            : undefined,
+          sourceAccount: editTransaction.sourceAccount
+            ? {
+                value: editTransaction.sourceAccount.id,
+                label: editTransaction.sourceAccount.name,
+                data: editTransaction.sourceAccount,
+              }
+            : undefined,
+        }
+      : {
+          type: {
+            value: TransactionType.Expense,
+            label: transactionTypeLabels[TransactionType.Expense],
+          },
+          ...(!!accountId && {
+            sourceAccount: {
+              value: accountId,
+              label: accountId,
+            },
+          }),
+          status: !!status
+            ? {
+                value: status,
+                label: transactionStatusLabel[status],
+              }
+            : undefined,
+          paymentMethod: !!paymentMethod
+            ? {
+                value: paymentMethod,
+                label: paymentMethodLabel[paymentMethod],
+              }
+            : undefined,
         },
-      }),
-      status: !!status
-        ? {
-            value: status,
-            label: transactionStatusLabel[status],
-          }
-        : undefined,
-      paymentMethod: !!paymentMethod
-        ? {
-            value: paymentMethod,
-            label: paymentMethodLabel[paymentMethod],
-          }
-        : undefined,
-    },
   });
 
   const selectedAccount = useWatch({
@@ -545,21 +673,27 @@ export function ExpenseTransactionCreateForm({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          size={triggerSize ?? 'sm'}
-          className={cn('flex items-center gap-1', triggerClassName)}
-          variant={'destructive'}
-        >
-          <ArrowDown />
-          <p>Nova despesa</p>
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="min-w-fit max-w-[90vw] md:max-w-fit">
+      {!isEditMode && (
+        <DialogTrigger asChild>
+          <Button
+            size={triggerSize ?? 'sm'}
+            className={cn('flex items-center gap-1', triggerClassName)}
+            variant={'destructive'}
+          >
+            <ArrowDown />
+            <p>Nova despesa</p>
+          </Button>
+        </DialogTrigger>
+      )}
+      <DialogContent className="min-w-[500px] max-w-[90vw] md:max-w-fit">
         <DialogHeader>
-          <DialogTitle>Nova despesa</DialogTitle>
+          <DialogTitle>
+            {isEditMode ? 'Editar despesa' : 'Nova despesa'}
+          </DialogTitle>
           <DialogDescription>
-            Preencha os campos abaixo para registrar uma nova despesa.
+            {isEditMode
+              ? 'Edite os campos da despesa abaixo.'
+              : 'Preencha os campos abaixo para registrar uma nova despesa.'}
           </DialogDescription>
         </DialogHeader>
 
@@ -624,37 +758,70 @@ export function ExpenseTransactionCreateForm({
             },
           }}
           onSubmit={async (data) => {
-            await createTransaction({
-              variables: {
-                data: {
-                  date: data.date,
-                  type: data.type.value as TransactionType,
-                  sourceAccountId: data.sourceAccount.value,
-                  status: data.status.value as TransactionStatus,
-                  description: data.description,
-                  amount: data.amount,
-                  paymentMethod: data.paymentMethod.value as PaymentMethod,
+            if (isEditMode) {
+              await updateTransaction({
+                variables: {
+                  data: {
+                    id: editTransaction.id,
+                    date: data.date,
+                    description: data.description,
+                    amount: data.amount,
+                    status: data.status.value as TransactionStatus,
+                    paymentMethod: data.paymentMethod.value as PaymentMethod,
+                  },
                 },
-              },
-              refetchQueries: [
-                TransactionsQuery,
-                BalanceForecastQuery,
-                TransactionsCalendarQuery,
-                FinancialAgendaQuery,
-                BillingQuery,
-              ],
-              onCompleted: () => {
-                toast.success('Movimentação criada!', {
-                  description: 'As informações foram salvas com sucesso.',
-                });
-                setOpen(false);
-              },
-              onError: (error) => {
-                toast.error('Erro ao criar movimentação', {
-                  description: error.message,
-                });
-              },
-            });
+                refetchQueries: [
+                  TransactionsQuery,
+                  BalanceForecastQuery,
+                  TransactionsCalendarQuery,
+                  FinancialAgendaQuery,
+                  BillingQuery,
+                ],
+                onCompleted: () => {
+                  toast.success('Movimentação atualizada!', {
+                    description: 'As informações foram salvas com sucesso.',
+                  });
+                  setOpen(false);
+                },
+                onError: (error) => {
+                  toast.error('Erro ao atualizar movimentação', {
+                    description: error.message,
+                  });
+                },
+              });
+            } else {
+              await createTransaction({
+                variables: {
+                  data: {
+                    date: data.date,
+                    type: data.type.value as TransactionType,
+                    sourceAccountId: data.sourceAccount.value,
+                    status: data.status.value as TransactionStatus,
+                    description: data.description,
+                    amount: data.amount,
+                    paymentMethod: data.paymentMethod.value as PaymentMethod,
+                  },
+                },
+                refetchQueries: [
+                  TransactionsQuery,
+                  BalanceForecastQuery,
+                  TransactionsCalendarQuery,
+                  FinancialAgendaQuery,
+                  BillingQuery,
+                ],
+                onCompleted: () => {
+                  toast.success('Movimentação criada!', {
+                    description: 'As informações foram salvas com sucesso.',
+                  });
+                  setOpen(false);
+                },
+                onError: (error) => {
+                  toast.error('Erro ao criar movimentação', {
+                    description: error.message,
+                  });
+                },
+              });
+            }
           }}
           renderAfter={() => (
             <DialogFooter>
@@ -696,26 +863,73 @@ export function BetweenAccountsTransactionCreateForm({
   triggerClassName,
   accountId,
   triggerSize,
+  editTransaction,
+  open: externalOpen,
+  onOpenChange: externalOnOpenChange,
 }: TransactionCreateFormProps) {
-  const [open, setOpen] = useState(false);
-  const [createTransaction, { loading }] = useMutation(
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = externalOpen ?? internalOpen;
+  const setOpen = externalOnOpenChange ?? setInternalOpen;
+  const isEditMode = !!editTransaction;
+
+  const [createTransaction, { loading: createLoading }] = useMutation(
     CreateTransactionMutation,
   );
+  const [updateTransaction, { loading: updateLoading }] = useMutation(
+    UpdateTransactionMutation,
+  );
+  const loading = isEditMode ? updateLoading : createLoading;
 
   const form = useForm<z.infer<typeof betweenAccountsSchema>>({
     resolver: zodResolver(betweenAccountsSchema),
-    defaultValues: {
-      type: {
-        value: TransactionType.BetweenAccounts,
-        label: transactionTypeLabels[TransactionType.BetweenAccounts],
-      },
-      ...(!!accountId && {
-        destinyAccount: {
-          value: accountId,
-          label: accountId,
+    defaultValues: isEditMode
+      ? {
+          type: {
+            value: editTransaction.type,
+            label: transactionTypeLabels[editTransaction.type],
+          },
+          date: new Date(editTransaction.date),
+          amount: Number(editTransaction.amount ?? 0),
+          description: editTransaction.description ?? '',
+          status: editTransaction.status
+            ? {
+                value: editTransaction.status,
+                label: transactionStatusLabel[editTransaction.status],
+              }
+            : undefined,
+          paymentMethod: editTransaction.paymentMethod
+            ? {
+                value: editTransaction.paymentMethod,
+                label: paymentMethodLabel[editTransaction.paymentMethod],
+              }
+            : undefined,
+          sourceAccount: editTransaction.sourceAccount
+            ? {
+                value: editTransaction.sourceAccount.id,
+                label: editTransaction.sourceAccount.name,
+                data: editTransaction.sourceAccount,
+              }
+            : undefined,
+          destinyAccount: editTransaction.destinyAccount
+            ? {
+                value: editTransaction.destinyAccount.id,
+                label: editTransaction.destinyAccount.name,
+                data: editTransaction.destinyAccount,
+              }
+            : undefined,
+        }
+      : {
+          type: {
+            value: TransactionType.BetweenAccounts,
+            label: transactionTypeLabels[TransactionType.BetweenAccounts],
+          },
+          ...(!!accountId && {
+            destinyAccount: {
+              value: accountId,
+              label: accountId,
+            },
+          }),
         },
-      }),
-    },
   });
 
   const selectedAccount = useWatch({
@@ -818,21 +1032,27 @@ export function BetweenAccountsTransactionCreateForm({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          size={triggerSize ?? 'sm'}
-          className={cn('flex items-center gap-1', triggerClassName)}
-          variant={'secondary'}
-        >
-          <ArrowLeftRight />
-          <p>Nova movimentação</p>
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="min-w-fit max-w-[90vw] md:max-w-fit">
+      {!isEditMode && (
+        <DialogTrigger asChild>
+          <Button
+            size={triggerSize ?? 'sm'}
+            className={cn('flex items-center gap-1', triggerClassName)}
+            variant={'secondary'}
+          >
+            <ArrowLeftRight />
+            <p>Nova movimentação</p>
+          </Button>
+        </DialogTrigger>
+      )}
+      <DialogContent className="min-w-[500px] max-w-[90vw] md:max-w-fit">
         <DialogHeader>
-          <DialogTitle>Nova movimentação</DialogTitle>
+          <DialogTitle>
+            {isEditMode ? 'Editar movimentação' : 'Nova movimentação'}
+          </DialogTitle>
           <DialogDescription>
-            Preencha os campos abaixo para registrar uma nova movimentação.
+            {isEditMode
+              ? 'Edite os campos da movimentação abaixo.'
+              : 'Preencha os campos abaixo para registrar uma nova movimentação.'}
           </DialogDescription>
         </DialogHeader>
 
@@ -918,43 +1138,75 @@ export function BetweenAccountsTransactionCreateForm({
             },
           }}
           onSubmit={async (data) => {
-            await createTransaction({
-              variables: {
-                data: {
-                  date: data.date,
-                  type: data.type.value as TransactionType,
-                  ...((data.type.value === TransactionType.Expense ||
-                    data.type.value === TransactionType.BetweenAccounts) && {
-                    sourceAccountId: data.sourceAccount.value,
-                  }),
-                  ...((data.type.value === TransactionType.Income ||
-                    data.type.value === TransactionType.BetweenAccounts) && {
-                    destinyAccountId: data.destinyAccount.value,
-                  }),
-                  status: data.status.value as TransactionStatus,
-                  description: data.description,
-                  amount: data.amount,
-                  paymentMethod: data.paymentMethod.value as PaymentMethod,
+            if (isEditMode) {
+              await updateTransaction({
+                variables: {
+                  data: {
+                    id: editTransaction.id,
+                    date: data.date,
+                    description: data.description,
+                    amount: data.amount,
+                    status: data.status.value as TransactionStatus,
+                    paymentMethod: data.paymentMethod.value as PaymentMethod,
+                  },
                 },
-              },
-              refetchQueries: [
-                TransactionsQuery,
-                BalanceForecastQuery,
-                TransactionsCalendarQuery,
-                FinancialAgendaQuery,
-              ],
-              onCompleted: () => {
-                toast.success('Movimentação criada!', {
-                  description: 'As informações foram salvas com sucesso.',
-                });
-                setOpen(false);
-              },
-              onError: (error) => {
-                toast.error('Erro ao criar movimentação', {
-                  description: error.message,
-                });
-              },
-            });
+                refetchQueries: [
+                  TransactionsQuery,
+                  BalanceForecastQuery,
+                  TransactionsCalendarQuery,
+                  FinancialAgendaQuery,
+                ],
+                onCompleted: () => {
+                  toast.success('Movimentação atualizada!', {
+                    description: 'As informações foram salvas com sucesso.',
+                  });
+                  setOpen(false);
+                },
+                onError: (error) => {
+                  toast.error('Erro ao atualizar movimentação', {
+                    description: error.message,
+                  });
+                },
+              });
+            } else {
+              await createTransaction({
+                variables: {
+                  data: {
+                    date: data.date,
+                    type: data.type.value as TransactionType,
+                    ...((data.type.value === TransactionType.Expense ||
+                      data.type.value === TransactionType.BetweenAccounts) && {
+                      sourceAccountId: data.sourceAccount.value,
+                    }),
+                    ...((data.type.value === TransactionType.Income ||
+                      data.type.value === TransactionType.BetweenAccounts) && {
+                      destinyAccountId: data.destinyAccount.value,
+                    }),
+                    status: data.status.value as TransactionStatus,
+                    description: data.description,
+                    amount: data.amount,
+                    paymentMethod: data.paymentMethod.value as PaymentMethod,
+                  },
+                },
+                refetchQueries: [
+                  TransactionsQuery,
+                  BalanceForecastQuery,
+                  TransactionsCalendarQuery,
+                  FinancialAgendaQuery,
+                ],
+                onCompleted: () => {
+                  toast.success('Movimentação criada!', {
+                    description: 'As informações foram salvas com sucesso.',
+                  });
+                  setOpen(false);
+                },
+                onError: (error) => {
+                  toast.error('Erro ao criar movimentação', {
+                    description: error.message,
+                  });
+                },
+              });
+            }
           }}
           renderAfter={() => (
             <DialogFooter>

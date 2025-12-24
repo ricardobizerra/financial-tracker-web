@@ -42,6 +42,7 @@ export const TransactionsFragment = graphql(`
       }
     }
     status
+    paymentMethod
   }
 `);
 

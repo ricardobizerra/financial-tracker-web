@@ -7,3 +7,16 @@ export const CreateTransactionMutation = graphql(`
     }
   }
 `);
+
+export const UpdateTransactionMutation = graphql(`
+  mutation UpdateTransaction($data: UpdateTransactionInput!) {
+    updateTransaction(data: $data) {
+      id
+      description
+      amount
+      date
+      status
+      paymentMethod
+    }
+  }
+`);

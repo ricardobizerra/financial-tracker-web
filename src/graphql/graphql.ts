@@ -2142,6 +2142,7 @@ export type Mutation = {
   resumeRecurringTransaction: RecurringTransactionModel;
   updateAccountCard: AccountCard;
   updateRecurringTransactionFromDate: RecurringTransactionModel;
+  updateTransaction: TransactionModel;
 };
 
 export type MutationAuthSignInArgs = {
@@ -2212,6 +2213,10 @@ export type MutationUpdateRecurringTransactionFromDateArgs = {
   data: UpdateRecurringTransactionInput;
   fromDate: Scalars['DateTime']['input'];
   id: Scalars['String']['input'];
+};
+
+export type MutationUpdateTransactionArgs = {
+  data: UpdateTransactionInput;
 };
 
 export type NestedBoolFilter = {
@@ -3709,6 +3714,15 @@ export type UpdateRecurringTransactionInput = {
   sourceAccountId?: InputMaybe<Scalars['ID']['input']>;
 };
 
+export type UpdateTransactionInput = {
+  amount?: InputMaybe<Scalars['Float']['input']>;
+  date?: InputMaybe<Scalars['DateTime']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  status?: InputMaybe<TransactionStatus>;
+};
+
 export type User = {
   __typename?: 'User';
   _count: UserCount;
@@ -4835,6 +4849,23 @@ export type CreateTransactionMutation = {
   createTransaction: { __typename?: 'TransactionModel'; id: string };
 };
 
+export type UpdateTransactionMutationVariables = Exact<{
+  data: UpdateTransactionInput;
+}>;
+
+export type UpdateTransactionMutation = {
+  __typename?: 'Mutation';
+  updateTransaction: {
+    __typename?: 'TransactionModel';
+    id: string;
+    description: string;
+    amount: any;
+    date: any;
+    status: TransactionStatus;
+    paymentMethod: PaymentMethod | null;
+  };
+};
+
 export type TransactionFragmentFragment = {
   __typename?: 'TransactionModel';
   id: string;
@@ -4845,6 +4876,7 @@ export type TransactionFragmentFragment = {
   createdAt: any;
   updatedAt: any;
   status: TransactionStatus;
+  paymentMethod: PaymentMethod | null;
   sourceAccount: {
     __typename?: 'Account';
     id: string;
@@ -4920,6 +4952,7 @@ export type TransactionsQuery = {
         createdAt: any;
         updatedAt: any;
         status: TransactionStatus;
+        paymentMethod: PaymentMethod | null;
         sourceAccount: {
           __typename?: 'Account';
           id: string;
@@ -5393,6 +5426,7 @@ export const TransactionFragmentFragmentDoc = {
             },
           },
           { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
         ],
       },
     },
@@ -8743,6 +8777,65 @@ export const CreateTransactionDocument = {
   CreateTransactionMutation,
   CreateTransactionMutationVariables
 >;
+export const UpdateTransactionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateTransaction' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'UpdateTransactionInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateTransaction' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'data' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'data' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'date' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'paymentMethod' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  UpdateTransactionMutation,
+  UpdateTransactionMutationVariables
+>;
 export const TransactionsDocument = {
   kind: 'Document',
   definitions: [
@@ -9173,6 +9266,7 @@ export const TransactionsDocument = {
             },
           },
           { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
         ],
       },
     },
