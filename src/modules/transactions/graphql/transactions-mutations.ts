@@ -49,3 +49,16 @@ export const RescheduleTransactionMutation = graphql(`
     }
   }
 `);
+
+export const UpdateRecurringTransactionsMutation = graphql(`
+  mutation UpdateRecurringTransactions(
+    $data: UpdateRecurringTransactionsInput!
+  ) {
+    updateRecurringTransactions(data: $data) {
+      id
+      description
+      amount
+      paymentMethod
+    }
+  }
+`);

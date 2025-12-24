@@ -1,11 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
+  PaymentMethod,
   TransactionFragmentFragment,
   TransactionStatus,
   TransactionType,
+  UpdateRecurringScope,
 } from '@/graphql/graphql';
+import { useMutation } from '@apollo/client';
+import { toast } from 'sonner';
 import { formatCurrency } from '@/lib/formatters/currency';
 import { formatDate } from '@/lib/formatters/date';
 import { TransactionStatusBadge } from './transaction-status-badge';
@@ -20,6 +24,9 @@ import {
 } from './transaction-create-form';
 import { TransactionActionsMenu } from './transaction-actions-menu';
 import { TransactionEditDescriptionDialog } from './transaction-edit-description-dialog';
+import { TransactionEditScopeDialog } from './transaction-edit-scope-dialog';
+import { TransactionsQuery } from '../graphql/transactions-queries';
+import { UpdateRecurringTransactionsMutation } from '../graphql/transactions-mutations';
 
 function AccountCell({
   account,
@@ -50,10 +57,42 @@ function TransactionActionsCell({
 }) {
   const [editOpen, setEditOpen] = useState(false);
   const [descriptionEditOpen, setDescriptionEditOpen] = useState(false);
+  const [scopeDialogOpen, setScopeDialogOpen] = useState(false);
+
+  // Para armazenar o resolver da Promise do onBeforeSubmit
+  const scopeResolverRef = React.useRef<
+    ((shouldContinue: boolean) => void) | null
+  >(null);
+
+  // Dados pendentes do formulário para aplicar com escopo
+  const [pendingData, setPendingData] = useState<{
+    description: string;
+    amount: number;
+    paymentMethod?: string;
+  } | null>(null);
+
+  const [updateRecurringTransactions] = useMutation(
+    UpdateRecurringTransactionsMutation,
+    {
+      refetchQueries: [TransactionsQuery],
+      onCompleted: () => {
+        toast.success('Transações atualizadas!', {
+          description: 'As alterações foram aplicadas com sucesso.',
+        });
+        setEditOpen(false);
+      },
+      onError: (error) => {
+        toast.error('Erro ao atualizar transações', {
+          description: error.message,
+        });
+      },
+    },
+  );
 
   const isCompleted = transaction.status === TransactionStatus.Completed;
   const isCanceled = transaction.status === TransactionStatus.Canceled;
   const isImmutable = isCompleted || isCanceled;
+  const isRecurring = !!transaction.recurringTransactionId;
 
   const handleEdit = () => {
     if (isImmutable) {
@@ -63,7 +102,69 @@ function TransactionActionsCell({
     }
   };
 
+  // Handler chamado antes do submit para transações recorrentes
+  const handleBeforeSubmit = async (data: {
+    description: string;
+    amount: number;
+    paymentMethod?: string;
+  }): Promise<boolean> => {
+    if (!isRecurring) {
+      return true; // Não é recorrente, continuar normalmente
+    }
+
+    // Salvar dados e abrir dialog de escopo
+    setPendingData(data);
+    setScopeDialogOpen(true);
+
+    // Retornar Promise que será resolvida quando usuário selecionar escopo
+    return new Promise((resolve) => {
+      scopeResolverRef.current = resolve;
+    });
+  };
+
+  const handleScopeSelected = async (scope: UpdateRecurringScope) => {
+    setScopeDialogOpen(false);
+
+    if (scope === UpdateRecurringScope.ThisOnly) {
+      // Continuar com submit normal (apenas esta transação)
+      scopeResolverRef.current?.(true);
+    } else {
+      // Para THIS_AND_FUTURE ou ALL_PLANNED, cancelar submit normal
+      // e usar mutation updateRecurringTransactions
+      scopeResolverRef.current?.(false);
+
+      if (pendingData) {
+        await updateRecurringTransactions({
+          variables: {
+            data: {
+              transactionId: transaction.id,
+              scope,
+              description: pendingData.description,
+              amount: pendingData.amount,
+              paymentMethod: pendingData.paymentMethod as PaymentMethod,
+            },
+          },
+        });
+      }
+    }
+
+    scopeResolverRef.current = null;
+    setPendingData(null);
+  };
+
+  const handleScopeDialogClose = (open: boolean) => {
+    if (!open && scopeResolverRef.current) {
+      // Dialog fechado sem seleção, cancelar submit
+      scopeResolverRef.current(false);
+      scopeResolverRef.current = null;
+      setPendingData(null);
+    }
+    setScopeDialogOpen(open);
+  };
+
   const renderEditForm = () => {
+    const onBeforeSubmit = isRecurring ? handleBeforeSubmit : undefined;
+
     switch (transaction.type) {
       case TransactionType.Income:
         return (
@@ -71,6 +172,7 @@ function TransactionActionsCell({
             editTransaction={transaction}
             open={editOpen}
             onOpenChange={setEditOpen}
+            onBeforeSubmit={onBeforeSubmit}
           />
         );
       case TransactionType.Expense:
@@ -79,6 +181,7 @@ function TransactionActionsCell({
             editTransaction={transaction}
             open={editOpen}
             onOpenChange={setEditOpen}
+            onBeforeSubmit={onBeforeSubmit}
           />
         );
       case TransactionType.BetweenAccounts:
@@ -87,6 +190,7 @@ function TransactionActionsCell({
             editTransaction={transaction}
             open={editOpen}
             onOpenChange={setEditOpen}
+            onBeforeSubmit={onBeforeSubmit}
           />
         );
       default:
@@ -102,6 +206,11 @@ function TransactionActionsCell({
         transaction={transaction}
         open={descriptionEditOpen}
         onOpenChange={setDescriptionEditOpen}
+      />
+      <TransactionEditScopeDialog
+        open={scopeDialogOpen}
+        onOpenChange={handleScopeDialogClose}
+        onSelectScope={handleScopeSelected}
       />
     </>
   );

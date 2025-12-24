@@ -81,6 +81,14 @@ interface TransactionCreateFormProps {
   open?: boolean;
   /** Para modo de edição: callback de mudança do Dialog */
   onOpenChange?: (open: boolean) => void;
+  /** Para transações recorrentes: callback chamado antes do submit com os dados.
+   * Retorne true para continuar com submit normal, false para cancelar.
+   * Use para interceptar dados e mostrar dialog de escopo. */
+  onBeforeSubmit?: (data: {
+    description: string;
+    amount: number;
+    paymentMethod?: string;
+  }) => Promise<boolean>;
 }
 
 const incomeSchema = z.object({
@@ -153,6 +161,7 @@ export function IncomeTransactionCreateForm({
   editTransaction,
   open: externalOpen,
   onOpenChange: externalOnOpenChange,
+  onBeforeSubmit,
 }: TransactionCreateFormProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen ?? internalOpen;
@@ -386,6 +395,16 @@ export function IncomeTransactionCreateForm({
           }}
           onSubmit={async (data) => {
             if (isEditMode) {
+              // Para transações recorrentes, chamar onBeforeSubmit primeiro
+              if (onBeforeSubmit) {
+                const shouldContinue = await onBeforeSubmit({
+                  description: data.description,
+                  amount: data.amount,
+                  paymentMethod: data.paymentMethod?.value,
+                });
+                if (!shouldContinue) return;
+              }
+
               await updateTransaction({
                 variables: {
                   data: {
@@ -492,6 +511,7 @@ export function ExpenseTransactionCreateForm({
   editTransaction,
   open: externalOpen,
   onOpenChange: externalOnOpenChange,
+  onBeforeSubmit,
 }: TransactionCreateFormProps & {
   hiddenFields?: Array<keyof typeof expenseSchema.shape>;
   minDate?: Date;
@@ -759,6 +779,16 @@ export function ExpenseTransactionCreateForm({
           }}
           onSubmit={async (data) => {
             if (isEditMode) {
+              // Para transações recorrentes, chamar onBeforeSubmit primeiro
+              if (onBeforeSubmit) {
+                const shouldContinue = await onBeforeSubmit({
+                  description: data.description,
+                  amount: data.amount,
+                  paymentMethod: data.paymentMethod?.value,
+                });
+                if (!shouldContinue) return;
+              }
+
               await updateTransaction({
                 variables: {
                   data: {
@@ -866,6 +896,7 @@ export function BetweenAccountsTransactionCreateForm({
   editTransaction,
   open: externalOpen,
   onOpenChange: externalOnOpenChange,
+  onBeforeSubmit,
 }: TransactionCreateFormProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen ?? internalOpen;
@@ -1139,6 +1170,16 @@ export function BetweenAccountsTransactionCreateForm({
           }}
           onSubmit={async (data) => {
             if (isEditMode) {
+              // Para transações recorrentes, chamar onBeforeSubmit primeiro
+              if (onBeforeSubmit) {
+                const shouldContinue = await onBeforeSubmit({
+                  description: data.description,
+                  amount: data.amount,
+                  paymentMethod: data.paymentMethod?.value,
+                });
+                if (!shouldContinue) return;
+              }
+
               await updateTransaction({
                 variables: {
                   data: {

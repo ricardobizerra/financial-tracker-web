@@ -2151,6 +2151,7 @@ export type Mutation = {
   resumeRecurringTransaction: RecurringTransactionModel;
   updateAccountCard: AccountCard;
   updateRecurringTransactionFromDate: RecurringTransactionModel;
+  updateRecurringTransactions: TransactionModel;
   updateTransaction: TransactionModel;
 };
 
@@ -2234,6 +2235,10 @@ export type MutationUpdateRecurringTransactionFromDateArgs = {
   data: UpdateRecurringTransactionInput;
   fromDate: Scalars['DateTime']['input'];
   id: Scalars['String']['input'];
+};
+
+export type MutationUpdateRecurringTransactionsArgs = {
+  data: UpdateRecurringTransactionsInput;
 };
 
 export type MutationUpdateTransactionArgs = {
@@ -3728,6 +3733,13 @@ export type TransactionsSummaryModel = {
   transactionCount: Scalars['Int']['output'];
 };
 
+/** Scope for updating recurring transactions */
+export enum UpdateRecurringScope {
+  AllPlanned = 'ALL_PLANNED',
+  ThisAndFuture = 'THIS_AND_FUTURE',
+  ThisOnly = 'THIS_ONLY',
+}
+
 export type UpdateRecurringTransactionInput = {
   dayOfMonth?: InputMaybe<Scalars['Int']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -3738,6 +3750,14 @@ export type UpdateRecurringTransactionInput = {
   monthOfYear?: InputMaybe<Scalars['Int']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   sourceAccountId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type UpdateRecurringTransactionsInput = {
+  amount?: InputMaybe<Scalars['Float']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  scope: UpdateRecurringScope;
+  transactionId: Scalars['ID']['input'];
 };
 
 export type UpdateTransactionInput = {
@@ -4933,6 +4953,21 @@ export type RescheduleTransactionMutation = {
   };
 };
 
+export type UpdateRecurringTransactionsMutationVariables = Exact<{
+  data: UpdateRecurringTransactionsInput;
+}>;
+
+export type UpdateRecurringTransactionsMutation = {
+  __typename?: 'Mutation';
+  updateRecurringTransactions: {
+    __typename?: 'TransactionModel';
+    id: string;
+    description: string;
+    amount: any;
+    paymentMethod: PaymentMethod | null;
+  };
+};
+
 export type TransactionFragmentFragment = {
   __typename?: 'TransactionModel';
   id: string;
@@ -4944,6 +4979,7 @@ export type TransactionFragmentFragment = {
   updatedAt: any;
   status: TransactionStatus;
   paymentMethod: PaymentMethod | null;
+  recurringTransactionId: string | null;
   sourceAccount: {
     __typename?: 'Account';
     id: string;
@@ -5020,6 +5056,7 @@ export type TransactionsQuery = {
         updatedAt: any;
         status: TransactionStatus;
         paymentMethod: PaymentMethod | null;
+        recurringTransactionId: string | null;
         sourceAccount: {
           __typename?: 'Account';
           id: string;
@@ -5494,6 +5531,10 @@ export const TransactionFragmentFragmentDoc = {
           },
           { kind: 'Field', name: { kind: 'Name', value: 'status' } },
           { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'recurringTransactionId' },
+          },
         ],
       },
     },
@@ -9061,6 +9102,63 @@ export const RescheduleTransactionDocument = {
   RescheduleTransactionMutation,
   RescheduleTransactionMutationVariables
 >;
+export const UpdateRecurringTransactionsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateRecurringTransactions' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'UpdateRecurringTransactionsInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateRecurringTransactions' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'data' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'data' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'paymentMethod' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  UpdateRecurringTransactionsMutation,
+  UpdateRecurringTransactionsMutationVariables
+>;
 export const TransactionsDocument = {
   kind: 'Document',
   definitions: [
@@ -9492,6 +9590,10 @@ export const TransactionsDocument = {
           },
           { kind: 'Field', name: { kind: 'Name', value: 'status' } },
           { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'recurringTransactionId' },
+          },
         ],
       },
     },
