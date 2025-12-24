@@ -20,3 +20,32 @@ export const UpdateTransactionMutation = graphql(`
     }
   }
 `);
+
+export const ConfirmTransactionMutation = graphql(`
+  mutation ConfirmTransaction($data: ConfirmTransactionInput!) {
+    confirmTransaction(data: $data) {
+      id
+      status
+      amount
+      date
+    }
+  }
+`);
+
+export const CancelTransactionMutation = graphql(`
+  mutation CancelTransaction($id: String!) {
+    cancelTransaction(id: $id) {
+      id
+      status
+    }
+  }
+`);
+
+export const RescheduleTransactionMutation = graphql(`
+  mutation RescheduleTransaction($data: RescheduleTransactionInput!) {
+    rescheduleTransaction(data: $data) {
+      id
+      date
+    }
+  }
+`);

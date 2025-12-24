@@ -51,6 +51,9 @@ type Documents = {
   '\n  query FinancialAgenda($accountId: String, $daysAhead: Int!) {\n    financialAgenda(accountId: $accountId, daysAhead: $daysAhead) {\n      groups {\n        label\n        transactions {\n          id\n          description\n          amount\n          type\n          status\n          date\n          daysUntilDue\n          isOverdue\n        }\n      }\n      totalIncome\n      totalExpense\n      balance\n      pendingCount\n    }\n  }\n': typeof types.FinancialAgendaDocument;
   '\n  mutation CreateTransaction($data: CreateTransactionInput!) {\n    createTransaction(data: $data) {\n      id\n    }\n  }\n': typeof types.CreateTransactionDocument;
   '\n  mutation UpdateTransaction($data: UpdateTransactionInput!) {\n    updateTransaction(data: $data) {\n      id\n      description\n      amount\n      date\n      status\n      paymentMethod\n    }\n  }\n': typeof types.UpdateTransactionDocument;
+  '\n  mutation ConfirmTransaction($data: ConfirmTransactionInput!) {\n    confirmTransaction(data: $data) {\n      id\n      status\n      amount\n      date\n    }\n  }\n': typeof types.ConfirmTransactionDocument;
+  '\n  mutation CancelTransaction($id: String!) {\n    cancelTransaction(id: $id) {\n      id\n      status\n    }\n  }\n': typeof types.CancelTransactionDocument;
+  '\n  mutation RescheduleTransaction($data: RescheduleTransactionInput!) {\n    rescheduleTransaction(data: $data) {\n      id\n      date\n    }\n  }\n': typeof types.RescheduleTransactionDocument;
   '\n  fragment TransactionFragment on TransactionModel {\n    id\n    description\n    amount\n    date\n    type\n    createdAt\n    updatedAt\n    sourceAccount {\n      id\n      name\n      institution {\n        id\n        name\n        logoUrl\n      }\n    }\n    destinyAccount {\n      id\n      name\n      institution {\n        id\n        name\n        logoUrl\n      }\n    }\n    billingPayment {\n      id\n      accountCard {\n        account {\n          id\n          name\n          institution {\n            id\n            name\n            logoUrl\n          }\n        }\n      }\n    }\n    status\n    paymentMethod\n  }\n': typeof types.TransactionFragmentFragmentDoc;
   '\n  query Transactions(\n    $first: Int\n    $after: String\n    $last: Int\n    $before: String\n    $search: String\n    $orderBy: OrdenationTransactionModel\n    $orderDirection: OrderDirection\n    $accountId: ID\n    $cardBillingId: ID\n    $startDate: DateTime\n    $endDate: DateTime\n    $types: [TransactionType!]\n    $statuses: [TransactionStatus!]\n  ) {\n    transactions(\n      first: $first\n      after: $after\n      last: $last\n      before: $before\n      search: $search\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      accountId: $accountId\n      cardBillingId: $cardBillingId\n      startDate: $startDate\n      endDate: $endDate\n      types: $types\n      statuses: $statuses\n    ) {\n      edges {\n        cursor\n        node {\n          ...TransactionFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n': typeof types.TransactionsDocument;
   '\n  query TransactionsSummary(\n    $search: String\n    $accountId: ID\n    $cardBillingId: ID\n    $startDate: DateTime\n    $endDate: DateTime\n    $types: [TransactionType!]\n    $statuses: [TransactionStatus!]\n  ) {\n    transactionsSummary(\n      search: $search\n      accountId: $accountId\n      cardBillingId: $cardBillingId\n      startDate: $startDate\n      endDate: $endDate\n      types: $types\n      statuses: $statuses\n    ) {\n      totalIncome\n      totalExpense\n      balance\n      transactionCount\n    }\n  }\n': typeof types.TransactionsSummaryDocument;
@@ -131,6 +134,12 @@ const documents: Documents = {
     types.CreateTransactionDocument,
   '\n  mutation UpdateTransaction($data: UpdateTransactionInput!) {\n    updateTransaction(data: $data) {\n      id\n      description\n      amount\n      date\n      status\n      paymentMethod\n    }\n  }\n':
     types.UpdateTransactionDocument,
+  '\n  mutation ConfirmTransaction($data: ConfirmTransactionInput!) {\n    confirmTransaction(data: $data) {\n      id\n      status\n      amount\n      date\n    }\n  }\n':
+    types.ConfirmTransactionDocument,
+  '\n  mutation CancelTransaction($id: String!) {\n    cancelTransaction(id: $id) {\n      id\n      status\n    }\n  }\n':
+    types.CancelTransactionDocument,
+  '\n  mutation RescheduleTransaction($data: RescheduleTransactionInput!) {\n    rescheduleTransaction(data: $data) {\n      id\n      date\n    }\n  }\n':
+    types.RescheduleTransactionDocument,
   '\n  fragment TransactionFragment on TransactionModel {\n    id\n    description\n    amount\n    date\n    type\n    createdAt\n    updatedAt\n    sourceAccount {\n      id\n      name\n      institution {\n        id\n        name\n        logoUrl\n      }\n    }\n    destinyAccount {\n      id\n      name\n      institution {\n        id\n        name\n        logoUrl\n      }\n    }\n    billingPayment {\n      id\n      accountCard {\n        account {\n          id\n          name\n          institution {\n            id\n            name\n            logoUrl\n          }\n        }\n      }\n    }\n    status\n    paymentMethod\n  }\n':
     types.TransactionFragmentFragmentDoc,
   '\n  query Transactions(\n    $first: Int\n    $after: String\n    $last: Int\n    $before: String\n    $search: String\n    $orderBy: OrdenationTransactionModel\n    $orderDirection: OrderDirection\n    $accountId: ID\n    $cardBillingId: ID\n    $startDate: DateTime\n    $endDate: DateTime\n    $types: [TransactionType!]\n    $statuses: [TransactionStatus!]\n  ) {\n    transactions(\n      first: $first\n      after: $after\n      last: $last\n      before: $before\n      search: $search\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      accountId: $accountId\n      cardBillingId: $cardBillingId\n      startDate: $startDate\n      endDate: $endDate\n      types: $types\n      statuses: $statuses\n    ) {\n      edges {\n        cursor\n        node {\n          ...TransactionFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n':
@@ -377,6 +386,24 @@ export function graphql(
 export function graphql(
   source: '\n  mutation UpdateTransaction($data: UpdateTransactionInput!) {\n    updateTransaction(data: $data) {\n      id\n      description\n      amount\n      date\n      status\n      paymentMethod\n    }\n  }\n',
 ): (typeof documents)['\n  mutation UpdateTransaction($data: UpdateTransactionInput!) {\n    updateTransaction(data: $data) {\n      id\n      description\n      amount\n      date\n      status\n      paymentMethod\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  mutation ConfirmTransaction($data: ConfirmTransactionInput!) {\n    confirmTransaction(data: $data) {\n      id\n      status\n      amount\n      date\n    }\n  }\n',
+): (typeof documents)['\n  mutation ConfirmTransaction($data: ConfirmTransactionInput!) {\n    confirmTransaction(data: $data) {\n      id\n      status\n      amount\n      date\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  mutation CancelTransaction($id: String!) {\n    cancelTransaction(id: $id) {\n      id\n      status\n    }\n  }\n',
+): (typeof documents)['\n  mutation CancelTransaction($id: String!) {\n    cancelTransaction(id: $id) {\n      id\n      status\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  mutation RescheduleTransaction($data: RescheduleTransactionInput!) {\n    rescheduleTransaction(data: $data) {\n      id\n      date\n    }\n  }\n',
+): (typeof documents)['\n  mutation RescheduleTransaction($data: RescheduleTransactionInput!) {\n    rescheduleTransaction(data: $data) {\n      id\n      date\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

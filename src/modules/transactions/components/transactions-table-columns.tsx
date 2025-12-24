@@ -10,15 +10,16 @@ import { formatCurrency } from '@/lib/formatters/currency';
 import { formatDate } from '@/lib/formatters/date';
 import { TransactionStatusBadge } from './transaction-status-badge';
 import { TransactionTypeBadge } from './transaction-type-badge';
-import { ArrowRight, Pencil } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { InitialColumnDef } from '@/components/data-table/utils';
 import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
-import { Button } from '@/components/ui/button';
 import {
   IncomeTransactionCreateForm,
   ExpenseTransactionCreateForm,
   BetweenAccountsTransactionCreateForm,
 } from './transaction-create-form';
+import { TransactionActionsMenu } from './transaction-actions-menu';
+import { TransactionEditDescriptionDialog } from './transaction-edit-description-dialog';
 
 function AccountCell({
   account,
@@ -48,7 +49,19 @@ function TransactionActionsCell({
   transaction: TransactionFragmentFragment;
 }) {
   const [editOpen, setEditOpen] = useState(false);
+  const [descriptionEditOpen, setDescriptionEditOpen] = useState(false);
+
   const isCompleted = transaction.status === TransactionStatus.Completed;
+  const isCanceled = transaction.status === TransactionStatus.Canceled;
+  const isImmutable = isCompleted || isCanceled;
+
+  const handleEdit = () => {
+    if (isImmutable) {
+      setDescriptionEditOpen(true);
+    } else {
+      setEditOpen(true);
+    }
+  };
 
   const renderEditForm = () => {
     switch (transaction.type) {
@@ -83,18 +96,13 @@ function TransactionActionsCell({
 
   return (
     <>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-8 w-8"
-        onClick={() => setEditOpen(true)}
-        disabled={isCompleted}
-        title={isCompleted ? 'Transação finalizada' : 'Editar transação'}
-      >
-        <Pencil className="h-4 w-4" />
-      </Button>
-
+      <TransactionActionsMenu transaction={transaction} onEdit={handleEdit} />
       {renderEditForm()}
+      <TransactionEditDescriptionDialog
+        transaction={transaction}
+        open={descriptionEditOpen}
+        onOpenChange={setDescriptionEditOpen}
+      />
     </>
   );
 }
