@@ -25,7 +25,10 @@ import {
 import { TransactionActionsMenu } from './transaction-actions-menu';
 import { TransactionEditDescriptionDialog } from './transaction-edit-description-dialog';
 import { TransactionEditScopeDialog } from './transaction-edit-scope-dialog';
-import { TransactionsQuery } from '../graphql/transactions-queries';
+import {
+  TransactionsQuery,
+  TransactionsSummaryQuery,
+} from '../graphql/transactions-queries';
 import { UpdateRecurringTransactionsMutation } from '../graphql/transactions-mutations';
 
 function AccountCell({
@@ -74,7 +77,7 @@ function TransactionActionsCell({
   const [updateRecurringTransactions] = useMutation(
     UpdateRecurringTransactionsMutation,
     {
-      refetchQueries: [TransactionsQuery],
+      refetchQueries: [TransactionsQuery, TransactionsSummaryQuery],
       onCompleted: () => {
         toast.success('Transações atualizadas!', {
           description: 'As alterações foram aplicadas com sucesso.',
