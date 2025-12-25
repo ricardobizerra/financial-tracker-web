@@ -114,6 +114,12 @@ export const TransactionsSummaryQuery = graphql(`
       totalExpense
       balance
       transactionCount
+      realizedIncome
+      realizedExpense
+      realizedBalance
+      forecastIncome
+      forecastExpense
+      forecastBalance
     }
   }
 `);

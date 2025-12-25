@@ -3728,6 +3728,12 @@ export type TransactionsCalendarModel = {
 export type TransactionsSummaryModel = {
   __typename?: 'TransactionsSummaryModel';
   balance: Scalars['Decimal']['output'];
+  forecastBalance: Scalars['Decimal']['output'];
+  forecastExpense: Scalars['Decimal']['output'];
+  forecastIncome: Scalars['Decimal']['output'];
+  realizedBalance: Scalars['Decimal']['output'];
+  realizedExpense: Scalars['Decimal']['output'];
+  realizedIncome: Scalars['Decimal']['output'];
   totalExpense: Scalars['Decimal']['output'];
   totalIncome: Scalars['Decimal']['output'];
   transactionCount: Scalars['Int']['output'];
@@ -5127,6 +5133,12 @@ export type TransactionsSummaryQuery = {
     totalExpense: any;
     balance: any;
     transactionCount: number;
+    realizedIncome: any;
+    realizedExpense: any;
+    realizedBalance: any;
+    forecastIncome: any;
+    forecastExpense: any;
+    forecastBalance: any;
   };
 };
 
@@ -9781,6 +9793,30 @@ export const TransactionsSummaryDocument = {
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'transactionCount' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'realizedIncome' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'realizedExpense' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'realizedBalance' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'forecastIncome' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'forecastExpense' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'forecastBalance' },
                 },
               ],
             },

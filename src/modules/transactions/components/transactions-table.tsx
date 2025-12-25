@@ -42,7 +42,7 @@ export function TransactionsTable({
   cardBillingId,
   hiddenActions = [],
   hiddenColumns = [],
-  showSummary = true,
+  showSummary = false,
   showFilters = true,
 }: TransactionsTableProps) {
   const params = useParams();
@@ -74,6 +74,12 @@ export function TransactionsTable({
           totalExpense={Number(summary?.totalExpense || 0)}
           balance={Number(summary?.balance || 0)}
           transactionCount={summary?.transactionCount || 0}
+          realizedIncome={Number(summary?.realizedIncome || 0)}
+          realizedExpense={Number(summary?.realizedExpense || 0)}
+          realizedBalance={Number(summary?.realizedBalance || 0)}
+          forecastIncome={Number(summary?.forecastIncome || 0)}
+          forecastExpense={Number(summary?.forecastExpense || 0)}
+          forecastBalance={Number(summary?.forecastBalance || 0)}
           loading={summaryQuery.loading}
         />
       )}
