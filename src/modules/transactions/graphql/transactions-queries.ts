@@ -123,3 +123,20 @@ export const TransactionsSummaryQuery = graphql(`
     }
   }
 `);
+
+export const TransactionsGroupedByPeriodQuery = graphql(`
+  query TransactionsGroupedByPeriod($accountId: ID, $limitPerGroup: Int) {
+    transactionsGroupedByPeriod(
+      accountId: $accountId
+      limitPerGroup: $limitPerGroup
+    ) {
+      period
+      label
+      count
+      hasMore
+      transactions {
+        ...TransactionFragment
+      }
+    }
+  }
+`);

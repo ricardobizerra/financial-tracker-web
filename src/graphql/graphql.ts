@@ -2576,6 +2576,7 @@ export type Query = {
   totalInvestments: TotalInvestmentsModel;
   transactions: TransactionConnection;
   transactionsCalendar: TransactionsCalendarModel;
+  transactionsGroupedByPeriod: Array<TransactionGroupModel>;
   transactionsSummary: TransactionsSummaryModel;
   user: UserModel;
   users: UserConnection;
@@ -2692,6 +2693,11 @@ export type QueryTransactionsCalendarArgs = {
   accountId?: InputMaybe<Scalars['String']['input']>;
   month: Scalars['Int']['input'];
   year: Scalars['Int']['input'];
+};
+
+export type QueryTransactionsGroupedByPeriodArgs = {
+  accountId?: InputMaybe<Scalars['ID']['input']>;
+  limitPerGroup?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type QueryTransactionsSummaryArgs = {
@@ -3562,6 +3568,15 @@ export type TransactionCreateWithoutUserInput = {
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+export type TransactionGroupModel = {
+  __typename?: 'TransactionGroupModel';
+  count: Scalars['Int']['output'];
+  hasMore: Scalars['Boolean']['output'];
+  label: Scalars['String']['output'];
+  period: TransactionPeriod;
+  transactions: Array<TransactionModel>;
+};
+
 export type TransactionListRelationFilter = {
   every?: InputMaybe<TransactionWhereInput>;
   none?: InputMaybe<TransactionWhereInput>;
@@ -3642,6 +3657,17 @@ export type TransactionNullableRelationFilter = {
   is?: InputMaybe<TransactionWhereInput>;
   isNot?: InputMaybe<TransactionWhereInput>;
 };
+
+/** Período temporal para agrupamento de transações */
+export enum TransactionPeriod {
+  Future = 'FUTURE',
+  NextMonth = 'NEXT_MONTH',
+  Overdue = 'OVERDUE',
+  Past = 'PAST',
+  ThisMonth = 'THIS_MONTH',
+  ThisWeek = 'THIS_WEEK',
+  Today = 'TODAY',
+}
 
 export enum TransactionStatus {
   Canceled = 'CANCELED',
@@ -5140,6 +5166,75 @@ export type TransactionsSummaryQuery = {
     forecastExpense: any;
     forecastBalance: any;
   };
+};
+
+export type TransactionsGroupedByPeriodQueryVariables = Exact<{
+  accountId?: InputMaybe<Scalars['ID']['input']>;
+  limitPerGroup?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+export type TransactionsGroupedByPeriodQuery = {
+  __typename?: 'Query';
+  transactionsGroupedByPeriod: Array<{
+    __typename?: 'TransactionGroupModel';
+    period: TransactionPeriod;
+    label: string;
+    count: number;
+    hasMore: boolean;
+    transactions: Array<{
+      __typename?: 'TransactionModel';
+      id: string;
+      description: string;
+      amount: any;
+      date: any;
+      type: TransactionType;
+      createdAt: any;
+      updatedAt: any;
+      status: TransactionStatus;
+      paymentMethod: PaymentMethod | null;
+      recurringTransactionId: string | null;
+      sourceAccount: {
+        __typename?: 'Account';
+        id: string;
+        name: string;
+        institution: {
+          __typename?: 'Institution';
+          id: string;
+          name: string;
+          logoUrl: string | null;
+        };
+      } | null;
+      destinyAccount: {
+        __typename?: 'Account';
+        id: string;
+        name: string;
+        institution: {
+          __typename?: 'Institution';
+          id: string;
+          name: string;
+          logoUrl: string | null;
+        };
+      } | null;
+      billingPayment: {
+        __typename?: 'CardBilling';
+        id: string;
+        accountCard: {
+          __typename?: 'AccountCard';
+          account: {
+            __typename?: 'Account';
+            id: string;
+            name: string;
+            institution: {
+              __typename?: 'Institution';
+              id: string;
+              name: string;
+              logoUrl: string | null;
+            };
+          };
+        };
+      } | null;
+    }>;
+  }>;
 };
 
 export type UsersQueryVariables = Exact<{
@@ -9828,6 +9923,221 @@ export const TransactionsSummaryDocument = {
 } as unknown as DocumentNode<
   TransactionsSummaryQuery,
   TransactionsSummaryQueryVariables
+>;
+export const TransactionsGroupedByPeriodDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'TransactionsGroupedByPeriod' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'accountId' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'limitPerGroup' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'transactionsGroupedByPeriod' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'accountId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'accountId' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'limitPerGroup' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'limitPerGroup' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'period' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'label' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'count' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'hasMore' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'transactions' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'TransactionFragment' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'TransactionFragment' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'TransactionModel' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'date' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'sourceAccount' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institution' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'logoUrl' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'destinyAccount' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institution' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'logoUrl' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'billingPayment' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'accountCard' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'account' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'institution' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'id' },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'name' },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'logoUrl' },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'recurringTransactionId' },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  TransactionsGroupedByPeriodQuery,
+  TransactionsGroupedByPeriodQueryVariables
 >;
 export const UsersDocument = {
   kind: 'Document',
