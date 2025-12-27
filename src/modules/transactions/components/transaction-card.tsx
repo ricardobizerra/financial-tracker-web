@@ -23,7 +23,9 @@ import {
   Pencil,
   X,
   CreditCard,
+  Eye,
 } from 'lucide-react';
+import Link from 'next/link';
 import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
 import { TransactionEditDescriptionDialog } from './transaction-edit-description-dialog';
 import { TransactionEditScopeDialog } from './transaction-edit-scope-dialog';
@@ -146,6 +148,7 @@ export function TransactionCard({ transaction }: TransactionCardProps) {
     billingStatus === CardBillingStatus.Closed ||
     billingStatus === CardBillingStatus.Overdue;
   const isBillingOpen = billingStatus === CardBillingStatus.Pending;
+  const billingAccountId = transaction.billingPayment?.accountCard?.account?.id;
 
   const handleEdit = () => {
     if (isBillingPayment) {
@@ -387,11 +390,22 @@ const renderAccountInfoForDialog = () => {
       // Se pode pagar, botão sem tooltip
       if (canPayBilling) {
         return (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full md:w-auto flex-wrap md:flex-nowrap">
+            <Button
+              variant="secondary"
+              size="sm"
+              asChild
+              className="flex-1 md:flex-none"
+            >
+              <Link href={`/accounts/${billingAccountId}?billingId=${transaction.billingPayment?.id}`}>
+                <Eye className="h-4 w-4" />
+                Ver fatura
+              </Link>
+            </Button>
             <Button
               size="sm"
               onClick={() => setBillingPaymentEditOpen(true)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white flex-1 md:flex-none"
             >
               <CreditCard className="h-4 w-4" />
               Pagar fatura
@@ -402,14 +416,25 @@ const renderAccountInfoForDialog = () => {
 
       // Se não pode pagar, botão com tooltip explicando
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full md:w-auto flex-wrap md:flex-nowrap">
+          <Button
+            variant="secondary"
+            size="sm"
+            asChild
+            className="flex-1 md:flex-none"
+          >
+            <Link href={`/accounts/${billingAccountId}?billingId=${transaction.billingPayment?.id}`}>
+              <Eye className="h-4 w-4" />
+              Ver fatura
+            </Link>
+          </Button>
           <Tooltip>
             <TooltipTrigger asChild>
               <span>
                 <Button
                   size="sm"
                   disabled
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white flex-1 md:flex-none"
                 >
                   <CreditCard className="h-4 w-4" />
                   Pagar fatura

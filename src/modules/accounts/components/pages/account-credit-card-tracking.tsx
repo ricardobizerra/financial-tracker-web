@@ -228,9 +228,15 @@ export function AccountCreditCardTracking({
   account: AccountFragmentFragment;
 }) {
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  // Ler billingId da URL se existir (para navegação direta à fatura)
+  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+  const billingIdFromUrl = searchParams.get('billingId');
+  
   const { data, loading, refetch } = useQuery(BillingQuery, {
     variables: {
       accountId: account.id,
+      id: billingIdFromUrl || undefined,
     },
     fetchPolicy: 'cache-and-network',
   });
