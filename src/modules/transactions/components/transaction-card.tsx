@@ -65,6 +65,9 @@ import { Separator } from '@/components/ui/separator';
 
 interface TransactionCardProps {
   transaction: TransactionFragmentFragment;
+  hideAccount?: boolean;
+  hideActions?: ('confirm' | 'edit' | 'cancel')[];
+  compact?: boolean;
 }
 
 // Formatar data com mês por extenso e ano só se não for o ano atual
@@ -82,7 +85,12 @@ function formatDateExtended(dateStr: string): string {
   }
 }
 
-export function TransactionCard({ transaction }: TransactionCardProps) {
+export function TransactionCard({
+  transaction,
+  hideAccount = false,
+  hideActions = [],
+  compact = false,
+}: TransactionCardProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [descriptionEditOpen, setDescriptionEditOpen] = useState(false);
   const [scopeDialogOpen, setScopeDialogOpen] = useState(false);
@@ -453,18 +461,20 @@ const renderAccountInfoForDialog = () => {
     return (
       <div className="flex items-center gap-2 w-full md:w-auto flex-wrap md:flex-nowrap">
         {/* Editar */}
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={handleEdit}
-          className="flex-1 md:flex-none"
-        >
-          <Pencil className="h-4 w-4" />
-          Editar detalhes
-        </Button>
+        {!hideActions.includes('edit') && (
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleEdit}
+            className="flex-1 md:flex-none"
+          >
+            <Pencil className="h-4 w-4" />
+            Editar detalhes
+          </Button>
+        )}
 
         {/* Confirmar pagamento */}
-        {!isImmutable && (
+        {!isImmutable && !hideActions.includes('confirm') && (
           <Button
             size="sm"
             onClick={() => setConfirmDialogOpen(true)}
@@ -476,7 +486,7 @@ const renderAccountInfoForDialog = () => {
         )}
 
         {/* Cancelar */}
-        {!isImmutable && (
+        {!isImmutable && !hideActions.includes('cancel') && (
           <Button
             variant="destructive"
             size="sm"
@@ -545,7 +555,7 @@ const renderAccountInfoForDialog = () => {
               <span className="font-medium">
                 {transaction.description || 'Sem descrição'}
               </span>
-              {getAccountDisplay()}
+              {!hideAccount && getAccountDisplay()}
               <div className="text-sm text-muted-foreground">
                 {formatDateExtended(transaction.date)}
               </div>

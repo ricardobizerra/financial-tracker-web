@@ -62,9 +62,17 @@ const periodConfig: Record<
 
 interface TransactionsCardViewProps {
   accountId?: string;
+  hideAccount?: boolean;
+  hideActions?: ('confirm' | 'edit' | 'cancel')[];
+  compact?: boolean;
 }
 
-export function TransactionsCardView({ accountId }: TransactionsCardViewProps) {
+export function TransactionsCardView({
+  accountId,
+  hideAccount = false,
+  hideActions = [],
+  compact = false,
+}: TransactionsCardViewProps) {
   const [expandedGroups, setExpandedGroups] = useState<
     Record<string, boolean>
   >({});
@@ -175,6 +183,9 @@ export function TransactionsCardView({ accountId }: TransactionsCardViewProps) {
                 <TransactionCard
                   key={transaction.id}
                   transaction={transaction}
+                  hideAccount={hideAccount}
+                  hideActions={hideActions}
+                  compact={compact}
                 />
               ))}
             </div>

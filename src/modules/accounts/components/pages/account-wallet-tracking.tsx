@@ -53,7 +53,7 @@ export function AccountWalletTracking({ account }: AccountWalletTrackingProps) {
       </Card>
 
       {/* Transaction Views with multiple visualization options */}
-      <TransactionsViews accountId={account.id} hiddenColumns={['account']} />
+      <TransactionsViews accountId={account.id} hideAccount />
     </div>
   );
 }

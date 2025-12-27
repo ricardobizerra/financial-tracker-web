@@ -2,32 +2,32 @@
 
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TransactionsTable } from './transactions-table';
+import { TransactionsCardView } from './transactions-card-view';
 import { BalanceForecastChart } from './balance-forecast-chart';
 import { TransactionsCalendar } from './transactions-calendar';
 import { FinancialAgenda } from './financial-agenda';
-import { TableIcon, LineChart, Calendar, ClipboardList } from 'lucide-react';
+import { LineChart, Calendar, ClipboardList, LayoutGrid } from 'lucide-react';
 import { useParams } from 'next/navigation';
 
 interface TransactionsViewsProps {
   accountId?: string;
-  hiddenColumns?: string[];
+  hideAccount?: boolean;
 }
 
 export function TransactionsViews({
   accountId,
-  hiddenColumns = [],
+  hideAccount = false,
 }: TransactionsViewsProps) {
-  const [activeTab, setActiveTab] = useState('table');
+  const [activeTab, setActiveTab] = useState('cards');
   const params = useParams<{ accountId?: string }>();
   const effectiveAccountId = accountId || params.accountId;
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <TabsList className="mb-4 grid w-full grid-cols-4">
-        <TabsTrigger value="table" className="flex items-center gap-2">
-          <TableIcon className="h-4 w-4" />
-          <span className="hidden sm:inline">Transações</span>
+        <TabsTrigger value="cards" className="flex items-center gap-2">
+          <LayoutGrid className="h-4 w-4" />
+          <span className="hidden sm:inline">Cards</span>
         </TabsTrigger>
         <TabsTrigger value="forecast" className="flex items-center gap-2">
           <LineChart className="h-4 w-4" />
@@ -43,11 +43,10 @@ export function TransactionsViews({
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="table" className="mt-0">
-        <TransactionsTable
-          hiddenColumns={[...hiddenColumns, 'account']}
-          showSummary
-          showFilters
+      <TabsContent value="cards" className="mt-0">
+        <TransactionsCardView
+          accountId={effectiveAccountId}
+          hideAccount={hideAccount}
         />
       </TabsContent>
 
