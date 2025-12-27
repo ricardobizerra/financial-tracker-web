@@ -5053,6 +5053,11 @@ export type TransactionFragmentFragment = {
       };
     };
   } | null;
+  cardBilling: {
+    __typename?: 'CardBilling';
+    id: string;
+    status: CardBillingStatus;
+  } | null;
 };
 
 export type TransactionsQueryVariables = Exact<{
@@ -5130,6 +5135,11 @@ export type TransactionsQuery = {
               };
             };
           };
+        } | null;
+        cardBilling: {
+          __typename?: 'CardBilling';
+          id: string;
+          status: CardBillingStatus;
         } | null;
       };
     }> | null;
@@ -5235,6 +5245,11 @@ export type TransactionsGroupedByPeriodQuery = {
             };
           };
         };
+      } | null;
+      cardBilling: {
+        __typename?: 'CardBilling';
+        id: string;
+        status: CardBillingStatus;
       } | null;
     }>;
   }>;
@@ -5637,6 +5652,17 @@ export const TransactionFragmentFragmentDoc = {
                     ],
                   },
                 },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'cardBilling' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
               ],
             },
           },
@@ -9700,6 +9726,17 @@ export const TransactionsDocument = {
               ],
             },
           },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'cardBilling' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+              ],
+            },
+          },
           { kind: 'Field', name: { kind: 'Name', value: 'status' } },
           { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
           {
@@ -10128,6 +10165,17 @@ export const TransactionsGroupedByPeriodDocument = {
                     ],
                   },
                 },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'cardBilling' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
               ],
             },
           },

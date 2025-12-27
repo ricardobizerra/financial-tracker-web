@@ -150,7 +150,16 @@ export function TransactionCard({
   const isRecurring = !!transaction.recurringTransactionId;
   const isBillingPayment = !!transaction.billingPayment;
 
-  // Fatura está fechada (pode ser paga) se status for CLOSED ou OVERDUE
+  // Transação pertence a uma fatura de cartão (não é a transação de pagamento)
+  const isPartOfBilling = !!transaction.cardBilling;
+  const cardBillingStatus = transaction.cardBilling?.status;
+  const isCardBillingOpen = cardBillingStatus === CardBillingStatus.Pending;
+  const isCardBillingClosed =
+    cardBillingStatus === CardBillingStatus.Closed ||
+    cardBillingStatus === CardBillingStatus.Overdue ||
+    cardBillingStatus === CardBillingStatus.Paid;
+
+  // Fatura está fechada (pode ser paga) se status for CLOSED ou OVERDUE (para billingPayment)
   const billingStatus = transaction.billingPayment?.status;
   const isBillingClosed =
     billingStatus === CardBillingStatus.Closed ||
@@ -158,10 +167,19 @@ export function TransactionCard({
   const isBillingOpen = billingStatus === CardBillingStatus.Pending;
   const billingAccountId = transaction.billingPayment?.accountCard?.account?.id;
 
+  // Transação é editável:
+  // - Se não for imutável (não completada/cancelada), OU
+  // - Se pertence a uma fatura aberta (exceção: pode editar mesmo se concluída)
+  // E se pertence a fatura fechada, não pode editar completamente
+  const canEditFully = 
+    (!isImmutable || (isPartOfBilling && isCardBillingOpen)) && 
+    !(isPartOfBilling && isCardBillingClosed);
+
   const handleEdit = () => {
     if (isBillingPayment) {
       setBillingPaymentEditOpen(true);
-    } else if (isImmutable) {
+    } else if (!canEditFully) {
+      // Transação imutável ou fatura fechada: só pode editar descrição
       setDescriptionEditOpen(true);
     } else {
       setEditOpen(true);
@@ -473,8 +491,8 @@ const renderAccountInfoForDialog = () => {
           </Button>
         )}
 
-        {/* Confirmar pagamento */}
-        {!isImmutable && !hideActions.includes('confirm') && (
+        {/* Confirmar pagamento - não mostrar para transações de fatura aberta */}
+        {canEditFully && !hideActions.includes('confirm') && !isPartOfBilling && (
           <Button
             size="sm"
             onClick={() => setConfirmDialogOpen(true)}
@@ -486,7 +504,7 @@ const renderAccountInfoForDialog = () => {
         )}
 
         {/* Cancelar */}
-        {!isImmutable && !hideActions.includes('cancel') && (
+        {canEditFully && !hideActions.includes('cancel') && (
           <Button
             variant="destructive"
             size="sm"
