@@ -11,7 +11,7 @@ import {
   TransactionStatus,
   TransactionType,
 } from '@/graphql/graphql';
-import { TransactionsTable } from '@/modules/transactions/components/transactions-table';
+import { TransactionsCardList } from '@/modules/transactions/components/transactions-card-list';
 import { useMutation, useQuery } from '@apollo/client';
 import { AccountsQuery, BillingQuery } from '../../graphql/accounts-queries';
 import {
@@ -773,14 +773,9 @@ export function AccountCreditCardTracking({
             <CardTitle className="text-base">Transações</CardTitle>
           </CardHeader>
           <CardContent>
-            <TransactionsTable
+            <TransactionsCardList
               cardBillingId={billing.id}
-              hiddenActions={[
-                TransactionType.Income,
-                TransactionType.Expense,
-                TransactionType.BetweenAccounts,
-              ]}
-              hiddenColumns={['type', 'status']}
+              hideAccount
             />
           </CardContent>
         </Card>

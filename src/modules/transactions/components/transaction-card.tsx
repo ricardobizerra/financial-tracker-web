@@ -508,7 +508,6 @@ const renderAccountInfoForDialog = () => {
           'transition-all hover:shadow-md',
           isOverdue &&
             'border-red-300 bg-red-50/50 dark:border-red-800 dark:bg-red-950/20',
-          isCompleted && 'opacity-75',
         )}
       >
         <CardContent className="flex flex-col md:flex-row items-center justify-between p-3 gap-3">
