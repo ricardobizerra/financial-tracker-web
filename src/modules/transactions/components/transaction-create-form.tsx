@@ -317,7 +317,7 @@ export function IncomeTransactionCreateForm({
         <DialogTrigger asChild>
           <Button
             size={triggerSize ?? 'sm'}
-            className={cn('flex items-center gap-1', triggerClassName)}
+            className={cn('flex items-center gap-1 flex-1 md:flex-none', triggerClassName)}
             variant={'default'}
           >
             <ArrowUp />
@@ -697,7 +697,7 @@ export function ExpenseTransactionCreateForm({
         <DialogTrigger asChild>
           <Button
             size={triggerSize ?? 'sm'}
-            className={cn('flex items-center gap-1', triggerClassName)}
+            className={cn('flex items-center gap-1 flex-1 md:flex-none', triggerClassName)}
             variant={'destructive'}
           >
             <ArrowDown />
@@ -1067,7 +1067,7 @@ export function BetweenAccountsTransactionCreateForm({
         <DialogTrigger asChild>
           <Button
             size={triggerSize ?? 'sm'}
-            className={cn('flex items-center gap-1', triggerClassName)}
+            className={cn('flex items-center gap-1 flex-1 md:flex-none', triggerClassName)}
             variant={'secondary'}
           >
             <ArrowLeftRight />

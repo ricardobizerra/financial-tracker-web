@@ -29,6 +29,7 @@ export const TransactionsFragment = graphql(`
     }
     billingPayment {
       id
+      status
       accountCard {
         account {
           id

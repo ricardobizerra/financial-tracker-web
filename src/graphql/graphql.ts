@@ -5037,6 +5037,7 @@ export type TransactionFragmentFragment = {
   billingPayment: {
     __typename?: 'CardBilling';
     id: string;
+    status: CardBillingStatus;
     accountCard: {
       __typename?: 'AccountCard';
       account: {
@@ -5114,6 +5115,7 @@ export type TransactionsQuery = {
         billingPayment: {
           __typename?: 'CardBilling';
           id: string;
+          status: CardBillingStatus;
           accountCard: {
             __typename?: 'AccountCard';
             account: {
@@ -5218,6 +5220,7 @@ export type TransactionsGroupedByPeriodQuery = {
       billingPayment: {
         __typename?: 'CardBilling';
         id: string;
+        status: CardBillingStatus;
         accountCard: {
           __typename?: 'AccountCard';
           account: {
@@ -5586,6 +5589,7 @@ export const TransactionFragmentFragmentDoc = {
               kind: 'SelectionSet',
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'accountCard' },
@@ -9645,6 +9649,7 @@ export const TransactionsDocument = {
               kind: 'SelectionSet',
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'accountCard' },
@@ -10075,6 +10080,7 @@ export const TransactionsGroupedByPeriodDocument = {
               kind: 'SelectionSet',
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'accountCard' },

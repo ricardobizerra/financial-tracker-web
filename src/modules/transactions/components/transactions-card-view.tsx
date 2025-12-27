@@ -127,7 +127,7 @@ export function TransactionsCardView({ accountId }: TransactionsCardViewProps) {
             <p className="text-muted-foreground">
               Nenhuma transação encontrada.
             </p>
-            <div className="mt-4 flex justify-center gap-2">
+            <div className="mt-4 flex flex-wrap md:flex-nowrap justify-center gap-2">
               <IncomeTransactionCreateForm accountId={accountId} />
               <ExpenseTransactionCreateForm accountId={accountId} />
               <BetweenAccountsTransactionCreateForm accountId={accountId} />
@@ -144,7 +144,7 @@ export function TransactionsCardView({ accountId }: TransactionsCardViewProps) {
       <TransactionsFilters filters={filters} onFiltersChange={setFilters} />
 
       {/* Botões de ação */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap md:flex-nowrap">
         <IncomeTransactionCreateForm accountId={accountId} />
         <ExpenseTransactionCreateForm accountId={accountId} />
         <BetweenAccountsTransactionCreateForm accountId={accountId} />
@@ -163,9 +163,9 @@ export function TransactionsCardView({ accountId }: TransactionsCardViewProps) {
             <div className="flex items-center gap-2">
               <Icon className={cn('h-5 w-5', color)} />
               <h3 className={cn('font-semibold', color)}>{group.label}</h3>
-              <span className="text-xs text-muted-foreground">
-                ({group.count}{' '}
-                {group.count === 1 ? 'transação' : 'transações'})
+              <span className="text-sm text-muted-foreground">
+                {group.count}{' '}
+                {group.count === 1 ? 'transação' : 'transações'}
               </span>
             </div>
 

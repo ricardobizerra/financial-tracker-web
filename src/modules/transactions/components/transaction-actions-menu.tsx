@@ -1,10 +1,9 @@
-'use client';
-
 import { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import {
   TransactionFragmentFragment,
   TransactionStatus,
+  CardBillingStatus,
 } from '@/graphql/graphql';
 import { Button } from '@/components/ui/button';
 import {
@@ -59,9 +58,16 @@ export function TransactionActionsMenu({
   const isCompleted = transaction.status === TransactionStatus.Completed;
   const isCanceled = transaction.status === TransactionStatus.Canceled;
   const isImmutable = isCompleted || isCanceled;
+  const isBillingPayment = !!transaction.billingPayment;
+  
+  // Fatura está fechada (pode ser paga) se status for CLOSED ou OVERDUE
+  const billingStatus = transaction.billingPayment?.status;
+  const isBillingClosed = billingStatus === CardBillingStatus.Closed || 
+                          billingStatus === CardBillingStatus.Overdue;
 
-  const canConfirm = !isImmutable;
-  const canCancel = !isImmutable;
+  const canConfirm = !isImmutable && !isBillingPayment;
+  const canCancel = !isImmutable && !isBillingPayment;
+  const canPayBilling = isBillingPayment && isBillingClosed && !isImmutable;
 
   const handleConfirmCancel = () => {
     cancelTransaction({ variables: { id: transaction.id } });
@@ -76,6 +82,15 @@ export function TransactionActionsMenu({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          {/* Pagamento de fatura fechada: apenas opção de pagar */}
+          {canPayBilling && (
+            <DropdownMenuItem onClick={onEdit}>
+              <Check className="mr-2 h-4 w-4 text-green-600" />
+              Pagar fatura
+            </DropdownMenuItem>
+          )}
+
+          {/* Transações normais: confirmar pagamento */}
           {canConfirm && (
             <DropdownMenuItem onClick={() => setConfirmDialogOpen(true)}>
               <Check className="mr-2 h-4 w-4 text-green-600" />
@@ -83,6 +98,7 @@ export function TransactionActionsMenu({
             </DropdownMenuItem>
           )}
 
+          {/* Cancelar transação (não disponível para pagamento de fatura) */}
           {canCancel && (
             <DropdownMenuItem
               onClick={() => setCancelDialogOpen(true)}
@@ -93,12 +109,16 @@ export function TransactionActionsMenu({
             </DropdownMenuItem>
           )}
 
-          {(canConfirm || canCancel) && <DropdownMenuSeparator />}
-
-          <DropdownMenuItem onClick={onEdit}>
-            <Pencil className="mr-2 h-4 w-4" />
-            {isImmutable ? 'Editar descrição' : 'Editar detalhes'}
-          </DropdownMenuItem>
+          {/* Editar - apenas para transações não-fatura */}
+          {!isBillingPayment && (
+            <>
+              {(canConfirm || canCancel) && <DropdownMenuSeparator />}
+              <DropdownMenuItem onClick={onEdit}>
+                <Pencil className="mr-2 h-4 w-4" />
+                {isImmutable ? 'Editar descrição' : 'Editar detalhes'}
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
