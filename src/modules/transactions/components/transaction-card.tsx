@@ -584,9 +584,16 @@ export function TransactionCard({
 
             {/* Descrição e conta */}
             <div className="flex w-full flex-col gap-0.5">
-              <span className="font-medium">
-                {transaction.description || 'Sem descrição'}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="font-medium">
+                  {transaction.description || 'Sem descrição'}
+                </span>
+                {transaction.installmentNumber && transaction.totalInstallments && (
+                  <span className="rounded-md bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
+                    {transaction.installmentNumber}/{transaction.totalInstallments}
+                  </span>
+                )}
+              </div>
               {!hideAccount && getAccountDisplay()}
               <div className="text-sm text-muted-foreground">
                 {formatDateExtended(transaction.date)}

@@ -51,6 +51,8 @@ export const TransactionsFragment = graphql(`
     status
     paymentMethod
     recurringTransactionId
+    installmentNumber
+    totalInstallments
   }
 `);
 

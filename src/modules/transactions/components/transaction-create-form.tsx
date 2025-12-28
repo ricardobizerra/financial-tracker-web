@@ -32,6 +32,8 @@ import {
   TransactionStatus,
   PaymentMethod,
   AccountType,
+  RecurrenceFrequency,
+  RecurrenceType,
 } from '@/graphql/graphql';
 import {
   PropsWithChildren,
@@ -48,6 +50,7 @@ import {
   TransactionsSummaryQuery,
 } from '../graphql/transactions-queries';
 import { BalanceForecastQuery } from '../graphql/balance-forecast-queries';
+import { CreateRecurringTransactionMutation } from '@/modules/recurring-transactions/graphql/recurring-transactions-mutations';
 import {
   TransactionsCalendarQuery,
   FinancialAgendaQuery,
@@ -74,6 +77,7 @@ import {
   UpdateTransactionMutation,
 } from '../graphql/transactions-mutations';
 import { TransactionFragmentFragment } from '@/graphql/graphql';
+import { formatCurrency } from '@/lib/formatters/currency';
 
 interface TransactionCreateFormProps {
   accountId?: string;
@@ -133,6 +137,12 @@ const expenseSchema = z.object({
   paymentMethod: formFields.select.describe(
     'Método de pagamento * // Insira o método de pagamento',
   ),
+  isInstallment: formFields.switch
+    .optional()
+    .describe('Parcelar // Marque para criar transação parcelada'),
+  installmentCount: formFields.number
+    .optional()
+    .describe('Número de parcelas // Quantas parcelas?'),
 });
 
 const betweenAccountsSchema = z.object({
@@ -535,10 +545,12 @@ export function ExpenseTransactionCreateForm({
   const [createTransaction, { loading: createLoading }] = useMutation(
     CreateTransactionMutation,
   );
+  const [createRecurringTransaction, { loading: recurringLoading }] =
+    useMutation(CreateRecurringTransactionMutation);
   const [updateTransaction, { loading: updateLoading }] = useMutation(
     UpdateTransactionMutation,
   );
-  const loading = isEditMode ? updateLoading : createLoading;
+  const loading = isEditMode ? updateLoading : createLoading || recurringLoading;
 
   const form = useForm<z.infer<typeof expenseSchema>>({
     resolver: zodResolver(expenseSchema),
@@ -565,6 +577,8 @@ export function ExpenseTransactionCreateForm({
                 data: editTransaction.sourceAccount,
               }
             : undefined,
+          isInstallment: false,
+          installmentCount: undefined,
         }
       : {
           type: {
@@ -578,6 +592,8 @@ export function ExpenseTransactionCreateForm({
             },
           }),
           isCompleted: false,
+          isInstallment: false,
+          installmentCount: undefined,
           paymentMethod: !!paymentMethod
             ? {
                 value: paymentMethod,
@@ -591,6 +607,29 @@ export function ExpenseTransactionCreateForm({
     control: form.control,
     name: 'sourceAccount',
   });
+
+  const isInstallment = useWatch({
+    control: form.control,
+    name: 'isInstallment',
+  });
+
+  const watchedAmount = useWatch({
+    control: form.control,
+    name: 'amount',
+  });
+
+  const watchedInstallmentCount = useWatch({
+    control: form.control,
+    name: 'installmentCount',
+  });
+
+  // Calcular valor por parcela
+  const installmentValue = useMemo(() => {
+    if (isInstallment && watchedAmount && watchedInstallmentCount && watchedInstallmentCount > 1) {
+      return (watchedAmount / watchedInstallmentCount).toFixed(2);
+    }
+    return null;
+  }, [isInstallment, watchedAmount, watchedInstallmentCount]);
 
   const paymentMethodOptions = Object.values(PaymentMethod).map((method) => ({
     value: method,
@@ -835,41 +874,85 @@ export function ExpenseTransactionCreateForm({
                 },
               });
             } else {
-              await createTransaction({
-                variables: {
-                  data: {
-                    date: data.date,
-                    type: data.type.value as TransactionType,
-                    sourceAccountId: data.sourceAccount.value,
-                    isCompleted: data.isCompleted,
-                    description: data.description,
-                    amount: data.amount,
-                    paymentMethod: isCreditCardAccount
-                      ? undefined
-                      : (data.paymentMethod?.value as PaymentMethod),
+              // Parcelamento
+              if (data.isInstallment && data.installmentCount && data.installmentCount > 1) {
+                const dayOfMonth = data.date.getDate() > 28 ? 28 : data.date.getDate();
+                await createRecurringTransaction({
+                  variables: {
+                    data: {
+                      description: data.description,
+                      estimatedAmount: data.amount,
+                      type: data.type.value as TransactionType,
+                      paymentMethod: isCreditCardAccount
+                        ? undefined
+                        : data.paymentMethod?.value as PaymentMethod,
+                      frequency: RecurrenceFrequency.Monthly,
+                      dayOfMonth,
+                      startDate: data.date,
+                      sourceAccountId: data.sourceAccount.value,
+                      recurrenceType: RecurrenceType.Installment,
+                      totalInstallments: data.installmentCount,
+                    },
                   },
-                },
-                refetchQueries: [
-                  TransactionsQuery,
-                  TransactionsGroupedByPeriodQuery,
-                  TransactionsSummaryQuery,
-                  BalanceForecastQuery,
-                  TransactionsCalendarQuery,
-                  FinancialAgendaQuery,
-                  BillingQuery,
-                ],
-                onCompleted: () => {
-                  toast.success('Movimentação criada!', {
-                    description: 'As informações foram salvas com sucesso.',
-                  });
-                  setOpen(false);
-                },
-                onError: (error) => {
-                  toast.error('Erro ao criar movimentação', {
-                    description: error.message,
-                  });
-                },
-              });
+                  refetchQueries: [
+                    TransactionsQuery,
+                    TransactionsGroupedByPeriodQuery,
+                    TransactionsSummaryQuery,
+                    BalanceForecastQuery,
+                    TransactionsCalendarQuery,
+                    FinancialAgendaQuery,
+                    BillingQuery,
+                  ],
+                  onCompleted: () => {
+                    toast.success(`Parcelamento criado em ${data.installmentCount}x!`, {
+                      description: 'As parcelas foram geradas com sucesso.',
+                    });
+                    setOpen(false);
+                  },
+                  onError: (error) => {
+                    toast.error('Erro ao criar parcelamento', {
+                      description: error.message,
+                    });
+                  },
+                });
+              } else {
+                // Transação única
+                await createTransaction({
+                  variables: {
+                    data: {
+                      date: data.date,
+                      type: data.type.value as TransactionType,
+                      sourceAccountId: data.sourceAccount.value,
+                      isCompleted: data.isCompleted,
+                      description: data.description,
+                      amount: data.amount,
+                      paymentMethod: isCreditCardAccount
+                        ? undefined
+                        : (data.paymentMethod?.value as PaymentMethod),
+                    },
+                  },
+                  refetchQueries: [
+                    TransactionsQuery,
+                    TransactionsGroupedByPeriodQuery,
+                    TransactionsSummaryQuery,
+                    BalanceForecastQuery,
+                    TransactionsCalendarQuery,
+                    FinancialAgendaQuery,
+                    BillingQuery,
+                  ],
+                  onCompleted: () => {
+                    toast.success('Movimentação criada!', {
+                      description: 'As informações foram salvas com sucesso.',
+                    });
+                    setOpen(false);
+                  },
+                  onError: (error) => {
+                    toast.error('Erro ao criar movimentação', {
+                      description: error.message,
+                    });
+                  },
+                });
+              }
             }
           }}
           renderAfter={() => (
@@ -887,6 +970,8 @@ export function ExpenseTransactionCreateForm({
             amount,
             description,
             paymentMethod,
+            isInstallment: isInstallmentField,
+            installmentCount,
           }) => (
             <>
               {!hiddenFields.includes('sourceAccount') && (
@@ -902,6 +987,18 @@ export function ExpenseTransactionCreateForm({
               {!hiddenFields.includes('paymentMethod') &&
                 showPaymentMethod &&
                 paymentMethod}
+              {!isEditMode && (
+                <>
+                  <Separator />
+                  {isInstallmentField}
+                  {isInstallment && installmentCount}
+                  {installmentValue && (
+                    <p className="text-sm text-muted-foreground">
+                      Valor de cada parcela: <strong>{formatCurrency(Number(installmentValue))}</strong>
+                    </p>
+                  )}
+                </>
+              )}
             </>
           )}
         </TsForm>
