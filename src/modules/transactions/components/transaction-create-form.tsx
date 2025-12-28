@@ -42,7 +42,11 @@ import {
 } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { TransactionsQuery } from '../graphql/transactions-queries';
+import {
+  TransactionsQuery,
+  TransactionsGroupedByPeriodQuery,
+  TransactionsSummaryQuery,
+} from '../graphql/transactions-queries';
 import { BalanceForecastQuery } from '../graphql/balance-forecast-queries';
 import {
   TransactionsCalendarQuery,
@@ -419,6 +423,8 @@ export function IncomeTransactionCreateForm({
                 },
                 refetchQueries: [
                   TransactionsQuery,
+                  TransactionsGroupedByPeriodQuery,
+                  TransactionsSummaryQuery,
                   BalanceForecastQuery,
                   TransactionsCalendarQuery,
                   FinancialAgendaQuery,
@@ -450,6 +456,8 @@ export function IncomeTransactionCreateForm({
                 },
                 refetchQueries: [
                   TransactionsQuery,
+                  TransactionsGroupedByPeriodQuery,
+                  TransactionsSummaryQuery,
                   BalanceForecastQuery,
                   TransactionsCalendarQuery,
                   FinancialAgendaQuery,
@@ -805,6 +813,8 @@ export function ExpenseTransactionCreateForm({
                 },
                 refetchQueries: [
                   TransactionsQuery,
+                  TransactionsGroupedByPeriodQuery,
+                  TransactionsSummaryQuery,
                   BalanceForecastQuery,
                   TransactionsCalendarQuery,
                   FinancialAgendaQuery,
@@ -839,6 +849,8 @@ export function ExpenseTransactionCreateForm({
                 },
                 refetchQueries: [
                   TransactionsQuery,
+                  TransactionsGroupedByPeriodQuery,
+                  TransactionsSummaryQuery,
                   BalanceForecastQuery,
                   TransactionsCalendarQuery,
                   FinancialAgendaQuery,
@@ -1190,6 +1202,8 @@ export function BetweenAccountsTransactionCreateForm({
                 },
                 refetchQueries: [
                   TransactionsQuery,
+                  TransactionsGroupedByPeriodQuery,
+                  TransactionsSummaryQuery,
                   BalanceForecastQuery,
                   TransactionsCalendarQuery,
                   FinancialAgendaQuery,
@@ -1228,6 +1242,8 @@ export function BetweenAccountsTransactionCreateForm({
                 },
                 refetchQueries: [
                   TransactionsQuery,
+                  TransactionsGroupedByPeriodQuery,
+                  TransactionsSummaryQuery,
                   BalanceForecastQuery,
                   TransactionsCalendarQuery,
                   FinancialAgendaQuery,
