@@ -81,7 +81,14 @@ export function TransactionsCardView({
   const { data, loading, error, refetch } = useQuery(
     TransactionsGroupedByPeriodQuery,
     {
-      variables: { accountId, limitPerGroup: 10 },
+      variables: {
+        accountId,
+        limitPerGroup: 10,
+        startDate: filters.startDate,
+        endDate: filters.endDate,
+        types: filters.types,
+        statuses: filters.statuses,
+      },
     },
   );
 

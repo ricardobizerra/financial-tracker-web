@@ -2699,7 +2699,12 @@ export type QueryTransactionsCalendarArgs = {
 
 export type QueryTransactionsGroupedByPeriodArgs = {
   accountId?: InputMaybe<Scalars['ID']['input']>;
+  cardBillingId?: InputMaybe<Scalars['ID']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
   limitPerGroup?: InputMaybe<Scalars['Int']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  statuses?: InputMaybe<Array<TransactionStatus>>;
+  types?: InputMaybe<Array<TransactionType>>;
 };
 
 export type QueryTransactionsSummaryArgs = {
@@ -5191,6 +5196,10 @@ export type TransactionsSummaryQuery = {
 export type TransactionsGroupedByPeriodQueryVariables = Exact<{
   accountId?: InputMaybe<Scalars['ID']['input']>;
   limitPerGroup?: InputMaybe<Scalars['Int']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  types?: InputMaybe<Array<TransactionType> | TransactionType>;
+  statuses?: InputMaybe<Array<TransactionStatus> | TransactionStatus>;
 }>;
 
 export type TransactionsGroupedByPeriodQuery = {
@@ -10004,6 +10013,62 @@ export const TransactionsGroupedByPeriodDocument = {
           },
           type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
         },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'startDate' },
+          },
+          type: {
+            kind: 'NamedType',
+            name: { kind: 'Name', value: 'DateTime' },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'endDate' },
+          },
+          type: {
+            kind: 'NamedType',
+            name: { kind: 'Name', value: 'DateTime' },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'types' },
+          },
+          type: {
+            kind: 'ListType',
+            type: {
+              kind: 'NonNullType',
+              type: {
+                kind: 'NamedType',
+                name: { kind: 'Name', value: 'TransactionType' },
+              },
+            },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'statuses' },
+          },
+          type: {
+            kind: 'ListType',
+            type: {
+              kind: 'NonNullType',
+              type: {
+                kind: 'NamedType',
+                name: { kind: 'Name', value: 'TransactionStatus' },
+              },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: 'SelectionSet',
@@ -10026,6 +10091,38 @@ export const TransactionsGroupedByPeriodDocument = {
                 value: {
                   kind: 'Variable',
                   name: { kind: 'Name', value: 'limitPerGroup' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'startDate' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'startDate' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'endDate' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'endDate' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'types' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'types' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'statuses' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'statuses' },
                 },
               },
             ],

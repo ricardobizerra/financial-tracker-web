@@ -132,10 +132,21 @@ export const TransactionsSummaryQuery = graphql(`
 `);
 
 export const TransactionsGroupedByPeriodQuery = graphql(`
-  query TransactionsGroupedByPeriod($accountId: ID, $limitPerGroup: Int) {
+  query TransactionsGroupedByPeriod(
+    $accountId: ID
+    $limitPerGroup: Int
+    $startDate: DateTime
+    $endDate: DateTime
+    $types: [TransactionType!]
+    $statuses: [TransactionStatus!]
+  ) {
     transactionsGroupedByPeriod(
       accountId: $accountId
       limitPerGroup: $limitPerGroup
+      startDate: $startDate
+      endDate: $endDate
+      types: $types
+      statuses: $statuses
     ) {
       period
       label
