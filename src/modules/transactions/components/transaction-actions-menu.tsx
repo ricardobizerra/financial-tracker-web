@@ -59,11 +59,12 @@ export function TransactionActionsMenu({
   const isCanceled = transaction.status === TransactionStatus.Canceled;
   const isImmutable = isCompleted || isCanceled;
   const isBillingPayment = !!transaction.billingPayment;
-  
+
   // Fatura está fechada (pode ser paga) se status for CLOSED ou OVERDUE
   const billingStatus = transaction.billingPayment?.status;
-  const isBillingClosed = billingStatus === CardBillingStatus.Closed || 
-                          billingStatus === CardBillingStatus.Overdue;
+  const isBillingClosed =
+    billingStatus === CardBillingStatus.Closed ||
+    billingStatus === CardBillingStatus.Overdue;
 
   const canConfirm = !isImmutable && !isBillingPayment;
   const canCancel = !isImmutable && !isBillingPayment;

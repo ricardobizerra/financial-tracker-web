@@ -142,7 +142,8 @@ export function TransactionCard({
 
   const isIncome = transaction.type === TransactionType.Income;
   const isExpense = transaction.type === TransactionType.Expense;
-  const isBetweenAccounts = transaction.type === TransactionType.BetweenAccounts;
+  const isBetweenAccounts =
+    transaction.type === TransactionType.BetweenAccounts;
   const isOverdue = transaction.status === TransactionStatus.Overdue;
   const isCompleted = transaction.status === TransactionStatus.Completed;
   const isCanceled = transaction.status === TransactionStatus.Canceled;
@@ -171,8 +172,8 @@ export function TransactionCard({
   // - Se não for imutável (não completada/cancelada), OU
   // - Se pertence a uma fatura aberta (exceção: pode editar mesmo se concluída)
   // E se pertence a fatura fechada, não pode editar completamente
-  const canEditFully = 
-    (!isImmutable || (isPartOfBilling && isCardBillingOpen)) && 
+  const canEditFully =
+    (!isImmutable || (isPartOfBilling && isCardBillingOpen)) &&
     !(isPartOfBilling && isCardBillingClosed);
 
   const handleEdit = () => {
@@ -284,7 +285,7 @@ export function TransactionCard({
       const sourceInst = transaction.sourceAccount?.institution;
       const destInst = transaction.destinyAccount?.institution;
       return (
-        <div className="flex items-center gap-1 text-sm text-muted-foreground font-semibold">
+        <div className="flex items-center gap-1 text-sm font-semibold text-muted-foreground">
           {sourceInst && (
             <>
               <InstitutionLogo
@@ -318,7 +319,7 @@ export function TransactionCard({
     const institution = account.institution;
 
     return (
-      <div className="flex items-center gap-1 text-sm text-muted-foreground font-semibold">
+      <div className="flex items-center gap-1 text-sm font-semibold text-muted-foreground">
         {institution && (
           <InstitutionLogo
             logoUrl={institution.logoUrl}
@@ -331,76 +332,84 @@ export function TransactionCard({
     );
   };
 
-// Renderiza informações da conta para os dialogs (formato mais detalhado)
-const renderAccountInfoForDialog = () => {
-  if (isBetweenAccounts) {
-    return (
-      <div className="flex items-center justify-between">
-        <span className="text-sm text-muted-foreground">Conta</span>
-        <div className="flex items-center gap-2">
-          {transaction.sourceAccount && (
-            <div className="flex items-center gap-1">
-              <InstitutionLogo
-                logoUrl={transaction.sourceAccount.institution.logoUrl}
-                name={transaction.sourceAccount.institution.name}
-                size="sm"
-              />
-              <span className="text-sm font-medium">{transaction.sourceAccount.name}</span>
-            </div>
-          )}
-          <ArrowRight className="h-4 w-4 text-muted-foreground" />
-          {transaction.destinyAccount && (
-            <div className="flex items-center gap-1">
-              <InstitutionLogo
-                logoUrl={transaction.destinyAccount.institution.logoUrl}
-                name={transaction.destinyAccount.institution.name}
-                size="sm"
-              />
-              <span className="text-sm font-medium">{transaction.destinyAccount.name}</span>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  if (isIncome && transaction.destinyAccount) {
-    return (
-      <div className="flex items-center justify-between">
-        <span className="text-sm text-muted-foreground">Creditada em</span>
-        <div className="flex items-center gap-2">
-          <InstitutionLogo
-            logoUrl={transaction.destinyAccount.institution.logoUrl}
-            name={transaction.destinyAccount.institution.name}
-            size="sm"
-          />
-          <span className="text-sm font-medium">{transaction.destinyAccount.name}</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (isExpense) {
-    const account = transaction.sourceAccount || transaction.billingPayment?.accountCard?.account;
-    if (account) {
+  // Renderiza informações da conta para os dialogs (formato mais detalhado)
+  const renderAccountInfoForDialog = () => {
+    if (isBetweenAccounts) {
       return (
         <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">Debitada de</span>
+          <span className="text-sm text-muted-foreground">Conta</span>
           <div className="flex items-center gap-2">
-            <InstitutionLogo
-              logoUrl={account.institution.logoUrl}
-              name={account.institution.name}
-              size="sm"
-            />
-            <span className="text-sm font-medium">{account.name}</span>
+            {transaction.sourceAccount && (
+              <div className="flex items-center gap-1">
+                <InstitutionLogo
+                  logoUrl={transaction.sourceAccount.institution.logoUrl}
+                  name={transaction.sourceAccount.institution.name}
+                  size="sm"
+                />
+                <span className="text-sm font-medium">
+                  {transaction.sourceAccount.name}
+                </span>
+              </div>
+            )}
+            <ArrowRight className="h-4 w-4 text-muted-foreground" />
+            {transaction.destinyAccount && (
+              <div className="flex items-center gap-1">
+                <InstitutionLogo
+                  logoUrl={transaction.destinyAccount.institution.logoUrl}
+                  name={transaction.destinyAccount.institution.name}
+                  size="sm"
+                />
+                <span className="text-sm font-medium">
+                  {transaction.destinyAccount.name}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       );
     }
-  }
 
-  return null;
-};
+    if (isIncome && transaction.destinyAccount) {
+      return (
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-muted-foreground">Creditada em</span>
+          <div className="flex items-center gap-2">
+            <InstitutionLogo
+              logoUrl={transaction.destinyAccount.institution.logoUrl}
+              name={transaction.destinyAccount.institution.name}
+              size="sm"
+            />
+            <span className="text-sm font-medium">
+              {transaction.destinyAccount.name}
+            </span>
+          </div>
+        </div>
+      );
+    }
+
+    if (isExpense) {
+      const account =
+        transaction.sourceAccount ||
+        transaction.billingPayment?.accountCard?.account;
+      if (account) {
+        return (
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Debitada de</span>
+            <div className="flex items-center gap-2">
+              <InstitutionLogo
+                logoUrl={account.institution.logoUrl}
+                name={account.institution.name}
+                size="sm"
+              />
+              <span className="text-sm font-medium">{account.name}</span>
+            </div>
+          </div>
+        );
+      }
+    }
+
+    return null;
+  };
 
   // Renderizar botões de ação
   const renderActionButtons = () => {
@@ -416,14 +425,16 @@ const renderAccountInfoForDialog = () => {
       // Se pode pagar, botão sem tooltip
       if (canPayBilling) {
         return (
-          <div className="flex items-center gap-2 w-full md:w-auto flex-wrap md:flex-nowrap">
+          <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:flex-nowrap">
             <Button
               variant="secondary"
               size="sm"
               asChild
               className="flex-1 md:flex-none"
             >
-              <Link href={`/accounts/${billingAccountId}?billingId=${transaction.billingPayment?.id}`}>
+              <Link
+                href={`/accounts/${billingAccountId}?billingId=${transaction.billingPayment?.id}`}
+              >
                 <Eye className="h-4 w-4" />
                 Ver fatura
               </Link>
@@ -431,7 +442,7 @@ const renderAccountInfoForDialog = () => {
             <Button
               size="sm"
               onClick={() => setBillingPaymentEditOpen(true)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white flex-1 md:flex-none"
+              className="flex-1 bg-emerald-600 text-white hover:bg-emerald-700 md:flex-none"
             >
               <CreditCard className="h-4 w-4" />
               Pagar fatura
@@ -442,14 +453,16 @@ const renderAccountInfoForDialog = () => {
 
       // Se não pode pagar, botão com tooltip explicando
       return (
-        <div className="flex items-center gap-2 w-full md:w-auto flex-wrap md:flex-nowrap">
+        <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:flex-nowrap">
           <Button
             variant="secondary"
             size="sm"
             asChild
             className="flex-1 md:flex-none"
           >
-            <Link href={`/accounts/${billingAccountId}?billingId=${transaction.billingPayment?.id}`}>
+            <Link
+              href={`/accounts/${billingAccountId}?billingId=${transaction.billingPayment?.id}`}
+            >
               <Eye className="h-4 w-4" />
               Ver fatura
             </Link>
@@ -460,7 +473,7 @@ const renderAccountInfoForDialog = () => {
                 <Button
                   size="sm"
                   disabled
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white flex-1 md:flex-none"
+                  className="flex-1 bg-emerald-600 text-white hover:bg-emerald-700 md:flex-none"
                 >
                   <CreditCard className="h-4 w-4" />
                   Pagar fatura
@@ -477,7 +490,7 @@ const renderAccountInfoForDialog = () => {
 
     // Transação normal
     return (
-      <div className="flex items-center gap-2 w-full md:w-auto flex-wrap md:flex-nowrap">
+      <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:flex-nowrap">
         {/* Editar */}
         {!hideActions.includes('edit') && (
           <Button
@@ -492,16 +505,18 @@ const renderAccountInfoForDialog = () => {
         )}
 
         {/* Confirmar pagamento - não mostrar para transações de fatura aberta */}
-        {canEditFully && !hideActions.includes('confirm') && !isPartOfBilling && (
-          <Button
-            size="sm"
-            onClick={() => setConfirmDialogOpen(true)}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white flex-1 md:flex-none"
-          >
-            <Check className="h-4 w-4" />
-            Confirmar
-          </Button>
-        )}
+        {canEditFully &&
+          !hideActions.includes('confirm') &&
+          !isPartOfBilling && (
+            <Button
+              size="sm"
+              onClick={() => setConfirmDialogOpen(true)}
+              className="flex-1 bg-emerald-600 text-white hover:bg-emerald-700 md:flex-none"
+            >
+              <Check className="h-4 w-4" />
+              Confirmar
+            </Button>
+          )}
 
         {/* Cancelar */}
         {canEditFully && !hideActions.includes('cancel') && (
@@ -528,33 +543,33 @@ const renderAccountInfoForDialog = () => {
             'border-red-300 bg-red-50/50 dark:border-red-800 dark:bg-red-950/20',
         )}
       >
-        <CardContent className="flex flex-col md:flex-row items-center justify-between p-3 gap-3">
-          <div className="flex flex-col md:flex-row items-center gap-3 w-full">
+        <CardContent className="flex flex-col items-center justify-between gap-3 p-3 md:flex-row">
+          <div className="flex w-full flex-col items-center gap-3 md:flex-row">
             <div className="flex items-center justify-center gap-3">
               {/* Ícone do tipo */}
               <div
                 className={cn(
-                  'flex h-6 min-w-6 max-w-6 md:h-10 md:min-w-10 md:max-w-10 items-center justify-center rounded-full',
+                  'flex h-6 min-w-6 max-w-6 items-center justify-center rounded-full md:h-10 md:min-w-10 md:max-w-10',
                   isIncome && 'bg-emerald-100 dark:bg-emerald-900/30',
                   isExpense && 'bg-red-100 dark:bg-red-900/30',
                   isBetweenAccounts && 'bg-blue-100 dark:bg-blue-900/30',
                 )}
               >
                 {isIncome && (
-                  <ArrowUp className="h-4 w-4 md:h-5 md:w-5 text-emerald-600 dark:text-emerald-400" />
+                  <ArrowUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400 md:h-5 md:w-5" />
                 )}
                 {isExpense && (
-                  <ArrowDown className="h-4 w-4 md:h-5 md:w-5 text-red-600 dark:text-red-400" />
+                  <ArrowDown className="h-4 w-4 text-red-600 dark:text-red-400 md:h-5 md:w-5" />
                 )}
                 {isBetweenAccounts && (
-                  <ArrowLeftRight className="h-4 w-4 md:h-5 md:w-5 text-blue-600 dark:text-blue-400" />
+                  <ArrowLeftRight className="h-4 w-4 text-blue-600 dark:text-blue-400 md:h-5 md:w-5" />
                 )}
               </div>
 
               {/* Valor */}
               <div
                 className={cn(
-                  'md:min-w-[100px] text-nowrap text-right font-semibold',
+                  'text-nowrap text-right font-semibold md:min-w-[100px]',
                   isIncome && 'text-emerald-600 dark:text-emerald-400',
                   isExpense && 'text-red-600 dark:text-red-400',
                   isBetweenAccounts && 'text-blue-600 dark:text-blue-400',
@@ -565,10 +580,10 @@ const renderAccountInfoForDialog = () => {
               </div>
             </div>
 
-            <Separator orientation='horizontal' className='md:hidden' />
+            <Separator orientation="horizontal" className="md:hidden" />
 
             {/* Descrição e conta */}
-            <div className="flex flex-col gap-0.5 w-full">
+            <div className="flex w-full flex-col gap-0.5">
               <span className="font-medium">
                 {transaction.description || 'Sem descrição'}
               </span>

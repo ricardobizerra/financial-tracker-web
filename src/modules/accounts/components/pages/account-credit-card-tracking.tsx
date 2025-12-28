@@ -228,11 +228,13 @@ export function AccountCreditCardTracking({
   account: AccountFragmentFragment;
 }) {
   const [isProcessing, setIsProcessing] = useState(false);
-  
+
   // Ler billingId da URL se existir (para navegação direta à fatura)
-  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+  const searchParams = new URLSearchParams(
+    typeof window !== 'undefined' ? window.location.search : '',
+  );
   const billingIdFromUrl = searchParams.get('billingId');
-  
+
   const { data, loading, refetch } = useQuery(BillingQuery, {
     variables: {
       accountId: account.id,
@@ -773,10 +775,7 @@ export function AccountCreditCardTracking({
             <CardTitle className="text-base">Transações</CardTitle>
           </CardHeader>
           <CardContent>
-            <TransactionsCardList
-              cardBillingId={billing.id}
-              hideAccount
-            />
+            <TransactionsCardList cardBillingId={billing.id} hideAccount />
           </CardContent>
         </Card>
       </div>

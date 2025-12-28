@@ -158,9 +158,6 @@ const betweenAccountsSchema = z.object({
   ),
 });
 
-
-
-
 // Função para verificar se a data é hoje
 function isToday(date: Date): boolean {
   const today = new Date();
@@ -202,8 +199,7 @@ export function IncomeTransactionCreateForm({
           date: new Date(editTransaction.date),
           amount: Number(editTransaction.amount ?? 0),
           description: editTransaction.description ?? '',
-          isCompleted:
-            editTransaction.status === TransactionStatus.Completed,
+          isCompleted: editTransaction.status === TransactionStatus.Completed,
           paymentMethod: editTransaction.paymentMethod
             ? {
                 value: editTransaction.paymentMethod,
@@ -330,7 +326,10 @@ export function IncomeTransactionCreateForm({
         <DialogTrigger asChild>
           <Button
             size={triggerSize ?? 'sm'}
-            className={cn('flex items-center gap-1 flex-1 md:flex-none', triggerClassName)}
+            className={cn(
+              'flex flex-1 items-center gap-1 md:flex-none',
+              triggerClassName,
+            )}
             variant={'default'}
           >
             <ArrowUp />
@@ -552,8 +551,7 @@ export function ExpenseTransactionCreateForm({
           date: new Date(editTransaction.date),
           amount: Number(editTransaction.amount ?? 0),
           description: editTransaction.description ?? '',
-          isCompleted:
-            editTransaction.status === TransactionStatus.Completed,
+          isCompleted: editTransaction.status === TransactionStatus.Completed,
           paymentMethod: editTransaction.paymentMethod
             ? {
                 value: editTransaction.paymentMethod,
@@ -602,7 +600,8 @@ export function ExpenseTransactionCreateForm({
   // Verificar se a conta selecionada é de cartão (criação ou edição)
   const isCreditCardAccount =
     selectedAccount?.data?.type === AccountType.CreditCard ||
-    (isEditMode && editTransaction?.sourceAccount?.type === AccountType.CreditCard);
+    (isEditMode &&
+      editTransaction?.sourceAccount?.type === AccountType.CreditCard);
   const showPaymentMethod = !isCreditCardAccount;
 
   const filteredPaymentMethodOptions = useMemo(() => {
@@ -716,7 +715,10 @@ export function ExpenseTransactionCreateForm({
         <DialogTrigger asChild>
           <Button
             size={triggerSize ?? 'sm'}
-            className={cn('flex items-center gap-1 flex-1 md:flex-none', triggerClassName)}
+            className={cn(
+              'flex flex-1 items-center gap-1 md:flex-none',
+              triggerClassName,
+            )}
             variant={'destructive'}
           >
             <ArrowDown />
@@ -941,8 +943,7 @@ export function BetweenAccountsTransactionCreateForm({
           date: new Date(editTransaction.date),
           amount: Number(editTransaction.amount ?? 0),
           description: editTransaction.description ?? '',
-          isCompleted:
-            editTransaction.status === TransactionStatus.Completed,
+          isCompleted: editTransaction.status === TransactionStatus.Completed,
           paymentMethod: editTransaction.paymentMethod
             ? {
                 value: editTransaction.paymentMethod,
@@ -1084,7 +1085,10 @@ export function BetweenAccountsTransactionCreateForm({
         <DialogTrigger asChild>
           <Button
             size={triggerSize ?? 'sm'}
-            className={cn('flex items-center gap-1 flex-1 md:flex-none', triggerClassName)}
+            className={cn(
+              'flex flex-1 items-center gap-1 md:flex-none',
+              triggerClassName,
+            )}
             variant={'secondary'}
           >
             <ArrowLeftRight />

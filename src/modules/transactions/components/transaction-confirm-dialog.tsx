@@ -19,7 +19,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { ConfirmTransactionMutation } from '../graphql/transactions-mutations';
-import { TransactionsQuery, TransactionsGroupedByPeriodQuery } from '../graphql/transactions-queries';
+import {
+  TransactionsQuery,
+  TransactionsGroupedByPeriodQuery,
+} from '../graphql/transactions-queries';
 import { formatCurrency } from '@/lib/formatters/currency';
 import { formatDate } from '@/lib/formatters/date';
 import { TsForm, formFields } from '@/components/ts-form';
@@ -159,7 +162,9 @@ export function TransactionConfirmDialog({
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Valor previsto</span>
+            <span className="text-sm text-muted-foreground">
+              Valor previsto
+            </span>
             <span className="text-sm font-medium">
               {formatCurrency(Number(transaction.amount))}
             </span>

@@ -5,7 +5,11 @@ import { TransactionsQuery } from '../graphql/transactions-queries';
 import { TransactionCard } from './transaction-card';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { OrderDirection, OrdenationTransactionModel, TransactionStatus } from '@/graphql/graphql';
+import {
+  OrderDirection,
+  OrdenationTransactionModel,
+  TransactionStatus,
+} from '@/graphql/graphql';
 
 interface TransactionsCardListProps {
   accountId?: string;
@@ -29,7 +33,11 @@ export function TransactionsCardList({
       cardBillingId,
       orderBy: OrdenationTransactionModel.Date,
       orderDirection: OrderDirection.Asc,
-      statuses: [TransactionStatus.Planned, TransactionStatus.Overdue, TransactionStatus.Completed],
+      statuses: [
+        TransactionStatus.Planned,
+        TransactionStatus.Overdue,
+        TransactionStatus.Completed,
+      ],
     },
   });
 
@@ -53,7 +61,8 @@ export function TransactionsCardList({
     );
   }
 
-  const transactions = data?.transactions?.edges?.map((edge) => edge.node) || [];
+  const transactions =
+    data?.transactions?.edges?.map((edge) => edge.node) || [];
 
   if (transactions.length === 0) {
     return (

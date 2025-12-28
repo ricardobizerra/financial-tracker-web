@@ -24,7 +24,10 @@ import {
   ExpenseTransactionCreateForm,
   BetweenAccountsTransactionCreateForm,
 } from './transaction-create-form';
-import { TransactionsFilters, TransactionFilters } from './transactions-filters';
+import {
+  TransactionsFilters,
+  TransactionFilters,
+} from './transactions-filters';
 
 const periodConfig: Record<
   TransactionPeriod,
@@ -73,9 +76,9 @@ export function TransactionsCardView({
   hideActions = [],
   compact = false,
 }: TransactionsCardViewProps) {
-  const [expandedGroups, setExpandedGroups] = useState<
-    Record<string, boolean>
-  >({});
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
+    {},
+  );
   const [filters, setFilters] = useState<TransactionFilters>({});
 
   const { data, loading, error, refetch } = useQuery(
@@ -142,7 +145,7 @@ export function TransactionsCardView({
             <p className="text-muted-foreground">
               Nenhuma transação encontrada.
             </p>
-            <div className="mt-4 flex flex-wrap md:flex-nowrap justify-center gap-2">
+            <div className="mt-4 flex flex-wrap justify-center gap-2 md:flex-nowrap">
               <IncomeTransactionCreateForm accountId={accountId} />
               <ExpenseTransactionCreateForm accountId={accountId} />
               <BetweenAccountsTransactionCreateForm accountId={accountId} />
@@ -159,7 +162,7 @@ export function TransactionsCardView({
       <TransactionsFilters filters={filters} onFiltersChange={setFilters} />
 
       {/* Botões de ação */}
-      <div className="flex items-center gap-2 flex-wrap md:flex-nowrap">
+      <div className="flex flex-wrap items-center gap-2 md:flex-nowrap">
         <IncomeTransactionCreateForm accountId={accountId} />
         <ExpenseTransactionCreateForm accountId={accountId} />
         <BetweenAccountsTransactionCreateForm accountId={accountId} />
@@ -179,8 +182,7 @@ export function TransactionsCardView({
               <Icon className={cn('h-5 w-5', color)} />
               <h3 className={cn('font-semibold', color)}>{group.label}</h3>
               <span className="text-sm text-muted-foreground">
-                {group.count}{' '}
-                {group.count === 1 ? 'transação' : 'transações'}
+                {group.count} {group.count === 1 ? 'transação' : 'transações'}
               </span>
             </div>
 
