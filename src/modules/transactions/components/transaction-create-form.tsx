@@ -103,9 +103,9 @@ const incomeSchema = z.object({
   destinyAccount: formFields.select.describe(
     'Conta de destino * // Insira a conta',
   ),
-  status: formFields.select.describe(
-    'Status * // Insira o status da movimentação',
-  ),
+  isCompleted: formFields.switch
+    .optional()
+    .describe('Já realizada // Marque se a transação já foi realizada'),
   paymentMethod: formFields.select.describe(
     'Método de pagamento * // Insira o método de pagamento',
   ),
@@ -123,9 +123,9 @@ const expenseSchema = z.object({
   sourceAccount: formFields.select.describe(
     'Conta de origem * // Insira a conta',
   ),
-  status: formFields.select.describe(
-    'Status * // Insira o status da movimentação',
-  ),
+  isCompleted: formFields.switch
+    .optional()
+    .describe('Já realizada // Marque se a transação já foi realizada'),
   paymentMethod: formFields.select.describe(
     'Método de pagamento * // Insira o método de pagamento',
   ),
@@ -146,14 +146,25 @@ const betweenAccountsSchema = z.object({
   destinyAccount: formFields.select.describe(
     'Conta de destino * // Insira a conta',
   ),
-  status: formFields.select.describe(
-    'Status * // Insira o status da movimentação',
-  ),
+  isCompleted: formFields.switch
+    .optional()
+    .describe('Já realizada // Marque se a transação já foi realizada'),
   paymentMethod: formFields.select.describe(
     'Método de pagamento * // Insira o método de pagamento',
   ),
 });
 
+
+
+
+// Função para verificar se a data é hoje
+function isToday(date: Date): boolean {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const checkDate = new Date(date);
+  checkDate.setHours(0, 0, 0, 0);
+  return checkDate.getTime() === today.getTime();
+}
 export function IncomeTransactionCreateForm({
   triggerClassName,
   accountId,
@@ -187,12 +198,8 @@ export function IncomeTransactionCreateForm({
           date: new Date(editTransaction.date),
           amount: Number(editTransaction.amount ?? 0),
           description: editTransaction.description ?? '',
-          status: editTransaction.status
-            ? {
-                value: editTransaction.status,
-                label: transactionStatusLabel[editTransaction.status],
-              }
-            : undefined,
+          isCompleted:
+            editTransaction.status === TransactionStatus.Completed,
           paymentMethod: editTransaction.paymentMethod
             ? {
                 value: editTransaction.paymentMethod,
@@ -212,6 +219,7 @@ export function IncomeTransactionCreateForm({
             value: TransactionType.Income,
             label: transactionTypeLabels[TransactionType.Income],
           },
+          isCompleted: false,
           ...(!!accountId && {
             destinyAccount: {
               value: accountId,
@@ -226,17 +234,18 @@ export function IncomeTransactionCreateForm({
     name: 'destinyAccount',
   });
 
+  const selectedDate = useWatch({
+    control: form.control,
+    name: 'date',
+  });
+
+  // Mostrar checkbox isCompleted apenas se a data for hoje
+  const showIsCompleted = selectedDate && isToday(selectedDate);
+
   const accountTypeOptions = Object.values(TransactionType).map((type) => ({
     value: type,
     label: transactionTypeLabels[type],
   }));
-
-  const accountStatusOptions = Object.values(TransactionStatus)
-    .filter((status) => status !== TransactionStatus.Overdue)
-    .map((status) => ({
-      value: status,
-      label: transactionStatusLabel[status],
-    }));
 
   const institutionsQueryOptions = useQuery(AccountsQuery, {
     variables: {
@@ -347,14 +356,6 @@ export function IncomeTransactionCreateForm({
                 <TransactionTypeBadge type={option.value as TransactionType} />
               ),
             },
-            status: {
-              options: accountStatusOptions,
-              renderLabel: (option) => (
-                <TransactionStatusBadge
-                  status={option.value as TransactionStatus}
-                />
-              ),
-            },
             paymentMethod: {
               options: filteredPaymentMethodOptions,
               renderLabel: (option) => {
@@ -412,8 +413,8 @@ export function IncomeTransactionCreateForm({
                     date: data.date,
                     description: data.description,
                     amount: data.amount,
-                    status: data.status.value as TransactionStatus,
-                    paymentMethod: data.paymentMethod.value as PaymentMethod,
+                    isCompleted: data.isCompleted,
+                    paymentMethod: data.paymentMethod?.value as PaymentMethod,
                   },
                 },
                 refetchQueries: [
@@ -441,10 +442,10 @@ export function IncomeTransactionCreateForm({
                     date: data.date,
                     type: data.type.value as TransactionType,
                     destinyAccountId: data.destinyAccount.value,
-                    status: data.status.value as TransactionStatus,
+                    isCompleted: data.isCompleted,
                     description: data.description,
                     amount: data.amount,
-                    paymentMethod: data.paymentMethod.value as PaymentMethod,
+                    paymentMethod: data.paymentMethod?.value as PaymentMethod,
                   },
                 },
                 refetchQueries: [
@@ -478,7 +479,7 @@ export function IncomeTransactionCreateForm({
           {({
             destinyAccount,
             date,
-            status,
+            isCompleted,
             amount,
             description,
             paymentMethod,
@@ -487,7 +488,7 @@ export function IncomeTransactionCreateForm({
               {destinyAccount}
               <Separator />
               {date}
-              {status}
+              {showIsCompleted && isCompleted}
               {amount}
               {paymentMethod}
               {description}
@@ -543,12 +544,8 @@ export function ExpenseTransactionCreateForm({
           date: new Date(editTransaction.date),
           amount: Number(editTransaction.amount ?? 0),
           description: editTransaction.description ?? '',
-          status: editTransaction.status
-            ? {
-                value: editTransaction.status,
-                label: transactionStatusLabel[editTransaction.status],
-              }
-            : undefined,
+          isCompleted:
+            editTransaction.status === TransactionStatus.Completed,
           paymentMethod: editTransaction.paymentMethod
             ? {
                 value: editTransaction.paymentMethod,
@@ -574,12 +571,7 @@ export function ExpenseTransactionCreateForm({
               label: accountId,
             },
           }),
-          status: !!status
-            ? {
-                value: status,
-                label: transactionStatusLabel[status],
-              }
-            : undefined,
+          isCompleted: false,
           paymentMethod: !!paymentMethod
             ? {
                 value: paymentMethod,
@@ -599,26 +591,45 @@ export function ExpenseTransactionCreateForm({
     label: paymentMethodLabel[method],
   }));
 
+  // Verificar se a conta selecionada é de cartão (criação ou edição)
+  const isCreditCardAccount =
+    selectedAccount?.data?.type === AccountType.CreditCard ||
+    (isEditMode && editTransaction?.sourceAccount?.type === AccountType.CreditCard);
+  const showPaymentMethod = !isCreditCardAccount;
+
   const filteredPaymentMethodOptions = useMemo(() => {
-    if (selectedAccount?.data?.type !== 'CREDIT_CARD') {
+    if (!isCreditCardAccount) {
       return paymentMethodOptions.filter(
         (option) => !['CREDIT_CARD', 'DEBIT_CARD'].includes(option.value),
       );
     }
     return paymentMethodOptions;
-  }, [selectedAccount?.data?.type, paymentMethodOptions]);
+  }, [isCreditCardAccount, paymentMethodOptions]);
+
+  // Auto-selecionar método de pagamento para contas de cartão
+  useEffect(() => {
+    if (isCreditCardAccount) {
+      // Para conta de cartão de crédito, usar CREDIT_CARD como padrão
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      form.setValue('paymentMethod', {
+        value: PaymentMethod.CreditCard,
+        label: paymentMethodLabel[PaymentMethod.CreditCard],
+      } as any);
+    }
+  }, [isCreditCardAccount, form]);
 
   const accountTypeOptions = Object.values(TransactionType).map((type) => ({
     value: type,
     label: transactionTypeLabels[type],
   }));
 
-  const accountStatusOptions = Object.values(TransactionStatus)
-    .filter((status) => status !== TransactionStatus.Overdue)
-    .map((status) => ({
-      value: status,
-      label: transactionStatusLabel[status],
-    }));
+  const selectedDate = useWatch({
+    control: form.control,
+    name: 'date',
+  });
+
+  // Mostrar switch isCompleted apenas se a data for hoje
+  const showIsCompleted = selectedDate && isToday(selectedDate);
 
   const institutionsQueryOptions = useQuery(AccountsQuery, {
     variables: {
@@ -731,14 +742,6 @@ export function ExpenseTransactionCreateForm({
               minDate,
               maxDate,
             },
-            status: {
-              options: accountStatusOptions,
-              renderLabel: (option) => (
-                <TransactionStatusBadge
-                  status={option.value as TransactionStatus}
-                />
-              ),
-            },
             paymentMethod: {
               options: filteredPaymentMethodOptions,
               renderLabel: (option) => {
@@ -796,8 +799,8 @@ export function ExpenseTransactionCreateForm({
                     date: data.date,
                     description: data.description,
                     amount: data.amount,
-                    status: data.status.value as TransactionStatus,
-                    paymentMethod: data.paymentMethod.value as PaymentMethod,
+                    isCompleted: data.isCompleted,
+                    paymentMethod: data.paymentMethod?.value as PaymentMethod,
                   },
                 },
                 refetchQueries: [
@@ -826,10 +829,12 @@ export function ExpenseTransactionCreateForm({
                     date: data.date,
                     type: data.type.value as TransactionType,
                     sourceAccountId: data.sourceAccount.value,
-                    status: data.status.value as TransactionStatus,
+                    isCompleted: data.isCompleted,
                     description: data.description,
                     amount: data.amount,
-                    paymentMethod: data.paymentMethod.value as PaymentMethod,
+                    paymentMethod: isCreditCardAccount
+                      ? undefined
+                      : (data.paymentMethod?.value as PaymentMethod),
                   },
                 },
                 refetchQueries: [
@@ -864,7 +869,7 @@ export function ExpenseTransactionCreateForm({
           {({
             sourceAccount,
             date,
-            status,
+            isCompleted,
             amount,
             description,
             paymentMethod,
@@ -877,10 +882,12 @@ export function ExpenseTransactionCreateForm({
                 </>
               )}
               {!hiddenFields.includes('date') && date}
-              {!hiddenFields.includes('status') && status}
+              {showIsCompleted && isCompleted}
               {!hiddenFields.includes('amount') && amount}
               {!hiddenFields.includes('description') && description}
-              {!hiddenFields.includes('paymentMethod') && paymentMethod}
+              {!hiddenFields.includes('paymentMethod') &&
+                showPaymentMethod &&
+                paymentMethod}
             </>
           )}
         </TsForm>
@@ -922,12 +929,8 @@ export function BetweenAccountsTransactionCreateForm({
           date: new Date(editTransaction.date),
           amount: Number(editTransaction.amount ?? 0),
           description: editTransaction.description ?? '',
-          status: editTransaction.status
-            ? {
-                value: editTransaction.status,
-                label: transactionStatusLabel[editTransaction.status],
-              }
-            : undefined,
+          isCompleted:
+            editTransaction.status === TransactionStatus.Completed,
           paymentMethod: editTransaction.paymentMethod
             ? {
                 value: editTransaction.paymentMethod,
@@ -960,6 +963,7 @@ export function BetweenAccountsTransactionCreateForm({
               label: accountId,
             },
           }),
+          isCompleted: false,
         },
   });
 
@@ -983,12 +987,13 @@ export function BetweenAccountsTransactionCreateForm({
     label: transactionTypeLabels[type],
   }));
 
-  const accountStatusOptions = Object.values(TransactionStatus)
-    .filter((status) => status !== TransactionStatus.Overdue)
-    .map((status) => ({
-      value: status,
-      label: transactionStatusLabel[status],
-    }));
+  const selectedDate = useWatch({
+    control: form.control,
+    name: 'date',
+  });
+
+  // Mostrar switch isCompleted apenas se a data for hoje
+  const showIsCompleted = selectedDate && isToday(selectedDate);
 
   const institutionsQueryOptions = useQuery(AccountsQuery, {
     variables: {
@@ -1097,14 +1102,6 @@ export function BetweenAccountsTransactionCreateForm({
                 <TransactionTypeBadge type={option.value as TransactionType} />
               ),
             },
-            status: {
-              options: accountStatusOptions,
-              renderLabel: (option) => (
-                <TransactionStatusBadge
-                  status={option.value as TransactionStatus}
-                />
-              ),
-            },
             paymentMethod: {
               options: paymentMethodOptions,
               renderLabel: (option) => {
@@ -1187,8 +1184,8 @@ export function BetweenAccountsTransactionCreateForm({
                     date: data.date,
                     description: data.description,
                     amount: data.amount,
-                    status: data.status.value as TransactionStatus,
-                    paymentMethod: data.paymentMethod.value as PaymentMethod,
+                    isCompleted: data.isCompleted,
+                    paymentMethod: data.paymentMethod?.value as PaymentMethod,
                   },
                 },
                 refetchQueries: [
@@ -1223,10 +1220,10 @@ export function BetweenAccountsTransactionCreateForm({
                       data.type.value === TransactionType.BetweenAccounts) && {
                       destinyAccountId: data.destinyAccount.value,
                     }),
-                    status: data.status.value as TransactionStatus,
+                    isCompleted: data.isCompleted,
                     description: data.description,
                     amount: data.amount,
-                    paymentMethod: data.paymentMethod.value as PaymentMethod,
+                    paymentMethod: data.paymentMethod?.value as PaymentMethod,
                   },
                 },
                 refetchQueries: [
@@ -1261,7 +1258,7 @@ export function BetweenAccountsTransactionCreateForm({
             sourceAccount,
             destinyAccount,
             date,
-            status,
+            isCompleted,
             amount,
             description,
             paymentMethod,
@@ -1276,7 +1273,7 @@ export function BetweenAccountsTransactionCreateForm({
               }
               <Separator />
               {date}
-              {status}
+              {showIsCompleted && isCompleted}
               {amount}
               {description}
               {paymentMethod}

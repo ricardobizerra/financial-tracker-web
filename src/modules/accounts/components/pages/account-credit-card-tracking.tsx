@@ -707,7 +707,7 @@ export function AccountCreditCardTracking({
                         ? PaymentMethod.DebitCard
                         : undefined
                   }
-                  hiddenFields={['sourceAccount', 'status', 'paymentMethod']}
+                  hiddenFields={['sourceAccount', 'paymentMethod']}
                 />
                 <Dialog>
                   <DialogTrigger asChild>

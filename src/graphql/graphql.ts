@@ -1247,12 +1247,14 @@ export type CreateTransactionInput = {
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
   destinyAccountId?: InputMaybe<Scalars['ID']['input']>;
+  /** Se true e a data for hoje, marca como COMPLETED. Se false ou não informado, usa PLANNED para hoje. */
+  isCompleted?: InputMaybe<Scalars['Boolean']['input']>;
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
-  paymentMethod: PaymentMethod;
+  paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccountId?: InputMaybe<Scalars['ID']['input']>;
-  status: TransactionStatus;
+  status?: InputMaybe<TransactionStatus>;
   type: TransactionType;
 };
 
@@ -3797,6 +3799,8 @@ export type UpdateTransactionInput = {
   date?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
+  /** Se true e a data for hoje, marca como COMPLETED. Se false ou não informado, usa PLANNED para hoje. */
+  isCompleted?: InputMaybe<Scalars['Boolean']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   status?: InputMaybe<TransactionStatus>;
 };
@@ -5016,6 +5020,7 @@ export type TransactionFragmentFragment = {
     __typename?: 'Account';
     id: string;
     name: string;
+    type: AccountType;
     institution: {
       __typename?: 'Institution';
       id: string;
@@ -5027,6 +5032,7 @@ export type TransactionFragmentFragment = {
     __typename?: 'Account';
     id: string;
     name: string;
+    type: AccountType;
     institution: {
       __typename?: 'Institution';
       id: string;
@@ -5099,6 +5105,7 @@ export type TransactionsQuery = {
           __typename?: 'Account';
           id: string;
           name: string;
+          type: AccountType;
           institution: {
             __typename?: 'Institution';
             id: string;
@@ -5110,6 +5117,7 @@ export type TransactionsQuery = {
           __typename?: 'Account';
           id: string;
           name: string;
+          type: AccountType;
           institution: {
             __typename?: 'Institution';
             id: string;
@@ -5209,6 +5217,7 @@ export type TransactionsGroupedByPeriodQuery = {
         __typename?: 'Account';
         id: string;
         name: string;
+        type: AccountType;
         institution: {
           __typename?: 'Institution';
           id: string;
@@ -5220,6 +5229,7 @@ export type TransactionsGroupedByPeriodQuery = {
         __typename?: 'Account';
         id: string;
         name: string;
+        type: AccountType;
         institution: {
           __typename?: 'Institution';
           id: string;
@@ -5553,6 +5563,7 @@ export const TransactionFragmentFragmentDoc = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'institution' },
@@ -5579,6 +5590,7 @@ export const TransactionFragmentFragmentDoc = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'institution' },
@@ -9624,6 +9636,7 @@ export const TransactionsDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'institution' },
@@ -9650,6 +9663,7 @@ export const TransactionsDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'institution' },
@@ -10066,6 +10080,7 @@ export const TransactionsGroupedByPeriodDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'institution' },
@@ -10092,6 +10107,7 @@ export const TransactionsGroupedByPeriodDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'institution' },

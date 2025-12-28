@@ -12,6 +12,7 @@ export const TransactionsFragment = graphql(`
     sourceAccount {
       id
       name
+      type
       institution {
         id
         name
@@ -21,6 +22,7 @@ export const TransactionsFragment = graphql(`
     destinyAccount {
       id
       name
+      type
       institution {
         id
         name
