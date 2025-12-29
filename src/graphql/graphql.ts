@@ -1107,6 +1107,7 @@ export type CardBillingModel = {
   statusHistory: Maybe<Array<CardBillingHistory>>;
   totalAmount: Scalars['Decimal']['output'];
   transactions: Maybe<Array<Transaction>>;
+  transactionsCount: Scalars['Float']['output'];
   updatedAt: Scalars['DateTime']['output'];
   usagePercentage: Scalars['Float']['output'];
 };
@@ -2531,6 +2532,9 @@ export enum OrdenationRecurringTransactionModel {
 export enum OrdenationTransactionModel {
   Amount = 'amount',
   BillingPayment = 'billingPayment',
+  CanCancel = 'canCancel',
+  CancelReason = 'cancelReason',
+  CancelWarningMessage = 'cancelWarningMessage',
   CardBilling = 'cardBilling',
   CardBillingId = 'cardBillingId',
   CreatedAt = 'createdAt',
@@ -3723,6 +3727,9 @@ export type TransactionModel = {
   __typename?: 'TransactionModel';
   amount: Scalars['Decimal']['output'];
   billingPayment: Maybe<CardBilling>;
+  canCancel: Maybe<Scalars['Boolean']['output']>;
+  cancelReason: Maybe<Scalars['String']['output']>;
+  cancelWarningMessage: Maybe<Scalars['String']['output']>;
   cardBilling: Maybe<CardBilling>;
   cardBillingId: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
@@ -4438,6 +4445,7 @@ export type BillingQuery = {
       accountCardId: string;
       createdAt: any;
       updatedAt: any;
+      transactionsCount: number;
       accountCard: {
         __typename?: 'AccountCard';
         id: string;
@@ -4466,7 +4474,11 @@ export type BillingQuery = {
         createdAt: any;
         updatedAt: any;
       } | null;
-      transactions: Array<{ __typename?: 'Transaction'; id: string }> | null;
+      transactions: Array<{
+        __typename?: 'Transaction';
+        id: string;
+        status: TransactionStatus;
+      }> | null;
     } | null;
   };
 };
@@ -5120,6 +5132,9 @@ export type TransactionFragmentFragment = {
   recurringTransactionId: string | null;
   installmentNumber: number | null;
   totalInstallments: number | null;
+  canCancel: boolean | null;
+  cancelReason: string | null;
+  cancelWarningMessage: string | null;
   sourceAccount: {
     __typename?: 'Account';
     id: string;
@@ -5207,6 +5222,9 @@ export type TransactionsQuery = {
         recurringTransactionId: string | null;
         installmentNumber: number | null;
         totalInstallments: number | null;
+        canCancel: boolean | null;
+        cancelReason: string | null;
+        cancelWarningMessage: string | null;
         sourceAccount: {
           __typename?: 'Account';
           id: string;
@@ -5325,6 +5343,9 @@ export type TransactionsGroupedByPeriodQuery = {
       recurringTransactionId: string | null;
       installmentNumber: number | null;
       totalInstallments: number | null;
+      canCancel: boolean | null;
+      cancelReason: string | null;
+      cancelWarningMessage: string | null;
       sourceAccount: {
         __typename?: 'Account';
         id: string;
@@ -5798,6 +5819,12 @@ export const TransactionFragmentFragmentDoc = {
           },
           { kind: 'Field', name: { kind: 'Name', value: 'installmentNumber' } },
           { kind: 'Field', name: { kind: 'Name', value: 'totalInstallments' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'canCancel' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'cancelWarningMessage' },
+          },
         ],
       },
     },
@@ -6978,6 +7005,10 @@ export const BillingDocument = {
                       },
                       {
                         kind: 'Field',
+                        name: { kind: 'Name', value: 'transactionsCount' },
+                      },
+                      {
+                        kind: 'Field',
                         name: { kind: 'Name', value: 'transactions' },
                         selectionSet: {
                           kind: 'SelectionSet',
@@ -6985,6 +7016,10 @@ export const BillingDocument = {
                             {
                               kind: 'Field',
                               name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'status' },
                             },
                           ],
                         },
@@ -9873,6 +9908,12 @@ export const TransactionsDocument = {
           },
           { kind: 'Field', name: { kind: 'Name', value: 'installmentNumber' } },
           { kind: 'Field', name: { kind: 'Name', value: 'totalInstallments' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'canCancel' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'cancelWarningMessage' },
+          },
         ],
       },
     },
@@ -10407,6 +10448,12 @@ export const TransactionsGroupedByPeriodDocument = {
           },
           { kind: 'Field', name: { kind: 'Name', value: 'installmentNumber' } },
           { kind: 'Field', name: { kind: 'Name', value: 'totalInstallments' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'canCancel' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'cancelWarningMessage' },
+          },
         ],
       },
     },

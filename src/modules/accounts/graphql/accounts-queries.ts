@@ -150,8 +150,10 @@ export const BillingQuery = graphql(`
           createdAt
           updatedAt
         }
+        transactionsCount
         transactions {
           id
+          status
         }
       }
       nextBillingId

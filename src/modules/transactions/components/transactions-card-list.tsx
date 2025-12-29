@@ -39,6 +39,7 @@ export function TransactionsCardList({
         TransactionStatus.Completed,
       ],
     },
+    fetchPolicy: 'cache-and-network',
   });
 
   if (loading) {

@@ -654,7 +654,7 @@ export function AccountCreditCardTracking({
                 Transações
               </div>
               <div className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">
-                {billing.transactions?.length ?? 0}
+                {billing.transactionsCount ?? 0}
               </div>
             </div>
 

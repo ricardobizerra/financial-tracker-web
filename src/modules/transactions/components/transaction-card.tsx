@@ -62,6 +62,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Separator } from '@/components/ui/separator';
+import { BillingQuery } from '@/modules/accounts/graphql/accounts-queries';
 
 interface TransactionCardProps {
   transaction: TransactionFragmentFragment;
@@ -129,7 +130,12 @@ export function TransactionCard({
   const [cancelTransaction, { loading: cancelLoading }] = useMutation(
     CancelTransactionMutation,
     {
-      refetchQueries: [TransactionsQuery, TransactionsGroupedByPeriodQuery],
+      refetchQueries: [
+        TransactionsQuery,
+        TransactionsGroupedByPeriodQuery,
+        TransactionsSummaryQuery,
+        BillingQuery,
+      ],
       onCompleted: () => {
         toast.success('Transação cancelada!');
         setCancelDialogOpen(false);
@@ -520,15 +526,36 @@ export function TransactionCard({
 
         {/* Cancelar */}
         {canEditFully && !hideActions.includes('cancel') && (
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => setCancelDialogOpen(true)}
-            className="flex-1 md:flex-none"
-          >
-            <X className="h-4 w-4" />
-            Cancelar
-          </Button>
+          transaction.canCancel ? (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setCancelDialogOpen(true)}
+              className="flex-1 md:flex-none"
+            >
+              <X className="h-4 w-4" />
+              Cancelar
+            </Button>
+          ) : transaction.cancelReason ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    disabled
+                    className="flex-1 md:flex-none"
+                  >
+                    <X className="h-4 w-4" />
+                    Cancelar
+                  </Button>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{transaction.cancelReason}</p>
+              </TooltipContent>
+            </Tooltip>
+          ) : null
         )}
       </div>
     );
@@ -634,6 +661,12 @@ export function TransactionCard({
           <AlertDialogHeader>
             <AlertDialogTitle>Cancelar transação?</AlertDialogTitle>
             <AlertDialogDescription>
+              {transaction.cancelWarningMessage ? (
+                <>
+                  <strong className="text-amber-600">{transaction.cancelWarningMessage}</strong>
+                  <br /><br />
+                </>
+              ) : null}
               Tem certeza que deseja cancelar esta transação? Esta ação não pode
               ser desfeita.
             </AlertDialogDescription>

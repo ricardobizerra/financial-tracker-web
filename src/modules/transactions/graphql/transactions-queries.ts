@@ -53,6 +53,9 @@ export const TransactionsFragment = graphql(`
     recurringTransactionId
     installmentNumber
     totalInstallments
+    canCancel
+    cancelReason
+    cancelWarningMessage
   }
 `);
 
