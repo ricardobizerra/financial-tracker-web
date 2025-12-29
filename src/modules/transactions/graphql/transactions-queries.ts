@@ -56,6 +56,7 @@ export const TransactionsFragment = graphql(`
     canCancel
     cancelReason
     cancelWarningMessage
+    installmentStartDate
   }
 `);
 

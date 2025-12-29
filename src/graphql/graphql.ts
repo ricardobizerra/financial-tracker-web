@@ -2543,6 +2543,7 @@ export enum OrdenationTransactionModel {
   DestinyAccount = 'destinyAccount',
   DestinyAccountId = 'destinyAccountId',
   InstallmentNumber = 'installmentNumber',
+  InstallmentStartDate = 'installmentStartDate',
   PaymentEnabled = 'paymentEnabled',
   PaymentLimit = 'paymentLimit',
   PaymentMethod = 'paymentMethod',
@@ -3739,6 +3740,7 @@ export type TransactionModel = {
   destinyAccountId: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   installmentNumber: Maybe<Scalars['Int']['output']>;
+  installmentStartDate: Maybe<Scalars['DateTime']['output']>;
   paymentEnabled: Scalars['Boolean']['output'];
   paymentLimit: Maybe<Scalars['DateTime']['output']>;
   paymentMethod: Maybe<PaymentMethod>;
@@ -5135,6 +5137,7 @@ export type TransactionFragmentFragment = {
   canCancel: boolean | null;
   cancelReason: string | null;
   cancelWarningMessage: string | null;
+  installmentStartDate: any | null;
   sourceAccount: {
     __typename?: 'Account';
     id: string;
@@ -5225,6 +5228,7 @@ export type TransactionsQuery = {
         canCancel: boolean | null;
         cancelReason: string | null;
         cancelWarningMessage: string | null;
+        installmentStartDate: any | null;
         sourceAccount: {
           __typename?: 'Account';
           id: string;
@@ -5346,6 +5350,7 @@ export type TransactionsGroupedByPeriodQuery = {
       canCancel: boolean | null;
       cancelReason: string | null;
       cancelWarningMessage: string | null;
+      installmentStartDate: any | null;
       sourceAccount: {
         __typename?: 'Account';
         id: string;
@@ -5824,6 +5829,10 @@ export const TransactionFragmentFragmentDoc = {
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'cancelWarningMessage' },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'installmentStartDate' },
           },
         ],
       },
@@ -9914,6 +9923,10 @@ export const TransactionsDocument = {
             kind: 'Field',
             name: { kind: 'Name', value: 'cancelWarningMessage' },
           },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'installmentStartDate' },
+          },
         ],
       },
     },
@@ -10453,6 +10466,10 @@ export const TransactionsGroupedByPeriodDocument = {
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'cancelWarningMessage' },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'installmentStartDate' },
           },
         ],
       },

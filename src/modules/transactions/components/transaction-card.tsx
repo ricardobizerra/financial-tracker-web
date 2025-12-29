@@ -72,13 +72,29 @@ interface TransactionCardProps {
 }
 
 // Formatar data com mês por extenso e ano só se não for o ano atual
-function formatDateExtended(dateStr: string): string {
+// ou se for diferente do ano de referência (para parcelas)
+function formatDateExtended(
+  dateStr: string,
+  referenceDateStr?: string | null,
+): string {
   const date = new Date(dateStr);
-  const currentYear = new Date().getFullYear();
   const day = date.getDate();
   const month = date.toLocaleDateString('pt-BR', { month: 'long' });
   const year = date.getFullYear();
 
+  // Se tiver data de referência, comparar com ela
+  if (referenceDateStr) {
+    const referenceDate = new Date(referenceDateStr);
+    const referenceYear = referenceDate.getFullYear();
+
+    if (year !== referenceYear) {
+      return `${day} de ${month} de ${year}`;
+    }
+    return `${day} de ${month}`;
+  }
+
+  // Caso padrão: comparar com o ano atual
+  const currentYear = new Date().getFullYear();
   if (year === currentYear) {
     return `${day} de ${month}`;
   } else {
@@ -623,7 +639,10 @@ export function TransactionCard({
               </div>
               {!hideAccount && getAccountDisplay()}
               <div className="text-sm text-muted-foreground">
-                {formatDateExtended(transaction.date)}
+                {formatDateExtended(
+                  transaction.installmentStartDate ?? transaction.date,
+                  transaction.installmentStartDate ? transaction.date : null,
+                )}
               </div>
             </div>
           </div>
