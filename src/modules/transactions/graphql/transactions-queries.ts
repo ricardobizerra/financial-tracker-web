@@ -51,12 +51,18 @@ export const TransactionsFragment = graphql(`
     status
     paymentMethod
     recurringTransactionId
-    installmentNumber
-    totalInstallments
+    installments {
+      id
+      installmentNumber
+      amount
+    }
     canCancel
     cancelReason
     cancelWarningMessage
     installmentStartDate
+    installmentNumber
+    totalInstallments
+    installmentId
   }
 `);
 
@@ -161,6 +167,14 @@ export const TransactionsGroupedByPeriodQuery = graphql(`
       transactions {
         ...TransactionFragment
       }
+    }
+  }
+`);
+
+export const BillingTransactionsQuery = graphql(`
+  query BillingTransactions($billingId: ID!) {
+    billingTransactions(billingId: $billingId) {
+      ...TransactionFragment
     }
   }
 `);

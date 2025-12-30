@@ -757,6 +757,7 @@ export type CardBilling = {
   accountCardId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  installments: Maybe<Array<TransactionInstallment>>;
   limit: Scalars['Decimal']['output'];
   paymentDate: Maybe<Scalars['DateTime']['output']>;
   paymentTransaction: Maybe<Transaction>;
@@ -781,6 +782,7 @@ export type CardBillingAvgAggregate = {
 
 export type CardBillingCount = {
   __typename?: 'CardBillingCount';
+  installments: Scalars['Int']['output'];
   statusHistory: Scalars['Int']['output'];
   transactions: Scalars['Int']['output'];
 };
@@ -826,6 +828,12 @@ export type CardBillingCreateNestedManyWithoutAccountCardInput = {
   createMany?: InputMaybe<CardBillingCreateManyAccountCardInputEnvelope>;
 };
 
+export type CardBillingCreateNestedOneWithoutInstallmentsInput = {
+  connect?: InputMaybe<CardBillingWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<CardBillingCreateOrConnectWithoutInstallmentsInput>;
+  create?: InputMaybe<CardBillingCreateWithoutInstallmentsInput>;
+};
+
 export type CardBillingCreateNestedOneWithoutPaymentTransactionInput = {
   connect?: InputMaybe<CardBillingWhereUniqueInput>;
   connectOrCreate?: InputMaybe<CardBillingCreateOrConnectWithoutPaymentTransactionInput>;
@@ -849,6 +857,11 @@ export type CardBillingCreateOrConnectWithoutAccountCardInput = {
   where: CardBillingWhereUniqueInput;
 };
 
+export type CardBillingCreateOrConnectWithoutInstallmentsInput = {
+  create: CardBillingCreateWithoutInstallmentsInput;
+  where: CardBillingWhereUniqueInput;
+};
+
 export type CardBillingCreateOrConnectWithoutPaymentTransactionInput = {
   create: CardBillingCreateWithoutPaymentTransactionInput;
   where: CardBillingWhereUniqueInput;
@@ -867,6 +880,22 @@ export type CardBillingCreateOrConnectWithoutTransactionsInput = {
 export type CardBillingCreateWithoutAccountCardInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
+  installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutCardBillingInput>;
+  limit: Scalars['Decimal']['input'];
+  paymentDate?: InputMaybe<Scalars['DateTime']['input']>;
+  paymentTransaction?: InputMaybe<TransactionCreateNestedOneWithoutBillingPaymentInput>;
+  periodEnd?: InputMaybe<Scalars['DateTime']['input']>;
+  periodStart: Scalars['DateTime']['input'];
+  status: CardBillingStatus;
+  statusHistory?: InputMaybe<CardBillingHistoryCreateNestedManyWithoutCardBillingInput>;
+  transactions?: InputMaybe<TransactionCreateNestedManyWithoutCardBillingInput>;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type CardBillingCreateWithoutInstallmentsInput = {
+  accountCard: AccountCardCreateNestedOneWithoutBillingsInput;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
   limit: Scalars['Decimal']['input'];
   paymentDate?: InputMaybe<Scalars['DateTime']['input']>;
   paymentTransaction?: InputMaybe<TransactionCreateNestedOneWithoutBillingPaymentInput>;
@@ -882,6 +911,7 @@ export type CardBillingCreateWithoutPaymentTransactionInput = {
   accountCard: AccountCardCreateNestedOneWithoutBillingsInput;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
+  installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutCardBillingInput>;
   limit: Scalars['Decimal']['input'];
   paymentDate?: InputMaybe<Scalars['DateTime']['input']>;
   periodEnd?: InputMaybe<Scalars['DateTime']['input']>;
@@ -896,6 +926,7 @@ export type CardBillingCreateWithoutStatusHistoryInput = {
   accountCard: AccountCardCreateNestedOneWithoutBillingsInput;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
+  installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutCardBillingInput>;
   limit: Scalars['Decimal']['input'];
   paymentDate?: InputMaybe<Scalars['DateTime']['input']>;
   paymentTransaction?: InputMaybe<TransactionCreateNestedOneWithoutBillingPaymentInput>;
@@ -910,6 +941,7 @@ export type CardBillingCreateWithoutTransactionsInput = {
   accountCard: AccountCardCreateNestedOneWithoutBillingsInput;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
+  installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutCardBillingInput>;
   limit: Scalars['Decimal']['input'];
   paymentDate?: InputMaybe<Scalars['DateTime']['input']>;
   paymentTransaction?: InputMaybe<TransactionCreateNestedOneWithoutBillingPaymentInput>;
@@ -1097,6 +1129,7 @@ export type CardBillingModel = {
   accountCardId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  installments: Maybe<Array<TransactionInstallment>>;
   limit: Scalars['Decimal']['output'];
   paymentDate: Maybe<Scalars['DateTime']['output']>;
   paymentTransaction: Maybe<Transaction>;
@@ -1150,6 +1183,7 @@ export type CardBillingWhereInput = {
   accountCardId?: InputMaybe<StringFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<StringFilter>;
+  installments?: InputMaybe<TransactionInstallmentListRelationFilter>;
   limit?: InputMaybe<DecimalFilter>;
   paymentDate?: InputMaybe<DateTimeNullableFilter>;
   paymentTransaction?: InputMaybe<TransactionNullableRelationFilter>;
@@ -1171,6 +1205,7 @@ export type CardBillingWhereUniqueInput = {
   accountCardId_periodStart?: InputMaybe<CardBillingAccountCardIdPeriodStartCompoundUniqueInput>;
   createdAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
+  installments?: InputMaybe<TransactionInstallmentListRelationFilter>;
   limit?: InputMaybe<DecimalFilter>;
   paymentDate?: InputMaybe<DateTimeNullableFilter>;
   paymentTransaction?: InputMaybe<TransactionNullableRelationFilter>;
@@ -1209,6 +1244,19 @@ export type CreateAccountInput = {
   isActive: Scalars['Boolean']['input'];
   name: Scalars['String']['input'];
   type: AccountType;
+};
+
+export type CreateInstallmentTransactionInput = {
+  /** Descrição da transação */
+  description: Scalars['String']['input'];
+  /** ID da conta cartão de crédito */
+  sourceAccountId: Scalars['ID']['input'];
+  /** Data da primeira parcela */
+  startDate: Scalars['DateTime']['input'];
+  /** Valor total da compra */
+  totalAmount: Scalars['Decimal']['input'];
+  /** Número de parcelas */
+  totalInstallments: Scalars['Int']['input'];
 };
 
 export type CreateInvestmentInput = {
@@ -1250,7 +1298,7 @@ export type CreateTransactionInput = {
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
   destinyAccountId?: InputMaybe<Scalars['ID']['input']>;
-  installmentNumber?: InputMaybe<Scalars['Int']['input']>;
+  installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutTransactionInput>;
   /** Se true e a data for hoje, marca como COMPLETED. Se false ou não informado, usa PLANNED para hoje. */
   isCompleted?: InputMaybe<Scalars['Boolean']['input']>;
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1259,7 +1307,6 @@ export type CreateTransactionInput = {
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccountId?: InputMaybe<Scalars['ID']['input']>;
   status?: InputMaybe<TransactionStatus>;
-  totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
 };
 
@@ -2152,6 +2199,7 @@ export type Mutation = {
   closeBilling: CardBilling;
   confirmTransaction: TransactionModel;
   createAccount: AccountModel;
+  createInstallmentTransaction: TransactionModel;
   createInvestment: Investment;
   createRecurringTransaction: RecurringTransactionModel;
   createTransaction: TransactionModel;
@@ -2188,6 +2236,10 @@ export type MutationConfirmTransactionArgs = {
 
 export type MutationCreateAccountArgs = {
   data: CreateAccountInput;
+};
+
+export type MutationCreateInstallmentTransactionArgs = {
+  data: CreateInstallmentTransactionInput;
 };
 
 export type MutationCreateInvestmentArgs = {
@@ -2530,6 +2582,7 @@ export enum OrdenationRecurringTransactionModel {
 }
 
 export enum OrdenationTransactionModel {
+  Count = '_count',
   Amount = 'amount',
   BillingPayment = 'billingPayment',
   CanCancel = 'canCancel',
@@ -2542,8 +2595,10 @@ export enum OrdenationTransactionModel {
   Description = 'description',
   DestinyAccount = 'destinyAccount',
   DestinyAccountId = 'destinyAccountId',
+  InstallmentId = 'installmentId',
   InstallmentNumber = 'installmentNumber',
   InstallmentStartDate = 'installmentStartDate',
+  Installments = 'installments',
   PaymentEnabled = 'paymentEnabled',
   PaymentLimit = 'paymentLimit',
   PaymentMethod = 'paymentMethod',
@@ -2592,6 +2647,7 @@ export type Query = {
   accounts: AccountConnection;
   balanceForecast: BalanceForecastModel;
   billing: CardBillingOnDate;
+  billingTransactions: Array<TransactionModel>;
   financialAgenda: FinancialAgendaModel;
   health: Scalars['String']['output'];
   institution: InstitutionModel;
@@ -2640,6 +2696,10 @@ export type QueryBalanceForecastArgs = {
 export type QueryBillingArgs = {
   accountId: Scalars['ID']['input'];
   id?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type QueryBillingTransactionsArgs = {
+  billingId: Scalars['ID']['input'];
 };
 
 export type QueryFinancialAgendaArgs = {
@@ -3271,6 +3331,7 @@ export type TotalInvestmentsModel = {
 
 export type Transaction = {
   __typename?: 'Transaction';
+  _count: TransactionCount;
   amount: Scalars['Decimal']['output'];
   billingPayment: Maybe<CardBilling>;
   cardBilling: Maybe<CardBilling>;
@@ -3281,7 +3342,7 @@ export type Transaction = {
   destinyAccount: Maybe<Account>;
   destinyAccountId: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  installmentNumber: Maybe<Scalars['Int']['output']>;
+  installments: Maybe<Array<TransactionInstallment>>;
   paymentEnabled: Scalars['Boolean']['output'];
   paymentLimit: Maybe<Scalars['DateTime']['output']>;
   paymentMethod: Maybe<PaymentMethod>;
@@ -3290,7 +3351,6 @@ export type Transaction = {
   sourceAccount: Maybe<Account>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
   status: TransactionStatus;
-  totalInstallments: Maybe<Scalars['Int']['output']>;
   type: TransactionType;
   updatedAt: Scalars['DateTime']['output'];
   user: User;
@@ -3300,14 +3360,17 @@ export type Transaction = {
 export type TransactionAvgAggregate = {
   __typename?: 'TransactionAvgAggregate';
   amount: Maybe<Scalars['Decimal']['output']>;
-  installmentNumber: Maybe<Scalars['Float']['output']>;
-  totalInstallments: Maybe<Scalars['Float']['output']>;
 };
 
 export type TransactionConnection = {
   __typename?: 'TransactionConnection';
   edges: Maybe<Array<TransactionModelEdge>>;
   pageInfo: Maybe<PageInfo>;
+};
+
+export type TransactionCount = {
+  __typename?: 'TransactionCount';
+  installments: Scalars['Int']['output'];
 };
 
 export type TransactionCountAggregate = {
@@ -3320,14 +3383,12 @@ export type TransactionCountAggregate = {
   description: Scalars['Int']['output'];
   destinyAccountId: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
-  installmentNumber: Scalars['Int']['output'];
   paymentEnabled: Scalars['Int']['output'];
   paymentLimit: Scalars['Int']['output'];
   paymentMethod: Scalars['Int']['output'];
   recurringTransactionId: Scalars['Int']['output'];
   sourceAccountId: Scalars['Int']['output'];
   status: Scalars['Int']['output'];
-  totalInstallments: Scalars['Int']['output'];
   type: Scalars['Int']['output'];
   updatedAt: Scalars['Int']['output'];
   userId: Scalars['Int']['output'];
@@ -3340,14 +3401,12 @@ export type TransactionCreateManyCardBillingInput = {
   description: Scalars['String']['input'];
   destinyAccountId?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
-  installmentNumber?: InputMaybe<Scalars['Int']['input']>;
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransactionId?: InputMaybe<Scalars['String']['input']>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
   status: TransactionStatus;
-  totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
   userId: Scalars['String']['input'];
@@ -3365,14 +3424,12 @@ export type TransactionCreateManyDestinyAccountInput = {
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
-  installmentNumber?: InputMaybe<Scalars['Int']['input']>;
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransactionId?: InputMaybe<Scalars['String']['input']>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
   status: TransactionStatus;
-  totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
   userId: Scalars['String']['input'];
@@ -3391,13 +3448,11 @@ export type TransactionCreateManyRecurringTransactionInput = {
   description: Scalars['String']['input'];
   destinyAccountId?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
-  installmentNumber?: InputMaybe<Scalars['Int']['input']>;
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
   status: TransactionStatus;
-  totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
   userId: Scalars['String']['input'];
@@ -3416,13 +3471,11 @@ export type TransactionCreateManySourceAccountInput = {
   description: Scalars['String']['input'];
   destinyAccountId?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
-  installmentNumber?: InputMaybe<Scalars['Int']['input']>;
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransactionId?: InputMaybe<Scalars['String']['input']>;
   status: TransactionStatus;
-  totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
   userId: Scalars['String']['input'];
@@ -3441,14 +3494,12 @@ export type TransactionCreateManyUserInput = {
   description: Scalars['String']['input'];
   destinyAccountId?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
-  installmentNumber?: InputMaybe<Scalars['Int']['input']>;
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransactionId?: InputMaybe<Scalars['String']['input']>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
   status: TransactionStatus;
-  totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
@@ -3509,6 +3560,12 @@ export type TransactionCreateNestedOneWithoutBillingPaymentInput = {
   create?: InputMaybe<TransactionCreateWithoutBillingPaymentInput>;
 };
 
+export type TransactionCreateNestedOneWithoutInstallmentsInput = {
+  connect?: InputMaybe<TransactionWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<TransactionCreateOrConnectWithoutInstallmentsInput>;
+  create?: InputMaybe<TransactionCreateWithoutInstallmentsInput>;
+};
+
 export type TransactionCreateOrConnectWithoutBillingPaymentInput = {
   create: TransactionCreateWithoutBillingPaymentInput;
   where: TransactionWhereUniqueInput;
@@ -3521,6 +3578,11 @@ export type TransactionCreateOrConnectWithoutCardBillingInput = {
 
 export type TransactionCreateOrConnectWithoutDestinyAccountInput = {
   create: TransactionCreateWithoutDestinyAccountInput;
+  where: TransactionWhereUniqueInput;
+};
+
+export type TransactionCreateOrConnectWithoutInstallmentsInput = {
+  create: TransactionCreateWithoutInstallmentsInput;
   where: TransactionWhereUniqueInput;
 };
 
@@ -3547,14 +3609,13 @@ export type TransactionCreateWithoutBillingPaymentInput = {
   description: Scalars['String']['input'];
   destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyTransactionsInput>;
   id?: InputMaybe<Scalars['String']['input']>;
-  installmentNumber?: InputMaybe<Scalars['Int']['input']>;
+  installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutTransactionInput>;
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
-  totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
   user: UserCreateNestedOneWithoutTransactionsInput;
@@ -3568,14 +3629,13 @@ export type TransactionCreateWithoutCardBillingInput = {
   description: Scalars['String']['input'];
   destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyTransactionsInput>;
   id?: InputMaybe<Scalars['String']['input']>;
-  installmentNumber?: InputMaybe<Scalars['Int']['input']>;
+  installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutTransactionInput>;
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
-  totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
   user: UserCreateNestedOneWithoutTransactionsInput;
@@ -3589,14 +3649,33 @@ export type TransactionCreateWithoutDestinyAccountInput = {
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
-  installmentNumber?: InputMaybe<Scalars['Int']['input']>;
+  installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutTransactionInput>;
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
-  totalInstallments?: InputMaybe<Scalars['Int']['input']>;
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutTransactionsInput;
+};
+
+export type TransactionCreateWithoutInstallmentsInput = {
+  amount: Scalars['Decimal']['input'];
+  billingPayment?: InputMaybe<CardBillingCreateNestedOneWithoutPaymentTransactionInput>;
+  cardBilling?: InputMaybe<CardBillingCreateNestedOneWithoutTransactionsInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  date: Scalars['DateTime']['input'];
+  description: Scalars['String']['input'];
+  destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyTransactionsInput>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
+  sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
+  status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
   user: UserCreateNestedOneWithoutTransactionsInput;
@@ -3611,13 +3690,12 @@ export type TransactionCreateWithoutRecurringTransactionInput = {
   description: Scalars['String']['input'];
   destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyTransactionsInput>;
   id?: InputMaybe<Scalars['String']['input']>;
-  installmentNumber?: InputMaybe<Scalars['Int']['input']>;
+  installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutTransactionInput>;
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
-  totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
   user: UserCreateNestedOneWithoutTransactionsInput;
@@ -3632,13 +3710,12 @@ export type TransactionCreateWithoutSourceAccountInput = {
   description: Scalars['String']['input'];
   destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyTransactionsInput>;
   id?: InputMaybe<Scalars['String']['input']>;
-  installmentNumber?: InputMaybe<Scalars['Int']['input']>;
+  installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutTransactionInput>;
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   status: TransactionStatus;
-  totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
   user: UserCreateNestedOneWithoutTransactionsInput;
@@ -3653,14 +3730,13 @@ export type TransactionCreateWithoutUserInput = {
   description: Scalars['String']['input'];
   destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyTransactionsInput>;
   id?: InputMaybe<Scalars['String']['input']>;
-  installmentNumber?: InputMaybe<Scalars['Int']['input']>;
+  installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutTransactionInput>;
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
-  totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
@@ -3672,6 +3748,179 @@ export type TransactionGroupModel = {
   label: Scalars['String']['output'];
   period: TransactionPeriod;
   transactions: Array<TransactionModel>;
+};
+
+export type TransactionInstallment = {
+  __typename?: 'TransactionInstallment';
+  amount: Scalars['Decimal']['output'];
+  cardBilling: Maybe<CardBilling>;
+  cardBillingId: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  installmentNumber: Scalars['Int']['output'];
+  transaction: Transaction;
+  transactionId: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type TransactionInstallmentAvgAggregate = {
+  __typename?: 'TransactionInstallmentAvgAggregate';
+  amount: Maybe<Scalars['Decimal']['output']>;
+  installmentNumber: Maybe<Scalars['Float']['output']>;
+};
+
+export type TransactionInstallmentCountAggregate = {
+  __typename?: 'TransactionInstallmentCountAggregate';
+  _all: Scalars['Int']['output'];
+  amount: Scalars['Int']['output'];
+  cardBillingId: Scalars['Int']['output'];
+  createdAt: Scalars['Int']['output'];
+  id: Scalars['Int']['output'];
+  installmentNumber: Scalars['Int']['output'];
+  transactionId: Scalars['Int']['output'];
+  updatedAt: Scalars['Int']['output'];
+};
+
+export type TransactionInstallmentCreateManyCardBillingInput = {
+  amount: Scalars['Decimal']['input'];
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  installmentNumber: Scalars['Int']['input'];
+  transactionId: Scalars['String']['input'];
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type TransactionInstallmentCreateManyCardBillingInputEnvelope = {
+  data: Array<TransactionInstallmentCreateManyCardBillingInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type TransactionInstallmentCreateManyTransactionInput = {
+  amount: Scalars['Decimal']['input'];
+  cardBillingId?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  installmentNumber: Scalars['Int']['input'];
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type TransactionInstallmentCreateManyTransactionInputEnvelope = {
+  data: Array<TransactionInstallmentCreateManyTransactionInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type TransactionInstallmentCreateNestedManyWithoutCardBillingInput = {
+  connect?: InputMaybe<Array<TransactionInstallmentWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<
+    Array<TransactionInstallmentCreateOrConnectWithoutCardBillingInput>
+  >;
+  create?: InputMaybe<
+    Array<TransactionInstallmentCreateWithoutCardBillingInput>
+  >;
+  createMany?: InputMaybe<TransactionInstallmentCreateManyCardBillingInputEnvelope>;
+};
+
+export type TransactionInstallmentCreateNestedManyWithoutTransactionInput = {
+  connect?: InputMaybe<Array<TransactionInstallmentWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<
+    Array<TransactionInstallmentCreateOrConnectWithoutTransactionInput>
+  >;
+  create?: InputMaybe<
+    Array<TransactionInstallmentCreateWithoutTransactionInput>
+  >;
+  createMany?: InputMaybe<TransactionInstallmentCreateManyTransactionInputEnvelope>;
+};
+
+export type TransactionInstallmentCreateOrConnectWithoutCardBillingInput = {
+  create: TransactionInstallmentCreateWithoutCardBillingInput;
+  where: TransactionInstallmentWhereUniqueInput;
+};
+
+export type TransactionInstallmentCreateOrConnectWithoutTransactionInput = {
+  create: TransactionInstallmentCreateWithoutTransactionInput;
+  where: TransactionInstallmentWhereUniqueInput;
+};
+
+export type TransactionInstallmentCreateWithoutCardBillingInput = {
+  amount: Scalars['Decimal']['input'];
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  installmentNumber: Scalars['Int']['input'];
+  transaction: TransactionCreateNestedOneWithoutInstallmentsInput;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type TransactionInstallmentCreateWithoutTransactionInput = {
+  amount: Scalars['Decimal']['input'];
+  cardBilling?: InputMaybe<CardBillingCreateNestedOneWithoutInstallmentsInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  installmentNumber: Scalars['Int']['input'];
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type TransactionInstallmentListRelationFilter = {
+  every?: InputMaybe<TransactionInstallmentWhereInput>;
+  none?: InputMaybe<TransactionInstallmentWhereInput>;
+  some?: InputMaybe<TransactionInstallmentWhereInput>;
+};
+
+export type TransactionInstallmentMaxAggregate = {
+  __typename?: 'TransactionInstallmentMaxAggregate';
+  amount: Maybe<Scalars['Decimal']['output']>;
+  cardBillingId: Maybe<Scalars['String']['output']>;
+  createdAt: Maybe<Scalars['DateTime']['output']>;
+  id: Maybe<Scalars['String']['output']>;
+  installmentNumber: Maybe<Scalars['Int']['output']>;
+  transactionId: Maybe<Scalars['String']['output']>;
+  updatedAt: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type TransactionInstallmentMinAggregate = {
+  __typename?: 'TransactionInstallmentMinAggregate';
+  amount: Maybe<Scalars['Decimal']['output']>;
+  cardBillingId: Maybe<Scalars['String']['output']>;
+  createdAt: Maybe<Scalars['DateTime']['output']>;
+  id: Maybe<Scalars['String']['output']>;
+  installmentNumber: Maybe<Scalars['Int']['output']>;
+  transactionId: Maybe<Scalars['String']['output']>;
+  updatedAt: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type TransactionInstallmentSumAggregate = {
+  __typename?: 'TransactionInstallmentSumAggregate';
+  amount: Maybe<Scalars['Decimal']['output']>;
+  installmentNumber: Maybe<Scalars['Int']['output']>;
+};
+
+export type TransactionInstallmentWhereInput = {
+  AND?: InputMaybe<Array<TransactionInstallmentWhereInput>>;
+  NOT?: InputMaybe<Array<TransactionInstallmentWhereInput>>;
+  OR?: InputMaybe<Array<TransactionInstallmentWhereInput>>;
+  amount?: InputMaybe<DecimalFilter>;
+  cardBilling?: InputMaybe<CardBillingNullableRelationFilter>;
+  cardBillingId?: InputMaybe<StringNullableFilter>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<StringFilter>;
+  installmentNumber?: InputMaybe<IntFilter>;
+  transaction?: InputMaybe<TransactionRelationFilter>;
+  transactionId?: InputMaybe<StringFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
+export type TransactionInstallmentWhereUniqueInput = {
+  AND?: InputMaybe<Array<TransactionInstallmentWhereInput>>;
+  NOT?: InputMaybe<Array<TransactionInstallmentWhereInput>>;
+  OR?: InputMaybe<Array<TransactionInstallmentWhereInput>>;
+  amount?: InputMaybe<DecimalFilter>;
+  cardBilling?: InputMaybe<CardBillingNullableRelationFilter>;
+  cardBillingId?: InputMaybe<StringNullableFilter>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  installmentNumber?: InputMaybe<IntFilter>;
+  transaction?: InputMaybe<TransactionRelationFilter>;
+  transactionId?: InputMaybe<StringFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
 export type TransactionListRelationFilter = {
@@ -3689,14 +3938,12 @@ export type TransactionMaxAggregate = {
   description: Maybe<Scalars['String']['output']>;
   destinyAccountId: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['String']['output']>;
-  installmentNumber: Maybe<Scalars['Int']['output']>;
   paymentEnabled: Maybe<Scalars['Boolean']['output']>;
   paymentLimit: Maybe<Scalars['DateTime']['output']>;
   paymentMethod: Maybe<PaymentMethod>;
   recurringTransactionId: Maybe<Scalars['String']['output']>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
   status: Maybe<TransactionStatus>;
-  totalInstallments: Maybe<Scalars['Int']['output']>;
   type: Maybe<TransactionType>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
   userId: Maybe<Scalars['String']['output']>;
@@ -3711,14 +3958,12 @@ export type TransactionMinAggregate = {
   description: Maybe<Scalars['String']['output']>;
   destinyAccountId: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['String']['output']>;
-  installmentNumber: Maybe<Scalars['Int']['output']>;
   paymentEnabled: Maybe<Scalars['Boolean']['output']>;
   paymentLimit: Maybe<Scalars['DateTime']['output']>;
   paymentMethod: Maybe<PaymentMethod>;
   recurringTransactionId: Maybe<Scalars['String']['output']>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
   status: Maybe<TransactionStatus>;
-  totalInstallments: Maybe<Scalars['Int']['output']>;
   type: Maybe<TransactionType>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
   userId: Maybe<Scalars['String']['output']>;
@@ -3726,6 +3971,7 @@ export type TransactionMinAggregate = {
 
 export type TransactionModel = {
   __typename?: 'TransactionModel';
+  _count: TransactionCount;
   amount: Scalars['Decimal']['output'];
   billingPayment: Maybe<CardBilling>;
   canCancel: Maybe<Scalars['Boolean']['output']>;
@@ -3739,8 +3985,10 @@ export type TransactionModel = {
   destinyAccount: Maybe<Account>;
   destinyAccountId: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  installmentId: Maybe<Scalars['String']['output']>;
   installmentNumber: Maybe<Scalars['Int']['output']>;
   installmentStartDate: Maybe<Scalars['DateTime']['output']>;
+  installments: Maybe<Array<TransactionInstallment>>;
   paymentEnabled: Scalars['Boolean']['output'];
   paymentLimit: Maybe<Scalars['DateTime']['output']>;
   paymentMethod: Maybe<PaymentMethod>;
@@ -3776,6 +4024,11 @@ export enum TransactionPeriod {
   Today = 'TODAY',
 }
 
+export type TransactionRelationFilter = {
+  is?: InputMaybe<TransactionWhereInput>;
+  isNot?: InputMaybe<TransactionWhereInput>;
+};
+
 export enum TransactionStatus {
   Canceled = 'CANCELED',
   Completed = 'COMPLETED',
@@ -3786,8 +4039,6 @@ export enum TransactionStatus {
 export type TransactionSumAggregate = {
   __typename?: 'TransactionSumAggregate';
   amount: Maybe<Scalars['Decimal']['output']>;
-  installmentNumber: Maybe<Scalars['Int']['output']>;
-  totalInstallments: Maybe<Scalars['Int']['output']>;
 };
 
 export enum TransactionType {
@@ -3810,7 +4061,7 @@ export type TransactionWhereInput = {
   destinyAccount?: InputMaybe<AccountNullableRelationFilter>;
   destinyAccountId?: InputMaybe<StringNullableFilter>;
   id?: InputMaybe<StringFilter>;
-  installmentNumber?: InputMaybe<IntNullableFilter>;
+  installments?: InputMaybe<TransactionInstallmentListRelationFilter>;
   paymentEnabled?: InputMaybe<BoolFilter>;
   paymentLimit?: InputMaybe<DateTimeNullableFilter>;
   paymentMethod?: InputMaybe<EnumPaymentMethodNullableFilter>;
@@ -3819,7 +4070,6 @@ export type TransactionWhereInput = {
   sourceAccount?: InputMaybe<AccountNullableRelationFilter>;
   sourceAccountId?: InputMaybe<StringNullableFilter>;
   status?: InputMaybe<EnumTransactionStatusFilter>;
-  totalInstallments?: InputMaybe<IntNullableFilter>;
   type?: InputMaybe<EnumTransactionTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
   user?: InputMaybe<UserRelationFilter>;
@@ -3840,7 +4090,7 @@ export type TransactionWhereUniqueInput = {
   destinyAccount?: InputMaybe<AccountNullableRelationFilter>;
   destinyAccountId?: InputMaybe<StringNullableFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
-  installmentNumber?: InputMaybe<IntNullableFilter>;
+  installments?: InputMaybe<TransactionInstallmentListRelationFilter>;
   paymentEnabled?: InputMaybe<BoolFilter>;
   paymentLimit?: InputMaybe<DateTimeNullableFilter>;
   paymentMethod?: InputMaybe<EnumPaymentMethodNullableFilter>;
@@ -3849,7 +4099,6 @@ export type TransactionWhereUniqueInput = {
   sourceAccount?: InputMaybe<AccountNullableRelationFilter>;
   sourceAccountId?: InputMaybe<StringNullableFilter>;
   status?: InputMaybe<EnumTransactionStatusFilter>;
-  totalInstallments?: InputMaybe<IntNullableFilter>;
   type?: InputMaybe<EnumTransactionTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
   user?: InputMaybe<UserRelationFilter>;
@@ -5120,6 +5369,22 @@ export type UpdateRecurringTransactionsMutation = {
   };
 };
 
+export type CreateInstallmentTransactionMutationVariables = Exact<{
+  data: CreateInstallmentTransactionInput;
+}>;
+
+export type CreateInstallmentTransactionMutation = {
+  __typename?: 'Mutation';
+  createInstallmentTransaction: {
+    __typename?: 'TransactionModel';
+    id: string;
+    description: string;
+    amount: any;
+    date: any;
+    status: TransactionStatus;
+  };
+};
+
 export type TransactionFragmentFragment = {
   __typename?: 'TransactionModel';
   id: string;
@@ -5132,12 +5397,13 @@ export type TransactionFragmentFragment = {
   status: TransactionStatus;
   paymentMethod: PaymentMethod | null;
   recurringTransactionId: string | null;
-  installmentNumber: number | null;
-  totalInstallments: number | null;
   canCancel: boolean | null;
   cancelReason: string | null;
   cancelWarningMessage: string | null;
   installmentStartDate: any | null;
+  installmentNumber: number | null;
+  totalInstallments: number | null;
+  installmentId: string | null;
   sourceAccount: {
     __typename?: 'Account';
     id: string;
@@ -5186,6 +5452,12 @@ export type TransactionFragmentFragment = {
     id: string;
     status: CardBillingStatus;
   } | null;
+  installments: Array<{
+    __typename?: 'TransactionInstallment';
+    id: string;
+    installmentNumber: number;
+    amount: any;
+  }> | null;
 };
 
 export type TransactionsQueryVariables = Exact<{
@@ -5223,12 +5495,13 @@ export type TransactionsQuery = {
         status: TransactionStatus;
         paymentMethod: PaymentMethod | null;
         recurringTransactionId: string | null;
-        installmentNumber: number | null;
-        totalInstallments: number | null;
         canCancel: boolean | null;
         cancelReason: string | null;
         cancelWarningMessage: string | null;
         installmentStartDate: any | null;
+        installmentNumber: number | null;
+        totalInstallments: number | null;
+        installmentId: string | null;
         sourceAccount: {
           __typename?: 'Account';
           id: string;
@@ -5277,6 +5550,12 @@ export type TransactionsQuery = {
           id: string;
           status: CardBillingStatus;
         } | null;
+        installments: Array<{
+          __typename?: 'TransactionInstallment';
+          id: string;
+          installmentNumber: number;
+          amount: any;
+        }> | null;
       };
     }> | null;
     pageInfo: {
@@ -5345,12 +5624,13 @@ export type TransactionsGroupedByPeriodQuery = {
       status: TransactionStatus;
       paymentMethod: PaymentMethod | null;
       recurringTransactionId: string | null;
-      installmentNumber: number | null;
-      totalInstallments: number | null;
       canCancel: boolean | null;
       cancelReason: string | null;
       cancelWarningMessage: string | null;
       installmentStartDate: any | null;
+      installmentNumber: number | null;
+      totalInstallments: number | null;
+      installmentId: string | null;
       sourceAccount: {
         __typename?: 'Account';
         id: string;
@@ -5399,7 +5679,95 @@ export type TransactionsGroupedByPeriodQuery = {
         id: string;
         status: CardBillingStatus;
       } | null;
+      installments: Array<{
+        __typename?: 'TransactionInstallment';
+        id: string;
+        installmentNumber: number;
+        amount: any;
+      }> | null;
     }>;
+  }>;
+};
+
+export type BillingTransactionsQueryVariables = Exact<{
+  billingId: Scalars['ID']['input'];
+}>;
+
+export type BillingTransactionsQuery = {
+  __typename?: 'Query';
+  billingTransactions: Array<{
+    __typename?: 'TransactionModel';
+    id: string;
+    description: string;
+    amount: any;
+    date: any;
+    type: TransactionType;
+    createdAt: any;
+    updatedAt: any;
+    status: TransactionStatus;
+    paymentMethod: PaymentMethod | null;
+    recurringTransactionId: string | null;
+    canCancel: boolean | null;
+    cancelReason: string | null;
+    cancelWarningMessage: string | null;
+    installmentStartDate: any | null;
+    installmentNumber: number | null;
+    totalInstallments: number | null;
+    installmentId: string | null;
+    sourceAccount: {
+      __typename?: 'Account';
+      id: string;
+      name: string;
+      type: AccountType;
+      institution: {
+        __typename?: 'Institution';
+        id: string;
+        name: string;
+        logoUrl: string | null;
+      };
+    } | null;
+    destinyAccount: {
+      __typename?: 'Account';
+      id: string;
+      name: string;
+      type: AccountType;
+      institution: {
+        __typename?: 'Institution';
+        id: string;
+        name: string;
+        logoUrl: string | null;
+      };
+    } | null;
+    billingPayment: {
+      __typename?: 'CardBilling';
+      id: string;
+      status: CardBillingStatus;
+      accountCard: {
+        __typename?: 'AccountCard';
+        account: {
+          __typename?: 'Account';
+          id: string;
+          name: string;
+          institution: {
+            __typename?: 'Institution';
+            id: string;
+            name: string;
+            logoUrl: string | null;
+          };
+        };
+      };
+    } | null;
+    cardBilling: {
+      __typename?: 'CardBilling';
+      id: string;
+      status: CardBillingStatus;
+    } | null;
+    installments: Array<{
+      __typename?: 'TransactionInstallment';
+      id: string;
+      installmentNumber: number;
+      amount: any;
+    }> | null;
   }>;
 };
 
@@ -5822,8 +6190,21 @@ export const TransactionFragmentFragmentDoc = {
             kind: 'Field',
             name: { kind: 'Name', value: 'recurringTransactionId' },
           },
-          { kind: 'Field', name: { kind: 'Name', value: 'installmentNumber' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'totalInstallments' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'installments' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'installmentNumber' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+              ],
+            },
+          },
           { kind: 'Field', name: { kind: 'Name', value: 'canCancel' } },
           { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
           {
@@ -5834,6 +6215,9 @@ export const TransactionFragmentFragmentDoc = {
             kind: 'Field',
             name: { kind: 'Name', value: 'installmentStartDate' },
           },
+          { kind: 'Field', name: { kind: 'Name', value: 'installmentNumber' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'totalInstallments' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'installmentId' } },
         ],
       },
     },
@@ -9466,6 +9850,64 @@ export const UpdateRecurringTransactionsDocument = {
   UpdateRecurringTransactionsMutation,
   UpdateRecurringTransactionsMutationVariables
 >;
+export const CreateInstallmentTransactionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CreateInstallmentTransaction' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: {
+                kind: 'Name',
+                value: 'CreateInstallmentTransactionInput',
+              },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createInstallmentTransaction' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'data' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'data' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'date' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreateInstallmentTransactionMutation,
+  CreateInstallmentTransactionMutationVariables
+>;
 export const TransactionsDocument = {
   kind: 'Document',
   definitions: [
@@ -9915,8 +10357,21 @@ export const TransactionsDocument = {
             kind: 'Field',
             name: { kind: 'Name', value: 'recurringTransactionId' },
           },
-          { kind: 'Field', name: { kind: 'Name', value: 'installmentNumber' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'totalInstallments' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'installments' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'installmentNumber' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+              ],
+            },
+          },
           { kind: 'Field', name: { kind: 'Name', value: 'canCancel' } },
           { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
           {
@@ -9927,6 +10382,9 @@ export const TransactionsDocument = {
             kind: 'Field',
             name: { kind: 'Name', value: 'installmentStartDate' },
           },
+          { kind: 'Field', name: { kind: 'Name', value: 'installmentNumber' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'totalInstallments' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'installmentId' } },
         ],
       },
     },
@@ -10459,8 +10917,21 @@ export const TransactionsGroupedByPeriodDocument = {
             kind: 'Field',
             name: { kind: 'Name', value: 'recurringTransactionId' },
           },
-          { kind: 'Field', name: { kind: 'Name', value: 'installmentNumber' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'totalInstallments' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'installments' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'installmentNumber' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+              ],
+            },
+          },
           { kind: 'Field', name: { kind: 'Name', value: 'canCancel' } },
           { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
           {
@@ -10471,6 +10942,9 @@ export const TransactionsGroupedByPeriodDocument = {
             kind: 'Field',
             name: { kind: 'Name', value: 'installmentStartDate' },
           },
+          { kind: 'Field', name: { kind: 'Name', value: 'installmentNumber' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'totalInstallments' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'installmentId' } },
         ],
       },
     },
@@ -10478,6 +10952,237 @@ export const TransactionsGroupedByPeriodDocument = {
 } as unknown as DocumentNode<
   TransactionsGroupedByPeriodQuery,
   TransactionsGroupedByPeriodQueryVariables
+>;
+export const BillingTransactionsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'BillingTransactions' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'billingId' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'billingTransactions' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'billingId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'billingId' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'FragmentSpread',
+                  name: { kind: 'Name', value: 'TransactionFragment' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'TransactionFragment' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'TransactionModel' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'date' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'sourceAccount' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institution' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'logoUrl' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'destinyAccount' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institution' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'logoUrl' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'billingPayment' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'accountCard' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'account' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'institution' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'id' },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'name' },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'logoUrl' },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'cardBilling' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'recurringTransactionId' },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'installments' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'installmentNumber' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'canCancel' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'cancelWarningMessage' },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'installmentStartDate' },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'installmentNumber' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'totalInstallments' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'installmentId' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  BillingTransactionsQuery,
+  BillingTransactionsQueryVariables
 >;
 export const UsersDocument = {
   kind: 'Document',

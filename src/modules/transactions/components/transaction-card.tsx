@@ -541,8 +541,9 @@ export function TransactionCard({
           )}
 
         {/* Cancelar */}
-        {canEditFully && !hideActions.includes('cancel') && (
-          transaction.canCancel ? (
+        {canEditFully &&
+          !hideActions.includes('cancel') &&
+          (transaction.canCancel ? (
             <Button
               variant="destructive"
               size="sm"
@@ -571,8 +572,7 @@ export function TransactionCard({
                 <p>{transaction.cancelReason}</p>
               </TooltipContent>
             </Tooltip>
-          ) : null
-        )}
+          ) : null)}
       </div>
     );
   };
@@ -631,11 +631,17 @@ export function TransactionCard({
                 <span className="font-medium">
                   {transaction.description || 'Sem descrição'}
                 </span>
-                {transaction.installmentNumber && transaction.totalInstallments && (
-                  <span className="rounded-md bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
-                    {transaction.installmentNumber}/{transaction.totalInstallments}
-                  </span>
-                )}
+                {transaction.installments &&
+                  (transaction.totalInstallments ?? 0) > 0 &&
+                  ((transaction.installmentNumber ?? 0) > 0 ? (
+                    <p className="rounded-md bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
+                      Parcela <span className="font-medium">{transaction.installmentNumber}</span> de <span className="font-medium">{transaction.totalInstallments}</span>
+                    </p>
+                  ) : (
+                    <p className="rounded-md bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
+                      <span className="font-medium">{transaction.totalInstallments}</span> parcelas
+                    </p>
+                  ))}
               </div>
               {!hideAccount && getAccountDisplay()}
               <div className="text-sm text-muted-foreground">
@@ -682,8 +688,11 @@ export function TransactionCard({
             <AlertDialogDescription>
               {transaction.cancelWarningMessage ? (
                 <>
-                  <strong className="text-amber-600">{transaction.cancelWarningMessage}</strong>
-                  <br /><br />
+                  <strong className="text-amber-600">
+                    {transaction.cancelWarningMessage}
+                  </strong>
+                  <br />
+                  <br />
                 </>
               ) : null}
               Tem certeza que deseja cancelar esta transação? Esta ação não pode

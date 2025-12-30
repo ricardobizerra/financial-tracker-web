@@ -75,6 +75,7 @@ import PixIcon from '@/static/pix-icon.svg';
 import {
   CreateTransactionMutation,
   UpdateTransactionMutation,
+  CreateInstallmentTransactionMutation,
 } from '../graphql/transactions-mutations';
 import { TransactionFragmentFragment } from '@/graphql/graphql';
 import { formatCurrency } from '@/lib/formatters/currency';
@@ -545,12 +546,14 @@ export function ExpenseTransactionCreateForm({
   const [createTransaction, { loading: createLoading }] = useMutation(
     CreateTransactionMutation,
   );
-  const [createRecurringTransaction, { loading: recurringLoading }] =
-    useMutation(CreateRecurringTransactionMutation);
+  const [createInstallmentTransaction, { loading: installmentLoading }] =
+    useMutation(CreateInstallmentTransactionMutation);
   const [updateTransaction, { loading: updateLoading }] = useMutation(
     UpdateTransactionMutation,
   );
-  const loading = isEditMode ? updateLoading : createLoading || recurringLoading;
+  const loading = isEditMode
+    ? updateLoading
+    : createLoading || installmentLoading;
 
   const form = useForm<z.infer<typeof expenseSchema>>({
     resolver: zodResolver(expenseSchema),
@@ -625,7 +628,12 @@ export function ExpenseTransactionCreateForm({
 
   // Calcular valor por parcela
   const installmentValue = useMemo(() => {
-    if (isInstallment && watchedAmount && watchedInstallmentCount && watchedInstallmentCount > 1) {
+    if (
+      isInstallment &&
+      watchedAmount &&
+      watchedInstallmentCount &&
+      watchedInstallmentCount > 1
+    ) {
       return (watchedAmount / watchedInstallmentCount).toFixed(2);
     }
     return null;
@@ -875,23 +883,19 @@ export function ExpenseTransactionCreateForm({
               });
             } else {
               // Parcelamento
-              if (data.isInstallment && data.installmentCount && data.installmentCount > 1) {
-                const dayOfMonth = data.date.getDate() > 28 ? 28 : data.date.getDate();
-                await createRecurringTransaction({
+              if (
+                data.isInstallment &&
+                data.installmentCount &&
+                data.installmentCount > 1
+              ) {
+                await createInstallmentTransaction({
                   variables: {
                     data: {
                       description: data.description,
-                      estimatedAmount: data.amount,
-                      type: data.type.value as TransactionType,
-                      paymentMethod: isCreditCardAccount
-                        ? undefined
-                        : data.paymentMethod?.value as PaymentMethod,
-                      frequency: RecurrenceFrequency.Monthly,
-                      dayOfMonth,
+                      totalAmount: data.amount,
+                      totalInstallments: data.installmentCount,
                       startDate: data.date,
                       sourceAccountId: data.sourceAccount.value,
-                      recurrenceType: RecurrenceType.Installment,
-                      totalInstallments: data.installmentCount,
                     },
                   },
                   refetchQueries: [
@@ -904,9 +908,12 @@ export function ExpenseTransactionCreateForm({
                     BillingQuery,
                   ],
                   onCompleted: () => {
-                    toast.success(`Parcelamento criado em ${data.installmentCount}x!`, {
-                      description: 'As parcelas foram geradas com sucesso.',
-                    });
+                    toast.success(
+                      `Parcelamento criado em ${data.installmentCount}x!`,
+                      {
+                        description: 'As parcelas foram geradas com sucesso.',
+                      },
+                    );
                     setOpen(false);
                   },
                   onError: (error) => {
@@ -994,7 +1001,10 @@ export function ExpenseTransactionCreateForm({
                   {isInstallment && installmentCount}
                   {installmentValue && (
                     <p className="text-sm text-muted-foreground">
-                      Valor de cada parcela: <strong>{formatCurrency(Number(installmentValue))}</strong>
+                      Valor de cada parcela:{' '}
+                      <strong>
+                        {formatCurrency(Number(installmentValue))}
+                      </strong>
                     </p>
                   )}
                 </>

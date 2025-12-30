@@ -1,7 +1,10 @@
 'use client';
 
 import { useQuery } from '@apollo/client';
-import { TransactionsQuery } from '../graphql/transactions-queries';
+import {
+  TransactionsQuery,
+  BillingTransactionsQuery,
+} from '../graphql/transactions-queries';
 import { TransactionCard } from './transaction-card';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -12,37 +15,26 @@ import {
 } from '@/graphql/graphql';
 
 interface TransactionsCardListProps {
-  accountId?: string;
   cardBillingId?: string;
   hideAccount?: boolean;
-  hideActions?: ('confirm' | 'edit' | 'cancel')[];
-  compact?: boolean;
 }
 
 export function TransactionsCardList({
-  accountId,
   cardBillingId,
   hideAccount = false,
-  hideActions = [],
-  compact = false,
 }: TransactionsCardListProps) {
-  const { data, loading, error } = useQuery(TransactionsQuery, {
+  const {
+    data: billingData,
+    loading: billingLoading,
+    error: billingError,
+  } = useQuery(BillingTransactionsQuery, {
     variables: {
-      first: 100,
-      accountId,
-      cardBillingId,
-      orderBy: OrdenationTransactionModel.Date,
-      orderDirection: OrderDirection.Asc,
-      statuses: [
-        TransactionStatus.Planned,
-        TransactionStatus.Overdue,
-        TransactionStatus.Completed,
-      ],
+      billingId: cardBillingId || '',
     },
     fetchPolicy: 'cache-and-network',
   });
 
-  if (loading) {
+  if (billingLoading) {
     return (
       <div className="space-y-2">
         {[1, 2, 3].map((i) => (
@@ -52,7 +44,7 @@ export function TransactionsCardList({
     );
   }
 
-  if (error) {
+  if (billingError) {
     return (
       <Card>
         <CardContent className="p-4 text-center text-destructive">
@@ -62,8 +54,7 @@ export function TransactionsCardList({
     );
   }
 
-  const transactions =
-    data?.transactions?.edges?.map((edge) => edge.node) || [];
+  const transactions = billingData?.billingTransactions || [];
 
   if (transactions.length === 0) {
     return (
@@ -82,8 +73,8 @@ export function TransactionsCardList({
           key={transaction.id}
           transaction={transaction}
           hideAccount={hideAccount}
-          hideActions={hideActions}
-          compact={compact}
+          hideActions={[]}
+          compact={false}
         />
       ))}
     </div>

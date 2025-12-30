@@ -62,3 +62,17 @@ export const UpdateRecurringTransactionsMutation = graphql(`
     }
   }
 `);
+
+export const CreateInstallmentTransactionMutation = graphql(`
+  mutation CreateInstallmentTransaction(
+    $data: CreateInstallmentTransactionInput!
+  ) {
+    createInstallmentTransaction(data: $data) {
+      id
+      description
+      amount
+      date
+      status
+    }
+  }
+`);
