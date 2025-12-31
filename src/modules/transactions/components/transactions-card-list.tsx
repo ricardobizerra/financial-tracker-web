@@ -75,6 +75,7 @@ export function TransactionsCardList({
           hideAccount={hideAccount}
           hideActions={[]}
           compact={false}
+          hideWarnings={true}
         />
       ))}
     </div>

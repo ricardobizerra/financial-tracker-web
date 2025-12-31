@@ -5451,6 +5451,10 @@ export type TransactionFragmentFragment = {
     __typename?: 'CardBilling';
     id: string;
     status: CardBillingStatus;
+    paymentTransaction: {
+      __typename?: 'Transaction';
+      description: string;
+    } | null;
   } | null;
   installments: Array<{
     __typename?: 'TransactionInstallment';
@@ -5549,6 +5553,10 @@ export type TransactionsQuery = {
           __typename?: 'CardBilling';
           id: string;
           status: CardBillingStatus;
+          paymentTransaction: {
+            __typename?: 'Transaction';
+            description: string;
+          } | null;
         } | null;
         installments: Array<{
           __typename?: 'TransactionInstallment';
@@ -5678,6 +5686,10 @@ export type TransactionsGroupedByPeriodQuery = {
         __typename?: 'CardBilling';
         id: string;
         status: CardBillingStatus;
+        paymentTransaction: {
+          __typename?: 'Transaction';
+          description: string;
+        } | null;
       } | null;
       installments: Array<{
         __typename?: 'TransactionInstallment';
@@ -5761,6 +5773,10 @@ export type BillingTransactionsQuery = {
       __typename?: 'CardBilling';
       id: string;
       status: CardBillingStatus;
+      paymentTransaction: {
+        __typename?: 'Transaction';
+        description: string;
+      } | null;
     } | null;
     installments: Array<{
       __typename?: 'TransactionInstallment';
@@ -6181,6 +6197,19 @@ export const TransactionFragmentFragmentDoc = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'paymentTransaction' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'description' },
+                      },
+                    ],
+                  },
+                },
               ],
             },
           },
@@ -10348,6 +10377,19 @@ export const TransactionsDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'paymentTransaction' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'description' },
+                      },
+                    ],
+                  },
+                },
               ],
             },
           },
@@ -10908,6 +10950,19 @@ export const TransactionsGroupedByPeriodDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'paymentTransaction' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'description' },
+                      },
+                    ],
+                  },
+                },
               ],
             },
           },
@@ -11139,6 +11194,19 @@ export const BillingTransactionsDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'paymentTransaction' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'description' },
+                      },
+                    ],
+                  },
+                },
               ],
             },
           },

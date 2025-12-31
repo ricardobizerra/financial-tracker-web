@@ -47,6 +47,9 @@ export const TransactionsFragment = graphql(`
     cardBilling {
       id
       status
+      paymentTransaction {
+        description
+      }
     }
     status
     paymentMethod

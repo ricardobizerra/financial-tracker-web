@@ -69,6 +69,7 @@ interface TransactionCardProps {
   hideAccount?: boolean;
   hideActions?: ('confirm' | 'edit' | 'cancel')[];
   compact?: boolean;
+  hideWarnings?: boolean;
 }
 
 // Formatar data com mês por extenso e ano só se não for o ano atual
@@ -107,6 +108,7 @@ export function TransactionCard({
   hideAccount = false,
   hideActions = [],
   compact = false,
+  hideWarnings = false,
 }: TransactionCardProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [descriptionEditOpen, setDescriptionEditOpen] = useState(false);
@@ -581,11 +583,34 @@ export function TransactionCard({
     <>
       <Card
         className={cn(
-          'transition-all hover:shadow-md',
+          'overflow-hidden transition-all hover:shadow-md',
           isOverdue &&
             'border-red-300 bg-red-50/50 dark:border-red-800 dark:bg-red-950/20',
+          (transaction.cardBilling ||
+            (transaction.totalInstallments ?? 0) > 0) &&
+            !hideWarnings &&
+            'border-dashed',
         )}
       >
+        {transaction.cardBilling && !hideWarnings && (
+          <div className="border-b border-dashed border-border bg-muted px-4 py-1 text-sm">
+            Este pagamento está incluído na fatura{' '}
+            <span className="font-semibold">
+              {transaction.cardBilling.paymentTransaction?.description}
+            </span>
+          </div>
+        )}
+
+        {(transaction.totalInstallments ?? 0) > 0 && !hideWarnings && (
+          <div className="border-b border-dashed border-border bg-muted px-4 py-1 text-sm">
+            Este pagamento está incluído nas{' '}
+            <span className="font-semibold">
+              {transaction.totalInstallments} próximas faturas
+            </span>
+            , a partir da data da operação
+          </div>
+        )}
+
         <CardContent className="flex flex-col items-center justify-between gap-3 p-3 md:flex-row">
           <div className="flex w-full flex-col items-center gap-3 md:flex-row">
             <div className="flex items-center justify-center gap-3">
@@ -602,7 +627,15 @@ export function TransactionCard({
                   <ArrowUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400 md:h-5 md:w-5" />
                 )}
                 {isExpense && (
-                  <ArrowDown className="h-4 w-4 text-red-600 dark:text-red-400 md:h-5 md:w-5" />
+                  <ArrowDown
+                    className={cn(
+                      'h-4 w-4 text-red-600 dark:text-red-400 md:h-5 md:w-5',
+                      (transaction.cardBilling ||
+                        (transaction.totalInstallments ?? 0) > 0) &&
+                        !hideWarnings &&
+                        'text-muted-foreground dark:text-muted-foreground',
+                    )}
+                  />
                 )}
                 {isBetweenAccounts && (
                   <ArrowLeftRight className="h-4 w-4 text-blue-600 dark:text-blue-400 md:h-5 md:w-5" />
@@ -616,6 +649,10 @@ export function TransactionCard({
                   isIncome && 'text-emerald-600 dark:text-emerald-400',
                   isExpense && 'text-red-600 dark:text-red-400',
                   isBetweenAccounts && 'text-blue-600 dark:text-blue-400',
+                  (transaction.cardBilling ||
+                    (transaction.totalInstallments ?? 0) > 0) &&
+                    !hideWarnings &&
+                    'text-muted-foreground dark:text-muted-foreground',
                 )}
               >
                 {isExpense && '-'}
@@ -635,11 +672,21 @@ export function TransactionCard({
                   (transaction.totalInstallments ?? 0) > 0 &&
                   ((transaction.installmentNumber ?? 0) > 0 ? (
                     <p className="rounded-md bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
-                      Parcela <span className="font-medium">{transaction.installmentNumber}</span> de <span className="font-medium">{transaction.totalInstallments}</span>
+                      Parcela{' '}
+                      <span className="font-medium">
+                        {transaction.installmentNumber}
+                      </span>{' '}
+                      de{' '}
+                      <span className="font-medium">
+                        {transaction.totalInstallments}
+                      </span>
                     </p>
                   ) : (
                     <p className="rounded-md bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
-                      <span className="font-medium">{transaction.totalInstallments}</span> parcelas
+                      <span className="font-medium">
+                        {transaction.totalInstallments}
+                      </span>{' '}
+                      parcelas
                     </p>
                   ))}
               </div>
