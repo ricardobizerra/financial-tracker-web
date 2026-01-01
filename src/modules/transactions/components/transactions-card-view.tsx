@@ -35,31 +35,31 @@ const periodConfig: Record<
 > = {
   [TransactionPeriod.Overdue]: {
     icon: AlertCircle,
-    color: 'text-red-600 dark:text-red-400',
+    color: 'bg-red-600 dark:bg-red-400',
   },
   [TransactionPeriod.Today]: {
     icon: Calendar,
-    color: 'text-amber-600 dark:text-amber-400',
+    color: 'bg-amber-600 dark:bg-amber-400',
   },
   [TransactionPeriod.ThisWeek]: {
     icon: CalendarDays,
-    color: 'text-blue-600 dark:text-blue-400',
+    color: 'bg-blue-600 dark:bg-blue-400',
   },
   [TransactionPeriod.ThisMonth]: {
     icon: CalendarClock,
-    color: 'text-violet-600 dark:text-violet-400',
+    color: 'bg-violet-600 dark:bg-violet-400',
   },
   [TransactionPeriod.NextMonth]: {
     icon: CalendarRange,
-    color: 'text-cyan-600 dark:text-cyan-400',
+    color: 'bg-cyan-600 dark:bg-cyan-400',
   },
   [TransactionPeriod.Future]: {
     icon: Clock,
-    color: 'text-slate-600 dark:text-slate-400',
+    color: 'bg-slate-600 dark:bg-slate-400',
   },
   [TransactionPeriod.Past]: {
     icon: CheckCircle2,
-    color: 'text-emerald-600 dark:text-emerald-400',
+    color: 'bg-emerald-600 dark:bg-emerald-400',
   },
 };
 
@@ -157,7 +157,7 @@ export function TransactionsCardView({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-4 lg:min-h-0 lg:flex-1">
       {/* Filtros */}
       <TransactionsFilters filters={filters} onFiltersChange={setFilters} />
 
@@ -168,52 +168,68 @@ export function TransactionsCardView({
         <BetweenAccountsTransactionCreateForm accountId={accountId} />
       </div>
 
-      {/* Grupos de transações */}
-      {groups.map((group) => {
-        const config = periodConfig[group.period];
-        const Icon = config?.icon || Calendar;
-        const color = config?.color || 'text-foreground';
-        const isExpanded = expandedGroups[group.period];
+      {/* Grupos de transações - layout kanban em telas grandes */}
+      <div className="grid grid-cols-1 gap-4 lg:min-h-0 lg:flex-1 lg:grid-cols-2 lg:overflow-hidden xl:grid-cols-3 2xl:grid-cols-4">
+        {groups.map((group) => {
+          const config = periodConfig[group.period];
+          const Icon = config?.icon || Calendar;
+          const color = config?.color || 'bg-muted';
+          const isExpanded = expandedGroups[group.period];
 
-        return (
-          <div key={group.period} className="space-y-3">
-            {/* Cabeçalho do grupo */}
-            <div className="flex items-center gap-2">
-              <Icon className={cn('h-5 w-5', color)} />
-              <h3 className={cn('font-semibold', color)}>{group.label}</h3>
-              <span className="text-sm text-muted-foreground">
-                {group.count} {group.count === 1 ? 'transação' : 'transações'}
-              </span>
-            </div>
-
-            {/* Lista de cartões */}
-            <div className="space-y-2">
-              {group.transactions.map((transaction) => (
-                <TransactionCard
-                  key={transaction.id}
-                  transaction={transaction}
-                  hideAccount={hideAccount}
-                  hideActions={hideActions}
-                  compact={compact}
-                />
-              ))}
-            </div>
-
-            {/* Botão "Ver mais" se tiver mais transações */}
-            {group.hasMore && !isExpanded && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full text-muted-foreground"
-                onClick={() => toggleGroup(group.period)}
+          return (
+            <div
+              key={group.period}
+              className="flex flex-col rounded-lg border bg-card lg:min-h-0"
+            >
+              {/* Cabeçalho do grupo */}
+              <div
+                className={cn(
+                  'flex shrink-0 items-center gap-2 rounded-t-lg px-4 py-3 text-white',
+                  color,
+                )}
               >
-                <ChevronDown className="mr-1 h-4 w-4" />
-                Ver mais ({group.count - group.transactions.length} restantes)
-              </Button>
-            )}
-          </div>
-        );
-      })}
+                <Icon className="h-5 w-5" />
+                <h3 className="font-semibold">{group.label}</h3>
+                <span className="ml-auto text-sm">
+                  <span className="font-semibold">{group.count}</span>
+                  <span className="hidden sm:inline">
+                    {' '}
+                    {group.count === 1 ? 'transação' : 'transações'}
+                  </span>
+                </span>
+              </div>
+
+              {/* Lista de cartões - scroll apenas em telas grandes */}
+              <div className="flex-1 space-y-2 p-4 lg:overflow-y-auto">
+                {group.transactions.map((transaction) => (
+                  <TransactionCard
+                    key={transaction.id}
+                    transaction={transaction}
+                    hideAccount={hideAccount}
+                    hideActions={hideActions}
+                    compact={compact}
+                  />
+                ))}
+              </div>
+
+              {/* Botão "Ver mais" se tiver mais transações */}
+              {group.hasMore && !isExpanded && (
+                <div className="shrink-0 border-t p-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full text-muted-foreground"
+                    onClick={() => toggleGroup(group.period)}
+                  >
+                    <ChevronDown className="mr-1 h-4 w-4" />
+                    Ver mais ({group.count - group.transactions.length})
+                  </Button>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

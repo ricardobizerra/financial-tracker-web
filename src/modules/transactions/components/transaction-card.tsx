@@ -449,12 +449,12 @@ export function TransactionCard({
       // Se pode pagar, botão sem tooltip
       if (canPayBilling) {
         return (
-          <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:flex-nowrap">
+          <div className="flex w-full flex-wrap items-center gap-2">
             <Button
               variant="secondary"
               size="sm"
               asChild
-              className="flex-1 md:flex-none"
+              className="min-w-[120px] flex-1"
             >
               <Link
                 href={`/accounts/${billingAccountId}?billingId=${transaction.billingPayment?.id}`}
@@ -466,7 +466,7 @@ export function TransactionCard({
             <Button
               size="sm"
               onClick={() => setBillingPaymentEditOpen(true)}
-              className="flex-1 bg-emerald-600 text-white hover:bg-emerald-700 md:flex-none"
+              className="min-w-[120px] flex-1 bg-emerald-600 text-white hover:bg-emerald-700"
             >
               <CreditCard className="h-4 w-4" />
               Pagar fatura
@@ -477,12 +477,12 @@ export function TransactionCard({
 
       // Se não pode pagar, botão com tooltip explicando
       return (
-        <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:flex-nowrap">
+        <div className="flex w-full flex-wrap items-center gap-2">
           <Button
             variant="secondary"
             size="sm"
             asChild
-            className="flex-1 md:flex-none"
+            className="min-w-[120px] flex-1"
           >
             <Link
               href={`/accounts/${billingAccountId}?billingId=${transaction.billingPayment?.id}`}
@@ -493,11 +493,11 @@ export function TransactionCard({
           </Button>
           <Tooltip>
             <TooltipTrigger asChild>
-              <span>
+              <span className="min-w-[120px] flex-1">
                 <Button
                   size="sm"
                   disabled
-                  className="flex-1 bg-emerald-600 text-white hover:bg-emerald-700 md:flex-none"
+                  className="w-full bg-emerald-600 text-white hover:bg-emerald-700"
                 >
                   <CreditCard className="h-4 w-4" />
                   Pagar fatura
@@ -514,17 +514,17 @@ export function TransactionCard({
 
     // Transação normal
     return (
-      <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:flex-nowrap">
+      <div className="flex w-full flex-wrap items-center gap-2">
         {/* Editar */}
         {!hideActions.includes('edit') && (
           <Button
             variant="secondary"
             size="sm"
             onClick={handleEdit}
-            className="flex-1 md:flex-none"
+            className="min-w-[100px] flex-1"
           >
             <Pencil className="h-4 w-4" />
-            Editar detalhes
+            Editar
           </Button>
         )}
 
@@ -535,7 +535,7 @@ export function TransactionCard({
             <Button
               size="sm"
               onClick={() => setConfirmDialogOpen(true)}
-              className="flex-1 bg-emerald-600 text-white hover:bg-emerald-700 md:flex-none"
+              className="min-w-[100px] flex-1 bg-emerald-600 text-white hover:bg-emerald-700"
             >
               <Check className="h-4 w-4" />
               Confirmar
@@ -550,7 +550,7 @@ export function TransactionCard({
               variant="destructive"
               size="sm"
               onClick={() => setCancelDialogOpen(true)}
-              className="flex-1 md:flex-none"
+              className="min-w-[100px] flex-1"
             >
               <X className="h-4 w-4" />
               Cancelar
@@ -558,12 +558,12 @@ export function TransactionCard({
           ) : transaction.cancelReason ? (
             <Tooltip>
               <TooltipTrigger asChild>
-                <span>
+                <span className="min-w-[100px] flex-1">
                   <Button
                     variant="destructive"
                     size="sm"
                     disabled
-                    className="flex-1 md:flex-none"
+                    className="w-full"
                   >
                     <X className="h-4 w-4" />
                     Cancelar
@@ -611,97 +611,91 @@ export function TransactionCard({
           </div>
         )}
 
-        <CardContent className="flex flex-col items-center justify-between gap-3 p-3 md:flex-row">
-          <div className="flex w-full flex-col items-center gap-3 md:flex-row">
-            <div className="flex items-center justify-center gap-3">
-              {/* Ícone do tipo */}
-              <div
-                className={cn(
-                  'flex h-6 min-w-6 max-w-6 items-center justify-center rounded-full md:h-10 md:min-w-10 md:max-w-10',
-                  isIncome && 'bg-emerald-100 dark:bg-emerald-900/30',
-                  isExpense && 'bg-red-100 dark:bg-red-900/30',
-                  isBetweenAccounts && 'bg-blue-100 dark:bg-blue-900/30',
-                )}
-              >
-                {isIncome && (
-                  <ArrowUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400 md:h-5 md:w-5" />
-                )}
-                {isExpense && (
-                  <ArrowDown
-                    className={cn(
-                      'h-4 w-4 text-red-600 dark:text-red-400 md:h-5 md:w-5',
-                      (transaction.cardBilling ||
-                        (transaction.totalInstallments ?? 0) > 0) &&
-                        !hideWarnings &&
-                        'text-muted-foreground dark:text-muted-foreground',
-                    )}
-                  />
-                )}
-                {isBetweenAccounts && (
-                  <ArrowLeftRight className="h-4 w-4 text-blue-600 dark:text-blue-400 md:h-5 md:w-5" />
-                )}
-              </div>
-
-              {/* Valor */}
-              <div
-                className={cn(
-                  'text-nowrap text-right font-semibold md:min-w-[100px]',
-                  isIncome && 'text-emerald-600 dark:text-emerald-400',
-                  isExpense && 'text-red-600 dark:text-red-400',
-                  isBetweenAccounts && 'text-blue-600 dark:text-blue-400',
-                  (transaction.cardBilling ||
-                    (transaction.totalInstallments ?? 0) > 0) &&
-                    !hideWarnings &&
-                    'text-muted-foreground dark:text-muted-foreground',
-                )}
-              >
-                {isExpense && '-'}
-                {formatCurrency(Number(transaction.amount))}
-              </div>
+        <CardContent className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:gap-3">
+          {/* Mobile: ícone + valor na linha superior */}
+          <div className="flex items-center justify-between sm:contents">
+            {/* Ícone do tipo */}
+            <div
+              className={cn(
+                'flex h-8 min-w-8 max-w-8 shrink-0 items-center justify-center rounded-full',
+                isIncome && 'bg-emerald-100 dark:bg-emerald-900/30',
+                isExpense && 'bg-red-100 dark:bg-red-900/30',
+                isBetweenAccounts && 'bg-blue-100 dark:bg-blue-900/30',
+              )}
+            >
+              {isIncome && (
+                <ArrowUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+              )}
+              {isExpense && (
+                <ArrowDown
+                  className={cn(
+                    'h-4 w-4 text-red-600 dark:text-red-400',
+                    (transaction.cardBilling ||
+                      (transaction.totalInstallments ?? 0) > 0) &&
+                      !hideWarnings &&
+                      'text-muted-foreground dark:text-muted-foreground',
+                  )}
+                />
+              )}
+              {isBetweenAccounts && (
+                <ArrowLeftRight className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              )}
             </div>
 
-            <Separator orientation="horizontal" className="md:hidden" />
+            {/* Valor - aparece à direita em mobile, no final em desktop */}
+            <div
+              className={cn(
+                'shrink-0 text-lg font-semibold sm:order-last sm:text-base',
+                isIncome && 'text-emerald-600 dark:text-emerald-400',
+                isExpense && 'text-red-600 dark:text-red-400',
+                isBetweenAccounts && 'text-blue-600 dark:text-blue-400',
+                (transaction.cardBilling ||
+                  (transaction.totalInstallments ?? 0) > 0) &&
+                  !hideWarnings &&
+                  'text-muted-foreground dark:text-muted-foreground',
+              )}
+            >
+              {isExpense && '-'}
+              {formatCurrency(Number(transaction.amount))}
+            </div>
+          </div>
 
-            {/* Descrição e conta */}
-            <div className="flex w-full flex-col gap-0.5">
-              <div className="flex items-center gap-2">
-                <span className="font-medium">
-                  {transaction.description || 'Sem descrição'}
-                </span>
-                {transaction.installments &&
-                  (transaction.totalInstallments ?? 0) > 0 &&
-                  ((transaction.installmentNumber ?? 0) > 0 ? (
-                    <p className="rounded-md bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
-                      Parcela{' '}
-                      <span className="font-medium">
-                        {transaction.installmentNumber}
-                      </span>{' '}
-                      de{' '}
-                      <span className="font-medium">
-                        {transaction.totalInstallments}
-                      </span>
-                    </p>
-                  ) : (
-                    <p className="rounded-md bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
-                      <span className="font-medium">
-                        {transaction.totalInstallments}
-                      </span>{' '}
-                      parcelas
-                    </p>
-                  ))}
-              </div>
-              {!hideAccount && getAccountDisplay()}
-              <div className="text-sm text-muted-foreground">
+          {/* Descrição, data e conta - ocupa toda a largura em mobile */}
+          <div className="flex min-w-0 flex-1 flex-col">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-medium sm:text-base">
+                {transaction.description || 'Sem descrição'}
+              </span>
+              {transaction.installments &&
+                (transaction.totalInstallments ?? 0) > 0 &&
+                (transaction.installmentNumber ?? 0) > 0 && (
+                  <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
+                    {transaction.installmentNumber}/
+                    {transaction.totalInstallments}
+                  </span>
+                )}
+            </div>
+            <div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground sm:gap-2">
+              <span>
                 {formatDateExtended(
                   transaction.installmentStartDate ?? transaction.date,
                   transaction.installmentStartDate ? transaction.date : null,
                 )}
-              </div>
+              </span>
+              {!hideAccount && (
+                <>
+                  <span>•</span>
+                  {getAccountDisplay()}
+                </>
+              )}
             </div>
           </div>
-
-          {renderActionButtons()}
         </CardContent>
+
+        {/* Footer com botões de ação */}
+        <div className="border-t bg-muted/30 px-3 py-2">
+          {renderActionButtons()}
+        </div>
       </Card>
 
       {/* Modais de edição */}
