@@ -10,13 +10,19 @@ import { TooltipContentProps } from '@radix-ui/react-tooltip';
 
 type SimpleTooltipProps = TooltipContentProps & {
   label: ReactNode;
+  hidden?: boolean;
 };
 
 export function SimpleTooltip({
   children,
   label,
+  hidden,
   ...contentProps
 }: PropsWithChildren<SimpleTooltipProps>) {
+  if (hidden) {
+    return <>{children}</>;
+  }
+
   return (
     <TooltipProvider delayDuration={100}>
       <Tooltip>
