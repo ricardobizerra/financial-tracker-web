@@ -21,17 +21,6 @@ export const UpdateTransactionMutation = graphql(`
   }
 `);
 
-export const ConfirmTransactionMutation = graphql(`
-  mutation ConfirmTransaction($data: ConfirmTransactionInput!) {
-    confirmTransaction(data: $data) {
-      id
-      status
-      amount
-      date
-    }
-  }
-`);
-
 export const CancelTransactionMutation = graphql(`
   mutation CancelTransaction($id: String!) {
     cancelTransaction(id: $id) {

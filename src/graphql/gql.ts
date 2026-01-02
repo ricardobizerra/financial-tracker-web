@@ -51,7 +51,6 @@ type Documents = {
   '\n  query FinancialAgenda($accountId: String, $daysAhead: Int!) {\n    financialAgenda(accountId: $accountId, daysAhead: $daysAhead) {\n      groups {\n        label\n        transactions {\n          id\n          description\n          amount\n          type\n          status\n          date\n          daysUntilDue\n          isOverdue\n        }\n      }\n      totalIncome\n      totalExpense\n      balance\n      pendingCount\n    }\n  }\n': typeof types.FinancialAgendaDocument;
   '\n  mutation CreateTransaction($data: CreateTransactionInput!) {\n    createTransaction(data: $data) {\n      id\n    }\n  }\n': typeof types.CreateTransactionDocument;
   '\n  mutation UpdateTransaction($data: UpdateTransactionInput!) {\n    updateTransaction(data: $data) {\n      id\n      description\n      amount\n      date\n      status\n      paymentMethod\n    }\n  }\n': typeof types.UpdateTransactionDocument;
-  '\n  mutation ConfirmTransaction($data: ConfirmTransactionInput!) {\n    confirmTransaction(data: $data) {\n      id\n      status\n      amount\n      date\n    }\n  }\n': typeof types.ConfirmTransactionDocument;
   '\n  mutation CancelTransaction($id: String!) {\n    cancelTransaction(id: $id) {\n      id\n      status\n    }\n  }\n': typeof types.CancelTransactionDocument;
   '\n  mutation RescheduleTransaction($data: RescheduleTransactionInput!) {\n    rescheduleTransaction(data: $data) {\n      id\n      date\n    }\n  }\n': typeof types.RescheduleTransactionDocument;
   '\n  mutation UpdateRecurringTransactions(\n    $data: UpdateRecurringTransactionsInput!\n  ) {\n    updateRecurringTransactions(data: $data) {\n      id\n      description\n      amount\n      paymentMethod\n    }\n  }\n': typeof types.UpdateRecurringTransactionsDocument;
@@ -138,8 +137,6 @@ const documents: Documents = {
     types.CreateTransactionDocument,
   '\n  mutation UpdateTransaction($data: UpdateTransactionInput!) {\n    updateTransaction(data: $data) {\n      id\n      description\n      amount\n      date\n      status\n      paymentMethod\n    }\n  }\n':
     types.UpdateTransactionDocument,
-  '\n  mutation ConfirmTransaction($data: ConfirmTransactionInput!) {\n    confirmTransaction(data: $data) {\n      id\n      status\n      amount\n      date\n    }\n  }\n':
-    types.ConfirmTransactionDocument,
   '\n  mutation CancelTransaction($id: String!) {\n    cancelTransaction(id: $id) {\n      id\n      status\n    }\n  }\n':
     types.CancelTransactionDocument,
   '\n  mutation RescheduleTransaction($data: RescheduleTransactionInput!) {\n    rescheduleTransaction(data: $data) {\n      id\n      date\n    }\n  }\n':
@@ -398,12 +395,6 @@ export function graphql(
 export function graphql(
   source: '\n  mutation UpdateTransaction($data: UpdateTransactionInput!) {\n    updateTransaction(data: $data) {\n      id\n      description\n      amount\n      date\n      status\n      paymentMethod\n    }\n  }\n',
 ): (typeof documents)['\n  mutation UpdateTransaction($data: UpdateTransactionInput!) {\n    updateTransaction(data: $data) {\n      id\n      description\n      amount\n      date\n      status\n      paymentMethod\n    }\n  }\n'];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: '\n  mutation ConfirmTransaction($data: ConfirmTransactionInput!) {\n    confirmTransaction(data: $data) {\n      id\n      status\n      amount\n      date\n    }\n  }\n',
-): (typeof documents)['\n  mutation ConfirmTransaction($data: ConfirmTransactionInput!) {\n    confirmTransaction(data: $data) {\n      id\n      status\n      amount\n      date\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

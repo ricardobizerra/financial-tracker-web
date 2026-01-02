@@ -27,7 +27,7 @@ import { MoreHorizontal, Check, X, Pencil } from 'lucide-react';
 import { CancelTransactionMutation } from '../graphql/transactions-mutations';
 import { TransactionsQuery } from '../graphql/transactions-queries';
 import { toast } from 'sonner';
-import { TransactionConfirmDialog } from './transaction-confirm-dialog';
+
 
 interface TransactionActionsMenuProps {
   transaction: TransactionFragmentFragment;
@@ -38,7 +38,7 @@ export function TransactionActionsMenu({
   transaction,
   onEdit,
 }: TransactionActionsMenuProps) {
-  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
   const [cancelTransaction, { loading: cancelLoading }] = useMutation(
@@ -66,8 +66,10 @@ export function TransactionActionsMenu({
     billingStatus === CardBillingStatus.Closed ||
     billingStatus === CardBillingStatus.Overdue;
 
-  const canConfirm = !isImmutable && !isBillingPayment;
-  const canCancel = !isImmutable && !isBillingPayment;
+
+  const canCancel =
+    (!isImmutable || (transaction.totalInstallments ?? 0) > 0) &&
+    !isBillingPayment;
   const canPayBilling = isBillingPayment && isBillingClosed && !isImmutable;
 
   const handleConfirmCancel = () => {
@@ -91,13 +93,7 @@ export function TransactionActionsMenu({
             </DropdownMenuItem>
           )}
 
-          {/* Transações normais: confirmar pagamento */}
-          {canConfirm && (
-            <DropdownMenuItem onClick={() => setConfirmDialogOpen(true)}>
-              <Check className="mr-2 h-4 w-4 text-green-600" />
-              Confirmar pagamento
-            </DropdownMenuItem>
-          )}
+
 
           {/* Cancelar transação (não disponível para pagamento de fatura) */}
           {canCancel && (
@@ -113,21 +109,17 @@ export function TransactionActionsMenu({
           {/* Editar - apenas para transações não-fatura */}
           {!isBillingPayment && (
             <>
-              {(canConfirm || canCancel) && <DropdownMenuSeparator />}
+              {canCancel && <DropdownMenuSeparator />}
               <DropdownMenuItem onClick={onEdit}>
                 <Pencil className="mr-2 h-4 w-4" />
-                {isImmutable ? 'Editar descrição' : 'Editar detalhes'}
+                {isCanceled ? 'Editar descrição' : 'Editar detalhes'}
               </DropdownMenuItem>
             </>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <TransactionConfirmDialog
-        transaction={transaction}
-        open={confirmDialogOpen}
-        onOpenChange={setConfirmDialogOpen}
-      />
+
 
       <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
         <AlertDialogContent>

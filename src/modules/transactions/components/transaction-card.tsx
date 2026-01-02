@@ -30,7 +30,7 @@ import { InstitutionLogo } from '@/modules/accounts/components/institution-logo'
 import { TransactionEditDescriptionDialog } from './transaction-edit-description-dialog';
 import { TransactionEditScopeDialog } from './transaction-edit-scope-dialog';
 import { BillingPaymentEditDialog } from './billing-payment-edit-dialog';
-import { TransactionConfirmDialog } from './transaction-confirm-dialog';
+
 import {
   IncomeTransactionCreateForm,
   ExpenseTransactionCreateForm,
@@ -114,7 +114,7 @@ export function TransactionCard({
   const [descriptionEditOpen, setDescriptionEditOpen] = useState(false);
   const [scopeDialogOpen, setScopeDialogOpen] = useState(false);
   const [billingPaymentEditOpen, setBillingPaymentEditOpen] = useState(false);
-  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
   const scopeResolverRef = React.useRef<
@@ -192,13 +192,9 @@ export function TransactionCard({
   const isBillingOpen = billingStatus === CardBillingStatus.Pending;
   const billingAccountId = transaction.billingPayment?.accountCard?.account?.id;
 
-  // Transação é editável:
-  // - Se não for imutável (não completada/cancelada), OU
-  // - Se pertence a uma fatura aberta (exceção: pode editar mesmo se concluída)
-  // E se pertence a fatura fechada, não pode editar completamente
-  const canEditFully =
-    (!isImmutable || (isPartOfBilling && isCardBillingOpen)) &&
-    !(isPartOfBilling && isCardBillingClosed);
+  // Transação é editável: tudo exceto CANCELED
+  // Backend faz as validações de fatura e recalculações necessárias
+  const canEditFully = !isCanceled;
 
   const handleEdit = () => {
     if (isBillingPayment) {
@@ -528,19 +524,7 @@ export function TransactionCard({
           </Button>
         )}
 
-        {/* Confirmar pagamento - não mostrar para transações de fatura aberta */}
-        {canEditFully &&
-          !hideActions.includes('confirm') &&
-          !isPartOfBilling && (
-            <Button
-              size="sm"
-              onClick={() => setConfirmDialogOpen(true)}
-              className="min-w-[100px] flex-1 bg-emerald-600 text-white hover:bg-emerald-700"
-            >
-              <Check className="h-4 w-4" />
-              Confirmar
-            </Button>
-          )}
+
 
         {/* Cancelar */}
         {canEditFully &&
@@ -715,11 +699,7 @@ export function TransactionCard({
         open={billingPaymentEditOpen}
         onOpenChange={setBillingPaymentEditOpen}
       />
-      <TransactionConfirmDialog
-        transaction={transaction}
-        open={confirmDialogOpen}
-        onOpenChange={setConfirmDialogOpen}
-      />
+
 
       {/* Dialog de cancelamento */}
       <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>

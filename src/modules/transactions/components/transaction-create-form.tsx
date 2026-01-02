@@ -580,8 +580,8 @@ export function ExpenseTransactionCreateForm({
                 data: editTransaction.sourceAccount,
               }
             : undefined,
-          isInstallment: false,
-          installmentCount: undefined,
+          isInstallment: (editTransaction.totalInstallments ?? 0) > 1,
+          installmentCount: editTransaction.totalInstallments ?? undefined,
         }
       : {
           type: {
@@ -994,20 +994,22 @@ export function ExpenseTransactionCreateForm({
               {!hiddenFields.includes('paymentMethod') &&
                 showPaymentMethod &&
                 paymentMethod}
-              {!isEditMode && (
-                <>
-                  <Separator />
-                  {isInstallmentField}
-                  {isInstallment && installmentCount}
-                  {installmentValue && (
-                    <p className="text-sm text-muted-foreground">
-                      Valor de cada parcela:{' '}
-                      <strong>
-                        {formatCurrency(Number(installmentValue))}
-                      </strong>
-                    </p>
-                  )}
-                </>
+              <Separator />
+              {isInstallmentField}
+              {isInstallment && installmentCount}
+              {installmentValue && (
+                <p className="text-sm text-muted-foreground">
+                  Valor de cada parcela:{' '}
+                  <strong>
+                    {formatCurrency(Number(installmentValue))}
+                  </strong>
+                </p>
+              )}
+              {/* Aviso para transações parceladas em edição */}
+              {isEditMode && (editTransaction?.totalInstallments ?? 0) > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  Ao alterar o valor ou número de parcelas, todas as parcelas serão recalculadas.
+                </p>
               )}
             </>
           )}

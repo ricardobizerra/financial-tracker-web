@@ -1223,12 +1223,6 @@ export enum CardType {
   Debit = 'DEBIT',
 }
 
-export type ConfirmTransactionInput = {
-  amount?: InputMaybe<Scalars['Float']['input']>;
-  date?: InputMaybe<Scalars['DateTime']['input']>;
-  id: Scalars['ID']['input'];
-};
-
 export type CreateAccountCardInfos = {
   billingCycleDay: Scalars['Float']['input'];
   billingPaymentDay: Scalars['Float']['input'];
@@ -2197,7 +2191,6 @@ export type Mutation = {
   authSignIn: SignIn;
   cancelTransaction: TransactionModel;
   closeBilling: CardBilling;
-  confirmTransaction: TransactionModel;
   createAccount: AccountModel;
   createInstallmentTransaction: TransactionModel;
   createInvestment: Investment;
@@ -2228,10 +2221,6 @@ export type MutationCancelTransactionArgs = {
 export type MutationCloseBillingArgs = {
   billingId: Scalars['String']['input'];
   closingDate?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type MutationConfirmTransactionArgs = {
-  data: ConfirmTransactionInput;
 };
 
 export type MutationCreateAccountArgs = {
@@ -5310,21 +5299,6 @@ export type UpdateTransactionMutation = {
     date: any;
     status: TransactionStatus;
     paymentMethod: PaymentMethod | null;
-  };
-};
-
-export type ConfirmTransactionMutationVariables = Exact<{
-  data: ConfirmTransactionInput;
-}>;
-
-export type ConfirmTransactionMutation = {
-  __typename?: 'Mutation';
-  confirmTransaction: {
-    __typename?: 'TransactionModel';
-    id: string;
-    status: TransactionStatus;
-    amount: any;
-    date: any;
   };
 };
 
@@ -9663,60 +9637,6 @@ export const UpdateTransactionDocument = {
 } as unknown as DocumentNode<
   UpdateTransactionMutation,
   UpdateTransactionMutationVariables
->;
-export const ConfirmTransactionDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'ConfirmTransaction' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'ConfirmTransactionInput' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'confirmTransaction' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'data' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'data' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'date' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  ConfirmTransactionMutation,
-  ConfirmTransactionMutationVariables
 >;
 export const CancelTransactionDocument = {
   kind: 'Document',
