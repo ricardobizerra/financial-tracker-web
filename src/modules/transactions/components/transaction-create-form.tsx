@@ -264,7 +264,10 @@ export function IncomeTransactionCreateForm({
       orderBy: OrdenationAccountModel.Name,
       orderDirection: OrderDirection.Asc,
       types: Object.values(AccountType).filter(
-        (t) => t !== AccountType.CreditCard,
+        (t) =>
+          t !== AccountType.CreditCard &&
+          t !== AccountType.Savings &&
+          t !== AccountType.Investment,
       ),
     },
     skip: !open,
@@ -690,6 +693,10 @@ export function ExpenseTransactionCreateForm({
       first: 50,
       orderBy: OrdenationAccountModel.Name,
       orderDirection: OrderDirection.Asc,
+      types: Object.values(AccountType).filter(
+        (t) =>
+          t !== AccountType.Savings && t !== AccountType.Investment,
+      ),
     },
     skip: !open,
     notifyOnNetworkStatusChange: true,
