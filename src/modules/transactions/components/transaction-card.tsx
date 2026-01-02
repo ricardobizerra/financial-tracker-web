@@ -24,6 +24,7 @@ import {
   X,
   CreditCard,
   Eye,
+  HelpCircle,
 } from 'lucide-react';
 import Link from 'next/link';
 import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
@@ -63,6 +64,9 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Separator } from '@/components/ui/separator';
 import { BillingQuery } from '@/modules/accounts/graphql/accounts-queries';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { SimpleTooltip } from '@/components/simple-tooltip';
 
 interface TransactionCardProps {
   transaction: TransactionFragmentFragment;
@@ -70,6 +74,7 @@ interface TransactionCardProps {
   hideActions?: ('confirm' | 'edit' | 'cancel')[];
   compact?: boolean;
   hideWarnings?: boolean;
+  showType?: boolean;
 }
 
 // Formatar data com mês por extenso e ano só se não for o ano atual
@@ -103,12 +108,64 @@ function formatDateExtended(
   }
 }
 
+// Formatar período da fatura (mês/ano)
+function formatBillingPeriod(periodStartStr: string): string {
+  const date = new Date(periodStartStr);
+  const month = date
+    .toLocaleDateString('pt-BR', { month: 'short' })
+    .replace('.', '');
+  const year = date.getFullYear();
+  return `${month}/${year}`;
+}
+
+// Traduzir status da fatura
+function getBillingStatusInfo(status: CardBillingStatus): {
+  label: string;
+  className: string;
+} {
+  switch (status) {
+    case CardBillingStatus.Pending:
+      return {
+        label: 'Aberta',
+        className:
+          'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+      };
+    case CardBillingStatus.Closed:
+      return {
+        label: 'Fechada',
+        className:
+          'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+      };
+    case CardBillingStatus.Overdue:
+      return {
+        label: 'Vencida',
+        className:
+          'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+      };
+    case CardBillingStatus.Paid:
+      return {
+        label: 'Paga',
+        className:
+          'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+      };
+    case CardBillingStatus.Completed:
+      return {
+        label: 'Concluída',
+        className:
+          'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400',
+      };
+    default:
+      return { label: status, className: 'bg-gray-100 text-gray-700' };
+  }
+}
+
 export function TransactionCard({
   transaction,
   hideAccount = false,
   hideActions = [],
   compact = false,
   hideWarnings = false,
+  showType = true,
 }: TransactionCardProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [descriptionEditOpen, setDescriptionEditOpen] = useState(false);
@@ -177,6 +234,11 @@ export function TransactionCard({
 
   // Transação pertence a uma fatura de cartão (não é a transação de pagamento)
   const isPartOfBilling = !!transaction.cardBilling;
+  // Verifica se é uma despesa que está incluída em uma fatura ou tem parcelas
+  const isExpenseForBilling =
+    isExpense &&
+    (isPartOfBilling || (transaction.totalInstallments ?? 0) > 0) &&
+    !hideWarnings;
   const cardBillingStatus = transaction.cardBilling?.status;
   const isCardBillingOpen = cardBillingStatus === CardBillingStatus.Pending;
   const isCardBillingClosed =
@@ -305,7 +367,7 @@ export function TransactionCard({
       const sourceInst = transaction.sourceAccount?.institution;
       const destInst = transaction.destinyAccount?.institution;
       return (
-        <div className="flex items-center gap-1 text-sm font-semibold text-muted-foreground">
+        <div className="flex items-center gap-1 text-sm font-medium text-muted-foreground">
           {sourceInst && (
             <>
               <InstitutionLogo
@@ -524,8 +586,6 @@ export function TransactionCard({
           </Button>
         )}
 
-
-
         {/* Cancelar */}
         {canEditFully &&
           !hideActions.includes('cancel') &&
@@ -576,56 +636,88 @@ export function TransactionCard({
             'border-dashed',
         )}
       >
-        {transaction.cardBilling && !hideWarnings && (
-          <div className="border-b border-dashed border-border bg-muted px-4 py-1 text-sm">
-            Este pagamento está incluído na fatura{' '}
-            <span className="font-semibold">
-              {transaction.cardBilling.paymentTransaction?.description}
-            </span>
-          </div>
-        )}
-
-        {(transaction.totalInstallments ?? 0) > 0 && !hideWarnings && (
-          <div className="border-b border-dashed border-border bg-muted px-4 py-1 text-sm">
-            Este pagamento está incluído nas{' '}
-            <span className="font-semibold">
-              {transaction.totalInstallments} próximas faturas
-            </span>
-            , a partir da data da operação
-          </div>
+        {/* Ícone do tipo */}
+        {showType && (
+          <SimpleTooltip
+            hidden={!isExpenseForBilling}
+            label={
+              transaction.cardBilling ? (
+                <>
+                  Este pagamento está incluído na fatura de{' '}
+                  <span className="font-semibold">
+                    {format(
+                      transaction.cardBilling?.periodEnd,
+                      "MMMM 'de' yyyy",
+                      {
+                        locale: ptBR,
+                      },
+                    )}
+                  </span>{' '}
+                  do cartão{' '}
+                  <span className="font-semibold">
+                    {transaction.sourceAccount?.name}
+                  </span>
+                </>
+              ) : (
+                <>
+                  Este pagamento está incluído{' '}
+                  {(transaction.totalInstallments ?? 0) > 0 ? 'nas' : 'na'}{' '}
+                  <span className="font-semibold">
+                    {transaction.totalInstallments}{' '}
+                    {(transaction.totalInstallments ?? 0) > 0
+                      ? 'próximas faturas'
+                      : 'próxima fatura'}
+                  </span>
+                  , a partir da data da operação
+                </>
+              )
+            }
+            side="top"
+          >
+            <div
+              className={cn(
+                'flex shrink-0 cursor-default items-center justify-center gap-1 py-1 text-xs font-medium',
+                isIncome &&
+                  'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
+                isExpense &&
+                  'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
+                isExpenseForBilling &&
+                  'text-muted-foreground dark:text-muted-foreground',
+                isBetweenAccounts &&
+                  'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
+              )}
+            >
+              {isIncome && (
+                <>
+                  <ArrowUp className="h-4 w-4" />
+                  <span>Entrada</span>
+                </>
+              )}
+              {isExpense && (
+                <>
+                  {isExpenseForBilling ? (
+                    <HelpCircle className="h-4 w-4" />
+                  ) : (
+                    <ArrowDown className="h-4 w-4" />
+                  )}
+                  <span>
+                    {isExpenseForBilling ? 'Despesa para fatura' : 'Despesa'}
+                  </span>
+                </>
+              )}
+              {isBetweenAccounts && (
+                <>
+                  <ArrowLeftRight className="h-4 w-4" />
+                  <span>Transferência</span>
+                </>
+              )}
+            </div>
+          </SimpleTooltip>
         )}
 
         <CardContent className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:gap-3">
           {/* Mobile: ícone + valor na linha superior */}
           <div className="flex items-center justify-between sm:contents">
-            {/* Ícone do tipo */}
-            <div
-              className={cn(
-                'flex h-8 min-w-8 max-w-8 shrink-0 items-center justify-center rounded-full',
-                isIncome && 'bg-emerald-100 dark:bg-emerald-900/30',
-                isExpense && 'bg-red-100 dark:bg-red-900/30',
-                isBetweenAccounts && 'bg-blue-100 dark:bg-blue-900/30',
-              )}
-            >
-              {isIncome && (
-                <ArrowUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-              )}
-              {isExpense && (
-                <ArrowDown
-                  className={cn(
-                    'h-4 w-4 text-red-600 dark:text-red-400',
-                    (transaction.cardBilling ||
-                      (transaction.totalInstallments ?? 0) > 0) &&
-                      !hideWarnings &&
-                      'text-muted-foreground dark:text-muted-foreground',
-                  )}
-                />
-              )}
-              {isBetweenAccounts && (
-                <ArrowLeftRight className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-              )}
-            </div>
-
             {/* Valor - aparece à direita em mobile, no final em desktop */}
             <div
               className={cn(
@@ -646,9 +738,33 @@ export function TransactionCard({
 
           {/* Descrição, data e conta - ocupa toda a largura em mobile */}
           <div className="flex min-w-0 flex-1 flex-col">
+            <span className="text-xs text-muted-foreground">
+              {formatDateExtended(
+                transaction.installmentStartDate ?? transaction.date,
+                transaction.installmentStartDate ? transaction.date : null,
+              )}
+            </span>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm font-medium sm:text-base">
-                {transaction.description || 'Sem descrição'}
+              <span className="text-sm font-semibold sm:text-base">
+                {isBillingPayment ? (
+                  <>
+                    <span className="text-muted-foreground">Fatura </span>
+                    <span className="capitalize">
+                      {format(transaction.billingPayment?.periodEnd, 'MMMM', {
+                        locale: ptBR,
+                      })}
+                    </span>{' '}
+                    <span>
+                      {format(
+                        transaction.billingPayment?.periodEnd,
+                        "'de' yyyy",
+                        { locale: ptBR },
+                      )}
+                    </span>
+                  </>
+                ) : (
+                  transaction.description || 'Sem descrição'
+                )}
               </span>
               {transaction.installments &&
                 (transaction.totalInstallments ?? 0) > 0 &&
@@ -659,27 +775,12 @@ export function TransactionCard({
                   </span>
                 )}
             </div>
-            <div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground sm:gap-2">
-              <span>
-                {formatDateExtended(
-                  transaction.installmentStartDate ?? transaction.date,
-                  transaction.installmentStartDate ? transaction.date : null,
-                )}
-              </span>
-              {!hideAccount && (
-                <>
-                  <span>•</span>
-                  {getAccountDisplay()}
-                </>
-              )}
-            </div>
+            {!hideAccount && getAccountDisplay()}
           </div>
         </CardContent>
 
         {/* Footer com botões de ação */}
-        <div className="border-t bg-muted/30 px-3 py-2">
-          {renderActionButtons()}
-        </div>
+        <div className="bg-muted/30 px-3 py-2">{renderActionButtons()}</div>
       </Card>
 
       {/* Modais de edição */}
@@ -699,7 +800,6 @@ export function TransactionCard({
         open={billingPaymentEditOpen}
         onOpenChange={setBillingPaymentEditOpen}
       />
-
 
       {/* Dialog de cancelamento */}
       <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>

@@ -208,6 +208,7 @@ export function TransactionsCardView({
                     hideAccount={hideAccount}
                     hideActions={hideActions}
                     compact={compact}
+                    showType={true}
                   />
                 ))}
               </div>

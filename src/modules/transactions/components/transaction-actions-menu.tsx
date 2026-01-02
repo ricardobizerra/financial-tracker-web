@@ -28,7 +28,6 @@ import { CancelTransactionMutation } from '../graphql/transactions-mutations';
 import { TransactionsQuery } from '../graphql/transactions-queries';
 import { toast } from 'sonner';
 
-
 interface TransactionActionsMenuProps {
   transaction: TransactionFragmentFragment;
   onEdit: () => void;
@@ -38,7 +37,6 @@ export function TransactionActionsMenu({
   transaction,
   onEdit,
 }: TransactionActionsMenuProps) {
-
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
   const [cancelTransaction, { loading: cancelLoading }] = useMutation(
@@ -66,7 +64,6 @@ export function TransactionActionsMenu({
     billingStatus === CardBillingStatus.Closed ||
     billingStatus === CardBillingStatus.Overdue;
 
-
   const canCancel =
     (!isImmutable || (transaction.totalInstallments ?? 0) > 0) &&
     !isBillingPayment;
@@ -93,8 +90,6 @@ export function TransactionActionsMenu({
             </DropdownMenuItem>
           )}
 
-
-
           {/* Cancelar transação (não disponível para pagamento de fatura) */}
           {canCancel && (
             <DropdownMenuItem
@@ -118,8 +113,6 @@ export function TransactionActionsMenu({
           )}
         </DropdownMenuContent>
       </DropdownMenu>
-
-
 
       <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
         <AlertDialogContent>

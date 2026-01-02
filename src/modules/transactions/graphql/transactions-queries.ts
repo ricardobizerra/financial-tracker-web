@@ -32,7 +32,12 @@ export const TransactionsFragment = graphql(`
     billingPayment {
       id
       status
+      periodStart
+      periodEnd
+      paymentDate
+      limit
       accountCard {
+        lastFourDigits
         account {
           id
           name
@@ -47,6 +52,7 @@ export const TransactionsFragment = graphql(`
     cardBilling {
       id
       status
+      periodEnd
       paymentTransaction {
         description
       }

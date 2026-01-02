@@ -5406,8 +5406,13 @@ export type TransactionFragmentFragment = {
     __typename?: 'CardBilling';
     id: string;
     status: CardBillingStatus;
+    periodStart: any;
+    periodEnd: any | null;
+    paymentDate: any | null;
+    limit: any;
     accountCard: {
       __typename?: 'AccountCard';
+      lastFourDigits: string | null;
       account: {
         __typename?: 'Account';
         id: string;
@@ -5425,6 +5430,7 @@ export type TransactionFragmentFragment = {
     __typename?: 'CardBilling';
     id: string;
     status: CardBillingStatus;
+    periodEnd: any | null;
     paymentTransaction: {
       __typename?: 'Transaction';
       description: string;
@@ -5508,8 +5514,13 @@ export type TransactionsQuery = {
           __typename?: 'CardBilling';
           id: string;
           status: CardBillingStatus;
+          periodStart: any;
+          periodEnd: any | null;
+          paymentDate: any | null;
+          limit: any;
           accountCard: {
             __typename?: 'AccountCard';
+            lastFourDigits: string | null;
             account: {
               __typename?: 'Account';
               id: string;
@@ -5527,6 +5538,7 @@ export type TransactionsQuery = {
           __typename?: 'CardBilling';
           id: string;
           status: CardBillingStatus;
+          periodEnd: any | null;
           paymentTransaction: {
             __typename?: 'Transaction';
             description: string;
@@ -5641,8 +5653,13 @@ export type TransactionsGroupedByPeriodQuery = {
         __typename?: 'CardBilling';
         id: string;
         status: CardBillingStatus;
+        periodStart: any;
+        periodEnd: any | null;
+        paymentDate: any | null;
+        limit: any;
         accountCard: {
           __typename?: 'AccountCard';
+          lastFourDigits: string | null;
           account: {
             __typename?: 'Account';
             id: string;
@@ -5660,6 +5677,7 @@ export type TransactionsGroupedByPeriodQuery = {
         __typename?: 'CardBilling';
         id: string;
         status: CardBillingStatus;
+        periodEnd: any | null;
         paymentTransaction: {
           __typename?: 'Transaction';
           description: string;
@@ -5728,8 +5746,13 @@ export type BillingTransactionsQuery = {
       __typename?: 'CardBilling';
       id: string;
       status: CardBillingStatus;
+      periodStart: any;
+      periodEnd: any | null;
+      paymentDate: any | null;
+      limit: any;
       accountCard: {
         __typename?: 'AccountCard';
+        lastFourDigits: string | null;
         account: {
           __typename?: 'Account';
           id: string;
@@ -5747,6 +5770,7 @@ export type BillingTransactionsQuery = {
       __typename?: 'CardBilling';
       id: string;
       status: CardBillingStatus;
+      periodEnd: any | null;
       paymentTransaction: {
         __typename?: 'Transaction';
         description: string;
@@ -6113,12 +6137,20 @@ export const TransactionFragmentFragmentDoc = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'periodStart' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'periodEnd' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'paymentDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'accountCard' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lastFourDigits' },
+                      },
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'account' },
@@ -6171,6 +6203,7 @@ export const TransactionFragmentFragmentDoc = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'periodEnd' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'paymentTransaction' },
@@ -10239,12 +10272,20 @@ export const TransactionsDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'periodStart' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'periodEnd' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'paymentDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'accountCard' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lastFourDigits' },
+                      },
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'account' },
@@ -10297,6 +10338,7 @@ export const TransactionsDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'periodEnd' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'paymentTransaction' },
@@ -10812,12 +10854,20 @@ export const TransactionsGroupedByPeriodDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'periodStart' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'periodEnd' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'paymentDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'accountCard' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lastFourDigits' },
+                      },
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'account' },
@@ -10870,6 +10920,7 @@ export const TransactionsGroupedByPeriodDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'periodEnd' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'paymentTransaction' },
@@ -11056,12 +11107,20 @@ export const BillingTransactionsDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'periodStart' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'periodEnd' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'paymentDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'accountCard' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lastFourDigits' },
+                      },
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'account' },
@@ -11114,6 +11173,7 @@ export const BillingTransactionsDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'periodEnd' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'paymentTransaction' },

@@ -694,8 +694,7 @@ export function ExpenseTransactionCreateForm({
       orderBy: OrdenationAccountModel.Name,
       orderDirection: OrderDirection.Asc,
       types: Object.values(AccountType).filter(
-        (t) =>
-          t !== AccountType.Savings && t !== AccountType.Investment,
+        (t) => t !== AccountType.Savings && t !== AccountType.Investment,
       ),
     },
     skip: !open,
@@ -1007,15 +1006,14 @@ export function ExpenseTransactionCreateForm({
               {installmentValue && (
                 <p className="text-sm text-muted-foreground">
                   Valor de cada parcela:{' '}
-                  <strong>
-                    {formatCurrency(Number(installmentValue))}
-                  </strong>
+                  <strong>{formatCurrency(Number(installmentValue))}</strong>
                 </p>
               )}
               {/* Aviso para transações parceladas em edição */}
               {isEditMode && (editTransaction?.totalInstallments ?? 0) > 0 && (
                 <p className="text-xs text-muted-foreground">
-                  Ao alterar o valor ou número de parcelas, todas as parcelas serão recalculadas.
+                  Ao alterar o valor ou número de parcelas, todas as parcelas
+                  serão recalculadas.
                 </p>
               )}
             </>
