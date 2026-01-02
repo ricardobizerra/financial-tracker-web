@@ -14,10 +14,7 @@ import {
 import { TransactionsCardList } from '@/modules/transactions/components/transactions-card-list';
 import { useMutation, useQuery } from '@apollo/client';
 import { AccountsQuery, BillingQuery } from '../../graphql/accounts-queries';
-import {
-  CloseBillingMutation,
-  PayBillingMutation,
-} from '../../graphql/accounts-mutations';
+import { CloseBillingMutation } from '../../graphql/accounts-mutations';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -56,159 +53,6 @@ const closeBillingSchema = z.object({
   closingDate: formFields.date.describe('Data de fechamento'),
 });
 
-const payBillingSchema = z.object({
-  sourceAccount: formFields.select.describe(
-    'Conta de origem * // Selecione a conta para pagamento',
-  ),
-  date: formFields.date.describe('Data do pagamento * // Insira a data'),
-  description: formFields.text.describe(
-    'Descrição // Insira a descrição do pagamento',
-  ),
-});
-
-interface PayBillingDialogProps {
-  billing: NonNullable<NonNullable<BillingQueryType['billing']>['billing']>;
-  isProcessing: boolean;
-  onSubmit: (data: z.infer<typeof payBillingSchema>) => Promise<void>;
-}
-
-function PayBillingDialog({
-  billing,
-  isProcessing,
-  onSubmit,
-}: PayBillingDialogProps) {
-  const [open, setOpen] = useState(false);
-
-  const accountsQueryOptions = useQuery(AccountsQuery, {
-    variables: {
-      first: 50,
-      orderBy: OrdenationAccountModel.Name,
-      orderDirection: OrderDirection.Asc,
-    },
-    skip: !open,
-    notifyOnNetworkStatusChange: true,
-  });
-
-  const accountsOptions = useMemo(
-    () =>
-      accountsQueryOptions.data?.accounts.edges?.map((edge) => ({
-        value: edge.node.id,
-        label: edge.node.name,
-        data: {
-          ...edge.node,
-        },
-      })) || [],
-    [accountsQueryOptions.data?.accounts.edges],
-  );
-
-  const accountsPageInfo = accountsQueryOptions.data?.accounts.pageInfo;
-
-  const paginate = useCallback(() => {
-    accountsQueryOptions.fetchMore({
-      variables: {
-        after: accountsPageInfo?.endCursor,
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
-
-        return {
-          ...prev,
-          accounts: {
-            ...prev.accounts,
-            ...fetchMoreResult.accounts,
-            edges: [
-              ...(prev.accounts.edges || []),
-              ...(fetchMoreResult.accounts.edges || []),
-            ],
-          },
-        };
-      },
-    });
-  }, [accountsQueryOptions, accountsPageInfo]);
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          size="sm"
-          disabled={isProcessing}
-          aria-label="Pagar fatura"
-          className="flex-1"
-        >
-          {isProcessing ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              <span className="truncate">Processando...</span>
-            </>
-          ) : (
-            <span className="truncate">Pagar Fatura</span>
-          )}
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Pagamento da Fatura</DialogTitle>
-        </DialogHeader>
-        <div className="py-4">
-          <TsForm
-            schema={payBillingSchema}
-            onSubmit={async (data) => {
-              await onSubmit(data);
-              setOpen(false);
-            }}
-            defaultValues={{
-              date: billing.paymentTransaction?.date
-                ? new Date(billing.paymentTransaction.date)
-                : billing.paymentDate
-                  ? new Date(billing.paymentDate)
-                  : new Date(),
-              description:
-                billing.paymentTransaction?.description ||
-                `Pagamento fatura ${formatDate(billing.periodStart)} - ${formatDate(billing.periodEnd)}`,
-            }}
-            props={{
-              sourceAccount: {
-                options: accountsOptions,
-                renderLabel: (option) => (
-                  <div className="flex items-center gap-3 py-1.5">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
-                      <InstitutionLogo
-                        logoUrl={option.data.institution.logoUrl}
-                        name={option.data.institution.name}
-                        size="sm"
-                      />
-                    </div>
-                    <div className="flex min-w-0 flex-1 flex-col items-start">
-                      <p className="truncate text-sm font-medium">
-                        {option.label}
-                      </p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {option.data?.institution?.name}
-                      </p>
-                    </div>
-                  </div>
-                ),
-                fetchMore: paginate,
-                networkStatus: accountsQueryOptions.networkStatus,
-                hasMore: accountsPageInfo?.hasNextPage,
-              },
-            }}
-            renderAfter={() => (
-              <Button
-                type="submit"
-                className="mt-4 w-full"
-                disabled={isProcessing}
-                loading={isProcessing}
-              >
-                Pagar Fatura
-              </Button>
-            )}
-          />
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 function getTextColorForBackground(hexColor: string | null): string {
   if (!hexColor) return '#000000';
@@ -244,7 +88,6 @@ export function AccountCreditCardTracking({
   });
 
   const [closeBillingMutation] = useMutation(CloseBillingMutation);
-  const [payBillingMutation] = useMutation(PayBillingMutation);
 
   const billing = data?.billing?.billing;
   const nextBillingId = data?.billing?.nextBillingId;
@@ -297,31 +140,7 @@ export function AccountCreditCardTracking({
     }
   };
 
-  const handlePayBilling = async (data: z.infer<typeof payBillingSchema>) => {
-    if (!billing) return;
 
-    try {
-      setIsProcessing(true);
-      await payBillingMutation({
-        variables: {
-          billingId: billing.id,
-          sourceAccountId: data.sourceAccount.value,
-          date: data.date,
-          description: data.description,
-        },
-      });
-      await refetch();
-      toast.success('Sucesso', {
-        description: 'Pagamento realizado com sucesso',
-      });
-    } catch (error) {
-      toast.error('Erro', {
-        description: 'Não foi possível realizar o pagamento. Tente novamente.',
-      });
-    } finally {
-      setIsProcessing(false);
-    }
-  };
 
   const loadBilling = async (billingId: string) => {
     await refetch({ accountId: account.id, id: billingId });
@@ -758,13 +577,7 @@ export function AccountCreditCardTracking({
                 </Dialog>
               </>
             )}
-            {(isClosed || isOverdue) && (
-              <PayBillingDialog
-                billing={billing}
-                isProcessing={isProcessing}
-                onSubmit={handlePayBilling}
-              />
-            )}
+
           </div>
         </CardContent>
       </Card>

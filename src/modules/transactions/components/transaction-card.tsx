@@ -30,7 +30,7 @@ import Link from 'next/link';
 import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
 import { TransactionEditDescriptionDialog } from './transaction-edit-description-dialog';
 import { TransactionEditScopeDialog } from './transaction-edit-scope-dialog';
-import { BillingPaymentEditDialog } from './billing-payment-edit-dialog';
+
 
 import {
   IncomeTransactionCreateForm,
@@ -170,7 +170,7 @@ export function TransactionCard({
   const [editOpen, setEditOpen] = useState(false);
   const [descriptionEditOpen, setDescriptionEditOpen] = useState(false);
   const [scopeDialogOpen, setScopeDialogOpen] = useState(false);
-  const [billingPaymentEditOpen, setBillingPaymentEditOpen] = useState(false);
+
 
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
@@ -259,10 +259,8 @@ export function TransactionCard({
   const canEditFully = !isCanceled;
 
   const handleEdit = () => {
-    if (isBillingPayment) {
-      setBillingPaymentEditOpen(true);
-    } else if (!canEditFully) {
-      // Transação imutável ou fatura fechada: só pode editar descrição
+    if (!canEditFully) {
+      // Transação cancelada: só pode editar descrição
       setDescriptionEditOpen(true);
     } else {
       setEditOpen(true);
@@ -497,43 +495,7 @@ export function TransactionCard({
   const renderActionButtons = () => {
     // Transação de pagamento de fatura
     if (isBillingPayment) {
-      const canPayBilling = isBillingClosed && !isImmutable;
-      const tooltipMessage = isBillingOpen
-        ? 'A fatura ainda está aberta'
-        : isImmutable
-          ? 'Fatura já paga'
-          : '';
-
-      // Se pode pagar, botão sem tooltip
-      if (canPayBilling) {
-        return (
-          <div className="flex w-full flex-wrap items-center gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              asChild
-              className="min-w-[120px] flex-1"
-            >
-              <Link
-                href={`/accounts/${billingAccountId}?billingId=${transaction.billingPayment?.id}`}
-              >
-                <Eye className="h-4 w-4" />
-                Ver fatura
-              </Link>
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => setBillingPaymentEditOpen(true)}
-              className="min-w-[120px] flex-1 bg-emerald-600 text-white hover:bg-emerald-700"
-            >
-              <CreditCard className="h-4 w-4" />
-              Pagar fatura
-            </Button>
-          </div>
-        );
-      }
-
-      // Se não pode pagar, botão com tooltip explicando
+      // Botão para ver detalhes da fatura
       return (
         <div className="flex w-full flex-wrap items-center gap-2">
           <Button
@@ -549,23 +511,6 @@ export function TransactionCard({
               Ver fatura
             </Link>
           </Button>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span className="min-w-[120px] flex-1">
-                <Button
-                  size="sm"
-                  disabled
-                  className="w-full bg-emerald-600 text-white hover:bg-emerald-700"
-                >
-                  <CreditCard className="h-4 w-4" />
-                  Pagar fatura
-                </Button>
-              </span>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{tooltipMessage}</p>
-            </TooltipContent>
-          </Tooltip>
         </div>
       );
     }
@@ -795,11 +740,7 @@ export function TransactionCard({
         onOpenChange={handleScopeDialogClose}
         onSelectScope={handleScopeSelected}
       />
-      <BillingPaymentEditDialog
-        transaction={transaction}
-        open={billingPaymentEditOpen}
-        onOpenChange={setBillingPaymentEditOpen}
-      />
+
 
       {/* Dialog de cancelamento */}
       <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>

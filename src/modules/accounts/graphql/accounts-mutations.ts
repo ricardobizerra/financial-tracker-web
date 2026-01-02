@@ -25,38 +25,6 @@ export const CloseBillingMutation = graphql(`
   }
 `);
 
-export const PayBillingMutation = graphql(`
-  mutation PayBilling(
-    $billingId: String!
-    $sourceAccountId: ID!
-    $date: DateTime
-    $description: String
-  ) {
-    payBilling(
-      billingId: $billingId
-      sourceAccountId: $sourceAccountId
-      date: $date
-      description: $description
-    ) {
-      id
-      description
-      amount
-      date
-      status
-      type
-      paymentMethod
-      paymentEnabled
-      paymentLimit
-      sourceAccountId
-      destinyAccountId
-      cardBillingId
-      userId
-      createdAt
-      updatedAt
-    }
-  }
-`);
-
 export const UpdateAccountCardMutation = graphql(`
   mutation UpdateAccountCard(
     $cardId: ID!

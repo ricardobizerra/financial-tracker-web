@@ -2201,7 +2201,6 @@ export type Mutation = {
   deleteRecurringTransaction: RecurringTransactionModel;
   endRecurringTransaction: RecurringTransactionModel;
   pauseRecurringTransaction: RecurringTransactionModel;
-  payBilling: Transaction;
   rescheduleTransaction: TransactionModel;
   resumeRecurringTransaction: RecurringTransactionModel;
   updateAccountCard: AccountCard;
@@ -2262,13 +2261,6 @@ export type MutationEndRecurringTransactionArgs = {
 
 export type MutationPauseRecurringTransactionArgs = {
   id: Scalars['String']['input'];
-};
-
-export type MutationPayBillingArgs = {
-  billingId: Scalars['String']['input'];
-  date?: InputMaybe<Scalars['DateTime']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  sourceAccountId: Scalars['ID']['input'];
 };
 
 export type MutationRescheduleTransactionArgs = {
@@ -4451,35 +4443,6 @@ export type CloseBillingMutation = {
   };
 };
 
-export type PayBillingMutationVariables = Exact<{
-  billingId: Scalars['String']['input'];
-  sourceAccountId: Scalars['ID']['input'];
-  date?: InputMaybe<Scalars['DateTime']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-export type PayBillingMutation = {
-  __typename?: 'Mutation';
-  payBilling: {
-    __typename?: 'Transaction';
-    id: string;
-    description: string;
-    amount: any;
-    date: any;
-    status: TransactionStatus;
-    type: TransactionType;
-    paymentMethod: PaymentMethod | null;
-    paymentEnabled: boolean;
-    paymentLimit: any | null;
-    sourceAccountId: string | null;
-    destinyAccountId: string | null;
-    cardBillingId: string | null;
-    userId: string;
-    createdAt: any;
-    updatedAt: any;
-  };
-};
-
 export type UpdateAccountCardMutationVariables = Exact<{
   cardId: Scalars['ID']['input'];
   billingCycleDay?: InputMaybe<Scalars['Float']['input']>;
@@ -6398,140 +6361,6 @@ export const CloseBillingDocument = {
   CloseBillingMutation,
   CloseBillingMutationVariables
 >;
-export const PayBillingDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'PayBilling' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'billingId' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'sourceAccountId' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'date' } },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'DateTime' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'description' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'payBilling' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'billingId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'billingId' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'sourceAccountId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'sourceAccountId' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'date' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'date' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'description' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'description' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'date' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'paymentMethod' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'paymentEnabled' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'paymentLimit' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'sourceAccountId' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'destinyAccountId' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'cardBillingId' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'userId' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<PayBillingMutation, PayBillingMutationVariables>;
 export const UpdateAccountCardDocument = {
   kind: 'Document',
   definitions: [
