@@ -38,6 +38,7 @@ import {
   AccountType,
   RecurrenceFrequency,
   RecurrenceType,
+  CardType,
 } from '@/graphql/graphql';
 import {
   PropsWithChildren,
@@ -695,6 +696,7 @@ export function ExpenseTransactionCreateForm({
   }, []);
 
   const isCreditCardAccount = selectedAccount?.type === AccountType.CreditCard;
+  const isDebitCard = selectedAccount?.accountCard?.type === CardType.Debit;
 
   // Step indicator for form stepper
   const renderStepIndicator = () => {
@@ -810,6 +812,7 @@ export function ExpenseTransactionCreateForm({
             <ExpenseTransactionFormDetails
               sourceAccountId={selectedAccount.id}
               isCreditCardAccount={isCreditCardAccount}
+              isDebitCard={isDebitCard}
               editTransaction={editTransaction}
               hiddenFields={hiddenFields}
               minDate={minDate}
@@ -837,6 +840,7 @@ export function ExpenseTransactionCreateForm({
 function ExpenseTransactionFormDetails({
   sourceAccountId,
   isCreditCardAccount,
+  isDebitCard,
   editTransaction,
   hiddenFields = [],
   minDate,
@@ -848,6 +852,7 @@ function ExpenseTransactionFormDetails({
 }: {
   sourceAccountId: string;
   isCreditCardAccount?: boolean;
+  isDebitCard?: boolean;
   editTransaction?: TransactionFragmentFragment;
   hiddenFields?: Array<keyof typeof expenseSchema.shape>;
   minDate?: Date;
@@ -867,12 +872,17 @@ function ExpenseTransactionFormDetails({
   const [updateTransaction, { loading: updateLoading }] = useMutation(
     UpdateTransactionMutation,
   );
+  const [createRecurringTransaction, { loading: recurringLoading }] =
+    useMutation(CreateRecurringTransactionMutation);
   const loading = isEditMode
     ? updateLoading
-    : createLoading || installmentLoading;
+    : createLoading || installmentLoading || recurringLoading;
 
   // Internal step state for installment configuration
   const [showInstallmentStep, setShowInstallmentStep] = useState(false);
+  // Internal step state for recurrence configuration
+  const [showRecurrenceStep, setShowRecurrenceStep] = useState(false);
+  const [recurrenceFrequency, setRecurrenceFrequency] = useState<'MONTHLY' | 'YEARLY'>('MONTHLY');
 
   const form = useForm<z.infer<typeof formStepperExpenseSchema>>({
     resolver: zodResolver(formStepperExpenseSchema),
@@ -894,12 +904,17 @@ function ExpenseTransactionFormDetails({
       : {
           isCompleted: false,
           isInstallment: false,
-          // For credit card accounts, auto-set payment method to CREDIT_CARD
+          // For credit/debit card accounts, auto-set payment method based on card type
           paymentMethod: isCreditCardAccount
-            ? {
-                value: PaymentMethod.CreditCard,
-                label: paymentMethodLabel[PaymentMethod.CreditCard],
-              }
+            ? isDebitCard
+              ? {
+                  value: PaymentMethod.DebitCard,
+                  label: paymentMethodLabel[PaymentMethod.DebitCard],
+                }
+              : {
+                  value: PaymentMethod.CreditCard,
+                  label: paymentMethodLabel[PaymentMethod.CreditCard],
+                }
             : presetPaymentMethod
               ? {
                   value: presetPaymentMethod,
@@ -1066,6 +1081,41 @@ function ExpenseTransactionFormDetails({
                 });
               },
             });
+          } else if (showRecurrenceStep) {
+            // If in recurrence step, create recurring transaction
+            await createRecurringTransaction({
+              variables: {
+                data: {
+                  description: data.description,
+                  estimatedAmount: data.amount,
+                  frequency: recurrenceFrequency as RecurrenceFrequency,
+                  startDate: data.date,
+                  dayOfMonth: data.date.getDate(),
+                  sourceAccountId: sourceAccountId,
+                  type: TransactionType.Expense,
+                  paymentMethod: data.paymentMethod?.value as PaymentMethod,
+                },
+              },
+              refetchQueries: [
+                TransactionsQuery,
+                TransactionsGroupedByPeriodQuery,
+                TransactionsSummaryQuery,
+                BalanceForecastQuery,
+                TransactionsCalendarQuery,
+                FinancialAgendaQuery,
+              ],
+              onCompleted: () => {
+                toast.success('Despesa recorrente criada!', {
+                  description: `Será repetida ${recurrenceFrequency === 'MONTHLY' ? 'mensalmente' : 'anualmente'}.`,
+                });
+                onClose();
+              },
+              onError: (error) => {
+                toast.error('Erro ao criar despesa recorrente', {
+                  description: error.message,
+                });
+              },
+            });
           } else {
             await createTransaction({
               variables: {
@@ -1118,6 +1168,16 @@ function ExpenseTransactionFormDetails({
               <ArrowLeft className="h-4 w-4" />
               Voltar
             </Button>
+          ) : showRecurrenceStep ? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowRecurrenceStep(false)}
+              className="gap-1"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Voltar
+            </Button>
           ) : onBack ? (
             <Button
               type="button"
@@ -1134,15 +1194,42 @@ function ExpenseTransactionFormDetails({
 
           {/* Action buttons */}
           <div className="flex gap-2">
-            {/* Parcelar button - only in step 2 (not installment step) and not in edit mode */}
-            {!showInstallmentStep && !isEditMode && (
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setShowInstallmentStep(true)}
-              >
-                Parcelar
-              </Button>
+            {/* Parcelar and Repetir buttons - only in step 2 (not installment/recurrence step) and not in edit mode */}
+            {!showInstallmentStep && !showRecurrenceStep && !isEditMode && (
+              <>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={async () => {
+                    // Validate form before navigating to installment step
+                    const fieldsToValidate = showPaymentMethod
+                      ? (['date', 'amount', 'description', 'paymentMethod'] as const)
+                      : (['date', 'amount', 'description'] as const);
+                    const isValid = await form.trigger(fieldsToValidate);
+                    if (isValid) {
+                      setShowInstallmentStep(true);
+                    }
+                  }}
+                >
+                  Parcelar
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={async () => {
+                    // Validate form before navigating to recurrence step
+                    const fieldsToValidate = showPaymentMethod
+                      ? (['date', 'amount', 'description', 'paymentMethod'] as const)
+                      : (['date', 'amount', 'description'] as const);
+                    const isValid = await form.trigger(fieldsToValidate);
+                    if (isValid) {
+                      setShowRecurrenceStep(true);
+                    }
+                  }}
+                >
+                  Repetir
+                </Button>
+              </>
             )}
             <Button type="submit" disabled={loading} loading={loading}>
               Salvar
@@ -1161,7 +1248,7 @@ function ExpenseTransactionFormDetails({
       }) => (
         <>
           {/* Step 2: Transaction details */}
-          {!showInstallmentStep && (
+          {!showInstallmentStep && !showRecurrenceStep && (
             <>
               {!hiddenFields.includes('date') && date}
               {showIsCompleted && isCompleted}
@@ -1196,6 +1283,59 @@ function ExpenseTransactionFormDetails({
                     </p>
                   </div>
                 )}
+              </div>
+            </>
+          )}
+
+          {/* Step 3: Recurrence configuration */}
+          {showRecurrenceStep && (
+            <>
+              <div className="space-y-4">
+                {/* Summary of previous step data */}
+                <div className="rounded-lg border border-muted bg-muted/30 p-4">
+                  <p className="text-sm text-muted-foreground">Valor</p>
+                  <p className="text-lg font-semibold">
+                    {watchedAmount ? formatCurrency(watchedAmount) : 'R$ 0,00'}
+                  </p>
+                </div>
+
+                {/* Frequency selection */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Frequência</label>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setRecurrenceFrequency('MONTHLY')}
+                      className={`flex-1 rounded-lg border-2 px-4 py-3 text-sm font-medium transition-all ${
+                        recurrenceFrequency === 'MONTHLY'
+                          ? 'border-primary bg-primary/5 text-primary'
+                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
+                      }`}
+                    >
+                      Mensal
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRecurrenceFrequency('YEARLY')}
+                      className={`flex-1 rounded-lg border-2 px-4 py-3 text-sm font-medium transition-all ${
+                        recurrenceFrequency === 'YEARLY'
+                          ? 'border-primary bg-primary/5 text-primary'
+                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
+                      }`}
+                    >
+                      Anual
+                    </button>
+                  </div>
+                </div>
+
+                {/* Summary */}
+                <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+                  <p className="text-sm text-muted-foreground">Resumo</p>
+                  <p className="text-sm font-medium text-primary">
+                    Esta despesa será repetida {recurrenceFrequency === 'MONTHLY' ? 'todo mês' : 'todo ano'}
+                    {selectedDate && ` no dia ${selectedDate.getDate()}`}
+                  </p>
+                </div>
               </div>
             </>
           )}
@@ -1724,6 +1864,9 @@ interface AccountData {
     color?: string | null;
   };
   type: AccountType;
+  accountCard?: {
+    type: CardType;
+  } | null;
 }
 
 interface TransactionWizardState {
