@@ -1948,6 +1948,12 @@ function TransactionAccountStep({
         (t) => t !== AccountType.Savings && t !== AccountType.Investment,
       );
     }
+    if (transactionType === TransactionType.BetweenAccounts) {
+      // Card accounts cannot participate in between-accounts transactions
+      return Object.values(AccountType).filter(
+        (t) => t !== AccountType.CreditCard,
+      );
+    }
     return undefined;
   }, [transactionType]);
 
