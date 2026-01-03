@@ -68,6 +68,7 @@ interface TransactionsCardViewProps {
   hideAccount?: boolean;
   hideActions?: ('confirm' | 'edit' | 'cancel')[];
   compact?: boolean;
+  isDebitCard?: boolean;
 }
 
 export function TransactionsCardView({
@@ -75,6 +76,7 @@ export function TransactionsCardView({
   hideAccount = false,
   hideActions = [],
   compact = false,
+  isDebitCard = false,
 }: TransactionsCardViewProps) {
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
     {},
@@ -146,9 +148,9 @@ export function TransactionsCardView({
               Nenhuma transação encontrada.
             </p>
             <div className="mt-4 flex flex-wrap justify-center gap-2 md:flex-nowrap">
-              <IncomeTransactionCreateForm accountId={accountId} />
+              {!isDebitCard && <IncomeTransactionCreateForm accountId={accountId} />}
               <ExpenseTransactionCreateForm accountId={accountId} />
-              <BetweenAccountsTransactionCreateForm accountId={accountId} />
+              {!isDebitCard && <BetweenAccountsTransactionCreateForm accountId={accountId} />}
             </div>
           </CardContent>
         </Card>
@@ -163,9 +165,9 @@ export function TransactionsCardView({
 
       {/* Botões de ação */}
       <div className="flex flex-wrap items-center gap-2 md:flex-nowrap">
-        <IncomeTransactionCreateForm accountId={accountId} />
+        {!isDebitCard && <IncomeTransactionCreateForm accountId={accountId} />}
         <ExpenseTransactionCreateForm accountId={accountId} />
-        <BetweenAccountsTransactionCreateForm accountId={accountId} />
+        {!isDebitCard && <BetweenAccountsTransactionCreateForm accountId={accountId} />}
       </div>
 
       {/* Grupos de transações - layout kanban em telas grandes */}

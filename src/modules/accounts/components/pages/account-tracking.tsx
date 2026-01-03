@@ -57,7 +57,7 @@ export function AccountTracking() {
   if (accountType === AccountType.CreditCard) {
     // Cartões de débito usam visão de conta corrente (sem faturas)
     if (account.accountCard?.type === CardType.Debit) {
-      return <AccountWalletTracking account={account} />;
+      return <AccountWalletTracking account={account} isDebitCard />;
     }
     return <AccountCreditCardTracking account={account} />;
   }

@@ -10,9 +10,10 @@ import { InstitutionLogo } from '@/modules/accounts/components/institution-logo'
 
 interface AccountWalletTrackingProps {
   account: AccountFragmentFragment;
+  isDebitCard?: boolean;
 }
 
-export function AccountWalletTracking({ account }: AccountWalletTrackingProps) {
+export function AccountWalletTracking({ account, isDebitCard = false }: AccountWalletTrackingProps) {
   const balance = Number(account.balance || 0);
 
   return (
@@ -53,7 +54,7 @@ export function AccountWalletTracking({ account }: AccountWalletTrackingProps) {
       </Card>
 
       {/* Transaction Views with multiple visualization options */}
-      <TransactionsViews accountId={account.id} hideAccount />
+      <TransactionsViews accountId={account.id} hideAccount isDebitCard={isDebitCard} />
     </div>
   );
 }

@@ -12,11 +12,13 @@ import { useParams } from 'next/navigation';
 interface TransactionsViewsProps {
   accountId?: string;
   hideAccount?: boolean;
+  isDebitCard?: boolean;
 }
 
 export function TransactionsViews({
   accountId,
   hideAccount = false,
+  isDebitCard = false,
 }: TransactionsViewsProps) {
   const [activeTab, setActiveTab] = useState('cards');
   const params = useParams<{ accountId?: string }>();
@@ -47,6 +49,7 @@ export function TransactionsViews({
         <TransactionsCardView
           accountId={effectiveAccountId}
           hideAccount={hideAccount}
+          isDebitCard={isDebitCard}
         />
       </TabsContent>
 
