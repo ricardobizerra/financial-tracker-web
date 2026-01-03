@@ -40,11 +40,11 @@ export function FinancialAgenda({
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'INCOME':
+      case TransactionType.Income:
         return <TrendingUp className="h-4 w-4 text-emerald-500" />;
-      case 'EXPENSE':
+      case TransactionType.Expense:
         return <TrendingDown className="h-4 w-4 text-red-500" />;
-      case 'BETWEEN_ACCOUNTS':
+      case TransactionType.BetweenAccounts:
         return <ArrowLeftRight className="h-4 w-4 text-blue-500" />;
       default:
         return null;
@@ -175,16 +175,16 @@ export function FinancialAgenda({
                       <p
                         className={cn(
                           'text-lg font-semibold',
-                          tx.type === 'INCOME'
+                          tx.type === TransactionType.Income
                             ? 'text-emerald-600'
-                            : tx.type === 'EXPENSE'
+                            : tx.type === TransactionType.Expense
                               ? 'text-red-600'
                               : 'text-blue-600',
                         )}
                       >
-                        {tx.type === 'INCOME'
+                        {tx.type === TransactionType.Income
                           ? '+'
-                          : tx.type === 'EXPENSE'
+                          : tx.type === TransactionType.Expense
                             ? '-'
                             : ''}
                         {formatCurrency(tx.amount)}

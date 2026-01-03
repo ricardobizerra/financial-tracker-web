@@ -233,16 +233,16 @@ export function TransactionsCalendar({ accountId }: TransactionsCalendarProps) {
                               <span
                                 className={cn(
                                   'text-sm font-medium',
-                                  tx.type === 'INCOME'
+                                  tx.type === TransactionType.Income
                                     ? 'text-emerald-600'
-                                    : tx.type === 'EXPENSE'
+                                    : tx.type === TransactionType.Expense
                                       ? 'text-red-600'
                                       : 'text-blue-600',
                                 )}
                               >
-                                {tx.type === 'INCOME'
+                                {tx.type === TransactionType.Income
                                   ? '+'
-                                  : tx.type === 'EXPENSE'
+                                  : tx.type === TransactionType.Expense
                                     ? '-'
                                     : ''}
                                 {formatCurrency(tx.amount)}

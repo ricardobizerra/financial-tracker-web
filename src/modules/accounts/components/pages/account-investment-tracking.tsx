@@ -2,6 +2,7 @@
 
 import {
   AccountFragmentFragment,
+  AccountType,
   InvestmentEvolutionPeriod,
   Regime,
 } from '@/graphql/graphql';
@@ -132,8 +133,8 @@ export function AccountInvestmentTracking({
   }));
 
   const defaultRegime =
-    account.type === 'SAVINGS' ? Regime.Poupanca : undefined;
-  const isSavings = account.type === 'SAVINGS';
+    account.type === AccountType.Savings ? Regime.Poupanca : undefined;
+  const isSavings = account.type === AccountType.Savings;
 
   return (
     <div className="space-y-6">

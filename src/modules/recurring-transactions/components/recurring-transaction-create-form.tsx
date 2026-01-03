@@ -446,9 +446,9 @@ export function ExpenseRecurringTransactionCreateForm({
   );
 
   const paymentMethodOptions = useMemo(() => {
-    if (selectedAccount?.data?.type !== 'CREDIT_CARD') {
+    if (selectedAccount?.data?.type !== AccountType.CreditCard) {
       return allPaymentMethodOptions.filter(
-        (option) => !['CREDIT_CARD', 'DEBIT_CARD'].includes(option.value),
+        (option) => ![PaymentMethod.CreditCard, PaymentMethod.DebitCard].includes(option.value as PaymentMethod),
       );
     }
     return allPaymentMethodOptions;
