@@ -1224,9 +1224,9 @@ export enum CardType {
 }
 
 export type CreateAccountCardInfos = {
-  billingCycleDay: Scalars['Float']['input'];
-  billingPaymentDay: Scalars['Float']['input'];
-  defaultLimit: Scalars['Decimal']['input'];
+  billingCycleDay?: InputMaybe<Scalars['Float']['input']>;
+  billingPaymentDay?: InputMaybe<Scalars['Float']['input']>;
+  defaultLimit?: InputMaybe<Scalars['Decimal']['input']>;
   type: CardType;
 };
 
@@ -4563,6 +4563,11 @@ export type AccountQuery = {
     institutionId: string;
     createdAt: any;
     updatedAt: any;
+    accountCard: {
+      __typename?: 'AccountCard';
+      id: string;
+      type: CardType;
+    } | null;
     institution: {
       __typename?: 'Institution';
       id: string;
@@ -6786,6 +6791,17 @@ export const AccountDocument = {
                 {
                   kind: 'FragmentSpread',
                   name: { kind: 'Name', value: 'AccountFragment' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'accountCard' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                    ],
+                  },
                 },
               ],
             },

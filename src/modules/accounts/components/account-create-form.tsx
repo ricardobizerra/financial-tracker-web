@@ -66,13 +66,14 @@ interface FormStepperState {
   institution?: InstitutionData;
   accountDetails?: AccountDetailsFormData;
   accountDetailsValid: boolean;
-  creditCardDetails?: CreditCardDetailsFormData;
-  creditCardDetailsValid: boolean;
+  selectedCardType?: CardType;
+  creditCardBillingDetails?: CreditCardBillingFormData;
+  creditCardBillingValid: boolean;
 }
 
 const initialFormStepperState: FormStepperState = {
   accountDetailsValid: false,
-  creditCardDetailsValid: false,
+  creditCardBillingValid: false,
 };
 
 const accountTypeIcons: Record<
@@ -144,10 +145,7 @@ const accountDetailsSchema = z.object({
 
 type AccountDetailsFormData = z.infer<typeof accountDetailsSchema>;
 
-const creditCardDetailsSchema = z.object({
-  cardType: formFields.select.describe(
-    'Tipo de cartão * // Insira o tipo de cartão',
-  ),
+const creditCardBillingSchema = z.object({
   billingCycleDay: formFields.number
     .describe(
       'Dia do ciclo de faturamento * // Insira o dia do ciclo de faturamento',
@@ -163,7 +161,7 @@ const creditCardDetailsSchema = z.object({
   ),
 });
 
-type CreditCardDetailsFormData = z.infer<typeof creditCardDetailsSchema>;
+type CreditCardBillingFormData = z.infer<typeof creditCardBillingSchema>;
 
 // ============================================================================
 // Step Indicator Component
@@ -174,15 +172,21 @@ function StepIndicator({
   isCreditCard,
   selectedType,
   selectedInstitution,
+  selectedCardType,
 }: {
   currentStep: number;
   isCreditCard: boolean;
   selectedType?: AccountType;
   selectedInstitution?: InstitutionData;
+  selectedCardType?: CardType;
 }) {
+  const isCreditCardSelected = selectedCardType === CardType.Credit;
+
+  // Steps dinamicamente baseados no tipo de conta e cartão
   const remainingSteps = [
     { number: 3, label: 'Dados' },
-    ...(isCreditCard ? [{ number: 4, label: 'Cartão' }] : []),
+    ...(isCreditCard ? [{ number: 4, label: 'Tipo' }] : []),
+    ...(isCreditCardSelected ? [{ number: 5, label: 'Fatura' }] : []),
   ];
 
   // Also show step 1 and 2 if not yet completed
@@ -266,7 +270,7 @@ function StepIndicator({
           </div>
         )}
 
-        {/* Remaining steps (3 and optionally 4) */}
+        {/* Remaining steps (3, 4 e opcionalmente 5) */}
         {remainingSteps.map((step) => (
           <div
             key={step.number}
@@ -536,23 +540,57 @@ function AccountDetailsStep({
 }
 
 // ============================================================================
-// Step 4: Credit Card Details
+// Step 4: Card Type Selection
 // ============================================================================
 
-function CreditCardDetailsStep({
+const cardTypeIcons: Record<CardType, ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>> = {
+  [CardType.Credit]: CreditCard,
+  [CardType.Debit]: Wallet2,
+};
+
+const cardTypeDescriptions: Record<CardType, string> = {
+  [CardType.Credit]: 'Compras parceladas, faturas mensais',
+  [CardType.Debit]: 'Débito direto na conta corrente',
+};
+
+function CardTypeSelectionStep({
+  selectedType,
+  onSelect,
+}: {
+  selectedType?: CardType;
+  onSelect: (type: CardType) => void;
+}) {
+  const orderedCardTypes = [CardType.Credit, CardType.Debit];
+
+  return (
+    <div className="flex flex-col gap-2">
+      {orderedCardTypes.map((cardType) => (
+        <TypeSelectionCard
+          key={cardType}
+          icon={cardTypeIcons[cardType]}
+          label={cardTypeLabels[cardType]}
+          description={cardTypeDescriptions[cardType]}
+          isSelected={selectedType === cardType}
+          onClick={() => onSelect(cardType)}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ============================================================================
+// Step 5: Credit Card Billing Details (only for credit cards)
+// ============================================================================
+
+function CreditCardBillingStep({
   defaultValues,
   onDataChange,
 }: {
-  defaultValues?: Partial<CreditCardDetailsFormData>;
-  onDataChange: (data: CreditCardDetailsFormData, isValid: boolean) => void;
+  defaultValues?: Partial<CreditCardBillingFormData>;
+  onDataChange: (data: CreditCardBillingFormData, isValid: boolean) => void;
 }) {
-  const cardTypeOptions = Object.values(CardType).map((t) => ({
-    value: t,
-    label: cardTypeLabels[t],
-  }));
-
-  const form = useForm<CreditCardDetailsFormData>({
-    resolver: zodResolver(creditCardDetailsSchema),
+  const form = useForm<CreditCardBillingFormData>({
+    resolver: zodResolver(creditCardBillingSchema),
     defaultValues: {
       defaultLimit: 10000,
       ...defaultValues,
@@ -563,12 +601,11 @@ function CreditCardDetailsStep({
   useEffect(() => {
     const subscription = form.watch((data) => {
       const isValid =
-        !!data.cardType?.value &&
         !!data.billingCycleDay &&
         !!data.billingPaymentDay &&
         !!data.defaultLimit &&
         Number(data.defaultLimit) > 0;
-      onDataChange(data as CreditCardDetailsFormData, isValid);
+      onDataChange(data as CreditCardBillingFormData, isValid);
     });
     return () => subscription.unsubscribe();
   }, [form, onDataChange]);
@@ -576,7 +613,6 @@ function CreditCardDetailsStep({
   useEffect(() => {
     const data = form.getValues();
     const isValid =
-      !!data.cardType?.value &&
       !!data.billingCycleDay &&
       !!data.billingPaymentDay &&
       !!data.defaultLimit &&
@@ -587,18 +623,12 @@ function CreditCardDetailsStep({
   return (
     <TsForm
       form={form}
-      schema={creditCardDetailsSchema}
-      props={{
-        cardType: {
-          options: cardTypeOptions,
-        } as any,
-      }}
+      schema={creditCardBillingSchema}
       onSubmit={() => {}}
       renderAfter={() => null}
     >
-      {({ cardType, billingCycleDay, billingPaymentDay, defaultLimit }) => (
+      {({ billingCycleDay, billingPaymentDay, defaultLimit }) => (
         <>
-          {cardType}
           {billingCycleDay}
           {billingPaymentDay}
           {defaultLimit}
@@ -629,7 +659,10 @@ export function AccountCreateForm({
   const [createAccount, { loading }] = useMutation(CreateAccountMutation);
 
   const isCreditCard = formStepperState.accountType === AccountType.CreditCard;
-  const totalSteps = isCreditCard ? 4 : 3;
+  const isDebitCardSelected = formStepperState.selectedCardType === CardType.Debit;
+  const isCreditCardSelected = formStepperState.selectedCardType === CardType.Credit;
+  // Total de passos: 3 para contas normais, 4 para cartão de débito, 5 para cartão de crédito
+  const totalSteps = isCreditCard ? (isCreditCardSelected ? 5 : 4) : 3;
 
   const nextStep = useCallback(() => {
     setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
@@ -689,12 +722,27 @@ export function AccountCreateForm({
     [],
   );
 
-  const handleCreditCardDetailsChange = useCallback(
-    (data: CreditCardDetailsFormData, isValid: boolean) => {
+  const handleCardTypeSelect = useCallback(
+    (cardType: CardType) => {
       setFormStepperState((prev) => ({
         ...prev,
-        creditCardDetails: data,
-        creditCardDetailsValid: isValid,
+        selectedCardType: cardType,
+      }));
+      // Para débito, não precisa de próximo passo - vai salvar direto
+      // Para crédito, avança para passo 5 (billing)
+      if (cardType === CardType.Credit) {
+        setCurrentStep(5);
+      }
+    },
+    [],
+  );
+
+  const handleBillingChange = useCallback(
+    (data: CreditCardBillingFormData, isValid: boolean) => {
+      setFormStepperState((prev) => ({
+        ...prev,
+        creditCardBillingDetails: data,
+        creditCardBillingValid: isValid,
       }));
     },
     [],
@@ -709,7 +757,7 @@ export function AccountCreateForm({
       return;
     }
 
-    const { accountType, institution, accountDetails, creditCardDetails } =
+    const { accountType, institution, accountDetails, selectedCardType, creditCardBillingDetails } =
       formStepperState;
 
     await createAccount({
@@ -721,14 +769,19 @@ export function AccountCreateForm({
           isActive: accountDetails.isActive,
           description: accountDetails.description,
           initialBalance: accountDetails.initialBalance,
+          // Para contas de cartão, enviar cardInfos
           ...(accountType === AccountType.CreditCard &&
-            creditCardDetails && {
+            selectedCardType && {
               cardInfos: {
-                type: creditCardDetails.cardType?.value as CardType,
-                billingCycleDay: creditCardDetails.billingCycleDay,
-                billingPaymentDay: creditCardDetails.billingPaymentDay,
-                defaultLimit: creditCardDetails.defaultLimit,
-              } as CreateAccountInput['cardInfos'],
+                type: selectedCardType,
+                // Campos de fatura apenas para cartão de crédito
+                ...(selectedCardType === CardType.Credit &&
+                  creditCardBillingDetails && {
+                    billingCycleDay: creditCardBillingDetails.billingCycleDay,
+                    billingPaymentDay: creditCardBillingDetails.billingPaymentDay,
+                    defaultLimit: creditCardBillingDetails.defaultLimit,
+                  }),
+              },
             }),
         },
       },
@@ -756,7 +809,9 @@ export function AccountCreateForm({
       case 3:
         return 'Informações da conta';
       case 4:
-        return 'Informações do cartão';
+        return 'Tipo de cartão';
+      case 5:
+        return 'Informações de fatura';
       default:
         return 'Nova conta';
     }
@@ -771,16 +826,17 @@ export function AccountCreateForm({
       case 3:
         return 'Preencha as informações básicas da conta.';
       case 4:
-        return 'Preencha as informações específicas do cartão de crédito.';
+        return 'Selecione se o cartão é de crédito ou débito.';
+      case 5:
+        return 'Preencha as informações de fatura do cartão de crédito.';
       default:
         return '';
     }
   };
 
   const canProceedStep3 = formStepperState.accountDetailsValid;
-  const canSubmit = isCreditCard
-    ? formStepperState.accountDetailsValid && formStepperState.creditCardDetailsValid
-    : formStepperState.accountDetailsValid;
+  const canSubmitDebit = isDebitCardSelected; // Débito pode salvar no passo 4
+  const canSubmitCredit = isCreditCardSelected && formStepperState.creditCardBillingValid; // Crédito precisa do passo 5
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -806,6 +862,7 @@ export function AccountCreateForm({
           isCreditCard={isCreditCard}
           selectedType={formStepperState.accountType}
           selectedInstitution={formStepperState.institution}
+          selectedCardType={formStepperState.selectedCardType}
         />
 
         <div className="flex flex-col text-center text-muted-foreground sm:text-left">
@@ -836,10 +893,19 @@ export function AccountCreateForm({
           />
         )}
 
+        {/* Step 4: Card Type Selection */}
         {currentStep === 4 && isCreditCard && (
-          <CreditCardDetailsStep
-            defaultValues={formStepperState.creditCardDetails}
-            onDataChange={handleCreditCardDetailsChange}
+          <CardTypeSelectionStep
+            selectedType={formStepperState.selectedCardType}
+            onSelect={handleCardTypeSelect}
+          />
+        )}
+
+        {/* Step 5: Credit Card Billing (only for credit cards) */}
+        {currentStep === 5 && isCreditCardSelected && (
+          <CreditCardBillingStep
+            defaultValues={formStepperState.creditCardBillingDetails}
+            onDataChange={handleBillingChange}
           />
         )}
 
@@ -858,6 +924,7 @@ export function AccountCreateForm({
             <div />
           )}
 
+          {/* Non-card accounts: Save on step 3 */}
           {currentStep === 3 && !isCreditCard && (
             <Button
               type="button"
@@ -869,6 +936,7 @@ export function AccountCreateForm({
             </Button>
           )}
 
+          {/* Card accounts: Next on step 3 */}
           {currentStep === 3 && isCreditCard && (
             <Button
               type="button"
@@ -881,10 +949,23 @@ export function AccountCreateForm({
             </Button>
           )}
 
-          {currentStep === 4 && (
+          {/* Debit cards: Save on step 4 */}
+          {currentStep === 4 && isDebitCardSelected && (
             <Button
               type="button"
-              disabled={loading || !canSubmit}
+              disabled={loading || !canSubmitDebit}
+              loading={loading}
+              onClick={handleSubmit}
+            >
+              Salvar
+            </Button>
+          )}
+
+          {/* Credit cards: Save on step 5 */}
+          {currentStep === 5 && (
+            <Button
+              type="button"
+              disabled={loading || !canSubmitCredit}
               loading={loading}
               onClick={handleSubmit}
             >

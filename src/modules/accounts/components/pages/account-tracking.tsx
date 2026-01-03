@@ -3,7 +3,7 @@
 import { useQuery } from '@apollo/client';
 import { AccountQuery } from '../../graphql/accounts-queries';
 import { useParams } from 'next/navigation';
-import { AccountType } from '@/graphql/graphql';
+import { AccountType, CardType } from '@/graphql/graphql';
 import { AccountCreditCardTracking } from './account-credit-card-tracking';
 import { AccountWalletTracking } from './account-wallet-tracking';
 import { AccountInvestmentTracking } from './account-investment-tracking';
@@ -55,6 +55,10 @@ export function AccountTracking() {
   }
 
   if (accountType === AccountType.CreditCard) {
+    // Cartões de débito usam visão de conta corrente (sem faturas)
+    if (account.accountCard?.type === CardType.Debit) {
+      return <AccountWalletTracking account={account} />;
+    }
     return <AccountCreditCardTracking account={account} />;
   }
 

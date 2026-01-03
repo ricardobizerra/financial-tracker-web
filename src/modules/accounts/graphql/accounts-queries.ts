@@ -63,6 +63,10 @@ export const AccountQuery = graphql(`
   query Account($id: ID!) {
     account(id: $id) {
       ...AccountFragment
+      accountCard {
+        id
+        type
+      }
     }
   }
 `);

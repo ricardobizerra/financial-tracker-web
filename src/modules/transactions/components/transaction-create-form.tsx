@@ -1194,42 +1194,43 @@ function ExpenseTransactionFormDetails({
 
           {/* Action buttons */}
           <div className="flex gap-2">
-            {/* Parcelar and Repetir buttons - only in step 2 (not installment/recurrence step) and not in edit mode */}
+            {/* Parcelar button - only for credit cards, not debit cards */}
+            {!showInstallmentStep && !showRecurrenceStep && !isEditMode && isCreditCardAccount && !isDebitCard && (
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={async () => {
+                  // Validate form before navigating to installment step
+                  const fieldsToValidate = showPaymentMethod
+                    ? (['date', 'amount', 'description', 'paymentMethod'] as const)
+                    : (['date', 'amount', 'description'] as const);
+                  const isValid = await form.trigger(fieldsToValidate);
+                  if (isValid) {
+                    setShowInstallmentStep(true);
+                  }
+                }}
+              >
+                Parcelar
+              </Button>
+            )}
+            {/* Repetir button - available for all accounts */}
             {!showInstallmentStep && !showRecurrenceStep && !isEditMode && (
-              <>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={async () => {
-                    // Validate form before navigating to installment step
-                    const fieldsToValidate = showPaymentMethod
-                      ? (['date', 'amount', 'description', 'paymentMethod'] as const)
-                      : (['date', 'amount', 'description'] as const);
-                    const isValid = await form.trigger(fieldsToValidate);
-                    if (isValid) {
-                      setShowInstallmentStep(true);
-                    }
-                  }}
-                >
-                  Parcelar
-                </Button>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={async () => {
-                    // Validate form before navigating to recurrence step
-                    const fieldsToValidate = showPaymentMethod
-                      ? (['date', 'amount', 'description', 'paymentMethod'] as const)
-                      : (['date', 'amount', 'description'] as const);
-                    const isValid = await form.trigger(fieldsToValidate);
-                    if (isValid) {
-                      setShowRecurrenceStep(true);
-                    }
-                  }}
-                >
-                  Repetir
-                </Button>
-              </>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={async () => {
+                  // Validate form before navigating to recurrence step
+                  const fieldsToValidate = showPaymentMethod
+                    ? (['date', 'amount', 'description', 'paymentMethod'] as const)
+                    : (['date', 'amount', 'description'] as const);
+                  const isValid = await form.trigger(fieldsToValidate);
+                  if (isValid) {
+                    setShowRecurrenceStep(true);
+                  }
+                }}
+              >
+                Repetir
+              </Button>
             )}
             <Button type="submit" disabled={loading} loading={loading}>
               Salvar
