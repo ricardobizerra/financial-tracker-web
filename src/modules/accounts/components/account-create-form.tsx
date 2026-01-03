@@ -48,6 +48,7 @@ import { InstitutionLogo } from '@/modules/accounts/components/institution-logo'
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Skeleton } from '@/components/ui/skeleton';
+import { TypeSelectionCard } from '@/components/form-stepper-shared';
 
 // ============================================================================
 // Types & Constants
@@ -60,7 +61,7 @@ interface InstitutionData {
   color?: string | null;
 }
 
-interface WizardState {
+interface FormStepperState {
   accountType?: AccountType;
   institution?: InstitutionData;
   accountDetails?: AccountDetailsFormData;
@@ -69,7 +70,7 @@ interface WizardState {
   creditCardDetailsValid: boolean;
 }
 
-const initialWizardState: WizardState = {
+const initialFormStepperState: FormStepperState = {
   accountDetailsValid: false,
   creditCardDetailsValid: false,
 };
@@ -315,42 +316,6 @@ const accountTypeDescriptions: Record<AccountType, string> = {
   [AccountType.Other]: 'Outros tipos de conta',
 };
 
-function AccountTypeCard({
-  type,
-  isSelected,
-  onClick,
-}: {
-  type: AccountType;
-  isSelected: boolean;
-  onClick: () => void;
-}) {
-  const Icon = accountTypeIcons[type];
-  const label = accountTypeLabels[type];
-  const description = accountTypeDescriptions[type];
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        'flex w-full items-center gap-4 rounded-lg border-2 p-4 text-left transition-all duration-200',
-        'cursor-pointer hover:bg-accent',
-        isSelected
-          ? 'border-primary bg-primary/5'
-          : 'border-transparent bg-muted/50',
-      )}
-    >
-      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted">
-        <Icon className="h-6 w-6 text-foreground" />
-      </div>
-      <div className="flex flex-col gap-0.5">
-        <span className="text-sm font-semibold text-foreground">{label}</span>
-        <span className="text-xs text-muted-foreground">{description}</span>
-      </div>
-    </button>
-  );
-}
-
 function AccountTypeStep({
   selectedType,
   onSelect,
@@ -372,9 +337,11 @@ function AccountTypeStep({
   return (
     <div className="flex flex-col gap-2">
       {orderedAccountTypes.map((accountType) => (
-        <AccountTypeCard
+        <TypeSelectionCard
           key={accountType}
-          type={accountType}
+          icon={accountTypeIcons[accountType]}
+          label={accountTypeLabels[accountType]}
+          description={accountTypeDescriptions[accountType]}
           isSelected={selectedType === accountType}
           onClick={() => onSelect(accountType)}
         />
@@ -654,14 +621,14 @@ export function AccountCreateForm({
 }) {
   const [open, setOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(type ? 2 : 1);
-  const [wizardState, setWizardState] = useState<WizardState>(() => ({
-    ...initialWizardState,
+  const [formStepperState, setFormStepperState] = useState<FormStepperState>(() => ({
+    ...initialFormStepperState,
     accountType: type,
   }));
 
   const [createAccount, { loading }] = useMutation(CreateAccountMutation);
 
-  const isCreditCard = wizardState.accountType === AccountType.CreditCard;
+  const isCreditCard = formStepperState.accountType === AccountType.CreditCard;
   const totalSteps = isCreditCard ? 4 : 3;
 
   const nextStep = useCallback(() => {
@@ -677,8 +644,8 @@ export function AccountCreateForm({
       setOpen(isOpen);
       if (!isOpen) {
         setTimeout(() => {
-          setWizardState({
-            ...initialWizardState,
+          setFormStepperState({
+            ...initialFormStepperState,
             accountType: type,
           });
           setCurrentStep(type ? 2 : 1);
@@ -690,7 +657,7 @@ export function AccountCreateForm({
 
   const handleTypeSelect = useCallback(
     (accountType: AccountType) => {
-      setWizardState((prev) => ({
+      setFormStepperState((prev) => ({
         ...prev,
         accountType,
         institution: undefined,
@@ -702,7 +669,7 @@ export function AccountCreateForm({
 
   const handleInstitutionSelect = useCallback(
     (institution: InstitutionData) => {
-      setWizardState((prev) => ({
+      setFormStepperState((prev) => ({
         ...prev,
         institution,
       }));
@@ -713,7 +680,7 @@ export function AccountCreateForm({
 
   const handleAccountDetailsChange = useCallback(
     (data: AccountDetailsFormData, isValid: boolean) => {
-      setWizardState((prev) => ({
+      setFormStepperState((prev) => ({
         ...prev,
         accountDetails: data,
         accountDetailsValid: isValid,
@@ -724,7 +691,7 @@ export function AccountCreateForm({
 
   const handleCreditCardDetailsChange = useCallback(
     (data: CreditCardDetailsFormData, isValid: boolean) => {
-      setWizardState((prev) => ({
+      setFormStepperState((prev) => ({
         ...prev,
         creditCardDetails: data,
         creditCardDetailsValid: isValid,
@@ -735,15 +702,15 @@ export function AccountCreateForm({
 
   const handleSubmit = useCallback(async () => {
     if (
-      !wizardState.accountType ||
-      !wizardState.institution ||
-      !wizardState.accountDetails
+      !formStepperState.accountType ||
+      !formStepperState.institution ||
+      !formStepperState.accountDetails
     ) {
       return;
     }
 
     const { accountType, institution, accountDetails, creditCardDetails } =
-      wizardState;
+      formStepperState;
 
     await createAccount({
       variables: {
@@ -778,7 +745,7 @@ export function AccountCreateForm({
         });
       },
     });
-  }, [wizardState, createAccount, handleOpenChange]);
+  }, [formStepperState, createAccount, handleOpenChange]);
 
   const getStepTitle = () => {
     switch (currentStep) {
@@ -810,10 +777,10 @@ export function AccountCreateForm({
     }
   };
 
-  const canProceedStep3 = wizardState.accountDetailsValid;
+  const canProceedStep3 = formStepperState.accountDetailsValid;
   const canSubmit = isCreditCard
-    ? wizardState.accountDetailsValid && wizardState.creditCardDetailsValid
-    : wizardState.accountDetailsValid;
+    ? formStepperState.accountDetailsValid && formStepperState.creditCardDetailsValid
+    : formStepperState.accountDetailsValid;
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -837,8 +804,8 @@ export function AccountCreateForm({
         <StepIndicator
           currentStep={currentStep}
           isCreditCard={isCreditCard}
-          selectedType={wizardState.accountType}
-          selectedInstitution={wizardState.institution}
+          selectedType={formStepperState.accountType}
+          selectedInstitution={formStepperState.institution}
         />
 
         <div className="flex flex-col text-center text-muted-foreground sm:text-left">
@@ -848,15 +815,15 @@ export function AccountCreateForm({
 
         {currentStep === 1 && (
           <AccountTypeStep
-            selectedType={wizardState.accountType}
+            selectedType={formStepperState.accountType}
             onSelect={handleTypeSelect}
           />
         )}
 
-        {currentStep === 2 && wizardState.accountType && (
+        {currentStep === 2 && formStepperState.accountType && (
           <InstitutionStep
-            accountType={wizardState.accountType}
-            selectedInstitutionId={wizardState.institution?.id}
+            accountType={formStepperState.accountType}
+            selectedInstitutionId={formStepperState.institution?.id}
             onSelect={handleInstitutionSelect}
           />
         )}
@@ -864,14 +831,14 @@ export function AccountCreateForm({
         {currentStep === 3 && (
           <AccountDetailsStep
             showInitialBalance={!isCreditCard}
-            defaultValues={wizardState.accountDetails}
+            defaultValues={formStepperState.accountDetails}
             onDataChange={handleAccountDetailsChange}
           />
         )}
 
         {currentStep === 4 && isCreditCard && (
           <CreditCardDetailsStep
-            defaultValues={wizardState.creditCardDetails}
+            defaultValues={formStepperState.creditCardDetails}
             onDataChange={handleCreditCardDetailsChange}
           />
         )}
