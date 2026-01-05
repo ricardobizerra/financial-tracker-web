@@ -4811,6 +4811,66 @@ export type UserQuery = {
   };
 };
 
+export type BalanceForecastQueryVariables = Exact<{
+  accountId?: InputMaybe<Scalars['String']['input']>;
+  period: BalanceForecastPeriod;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+}>;
+
+export type BalanceForecastQuery = {
+  __typename?: 'Query';
+  balanceForecast: {
+    __typename?: 'BalanceForecastModel';
+    currentBalance: number;
+    projectedBalance: number;
+    balanceTrend: number;
+    startDate: any;
+    endDate: any;
+    dataPoints: Array<{
+      __typename?: 'BalanceForecastPointModel';
+      date: any;
+      balance: number;
+      isProjected: boolean;
+      incomeAmount: number;
+      expenseAmount: number;
+      transactionCount: number;
+      transactions: Array<{
+        __typename?: 'BalanceForecastTransactionModel';
+        id: string;
+        description: string;
+        amount: number;
+        isIncome: boolean;
+      }>;
+    }>;
+  };
+};
+
+export type TransactionsSummaryForCashFlowQueryVariables = Exact<{
+  accountId?: InputMaybe<Scalars['ID']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  types?: InputMaybe<Array<TransactionType> | TransactionType>;
+  statuses?: InputMaybe<Array<TransactionStatus> | TransactionStatus>;
+}>;
+
+export type TransactionsSummaryForCashFlowQuery = {
+  __typename?: 'Query';
+  transactionsSummary: {
+    __typename?: 'TransactionsSummaryModel';
+    totalIncome: any;
+    totalExpense: any;
+    balance: any;
+    transactionCount: number;
+    realizedIncome: any;
+    realizedExpense: any;
+    realizedBalance: any;
+    forecastIncome: any;
+    forecastExpense: any;
+    forecastBalance: any;
+  };
+};
+
 export type PageInfoFragmentFragment = {
   __typename?: 'PageInfo';
   startCursor: string | null;
@@ -5230,41 +5290,6 @@ export type RecurringTransactionQuery = {
       };
     } | null;
   } | null;
-};
-
-export type BalanceForecastQueryVariables = Exact<{
-  accountId?: InputMaybe<Scalars['String']['input']>;
-  period: BalanceForecastPeriod;
-  startDate?: InputMaybe<Scalars['DateTime']['input']>;
-  endDate?: InputMaybe<Scalars['DateTime']['input']>;
-}>;
-
-export type BalanceForecastQuery = {
-  __typename?: 'Query';
-  balanceForecast: {
-    __typename?: 'BalanceForecastModel';
-    currentBalance: number;
-    projectedBalance: number;
-    balanceTrend: number;
-    startDate: any;
-    endDate: any;
-    dataPoints: Array<{
-      __typename?: 'BalanceForecastPointModel';
-      date: any;
-      balance: number;
-      isProjected: boolean;
-      incomeAmount: number;
-      expenseAmount: number;
-      transactionCount: number;
-      transactions: Array<{
-        __typename?: 'BalanceForecastTransactionModel';
-        id: string;
-        description: string;
-        amount: number;
-        isIncome: boolean;
-      }>;
-    }>;
-  };
 };
 
 export type TransactionsCalendarQueryVariables = Exact<{
@@ -7551,6 +7576,351 @@ export const UserDocument = {
     },
   ],
 } as unknown as DocumentNode<UserQuery, UserQueryVariables>;
+export const BalanceForecastDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'BalanceForecast' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'accountId' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'period' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'BalanceForecastPeriod' },
+            },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'startDate' },
+          },
+          type: {
+            kind: 'NamedType',
+            name: { kind: 'Name', value: 'DateTime' },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'endDate' },
+          },
+          type: {
+            kind: 'NamedType',
+            name: { kind: 'Name', value: 'DateTime' },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'balanceForecast' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'accountId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'accountId' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'period' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'period' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'startDate' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'startDate' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'endDate' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'endDate' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'dataPoints' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'date' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'balance' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'isProjected' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'incomeAmount' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'expenseAmount' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'transactionCount' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'transactions' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'description' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'amount' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'isIncome' },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'currentBalance' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'projectedBalance' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'balanceTrend' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  BalanceForecastQuery,
+  BalanceForecastQueryVariables
+>;
+export const TransactionsSummaryForCashFlowDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'TransactionsSummaryForCashFlow' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'accountId' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'startDate' },
+          },
+          type: {
+            kind: 'NamedType',
+            name: { kind: 'Name', value: 'DateTime' },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'endDate' },
+          },
+          type: {
+            kind: 'NamedType',
+            name: { kind: 'Name', value: 'DateTime' },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'types' },
+          },
+          type: {
+            kind: 'ListType',
+            type: {
+              kind: 'NonNullType',
+              type: {
+                kind: 'NamedType',
+                name: { kind: 'Name', value: 'TransactionType' },
+              },
+            },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'statuses' },
+          },
+          type: {
+            kind: 'ListType',
+            type: {
+              kind: 'NonNullType',
+              type: {
+                kind: 'NamedType',
+                name: { kind: 'Name', value: 'TransactionStatus' },
+              },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'transactionsSummary' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'accountId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'accountId' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'startDate' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'startDate' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'endDate' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'endDate' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'types' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'types' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'statuses' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'statuses' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'totalIncome' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'totalExpense' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'balance' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'transactionCount' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'realizedIncome' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'realizedExpense' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'realizedBalance' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'forecastIncome' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'forecastExpense' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'forecastBalance' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  TransactionsSummaryForCashFlowQuery,
+  TransactionsSummaryForCashFlowQueryVariables
+>;
 export const CreateInvestmentDocument = {
   kind: 'Document',
   definitions: [
@@ -9051,182 +9421,6 @@ export const RecurringTransactionDocument = {
 } as unknown as DocumentNode<
   RecurringTransactionQuery,
   RecurringTransactionQueryVariables
->;
-export const BalanceForecastDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'BalanceForecast' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'accountId' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'period' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'BalanceForecastPeriod' },
-            },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'startDate' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'DateTime' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'endDate' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'DateTime' },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'balanceForecast' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'accountId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'accountId' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'period' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'period' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'startDate' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'startDate' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'endDate' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'endDate' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'dataPoints' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'date' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'balance' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'isProjected' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'incomeAmount' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'expenseAmount' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'transactionCount' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'transactions' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'description' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'amount' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'isIncome' },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'currentBalance' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'projectedBalance' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'balanceTrend' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  BalanceForecastQuery,
-  BalanceForecastQueryVariables
 >;
 export const TransactionsCalendarDocument = {
   kind: 'Document',

@@ -1,6 +1,12 @@
 'use client';
 
-import { ArrowLeftRight, Landmark, PiggyBank, Repeat } from 'lucide-react';
+import {
+  ArrowLeftRight,
+  Landmark,
+  PiggyBank,
+  Repeat,
+  TrendingUp,
+} from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -27,6 +33,11 @@ import { APP_CONFIG } from '@/lib/config';
 
 const items = [
   {
+    title: 'Fluxo de Caixa',
+    url: '/cash-flow',
+    icon: TrendingUp,
+  },
+  {
     title: 'Contas',
     url: '/accounts',
     icon: Landmark,
@@ -47,6 +58,7 @@ const items = [
     icon: Repeat,
   },
 ];
+
 
 export function AppSidebar() {
   const { state } = useSidebar();
