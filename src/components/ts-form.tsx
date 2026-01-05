@@ -10,6 +10,7 @@ import { CurrencyField } from './form-fields/currency-field';
 import { SelectField } from './form-fields/select-field';
 import { selectSchema } from './form-fields/utils/select-schema';
 import { DateField } from './form-fields/date-field';
+import { SwitchField } from './form-fields/switch-field';
 
 interface FormComponentProps extends React.FormHTMLAttributes<HTMLFormElement> {
   isPreventDefault?: boolean;
@@ -63,6 +64,7 @@ export const formFields = {
   currency: createUniqueFieldSchema(z.number(), 'currency'),
   select: createUniqueFieldSchema(selectSchema, 'select'),
   date: z.date(),
+  switch: z.boolean(),
 };
 
 const mapping = [
@@ -74,6 +76,7 @@ const mapping = [
   [formFields.currency, CurrencyField],
   [formFields.select, SelectField],
   [formFields.date, DateField],
+  [formFields.switch, SwitchField],
 ] as const;
 
 export const TsForm = createTsForm(mapping, { FormComponent });

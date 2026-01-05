@@ -1,3 +1,5 @@
+'use client';
+
 import { useDescription, useTsController } from '@ts-react/form';
 import { BaseFieldProps } from './base-field';
 import { BaseTextField } from './base-text-field';

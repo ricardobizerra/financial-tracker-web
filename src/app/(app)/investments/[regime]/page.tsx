@@ -2,11 +2,20 @@
 
 import { Regime } from '@/graphql/graphql';
 import { InvestmentsTable } from '@/modules/investments/components/investments-table';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 
 export default function InvestmentsPage() {
   const params = useParams();
-  const regime = params.regime as Regime;
+  const searchParams = useSearchParams();
+  const regime = params.regime as string;
+  const accountId = searchParams.get('accountId');
 
-  return <InvestmentsTable regime={regime} />;
+  const regimeEnum = regime.toUpperCase() as Regime;
+
+  return (
+    <InvestmentsTable
+      regime={regimeEnum}
+      accountIds={accountId ? [accountId] : undefined}
+    />
+  );
 }

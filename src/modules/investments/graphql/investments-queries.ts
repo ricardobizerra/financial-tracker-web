@@ -11,6 +11,7 @@ export const InvestmentFragment = graphql(`
     taxedVariation
     startDate
     duration
+    status
   }
 `);
 
@@ -23,6 +24,7 @@ export const InvestmentsQuery = graphql(`
     $last: Int
     $before: String
     $regime: Regime
+    $accountIds: [String!]
   ) {
     investments(
       first: $first
@@ -32,6 +34,7 @@ export const InvestmentsQuery = graphql(`
       last: $last
       before: $before
       regime: $regime
+      accountIds: $accountIds
     ) {
       edges {
         cursor
@@ -71,14 +74,48 @@ export const InvestmentRegimeSummaryFragment = graphql(`
 `);
 
 export const InvestmentRegimesQuery = graphql(`
-  query InvestmentRegimes {
-    investmentRegimes {
+  query InvestmentRegimes($accountId: String) {
+    investmentRegimes(accountId: $accountId) {
       edges {
         cursor
         node {
           ...InvestmentRegimeSummaryFragment
         }
       }
+    }
+  }
+`);
+
+export const InvestmentEvolutionQuery = graphql(`
+  query InvestmentEvolution(
+    $period: InvestmentEvolutionPeriod
+    $accountId: String
+  ) {
+    investmentEvolution(period: $period, accountId: $accountId) {
+      dataPoints {
+        date
+        invested
+        currentAmount
+        taxedAmount
+        profit
+      }
+      totalInvested
+      totalCurrentAmount
+      totalTaxedAmount
+      totalProfit
+      totalProfitPercentage
+    }
+  }
+`);
+
+export const InvestmentAccountsQuery = graphql(`
+  query InvestmentAccounts($regime: Regime!) {
+    investmentAccounts(regime: $regime) {
+      id
+      name
+      institutionName
+      institutionLogoUrl
+      investmentCount
     }
   }
 `);
