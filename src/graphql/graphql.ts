@@ -1271,7 +1271,9 @@ export type CreateInvestmentInput = {
 };
 
 export type CreateRecurringTransactionInput = {
-  dayOfMonth: Scalars['Int']['input'];
+  dayMode?: InputMaybe<DayMode>;
+  dayOfMonth?: InputMaybe<Scalars['Int']['input']>;
+  dayOfWeek?: InputMaybe<Scalars['Int']['input']>;
   description: Scalars['String']['input'];
   destinyAccountId?: InputMaybe<Scalars['ID']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -1284,6 +1286,7 @@ export type CreateRecurringTransactionInput = {
   startDate: Scalars['DateTime']['input'];
   totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
+  weekOfMonth?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type CreateTransactionInput = {
@@ -1326,6 +1329,14 @@ export type DateTimeNullableFilter = {
   notIn?: InputMaybe<Array<Scalars['DateTime']['input']>>;
 };
 
+export enum DayMode {
+  FirstBusinessDay = 'FIRST_BUSINESS_DAY',
+  LastBusinessDay = 'LAST_BUSINESS_DAY',
+  LastDay = 'LAST_DAY',
+  NthWeekday = 'NTH_WEEKDAY',
+  SpecificDay = 'SPECIFIC_DAY',
+}
+
 export type DecimalFilter = {
   equals?: InputMaybe<Scalars['Decimal']['input']>;
   gt?: InputMaybe<Scalars['Decimal']['input']>;
@@ -1364,6 +1375,13 @@ export type EnumCardTypeFilter = {
   in?: InputMaybe<Array<CardType>>;
   not?: InputMaybe<NestedEnumCardTypeFilter>;
   notIn?: InputMaybe<Array<CardType>>;
+};
+
+export type EnumDayModeFilter = {
+  equals?: InputMaybe<DayMode>;
+  in?: InputMaybe<Array<DayMode>>;
+  not?: InputMaybe<NestedEnumDayModeFilter>;
+  notIn?: InputMaybe<Array<DayMode>>;
 };
 
 export type EnumInvestmentStatusFilter = {
@@ -2351,6 +2369,13 @@ export type NestedEnumCardTypeFilter = {
   notIn?: InputMaybe<Array<CardType>>;
 };
 
+export type NestedEnumDayModeFilter = {
+  equals?: InputMaybe<DayMode>;
+  in?: InputMaybe<Array<DayMode>>;
+  not?: InputMaybe<NestedEnumDayModeFilter>;
+  notIn?: InputMaybe<Array<DayMode>>;
+};
+
 export type NestedEnumInvestmentStatusFilter = {
   equals?: InputMaybe<InvestmentStatus>;
   in?: InputMaybe<Array<InvestmentStatus>>;
@@ -2542,7 +2567,9 @@ export enum OrdenationInvestmentModel {
 export enum OrdenationRecurringTransactionModel {
   Count = '_count',
   CreatedAt = 'createdAt',
+  DayMode = 'dayMode',
   DayOfMonth = 'dayOfMonth',
+  DayOfWeek = 'dayOfWeek',
   Description = 'description',
   DestinyAccount = 'destinyAccount',
   DestinyAccountId = 'destinyAccountId',
@@ -2560,6 +2587,7 @@ export enum OrdenationRecurringTransactionModel {
   Transactions = 'transactions',
   Type = 'type',
   UpdatedAt = 'updatedAt',
+  WeekOfMonth = 'weekOfMonth',
 }
 
 export enum OrdenationTransactionModel {
@@ -2801,7 +2829,9 @@ export enum QueryMode {
 }
 
 export enum RecurrenceFrequency {
+  BiWeekly = 'BI_WEEKLY',
   Monthly = 'MONTHLY',
+  Weekly = 'WEEKLY',
   Yearly = 'YEARLY',
 }
 
@@ -2814,7 +2844,9 @@ export type RecurringTransaction = {
   __typename?: 'RecurringTransaction';
   _count: RecurringTransactionCount;
   createdAt: Scalars['DateTime']['output'];
-  dayOfMonth: Scalars['Int']['output'];
+  dayMode: DayMode;
+  dayOfMonth: Maybe<Scalars['Int']['output']>;
+  dayOfWeek: Maybe<Scalars['Int']['output']>;
   description: Scalars['String']['output'];
   destinyAccount: Maybe<Account>;
   destinyAccountId: Maybe<Scalars['String']['output']>;
@@ -2835,14 +2867,17 @@ export type RecurringTransaction = {
   updatedAt: Scalars['DateTime']['output'];
   user: User;
   userId: Scalars['String']['output'];
+  weekOfMonth: Maybe<Scalars['Int']['output']>;
 };
 
 export type RecurringTransactionAvgAggregate = {
   __typename?: 'RecurringTransactionAvgAggregate';
   dayOfMonth: Maybe<Scalars['Float']['output']>;
+  dayOfWeek: Maybe<Scalars['Float']['output']>;
   estimatedAmount: Maybe<Scalars['Decimal']['output']>;
   monthOfYear: Maybe<Scalars['Float']['output']>;
   totalInstallments: Maybe<Scalars['Float']['output']>;
+  weekOfMonth: Maybe<Scalars['Float']['output']>;
 };
 
 export type RecurringTransactionConnection = {
@@ -2860,7 +2895,9 @@ export type RecurringTransactionCountAggregate = {
   __typename?: 'RecurringTransactionCountAggregate';
   _all: Scalars['Int']['output'];
   createdAt: Scalars['Int']['output'];
+  dayMode: Scalars['Int']['output'];
   dayOfMonth: Scalars['Int']['output'];
+  dayOfWeek: Scalars['Int']['output'];
   description: Scalars['Int']['output'];
   destinyAccountId: Scalars['Int']['output'];
   endDate: Scalars['Int']['output'];
@@ -2877,11 +2914,14 @@ export type RecurringTransactionCountAggregate = {
   type: Scalars['Int']['output'];
   updatedAt: Scalars['Int']['output'];
   userId: Scalars['Int']['output'];
+  weekOfMonth: Scalars['Int']['output'];
 };
 
 export type RecurringTransactionCreateManyDestinyAccountInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  dayOfMonth: Scalars['Int']['input'];
+  dayMode?: InputMaybe<DayMode>;
+  dayOfMonth?: InputMaybe<Scalars['Int']['input']>;
+  dayOfWeek?: InputMaybe<Scalars['Int']['input']>;
   description: Scalars['String']['input'];
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   estimatedAmount: Scalars['Decimal']['input'];
@@ -2897,6 +2937,7 @@ export type RecurringTransactionCreateManyDestinyAccountInput = {
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
   userId: Scalars['String']['input'];
+  weekOfMonth?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type RecurringTransactionCreateManyDestinyAccountInputEnvelope = {
@@ -2906,7 +2947,9 @@ export type RecurringTransactionCreateManyDestinyAccountInputEnvelope = {
 
 export type RecurringTransactionCreateManySourceAccountInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  dayOfMonth: Scalars['Int']['input'];
+  dayMode?: InputMaybe<DayMode>;
+  dayOfMonth?: InputMaybe<Scalars['Int']['input']>;
+  dayOfWeek?: InputMaybe<Scalars['Int']['input']>;
   description: Scalars['String']['input'];
   destinyAccountId?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -2922,6 +2965,7 @@ export type RecurringTransactionCreateManySourceAccountInput = {
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
   userId: Scalars['String']['input'];
+  weekOfMonth?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type RecurringTransactionCreateManySourceAccountInputEnvelope = {
@@ -2931,7 +2975,9 @@ export type RecurringTransactionCreateManySourceAccountInputEnvelope = {
 
 export type RecurringTransactionCreateManyUserInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  dayOfMonth: Scalars['Int']['input'];
+  dayMode?: InputMaybe<DayMode>;
+  dayOfMonth?: InputMaybe<Scalars['Int']['input']>;
+  dayOfWeek?: InputMaybe<Scalars['Int']['input']>;
   description: Scalars['String']['input'];
   destinyAccountId?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -2947,6 +2993,7 @@ export type RecurringTransactionCreateManyUserInput = {
   totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  weekOfMonth?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type RecurringTransactionCreateManyUserInputEnvelope = {
@@ -3013,7 +3060,9 @@ export type RecurringTransactionCreateOrConnectWithoutUserInput = {
 
 export type RecurringTransactionCreateWithoutDestinyAccountInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  dayOfMonth: Scalars['Int']['input'];
+  dayMode?: InputMaybe<DayMode>;
+  dayOfMonth?: InputMaybe<Scalars['Int']['input']>;
+  dayOfWeek?: InputMaybe<Scalars['Int']['input']>;
   description: Scalars['String']['input'];
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   estimatedAmount: Scalars['Decimal']['input'];
@@ -3030,11 +3079,14 @@ export type RecurringTransactionCreateWithoutDestinyAccountInput = {
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
   user: UserCreateNestedOneWithoutRecurringTransactionsInput;
+  weekOfMonth?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type RecurringTransactionCreateWithoutSourceAccountInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  dayOfMonth: Scalars['Int']['input'];
+  dayMode?: InputMaybe<DayMode>;
+  dayOfMonth?: InputMaybe<Scalars['Int']['input']>;
+  dayOfWeek?: InputMaybe<Scalars['Int']['input']>;
   description: Scalars['String']['input'];
   destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyRecurringTransactionsInput>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3051,11 +3103,14 @@ export type RecurringTransactionCreateWithoutSourceAccountInput = {
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
   user: UserCreateNestedOneWithoutRecurringTransactionsInput;
+  weekOfMonth?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type RecurringTransactionCreateWithoutTransactionsInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  dayOfMonth: Scalars['Int']['input'];
+  dayMode?: InputMaybe<DayMode>;
+  dayOfMonth?: InputMaybe<Scalars['Int']['input']>;
+  dayOfWeek?: InputMaybe<Scalars['Int']['input']>;
   description: Scalars['String']['input'];
   destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyRecurringTransactionsInput>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3072,11 +3127,14 @@ export type RecurringTransactionCreateWithoutTransactionsInput = {
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
   user: UserCreateNestedOneWithoutRecurringTransactionsInput;
+  weekOfMonth?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type RecurringTransactionCreateWithoutUserInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  dayOfMonth: Scalars['Int']['input'];
+  dayMode?: InputMaybe<DayMode>;
+  dayOfMonth?: InputMaybe<Scalars['Int']['input']>;
+  dayOfWeek?: InputMaybe<Scalars['Int']['input']>;
   description: Scalars['String']['input'];
   destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyRecurringTransactionsInput>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3093,6 +3151,7 @@ export type RecurringTransactionCreateWithoutUserInput = {
   transactions?: InputMaybe<TransactionCreateNestedManyWithoutRecurringTransactionInput>;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  weekOfMonth?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type RecurringTransactionListRelationFilter = {
@@ -3104,7 +3163,9 @@ export type RecurringTransactionListRelationFilter = {
 export type RecurringTransactionMaxAggregate = {
   __typename?: 'RecurringTransactionMaxAggregate';
   createdAt: Maybe<Scalars['DateTime']['output']>;
+  dayMode: Maybe<DayMode>;
   dayOfMonth: Maybe<Scalars['Int']['output']>;
+  dayOfWeek: Maybe<Scalars['Int']['output']>;
   description: Maybe<Scalars['String']['output']>;
   destinyAccountId: Maybe<Scalars['String']['output']>;
   endDate: Maybe<Scalars['DateTime']['output']>;
@@ -3121,12 +3182,15 @@ export type RecurringTransactionMaxAggregate = {
   type: Maybe<TransactionType>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
   userId: Maybe<Scalars['String']['output']>;
+  weekOfMonth: Maybe<Scalars['Int']['output']>;
 };
 
 export type RecurringTransactionMinAggregate = {
   __typename?: 'RecurringTransactionMinAggregate';
   createdAt: Maybe<Scalars['DateTime']['output']>;
+  dayMode: Maybe<DayMode>;
   dayOfMonth: Maybe<Scalars['Int']['output']>;
+  dayOfWeek: Maybe<Scalars['Int']['output']>;
   description: Maybe<Scalars['String']['output']>;
   destinyAccountId: Maybe<Scalars['String']['output']>;
   endDate: Maybe<Scalars['DateTime']['output']>;
@@ -3143,13 +3207,16 @@ export type RecurringTransactionMinAggregate = {
   type: Maybe<TransactionType>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
   userId: Maybe<Scalars['String']['output']>;
+  weekOfMonth: Maybe<Scalars['Int']['output']>;
 };
 
 export type RecurringTransactionModel = {
   __typename?: 'RecurringTransactionModel';
   _count: RecurringTransactionCount;
   createdAt: Scalars['DateTime']['output'];
-  dayOfMonth: Scalars['Int']['output'];
+  dayMode: DayMode;
+  dayOfMonth: Maybe<Scalars['Int']['output']>;
+  dayOfWeek: Maybe<Scalars['Int']['output']>;
   description: Scalars['String']['output'];
   destinyAccount: Maybe<Account>;
   destinyAccountId: Maybe<Scalars['String']['output']>;
@@ -3168,6 +3235,7 @@ export type RecurringTransactionModel = {
   transactions: Maybe<Array<Transaction>>;
   type: TransactionType;
   updatedAt: Scalars['DateTime']['output'];
+  weekOfMonth: Maybe<Scalars['Int']['output']>;
 };
 
 export type RecurringTransactionModelEdge = {
@@ -3184,9 +3252,11 @@ export type RecurringTransactionNullableRelationFilter = {
 export type RecurringTransactionSumAggregate = {
   __typename?: 'RecurringTransactionSumAggregate';
   dayOfMonth: Maybe<Scalars['Int']['output']>;
+  dayOfWeek: Maybe<Scalars['Int']['output']>;
   estimatedAmount: Maybe<Scalars['Decimal']['output']>;
   monthOfYear: Maybe<Scalars['Int']['output']>;
   totalInstallments: Maybe<Scalars['Int']['output']>;
+  weekOfMonth: Maybe<Scalars['Int']['output']>;
 };
 
 export type RecurringTransactionWhereInput = {
@@ -3194,7 +3264,9 @@ export type RecurringTransactionWhereInput = {
   NOT?: InputMaybe<Array<RecurringTransactionWhereInput>>;
   OR?: InputMaybe<Array<RecurringTransactionWhereInput>>;
   createdAt?: InputMaybe<DateTimeFilter>;
-  dayOfMonth?: InputMaybe<IntFilter>;
+  dayMode?: InputMaybe<EnumDayModeFilter>;
+  dayOfMonth?: InputMaybe<IntNullableFilter>;
+  dayOfWeek?: InputMaybe<IntNullableFilter>;
   description?: InputMaybe<StringFilter>;
   destinyAccount?: InputMaybe<AccountNullableRelationFilter>;
   destinyAccountId?: InputMaybe<StringNullableFilter>;
@@ -3215,6 +3287,7 @@ export type RecurringTransactionWhereInput = {
   updatedAt?: InputMaybe<DateTimeFilter>;
   user?: InputMaybe<UserRelationFilter>;
   userId?: InputMaybe<StringFilter>;
+  weekOfMonth?: InputMaybe<IntNullableFilter>;
 };
 
 export type RecurringTransactionWhereUniqueInput = {
@@ -3222,7 +3295,9 @@ export type RecurringTransactionWhereUniqueInput = {
   NOT?: InputMaybe<Array<RecurringTransactionWhereInput>>;
   OR?: InputMaybe<Array<RecurringTransactionWhereInput>>;
   createdAt?: InputMaybe<DateTimeFilter>;
-  dayOfMonth?: InputMaybe<IntFilter>;
+  dayMode?: InputMaybe<EnumDayModeFilter>;
+  dayOfMonth?: InputMaybe<IntNullableFilter>;
+  dayOfWeek?: InputMaybe<IntNullableFilter>;
   description?: InputMaybe<StringFilter>;
   destinyAccount?: InputMaybe<AccountNullableRelationFilter>;
   destinyAccountId?: InputMaybe<StringNullableFilter>;
@@ -3243,6 +3318,7 @@ export type RecurringTransactionWhereUniqueInput = {
   updatedAt?: InputMaybe<DateTimeFilter>;
   user?: InputMaybe<UserRelationFilter>;
   userId?: InputMaybe<StringFilter>;
+  weekOfMonth?: InputMaybe<IntNullableFilter>;
 };
 
 export enum Regime {
@@ -5008,7 +5084,10 @@ export type RecurringTransactionFragmentFragment = {
   type: TransactionType;
   paymentMethod: PaymentMethod | null;
   frequency: RecurrenceFrequency;
-  dayOfMonth: number;
+  dayMode: DayMode;
+  dayOfMonth: number | null;
+  dayOfWeek: number | null;
+  weekOfMonth: number | null;
   monthOfYear: number | null;
   startDate: any;
   endDate: any | null;
@@ -5064,7 +5143,10 @@ export type RecurringTransactionsQuery = {
         type: TransactionType;
         paymentMethod: PaymentMethod | null;
         frequency: RecurrenceFrequency;
-        dayOfMonth: number;
+        dayMode: DayMode;
+        dayOfMonth: number | null;
+        dayOfWeek: number | null;
+        weekOfMonth: number | null;
         monthOfYear: number | null;
         startDate: any;
         endDate: any | null;
@@ -5117,7 +5199,10 @@ export type RecurringTransactionQuery = {
     type: TransactionType;
     paymentMethod: PaymentMethod | null;
     frequency: RecurrenceFrequency;
-    dayOfMonth: number;
+    dayMode: DayMode;
+    dayOfMonth: number | null;
+    dayOfWeek: number | null;
+    weekOfMonth: number | null;
     monthOfYear: number | null;
     startDate: any;
     endDate: any | null;
@@ -5961,7 +6046,10 @@ export const RecurringTransactionFragmentFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'type' } },
           { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
           { kind: 'Field', name: { kind: 'Name', value: 'frequency' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dayMode' } },
           { kind: 'Field', name: { kind: 'Name', value: 'dayOfMonth' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dayOfWeek' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'weekOfMonth' } },
           { kind: 'Field', name: { kind: 'Name', value: 'monthOfYear' } },
           { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
@@ -8746,7 +8834,10 @@ export const RecurringTransactionsDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'type' } },
           { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
           { kind: 'Field', name: { kind: 'Name', value: 'frequency' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dayMode' } },
           { kind: 'Field', name: { kind: 'Name', value: 'dayOfMonth' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dayOfWeek' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'weekOfMonth' } },
           { kind: 'Field', name: { kind: 'Name', value: 'monthOfYear' } },
           { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
@@ -8893,7 +8984,10 @@ export const RecurringTransactionDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'type' } },
           { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
           { kind: 'Field', name: { kind: 'Name', value: 'frequency' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dayMode' } },
           { kind: 'Field', name: { kind: 'Name', value: 'dayOfMonth' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dayOfWeek' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'weekOfMonth' } },
           { kind: 'Field', name: { kind: 'Name', value: 'monthOfYear' } },
           { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
           { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },

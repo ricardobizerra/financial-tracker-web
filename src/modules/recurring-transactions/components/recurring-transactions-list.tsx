@@ -116,13 +116,29 @@ export function RecurringTransactionsList() {
 
   const formatRecurrenceInfo = (
     frequency: string,
-    dayOfMonth: number,
+    dayOfMonth: number | null,
     monthOfYear?: number | null,
+    dayOfWeek?: number | null,
   ) => {
-    if (frequency === 'YEARLY' && monthOfYear) {
-      return `Anual (dia ${dayOfMonth} de ${monthLabels[monthOfYear]})`;
+    const dayOfWeekNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+    switch (frequency) {
+      case 'WEEKLY':
+        return `Semanal (${dayOfWeekNames[dayOfWeek ?? 0]})`;
+      case 'BI_WEEKLY':
+        return `Quinzenal (${dayOfWeekNames[dayOfWeek ?? 0]})`;
+      case 'YEARLY':
+        if (monthOfYear && dayOfMonth) {
+          return `Anual (dia ${dayOfMonth} de ${monthLabels[monthOfYear]})`;
+        }
+        return 'Anual';
+      case 'MONTHLY':
+      default:
+        if (dayOfMonth) {
+          return `Mensal (dia ${dayOfMonth})`;
+        }
+        return 'Mensal';
     }
-    return `Mensal (dia ${dayOfMonth})`;
   };
 
   if (loading) {
@@ -206,6 +222,7 @@ export function RecurringTransactionsList() {
                     node.frequency,
                     node.dayOfMonth,
                     node.monthOfYear,
+                    node.dayOfWeek,
                   )}
                 </span>
               </TableCell>

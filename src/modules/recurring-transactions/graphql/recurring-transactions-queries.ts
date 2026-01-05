@@ -8,7 +8,10 @@ export const RecurringTransactionFragment = graphql(`
     type
     paymentMethod
     frequency
+    dayMode
     dayOfMonth
+    dayOfWeek
+    weekOfMonth
     monthOfYear
     startDate
     endDate

@@ -1,6 +1,8 @@
 import { RecurrenceFrequency } from '@/graphql/graphql';
 
 export const recurrenceFrequencyLabels: Record<RecurrenceFrequency, string> = {
+  [RecurrenceFrequency.Weekly]: 'Semanal',
+  [RecurrenceFrequency.BiWeekly]: 'Quinzenal',
   [RecurrenceFrequency.Monthly]: 'Mensal',
   [RecurrenceFrequency.Yearly]: 'Anual',
 };
