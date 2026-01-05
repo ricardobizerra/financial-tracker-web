@@ -4,4 +4,5 @@ export const selectSchema = z.object({
   value: z.string(),
   label: z.string(),
   data: z.any().optional(),
+  group: z.string().optional(),
 });

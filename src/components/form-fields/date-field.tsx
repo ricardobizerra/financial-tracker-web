@@ -15,10 +15,14 @@ import { CalendarIcon } from 'lucide-react';
 
 export interface DateFieldProps extends BaseFieldProps {
   captionLayout?: CalendarProps['captionLayout'];
+  minDate?: Date;
+  maxDate?: Date;
 }
 
 export function DateField({
   captionLayout = 'label',
+  minDate,
+  maxDate,
   ...baseProps
 }: DateFieldProps) {
   const {
@@ -52,6 +56,10 @@ export function DateField({
           selected={value}
           onSelect={onChange}
           captionLayout={captionLayout}
+          disabled={[
+            ...(!!minDate ? [{ before: minDate }] : []),
+            ...(!!maxDate ? [{ after: maxDate }] : []),
+          ]}
         />
       </PopoverContent>
     </Popover>

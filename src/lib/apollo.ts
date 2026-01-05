@@ -54,7 +54,7 @@ export const createApolloClient = (token: string | null) => {
     cache: new InMemoryCache(),
     defaultOptions: {
       watchQuery: {
-        fetchPolicy: 'cache-and-network',
+        fetchPolicy: 'cache-first',
       },
     },
   });

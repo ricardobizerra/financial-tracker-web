@@ -1,0 +1,119 @@
+import { AccountFragmentFragment, AccountType } from '@/graphql/graphql';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { formatCurrency } from '@/lib/formatters/currency';
+import { cn } from '@/lib/utils';
+import { AccountTypeBadge } from './account-type-badge';
+import { AccountStatusBadge } from './account-status-badge';
+import { LastUpdatedLabel } from '@/components/last-updated-label';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { EyeIcon } from 'lucide-react';
+import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
+
+function getDisplayInfo(account: AccountFragmentFragment): {
+  label: string;
+  value: number;
+  colorClasses: string;
+} {
+  switch (account.type) {
+    case AccountType.CreditCard: {
+      const value = Number(account.currentBillingAmount ?? 0);
+      return {
+        label: 'Fatura atual',
+        value,
+        colorClasses:
+          value > 0
+            ? 'text-red-700 dark:text-red-500'
+            : 'text-muted-foreground',
+      };
+    }
+    case AccountType.Investment:
+    case AccountType.Savings: {
+      const value = Number(account.totalInvested ?? 0);
+      return {
+        label: 'Total investido',
+        value,
+        colorClasses:
+          value >= 0
+            ? 'text-green-700 dark:text-green-500'
+            : 'text-red-700 dark:text-red-500',
+      };
+    }
+    default: {
+      const value = Number(account.balance ?? 0);
+      return {
+        label: 'Saldo',
+        value,
+        colorClasses:
+          value >= 0
+            ? 'text-green-700 dark:text-green-500'
+            : 'text-red-700 dark:text-red-500',
+      };
+    }
+  }
+}
+
+export function AccountCard({ account }: { account: AccountFragmentFragment }) {
+  const { label, value, colorClasses } = getDisplayInfo(account);
+
+  return (
+    <Card
+      key={account.id}
+      className="relative overflow-hidden border-l-4 transition-shadow hover:shadow-md"
+      style={{
+        borderColor: account.institution?.color || '#e5e7eb',
+      }}
+    >
+      <CardContent className="p-4">
+        <CardHeader className="mb-4 flex flex-row items-center justify-between gap-4 p-0">
+          <div className="flex items-center gap-3">
+            <InstitutionLogo
+              logoUrl={account.institution?.logoUrl}
+              name={account.institution?.name || 'Sem instituição'}
+              color={account.institution?.color}
+            />
+            <div>
+              <CardTitle className="text-base">{account.name}</CardTitle>
+              <CardDescription className="text-xs">
+                {account.institution?.name || 'Sem instituição'}
+              </CardDescription>
+            </div>
+          </div>
+          <div className="flex flex-col items-end">
+            <span className="text-xs text-muted-foreground">{label}</span>
+            <span className={cn('text-lg font-semibold', colorClasses)}>
+              {formatCurrency(value)}
+            </span>
+          </div>
+        </CardHeader>
+
+        <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <AccountTypeBadge type={account.type} />
+            <AccountStatusBadge isActive={account.isActive} />
+          </div>
+          <LastUpdatedLabel updatedAt={account.updatedAt} />
+        </div>
+
+        <CardFooter className="flex flex-wrap gap-4 px-0 pb-0 pt-6">
+          <Button variant="outline" size="sm" className="flex-1" asChild>
+            <Link
+              href={`/accounts/${account.id}`}
+              className="flex items-center gap-1"
+            >
+              <EyeIcon className="h-4 w-4" />
+              Ver conta
+            </Link>
+          </Button>
+        </CardFooter>
+      </CardContent>
+    </Card>
+  );
+}

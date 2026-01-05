@@ -1,6 +1,12 @@
 'use client';
 
-import { PiggyBank } from 'lucide-react';
+import {
+  ArrowLeftRight,
+  Landmark,
+  PiggyBank,
+  Repeat,
+  TrendingUp,
+} from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -27,11 +33,32 @@ import { APP_CONFIG } from '@/lib/config';
 
 const items = [
   {
+    title: 'Fluxo de Caixa',
+    url: '/cash-flow',
+    icon: TrendingUp,
+  },
+  {
+    title: 'Contas',
+    url: '/accounts',
+    icon: Landmark,
+  },
+  {
     title: 'Investimentos',
     url: '/investments',
     icon: PiggyBank,
   },
+  {
+    title: 'Movimentações',
+    url: '/transactions',
+    icon: ArrowLeftRight,
+  },
+  {
+    title: 'Recorrências',
+    url: '/recurring-transactions',
+    icon: Repeat,
+  },
 ];
+
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -72,7 +99,11 @@ export function AppSidebar() {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip={item.title}
+                    data-active={pathname.startsWith(item.url)}
+                  >
                     <a href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>

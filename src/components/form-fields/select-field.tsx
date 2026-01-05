@@ -6,25 +6,61 @@ import { BaseField, BaseFieldProps } from './base-field';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
 import { selectSchema } from './utils/select-schema';
 import { z } from 'zod';
+import { NetworkStatus } from '@apollo/client';
+import { ReactNode } from 'react';
 
 interface SelectFieldProps extends BaseFieldProps {
   options: z.infer<typeof selectSchema>[];
+  renderLabel?: (option: z.infer<typeof selectSchema>) => React.ReactNode;
+  renderGroup?: (groupName: string) => React.ReactNode;
+  networkStatus?: NetworkStatus;
+  hasMore?: boolean;
+  fetchMore?: () => void;
+  NoResultAction?: ReactNode;
 }
 
-export function SelectField({ options, ...baseProps }: SelectFieldProps) {
+export function SelectField({
+  options,
+  renderLabel,
+  renderGroup,
+  networkStatus,
+  hasMore = false,
+  fetchMore,
+  NoResultAction,
+  ...baseProps
+}: SelectFieldProps) {
   const {
     field: { onChange, value, ...field },
   } = useTsController<z.infer<typeof selectSchema>>();
   const { placeholder } = useDescription();
   const { setValue } = useFormContext();
 
-  console.log('value', value);
+  const loading = networkStatus === NetworkStatus.loading;
+  const fetchMoreLoading = networkStatus === NetworkStatus.fetchMore;
+
+  const hasGroups = options?.some((option) => !!option.group);
+
+  const groupedOptions = hasGroups
+    ? options?.reduce<Record<string, z.infer<typeof selectSchema>[]>>(
+        (groups, option) => {
+          const group = option.group || 'Other';
+          if (!groups[group]) {
+            groups[group] = [];
+          }
+          groups[group].push(option);
+          return groups;
+        },
+        {} as Record<string, z.infer<typeof selectSchema>[]>,
+      )
+    : undefined;
 
   return (
     <Select
@@ -43,11 +79,51 @@ export function SelectField({ options, ...baseProps }: SelectFieldProps) {
         </SelectTrigger>
       </BaseField>
       <SelectContent>
-        {options?.map((option) => (
-          <SelectItem key={option.value} value={option.value}>
-            {option.label}
-          </SelectItem>
-        ))}
+        {hasGroups
+          ? Object.entries(groupedOptions || {}).map(
+              ([groupName, groupOptions]) => (
+                <SelectGroup key={groupName}>
+                  {renderGroup ? (
+                    renderGroup(groupName)
+                  ) : (
+                    <SelectLabel>{groupName}</SelectLabel>
+                  )}
+                  {groupOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {renderLabel ? renderLabel(option) : option.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              ),
+            )
+          : options?.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {renderLabel ? renderLabel(option) : option.label}
+              </SelectItem>
+            ))}
+        {options.length === 0 && !loading && (
+          <div
+            className="relative flex w-full cursor-default select-none flex-col items-center justify-center gap-2 rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground"
+            onClick={fetchMore}
+          >
+            <p>Sem resultados</p>
+
+            {NoResultAction}
+          </div>
+        )}
+        {hasMore && (
+          <div
+            className="relative flex w-full cursor-default select-none items-center justify-center rounded-sm py-1.5 pl-2 pr-8 text-sm text-muted-foreground outline-none focus:bg-accent focus:text-accent-foreground"
+            onClick={fetchMore}
+          >
+            {fetchMoreLoading ? 'Carregando...' : 'Carregar mais'}
+          </div>
+        )}
+        {loading && (
+          <div className="animate-pulse py-2 text-center text-sm text-muted-foreground">
+            Carregando...
+          </div>
+        )}
       </SelectContent>
     </Select>
   );
