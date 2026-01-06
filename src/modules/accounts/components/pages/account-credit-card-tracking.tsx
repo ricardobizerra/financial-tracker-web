@@ -53,7 +53,6 @@ const closeBillingSchema = z.object({
   closingDate: formFields.date.describe('Data de fechamento'),
 });
 
-
 function getTextColorForBackground(hexColor: string | null): string {
   if (!hexColor) return '#000000';
 
@@ -139,8 +138,6 @@ export function AccountCreditCardTracking({
       setIsProcessing(false);
     }
   };
-
-
 
   const loadBilling = async (billingId: string) => {
     await refetch({ accountId: account.id, id: billingId });
@@ -577,7 +574,6 @@ export function AccountCreditCardTracking({
                 </Dialog>
               </>
             )}
-
           </div>
         </CardContent>
       </Card>

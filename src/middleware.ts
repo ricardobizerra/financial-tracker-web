@@ -32,8 +32,7 @@ export async function middleware(request: NextRequest) {
   });
 
   const isApiRoute = request.nextUrl.pathname.startsWith('/api');
-  const isAuthCallbackRoute =
-    request.nextUrl.pathname === '/api/auth/callback';
+  const isAuthCallbackRoute = request.nextUrl.pathname === '/api/auth/callback';
 
   if ((isPrivateRoute || isApiRoute) && !isAuthCallbackRoute) {
     if (!accessToken) {

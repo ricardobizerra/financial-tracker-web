@@ -10,10 +10,7 @@ export async function GET(request: NextRequest) {
 
   // Validate token presence
   if (!token) {
-    return NextResponse.json(
-      { error: 'Token não fornecido' },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: 'Token não fornecido' }, { status: 400 });
   }
 
   // Verify JWT signature and expiration before setting cookie

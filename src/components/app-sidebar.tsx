@@ -59,7 +59,6 @@ const items = [
   },
 ];
 
-
 export function AppSidebar() {
   const { state } = useSidebar();
   const pathname = usePathname();

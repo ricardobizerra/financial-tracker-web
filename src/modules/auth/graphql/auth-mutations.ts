@@ -39,4 +39,3 @@ export const ResetPasswordMutation = graphql(`
     resetPassword(token: $token, newPassword: $newPassword)
   }
 `);
-

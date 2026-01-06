@@ -148,9 +148,13 @@ export function TransactionsCardView({
               Nenhuma transação encontrada.
             </p>
             <div className="mt-4 flex flex-wrap justify-center gap-2 md:flex-nowrap">
-              {!isDebitCard && <IncomeTransactionCreateForm accountId={accountId} />}
+              {!isDebitCard && (
+                <IncomeTransactionCreateForm accountId={accountId} />
+              )}
               <ExpenseTransactionCreateForm accountId={accountId} />
-              {!isDebitCard && <BetweenAccountsTransactionCreateForm accountId={accountId} />}
+              {!isDebitCard && (
+                <BetweenAccountsTransactionCreateForm accountId={accountId} />
+              )}
             </div>
           </CardContent>
         </Card>
@@ -167,7 +171,9 @@ export function TransactionsCardView({
       <div className="flex flex-wrap items-center gap-2 md:flex-nowrap">
         {!isDebitCard && <IncomeTransactionCreateForm accountId={accountId} />}
         <ExpenseTransactionCreateForm accountId={accountId} />
-        {!isDebitCard && <BetweenAccountsTransactionCreateForm accountId={accountId} />}
+        {!isDebitCard && (
+          <BetweenAccountsTransactionCreateForm accountId={accountId} />
+        )}
       </div>
 
       {/* Grupos de transações - layout kanban em telas grandes */}

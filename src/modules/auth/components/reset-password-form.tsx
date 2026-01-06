@@ -21,7 +21,9 @@ import { z } from 'zod';
 
 const schema = z
   .object({
-    password: formFields.password.describe('Nova senha // Digite sua nova senha'),
+    password: formFields.password.describe(
+      'Nova senha // Digite sua nova senha',
+    ),
     confirmPassword: formFields.password.describe(
       'Confirmar senha // Confirme sua nova senha',
     ),
@@ -103,9 +105,7 @@ export function ResetPasswordForm() {
             <CheckCircleIcon className="h-12 w-12 text-green-500" />
           </div>
           <CardTitle className="text-lg">Senha alterada!</CardTitle>
-          <CardDescription>
-            Sua senha foi alterada com sucesso.
-          </CardDescription>
+          <CardDescription>Sua senha foi alterada com sucesso.</CardDescription>
         </CardHeader>
         <CardFooter>
           <Button onClick={() => router.push('/login')} className="w-full">

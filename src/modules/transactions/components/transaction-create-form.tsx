@@ -111,7 +111,15 @@ interface TransactionCreateFormProps {
 
 // Helper function to get day of week name in Portuguese
 const getDayOfWeekName = (dayOfWeek: number): string => {
-  const days = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
+  const days = [
+    'domingo',
+    'segunda-feira',
+    'terça-feira',
+    'quarta-feira',
+    'quinta-feira',
+    'sexta-feira',
+    'sábado',
+  ];
   return days[dayOfWeek] || '';
 };
 
@@ -127,7 +135,7 @@ const getRecurrenceSummary = (
   dayMode: DayMode,
   dayOfWeek: number,
   weekOfMonth: number,
-  selectedDate?: Date | null
+  selectedDate?: Date | null,
 ): string => {
   const dayName = getDayOfWeekName(dayOfWeek);
   const weekOrdinal = getWeekOrdinal(weekOfMonth);
@@ -139,11 +147,13 @@ const getRecurrenceSummary = (
       return `A cada duas semanas às ${dayName}s`;
     case RecurrenceFrequency.Monthly:
     case RecurrenceFrequency.Yearly:
-      const periodText = frequency === RecurrenceFrequency.Monthly ? 'todo mês' : 'todo ano';
+      const periodText =
+        frequency === RecurrenceFrequency.Monthly ? 'todo mês' : 'todo ano';
       switch (dayMode) {
         case DayMode.SpecificDay:
           if (selectedDate) {
-            const dayFormat = frequency === RecurrenceFrequency.Monthly ? 'dd' : "dd 'de' MMMM";
+            const dayFormat =
+              frequency === RecurrenceFrequency.Monthly ? 'dd' : "dd 'de' MMMM";
             return `Esta transação será repetida ${periodText} no dia ${format(selectedDate, dayFormat, { locale: ptBR })}`;
           }
           return `Esta transação será repetida ${periodText}`;
@@ -168,7 +178,7 @@ const getRecurrenceDescription = (
   frequency: RecurrenceFrequency,
   dayMode: DayMode,
   dayOfWeek: number,
-  weekOfMonth: number
+  weekOfMonth: number,
 ): string => {
   const dayName = getDayOfWeekName(dayOfWeek);
   const weekOrdinal = getWeekOrdinal(weekOfMonth);
@@ -180,7 +190,10 @@ const getRecurrenceDescription = (
       return `Será repetida a cada duas semanas`;
     case RecurrenceFrequency.Monthly:
     case RecurrenceFrequency.Yearly:
-      const periodText = frequency === RecurrenceFrequency.Monthly ? 'mensalmente' : 'anualmente';
+      const periodText =
+        frequency === RecurrenceFrequency.Monthly
+          ? 'mensalmente'
+          : 'anualmente';
       switch (dayMode) {
         case DayMode.LastDay:
           return `Será repetida no último dia de cada ${frequency === RecurrenceFrequency.Monthly ? 'mês' : 'ano'}`;
@@ -505,8 +518,6 @@ export function IncomeTransactionCreateForm({
             <div />
           </DialogFooter>
         )}
-
-
       </DialogContent>
     </Dialog>
   );
@@ -535,11 +546,14 @@ function IncomeTransactionFormDetails({
   );
   const [createRecurringTransaction, { loading: recurringLoading }] =
     useMutation(CreateRecurringTransactionMutation);
-  const loading = isEditMode ? updateLoading : createLoading || recurringLoading;
+  const loading = isEditMode
+    ? updateLoading
+    : createLoading || recurringLoading;
 
   // Internal step state for recurrence configuration
   const [showRecurrenceStep, setShowRecurrenceStep] = useState(false);
-  const [recurrenceFrequency, setRecurrenceFrequency] = useState<RecurrenceFrequency>(RecurrenceFrequency.Monthly);
+  const [recurrenceFrequency, setRecurrenceFrequency] =
+    useState<RecurrenceFrequency>(RecurrenceFrequency.Monthly);
   const [dayMode, setDayMode] = useState<DayMode>(DayMode.SpecificDay);
   const [dayOfWeek, setDayOfWeek] = useState<number>(1); // 0-6, default Monday
   const [weekOfMonth, setWeekOfMonth] = useState<number>(1); // 1-5, default 1st
@@ -660,19 +674,31 @@ function IncomeTransactionFormDetails({
                   destinyAccountId: destinyAccountId,
                   paymentMethod: data.paymentMethod?.value as PaymentMethod,
                   frequency: recurrenceFrequency,
-                  dayMode: (recurrenceFrequency === RecurrenceFrequency.Weekly || recurrenceFrequency === RecurrenceFrequency.BiWeekly)
-                    ? DayMode.SpecificDay
-                    : dayMode,
-                  dayOfMonth: dayMode === DayMode.SpecificDay && !(recurrenceFrequency === RecurrenceFrequency.Weekly || recurrenceFrequency === RecurrenceFrequency.BiWeekly)
-                    ? (data.date?.getDate() ?? new Date().getDate())
-                    : undefined,
-                  dayOfWeek: ((recurrenceFrequency === RecurrenceFrequency.Weekly || recurrenceFrequency === RecurrenceFrequency.BiWeekly) || dayMode === DayMode.NthWeekday)
-                    ? dayOfWeek
-                    : undefined,
-                  weekOfMonth: dayMode === DayMode.NthWeekday ? weekOfMonth : undefined,
-                  monthOfYear: recurrenceFrequency === RecurrenceFrequency.Yearly
-                    ? (data.date?.getMonth() ?? 0) + 1
-                    : undefined,
+                  dayMode:
+                    recurrenceFrequency === RecurrenceFrequency.Weekly ||
+                    recurrenceFrequency === RecurrenceFrequency.BiWeekly
+                      ? DayMode.SpecificDay
+                      : dayMode,
+                  dayOfMonth:
+                    dayMode === DayMode.SpecificDay &&
+                    !(
+                      recurrenceFrequency === RecurrenceFrequency.Weekly ||
+                      recurrenceFrequency === RecurrenceFrequency.BiWeekly
+                    )
+                      ? (data.date?.getDate() ?? new Date().getDate())
+                      : undefined,
+                  dayOfWeek:
+                    recurrenceFrequency === RecurrenceFrequency.Weekly ||
+                    recurrenceFrequency === RecurrenceFrequency.BiWeekly ||
+                    dayMode === DayMode.NthWeekday
+                      ? dayOfWeek
+                      : undefined,
+                  weekOfMonth:
+                    dayMode === DayMode.NthWeekday ? weekOfMonth : undefined,
+                  monthOfYear:
+                    recurrenceFrequency === RecurrenceFrequency.Yearly
+                      ? (data.date?.getMonth() ?? 0) + 1
+                      : undefined,
                   startDate: data.date ?? new Date(),
                 },
               },
@@ -686,7 +712,12 @@ function IncomeTransactionFormDetails({
               ],
               onCompleted: () => {
                 toast.success('Entrada recorrente criada!', {
-                  description: getRecurrenceDescription(recurrenceFrequency, dayMode, dayOfWeek, weekOfMonth),
+                  description: getRecurrenceDescription(
+                    recurrenceFrequency,
+                    dayMode,
+                    dayOfWeek,
+                    weekOfMonth,
+                  ),
                 });
                 onClose();
               },
@@ -767,7 +798,12 @@ function IncomeTransactionFormDetails({
                 type="button"
                 variant="secondary"
                 onClick={async () => {
-                  const isValid = await form.trigger(['date', 'amount', 'description', 'paymentMethod']);
+                  const isValid = await form.trigger([
+                    'date',
+                    'amount',
+                    'description',
+                    'paymentMethod',
+                  ]);
                   if (isValid) {
                     setShowRecurrenceStep(true);
                   }
@@ -800,7 +836,9 @@ function IncomeTransactionFormDetails({
               <div className="rounded-lg border border-muted bg-muted/30 p-4">
                 <p className="text-sm text-muted-foreground">Valor</p>
                 <p className="text-lg font-semibold">
-                  {form.getValues('amount') ? formatCurrency(form.getValues('amount')) : 'R$ 0,00'}
+                  {form.getValues('amount')
+                    ? formatCurrency(form.getValues('amount'))
+                    : 'R$ 0,00'}
                 </p>
               </div>
 
@@ -810,7 +848,9 @@ function IncomeTransactionFormDetails({
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
-                    onClick={() => setRecurrenceFrequency(RecurrenceFrequency.Weekly)}
+                    onClick={() =>
+                      setRecurrenceFrequency(RecurrenceFrequency.Weekly)
+                    }
                     className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
                       recurrenceFrequency === RecurrenceFrequency.Weekly
                         ? 'border-primary bg-primary/5 text-primary'
@@ -821,7 +861,9 @@ function IncomeTransactionFormDetails({
                   </button>
                   <button
                     type="button"
-                    onClick={() => setRecurrenceFrequency(RecurrenceFrequency.BiWeekly)}
+                    onClick={() =>
+                      setRecurrenceFrequency(RecurrenceFrequency.BiWeekly)
+                    }
                     className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
                       recurrenceFrequency === RecurrenceFrequency.BiWeekly
                         ? 'border-primary bg-primary/5 text-primary'
@@ -832,7 +874,9 @@ function IncomeTransactionFormDetails({
                   </button>
                   <button
                     type="button"
-                    onClick={() => setRecurrenceFrequency(RecurrenceFrequency.Monthly)}
+                    onClick={() =>
+                      setRecurrenceFrequency(RecurrenceFrequency.Monthly)
+                    }
                     className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
                       recurrenceFrequency === RecurrenceFrequency.Monthly
                         ? 'border-primary bg-primary/5 text-primary'
@@ -843,7 +887,9 @@ function IncomeTransactionFormDetails({
                   </button>
                   <button
                     type="button"
-                    onClick={() => setRecurrenceFrequency(RecurrenceFrequency.Yearly)}
+                    onClick={() =>
+                      setRecurrenceFrequency(RecurrenceFrequency.Yearly)
+                    }
                     className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
                       recurrenceFrequency === RecurrenceFrequency.Yearly
                         ? 'border-primary bg-primary/5 text-primary'
@@ -856,32 +902,41 @@ function IncomeTransactionFormDetails({
               </div>
 
               {/* Day of week selection for weekly/bi-weekly */}
-              {(recurrenceFrequency === RecurrenceFrequency.Weekly || recurrenceFrequency === RecurrenceFrequency.BiWeekly) && (
+              {(recurrenceFrequency === RecurrenceFrequency.Weekly ||
+                recurrenceFrequency === RecurrenceFrequency.BiWeekly) && (
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Dia da semana</label>
-                  <div className="flex gap-1 flex-wrap">
-                    {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day, index) => (
-                      <button
-                        key={day}
-                        type="button"
-                        onClick={() => setDayOfWeek(index)}
-                        className={`flex-1 min-w-[40px] rounded-lg border-2 px-2 py-2 text-xs font-medium transition-all ${
-                          dayOfWeek === index
-                            ? 'border-primary bg-primary/5 text-primary'
-                            : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                        }`}
-                      >
-                        {day}
-                      </button>
-                    ))}
+                  <div className="flex flex-wrap gap-1">
+                    {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(
+                      (day, index) => (
+                        <button
+                          key={day}
+                          type="button"
+                          onClick={() => setDayOfWeek(index)}
+                          className={`min-w-[40px] flex-1 rounded-lg border-2 px-2 py-2 text-xs font-medium transition-all ${
+                            dayOfWeek === index
+                              ? 'border-primary bg-primary/5 text-primary'
+                              : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
+                          }`}
+                        >
+                          {day}
+                        </button>
+                      ),
+                    )}
                   </div>
                 </div>
               )}
 
               {/* Day mode selection for monthly/yearly */}
-              {(recurrenceFrequency === RecurrenceFrequency.Monthly || recurrenceFrequency === RecurrenceFrequency.Yearly) && (
+              {(recurrenceFrequency === RecurrenceFrequency.Monthly ||
+                recurrenceFrequency === RecurrenceFrequency.Yearly) && (
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Dia do {recurrenceFrequency === RecurrenceFrequency.Monthly ? 'mês' : 'ano'}</label>
+                  <label className="text-sm font-medium">
+                    Dia do{' '}
+                    {recurrenceFrequency === RecurrenceFrequency.Monthly
+                      ? 'mês'
+                      : 'ano'}
+                  </label>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
@@ -943,54 +998,68 @@ function IncomeTransactionFormDetails({
               )}
 
               {/* Nth weekday selection */}
-              {dayMode === DayMode.NthWeekday && (recurrenceFrequency === RecurrenceFrequency.Monthly || recurrenceFrequency === RecurrenceFrequency.Yearly) && (
-                <>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Qual semana?</label>
-                    <div className="flex gap-2">
-                      {['1ª', '2ª', '3ª', '4ª', '5ª'].map((week, index) => (
-                        <button
-                          key={week}
-                          type="button"
-                          onClick={() => setWeekOfMonth(index + 1)}
-                          className={`flex-1 rounded-lg border-2 px-2 py-2 text-sm font-medium transition-all ${
-                            weekOfMonth === index + 1
-                              ? 'border-primary bg-primary/5 text-primary'
-                              : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                          }`}
-                        >
-                          {week}
-                        </button>
-                      ))}
+              {dayMode === DayMode.NthWeekday &&
+                (recurrenceFrequency === RecurrenceFrequency.Monthly ||
+                  recurrenceFrequency === RecurrenceFrequency.Yearly) && (
+                  <>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        Qual semana?
+                      </label>
+                      <div className="flex gap-2">
+                        {['1ª', '2ª', '3ª', '4ª', '5ª'].map((week, index) => (
+                          <button
+                            key={week}
+                            type="button"
+                            onClick={() => setWeekOfMonth(index + 1)}
+                            className={`flex-1 rounded-lg border-2 px-2 py-2 text-sm font-medium transition-all ${
+                              weekOfMonth === index + 1
+                                ? 'border-primary bg-primary/5 text-primary'
+                                : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
+                            }`}
+                          >
+                            {week}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Dia da semana</label>
-                    <div className="flex gap-1 flex-wrap">
-                      {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day, index) => (
-                        <button
-                          key={day}
-                          type="button"
-                          onClick={() => setDayOfWeek(index)}
-                          className={`flex-1 min-w-[40px] rounded-lg border-2 px-2 py-2 text-xs font-medium transition-all ${
-                            dayOfWeek === index
-                              ? 'border-primary bg-primary/5 text-primary'
-                              : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                          }`}
-                        >
-                          {day}
-                        </button>
-                      ))}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        Dia da semana
+                      </label>
+                      <div className="flex flex-wrap gap-1">
+                        {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(
+                          (day, index) => (
+                            <button
+                              key={day}
+                              type="button"
+                              onClick={() => setDayOfWeek(index)}
+                              className={`min-w-[40px] flex-1 rounded-lg border-2 px-2 py-2 text-xs font-medium transition-all ${
+                                dayOfWeek === index
+                                  ? 'border-primary bg-primary/5 text-primary'
+                                  : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
+                              }`}
+                            >
+                              {day}
+                            </button>
+                          ),
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </>
-              )}
+                  </>
+                )}
 
               {/* Summary */}
               <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
                 <p className="text-sm text-muted-foreground">Resumo</p>
                 <p className="text-sm font-medium text-primary">
-                  {getRecurrenceSummary(recurrenceFrequency, dayMode, dayOfWeek, weekOfMonth, form.getValues('date'))}
+                  {getRecurrenceSummary(
+                    recurrenceFrequency,
+                    dayMode,
+                    dayOfWeek,
+                    weekOfMonth,
+                    form.getValues('date'),
+                  )}
                 </p>
               </div>
             </div>
@@ -1205,7 +1274,9 @@ export function ExpenseTransactionCreateForm({
               presetPaymentMethod={paymentMethod}
               onBeforeSubmit={onBeforeSubmit}
               onClose={() => handleOpenChange(false)}
-              onBack={!isEditMode && !hasPreselectedAccount ? prevStep : undefined}
+              onBack={
+                !isEditMode && !hasPreselectedAccount ? prevStep : undefined
+              }
             />
           )}
 
@@ -1214,8 +1285,6 @@ export function ExpenseTransactionCreateForm({
             <div />
           </DialogFooter>
         )}
-
-
       </DialogContent>
     </Dialog>
   );
@@ -1267,7 +1336,8 @@ function ExpenseTransactionFormDetails({
   const [showInstallmentStep, setShowInstallmentStep] = useState(false);
   // Internal step state for recurrence configuration
   const [showRecurrenceStep, setShowRecurrenceStep] = useState(false);
-  const [recurrenceFrequency, setRecurrenceFrequency] = useState<RecurrenceFrequency>(RecurrenceFrequency.Monthly);
+  const [recurrenceFrequency, setRecurrenceFrequency] =
+    useState<RecurrenceFrequency>(RecurrenceFrequency.Monthly);
   const [dayMode, setDayMode] = useState<DayMode>(DayMode.SpecificDay);
   const [dayOfWeek, setDayOfWeek] = useState<number>(1); // 0-6, default Monday
   const [weekOfMonth, setWeekOfMonth] = useState<number>(1); // 1-5, default 1st
@@ -1472,10 +1542,14 @@ function ExpenseTransactionFormDetails({
           } else if (showRecurrenceStep) {
             // If in recurrence step, create recurring transaction
             // Build data object based on frequency and dayMode
-            const isWeeklyOrBiWeekly = recurrenceFrequency === RecurrenceFrequency.Weekly || recurrenceFrequency === RecurrenceFrequency.BiWeekly;
+            const isWeeklyOrBiWeekly =
+              recurrenceFrequency === RecurrenceFrequency.Weekly ||
+              recurrenceFrequency === RecurrenceFrequency.BiWeekly;
             const isYearly = recurrenceFrequency === RecurrenceFrequency.Yearly;
-            const needsDayOfWeek = isWeeklyOrBiWeekly || dayMode === DayMode.NthWeekday;
-            const needsDayOfMonth = dayMode === DayMode.SpecificDay && !isWeeklyOrBiWeekly;
+            const needsDayOfWeek =
+              isWeeklyOrBiWeekly || dayMode === DayMode.NthWeekday;
+            const needsDayOfMonth =
+              dayMode === DayMode.SpecificDay && !isWeeklyOrBiWeekly;
 
             await createRecurringTransaction({
               variables: {
@@ -1487,8 +1561,9 @@ function ExpenseTransactionFormDetails({
                   dayMode: isWeeklyOrBiWeekly ? DayMode.SpecificDay : dayMode,
                   dayOfMonth: needsDayOfMonth ? data.date.getDate() : undefined,
                   dayOfWeek: needsDayOfWeek ? dayOfWeek : undefined,
-                  weekOfMonth: dayMode === DayMode.NthWeekday ? weekOfMonth : undefined,
-                  monthOfYear: isYearly ? (data.date.getMonth() + 1) : undefined,
+                  weekOfMonth:
+                    dayMode === DayMode.NthWeekday ? weekOfMonth : undefined,
+                  monthOfYear: isYearly ? data.date.getMonth() + 1 : undefined,
                   sourceAccountId: sourceAccountId,
                   type: TransactionType.Expense,
                   paymentMethod: data.paymentMethod?.value as PaymentMethod,
@@ -1504,7 +1579,12 @@ function ExpenseTransactionFormDetails({
               ],
               onCompleted: () => {
                 toast.success('Despesa recorrente criada!', {
-                  description: getRecurrenceDescription(recurrenceFrequency, dayMode, dayOfWeek, weekOfMonth),
+                  description: getRecurrenceDescription(
+                    recurrenceFrequency,
+                    dayMode,
+                    dayOfWeek,
+                    weekOfMonth,
+                  ),
                 });
                 onClose();
               },
@@ -1593,24 +1673,33 @@ function ExpenseTransactionFormDetails({
           {/* Action buttons */}
           <div className="flex gap-2">
             {/* Parcelar button - only for credit cards, not debit cards */}
-            {!showInstallmentStep && !showRecurrenceStep && !isEditMode && isCreditCardAccount && !isDebitCard && (
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={async () => {
-                  // Validate form before navigating to installment step
-                  const fieldsToValidate = showPaymentMethod
-                    ? (['date', 'amount', 'description', 'paymentMethod'] as const)
-                    : (['date', 'amount', 'description'] as const);
-                  const isValid = await form.trigger(fieldsToValidate);
-                  if (isValid) {
-                    setShowInstallmentStep(true);
-                  }
-                }}
-              >
-                Parcelar
-              </Button>
-            )}
+            {!showInstallmentStep &&
+              !showRecurrenceStep &&
+              !isEditMode &&
+              isCreditCardAccount &&
+              !isDebitCard && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={async () => {
+                    // Validate form before navigating to installment step
+                    const fieldsToValidate = showPaymentMethod
+                      ? ([
+                          'date',
+                          'amount',
+                          'description',
+                          'paymentMethod',
+                        ] as const)
+                      : (['date', 'amount', 'description'] as const);
+                    const isValid = await form.trigger(fieldsToValidate);
+                    if (isValid) {
+                      setShowInstallmentStep(true);
+                    }
+                  }}
+                >
+                  Parcelar
+                </Button>
+              )}
             {/* Repetir button - available for all accounts */}
             {!showInstallmentStep && !showRecurrenceStep && !isEditMode && (
               <Button
@@ -1619,7 +1708,12 @@ function ExpenseTransactionFormDetails({
                 onClick={async () => {
                   // Validate form before navigating to recurrence step
                   const fieldsToValidate = showPaymentMethod
-                    ? (['date', 'amount', 'description', 'paymentMethod'] as const)
+                    ? ([
+                        'date',
+                        'amount',
+                        'description',
+                        'paymentMethod',
+                      ] as const)
                     : (['date', 'amount', 'description'] as const);
                   const isValid = await form.trigger(fieldsToValidate);
                   if (isValid) {
@@ -1674,14 +1768,20 @@ function ExpenseTransactionFormDetails({
                 {installmentCount}
 
                 {/* Installment value calculation */}
-                {watchedInstallmentCount && watchedInstallmentCount > 1 && watchedAmount && (
-                  <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-                    <p className="text-sm text-muted-foreground">Valor de cada parcela</p>
-                    <p className="text-lg font-semibold text-primary">
-                      {formatCurrency(watchedAmount / watchedInstallmentCount)}
-                    </p>
-                  </div>
-                )}
+                {watchedInstallmentCount &&
+                  watchedInstallmentCount > 1 &&
+                  watchedAmount && (
+                    <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+                      <p className="text-sm text-muted-foreground">
+                        Valor de cada parcela
+                      </p>
+                      <p className="text-lg font-semibold text-primary">
+                        {formatCurrency(
+                          watchedAmount / watchedInstallmentCount,
+                        )}
+                      </p>
+                    </div>
+                  )}
               </div>
             </>
           )}
@@ -1704,7 +1804,9 @@ function ExpenseTransactionFormDetails({
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
-                      onClick={() => setRecurrenceFrequency(RecurrenceFrequency.Weekly)}
+                      onClick={() =>
+                        setRecurrenceFrequency(RecurrenceFrequency.Weekly)
+                      }
                       className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
                         recurrenceFrequency === RecurrenceFrequency.Weekly
                           ? 'border-primary bg-primary/5 text-primary'
@@ -1715,7 +1817,9 @@ function ExpenseTransactionFormDetails({
                     </button>
                     <button
                       type="button"
-                      onClick={() => setRecurrenceFrequency(RecurrenceFrequency.BiWeekly)}
+                      onClick={() =>
+                        setRecurrenceFrequency(RecurrenceFrequency.BiWeekly)
+                      }
                       className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
                         recurrenceFrequency === RecurrenceFrequency.BiWeekly
                           ? 'border-primary bg-primary/5 text-primary'
@@ -1726,7 +1830,9 @@ function ExpenseTransactionFormDetails({
                     </button>
                     <button
                       type="button"
-                      onClick={() => setRecurrenceFrequency(RecurrenceFrequency.Monthly)}
+                      onClick={() =>
+                        setRecurrenceFrequency(RecurrenceFrequency.Monthly)
+                      }
                       className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
                         recurrenceFrequency === RecurrenceFrequency.Monthly
                           ? 'border-primary bg-primary/5 text-primary'
@@ -1737,7 +1843,9 @@ function ExpenseTransactionFormDetails({
                     </button>
                     <button
                       type="button"
-                      onClick={() => setRecurrenceFrequency(RecurrenceFrequency.Yearly)}
+                      onClick={() =>
+                        setRecurrenceFrequency(RecurrenceFrequency.Yearly)
+                      }
                       className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
                         recurrenceFrequency === RecurrenceFrequency.Yearly
                           ? 'border-primary bg-primary/5 text-primary'
@@ -1750,32 +1858,41 @@ function ExpenseTransactionFormDetails({
                 </div>
 
                 {/* Day of week selection for weekly/bi-weekly */}
-                {(recurrenceFrequency === RecurrenceFrequency.Weekly || recurrenceFrequency === RecurrenceFrequency.BiWeekly) && (
+                {(recurrenceFrequency === RecurrenceFrequency.Weekly ||
+                  recurrenceFrequency === RecurrenceFrequency.BiWeekly) && (
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Dia da semana</label>
-                    <div className="flex gap-1 flex-wrap">
-                      {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day, index) => (
-                        <button
-                          key={day}
-                          type="button"
-                          onClick={() => setDayOfWeek(index)}
-                          className={`flex-1 min-w-[40px] rounded-lg border-2 px-2 py-2 text-xs font-medium transition-all ${
-                            dayOfWeek === index
-                              ? 'border-primary bg-primary/5 text-primary'
-                              : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                          }`}
-                        >
-                          {day}
-                        </button>
-                      ))}
+                    <div className="flex flex-wrap gap-1">
+                      {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(
+                        (day, index) => (
+                          <button
+                            key={day}
+                            type="button"
+                            onClick={() => setDayOfWeek(index)}
+                            className={`min-w-[40px] flex-1 rounded-lg border-2 px-2 py-2 text-xs font-medium transition-all ${
+                              dayOfWeek === index
+                                ? 'border-primary bg-primary/5 text-primary'
+                                : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
+                            }`}
+                          >
+                            {day}
+                          </button>
+                        ),
+                      )}
                     </div>
                   </div>
                 )}
 
                 {/* Day mode selection for monthly/yearly */}
-                {(recurrenceFrequency === RecurrenceFrequency.Monthly || recurrenceFrequency === RecurrenceFrequency.Yearly) && (
+                {(recurrenceFrequency === RecurrenceFrequency.Monthly ||
+                  recurrenceFrequency === RecurrenceFrequency.Yearly) && (
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Dia do {recurrenceFrequency === RecurrenceFrequency.Monthly ? 'mês' : 'ano'}</label>
+                    <label className="text-sm font-medium">
+                      Dia do{' '}
+                      {recurrenceFrequency === RecurrenceFrequency.Monthly
+                        ? 'mês'
+                        : 'ano'}
+                    </label>
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         type="button"
@@ -1837,54 +1954,74 @@ function ExpenseTransactionFormDetails({
                 )}
 
                 {/* Nth weekday selection */}
-                {dayMode === DayMode.NthWeekday && (recurrenceFrequency === RecurrenceFrequency.Monthly || recurrenceFrequency === RecurrenceFrequency.Yearly) && (
-                  <>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Qual semana?</label>
-                      <div className="flex gap-2">
-                        {['1ª', '2ª', '3ª', '4ª', '5ª'].map((week, index) => (
-                          <button
-                            key={week}
-                            type="button"
-                            onClick={() => setWeekOfMonth(index + 1)}
-                            className={`flex-1 rounded-lg border-2 px-2 py-2 text-sm font-medium transition-all ${
-                              weekOfMonth === index + 1
-                                ? 'border-primary bg-primary/5 text-primary'
-                                : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                            }`}
-                          >
-                            {week}
-                          </button>
-                        ))}
+                {dayMode === DayMode.NthWeekday &&
+                  (recurrenceFrequency === RecurrenceFrequency.Monthly ||
+                    recurrenceFrequency === RecurrenceFrequency.Yearly) && (
+                    <>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">
+                          Qual semana?
+                        </label>
+                        <div className="flex gap-2">
+                          {['1ª', '2ª', '3ª', '4ª', '5ª'].map((week, index) => (
+                            <button
+                              key={week}
+                              type="button"
+                              onClick={() => setWeekOfMonth(index + 1)}
+                              className={`flex-1 rounded-lg border-2 px-2 py-2 text-sm font-medium transition-all ${
+                                weekOfMonth === index + 1
+                                  ? 'border-primary bg-primary/5 text-primary'
+                                  : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
+                              }`}
+                            >
+                              {week}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Dia da semana</label>
-                      <div className="flex gap-1 flex-wrap">
-                        {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day, index) => (
-                          <button
-                            key={day}
-                            type="button"
-                            onClick={() => setDayOfWeek(index)}
-                            className={`flex-1 min-w-[40px] rounded-lg border-2 px-2 py-2 text-xs font-medium transition-all ${
-                              dayOfWeek === index
-                                ? 'border-primary bg-primary/5 text-primary'
-                                : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                            }`}
-                          >
-                            {day}
-                          </button>
-                        ))}
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">
+                          Dia da semana
+                        </label>
+                        <div className="flex flex-wrap gap-1">
+                          {[
+                            'Dom',
+                            'Seg',
+                            'Ter',
+                            'Qua',
+                            'Qui',
+                            'Sex',
+                            'Sáb',
+                          ].map((day, index) => (
+                            <button
+                              key={day}
+                              type="button"
+                              onClick={() => setDayOfWeek(index)}
+                              className={`min-w-[40px] flex-1 rounded-lg border-2 px-2 py-2 text-xs font-medium transition-all ${
+                                dayOfWeek === index
+                                  ? 'border-primary bg-primary/5 text-primary'
+                                  : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
+                              }`}
+                            >
+                              {day}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  </>
-                )}
+                    </>
+                  )}
 
                 {/* Summary */}
                 <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
                   <p className="text-sm text-muted-foreground">Resumo</p>
                   <p className="text-sm font-medium text-primary">
-                    {getRecurrenceSummary(recurrenceFrequency, dayMode, dayOfWeek, weekOfMonth, selectedDate)}
+                    {getRecurrenceSummary(
+                      recurrenceFrequency,
+                      dayMode,
+                      dayOfWeek,
+                      weekOfMonth,
+                      selectedDate,
+                    )}
                   </p>
                 </div>
               </div>
@@ -1903,8 +2040,8 @@ function ExpenseTransactionFormDetails({
                 </p>
               )}
               <p className="text-xs text-muted-foreground">
-                Ao alterar o valor ou número de parcelas, todas as parcelas serão
-                recalculadas.
+                Ao alterar o valor ou número de parcelas, todas as parcelas
+                serão recalculadas.
               </p>
             </>
           )}
@@ -2152,8 +2289,6 @@ export function BetweenAccountsTransactionCreateForm({
             </Button>
           </DialogFooter>
         )}
-
-
       </DialogContent>
     </Dialog>
   );
@@ -2442,7 +2577,7 @@ function TransactionAccountCard({
       type="button"
       onClick={onClick}
       className={cn(
-        'flex items-center gap-3 rounded-lg border-2 p-3 transition-all duration-200 cursor-pointer hover:bg-accent w-full',
+        'flex w-full cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-all duration-200 hover:bg-accent',
         isSelected
           ? 'border-primary bg-primary/5'
           : 'border-transparent bg-muted/50',
@@ -2819,7 +2954,9 @@ export function TransactionCreateForm({
     }
   };
 
-  const isDetailsStep = isBetweenAccounts ? currentStep === 4 : currentStep === 3;
+  const isDetailsStep = isBetweenAccounts
+    ? currentStep === 4
+    : currentStep === 3;
 
   const renderDetailsForm = () => {
     if (!wizardState.transactionType || !wizardState.sourceAccount) {
