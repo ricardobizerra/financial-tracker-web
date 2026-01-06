@@ -31,7 +31,6 @@ import { InstitutionLogo } from '@/modules/accounts/components/institution-logo'
 import { TransactionEditDescriptionDialog } from './transaction-edit-description-dialog';
 import { TransactionEditScopeDialog } from './transaction-edit-scope-dialog';
 
-
 import {
   IncomeTransactionCreateForm,
   ExpenseTransactionCreateForm,
@@ -170,7 +169,6 @@ export function TransactionCard({
   const [editOpen, setEditOpen] = useState(false);
   const [descriptionEditOpen, setDescriptionEditOpen] = useState(false);
   const [scopeDialogOpen, setScopeDialogOpen] = useState(false);
-
 
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
@@ -740,7 +738,6 @@ export function TransactionCard({
         onOpenChange={handleScopeDialogClose}
         onSelectScope={handleScopeSelected}
       />
-
 
       {/* Dialog de cancelamento */}
       <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>

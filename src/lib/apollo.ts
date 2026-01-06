@@ -13,11 +13,11 @@ import { createClient } from 'graphql-ws';
 import { setContext } from '@apollo/client/link/context';
 
 export const makeAuthMiddleware = (token: string | null) => {
-  const authMiddleware = setContext(async (operation, { headers }) => {
+  const authMiddleware = setContext((_, { headers }) => {
     return {
       headers: {
         ...headers,
-        Authorization: `Bearer ${token}`,
+        Authorization: token ? `Bearer ${token}` : '',
       },
     };
   });
@@ -36,6 +36,7 @@ const hasSubscriptionOperation = ({ query }: Operation) => {
 export const createApolloClient = (token: string | null) => {
   const httpLink = createHttpLink({
     uri: `${process.env.NEXT_PUBLIC_API_URL}/graphql`,
+    credentials: 'include',
   });
 
   const authLink = makeAuthMiddleware(token);
@@ -57,6 +58,7 @@ export const createApolloClient = (token: string | null) => {
         fetchPolicy: 'cache-first',
       },
     },
+    credentials: 'include',
   });
 
   return client;

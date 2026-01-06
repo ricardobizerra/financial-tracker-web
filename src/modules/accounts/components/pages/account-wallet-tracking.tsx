@@ -13,7 +13,10 @@ interface AccountWalletTrackingProps {
   isDebitCard?: boolean;
 }
 
-export function AccountWalletTracking({ account, isDebitCard = false }: AccountWalletTrackingProps) {
+export function AccountWalletTracking({
+  account,
+  isDebitCard = false,
+}: AccountWalletTrackingProps) {
   const balance = Number(account.balance || 0);
 
   return (
@@ -54,7 +57,11 @@ export function AccountWalletTracking({ account, isDebitCard = false }: AccountW
       </Card>
 
       {/* Transaction Views with multiple visualization options */}
-      <TransactionsViews accountId={account.id} hideAccount isDebitCard={isDebitCard} />
+      <TransactionsViews
+        accountId={account.id}
+        hideAccount
+        isDebitCard={isDebitCard}
+      />
     </div>
   );
 }

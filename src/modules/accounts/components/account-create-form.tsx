@@ -543,7 +543,12 @@ function AccountDetailsStep({
 // Step 4: Card Type Selection
 // ============================================================================
 
-const cardTypeIcons: Record<CardType, ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>>> = {
+const cardTypeIcons: Record<
+  CardType,
+  ForwardRefExoticComponent<
+    Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
+  >
+> = {
   [CardType.Credit]: CreditCard,
   [CardType.Debit]: Wallet2,
 };
@@ -651,16 +656,20 @@ export function AccountCreateForm({
 }) {
   const [open, setOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(type ? 2 : 1);
-  const [formStepperState, setFormStepperState] = useState<FormStepperState>(() => ({
-    ...initialFormStepperState,
-    accountType: type,
-  }));
+  const [formStepperState, setFormStepperState] = useState<FormStepperState>(
+    () => ({
+      ...initialFormStepperState,
+      accountType: type,
+    }),
+  );
 
   const [createAccount, { loading }] = useMutation(CreateAccountMutation);
 
   const isCreditCard = formStepperState.accountType === AccountType.CreditCard;
-  const isDebitCardSelected = formStepperState.selectedCardType === CardType.Debit;
-  const isCreditCardSelected = formStepperState.selectedCardType === CardType.Credit;
+  const isDebitCardSelected =
+    formStepperState.selectedCardType === CardType.Debit;
+  const isCreditCardSelected =
+    formStepperState.selectedCardType === CardType.Credit;
   // Total de passos: 3 para contas normais, 4 para cartão de débito, 5 para cartão de crédito
   const totalSteps = isCreditCard ? (isCreditCardSelected ? 5 : 4) : 3;
 
@@ -722,20 +731,17 @@ export function AccountCreateForm({
     [],
   );
 
-  const handleCardTypeSelect = useCallback(
-    (cardType: CardType) => {
-      setFormStepperState((prev) => ({
-        ...prev,
-        selectedCardType: cardType,
-      }));
-      // Para débito, não precisa de próximo passo - vai salvar direto
-      // Para crédito, avança para passo 5 (billing)
-      if (cardType === CardType.Credit) {
-        setCurrentStep(5);
-      }
-    },
-    [],
-  );
+  const handleCardTypeSelect = useCallback((cardType: CardType) => {
+    setFormStepperState((prev) => ({
+      ...prev,
+      selectedCardType: cardType,
+    }));
+    // Para débito, não precisa de próximo passo - vai salvar direto
+    // Para crédito, avança para passo 5 (billing)
+    if (cardType === CardType.Credit) {
+      setCurrentStep(5);
+    }
+  }, []);
 
   const handleBillingChange = useCallback(
     (data: CreditCardBillingFormData, isValid: boolean) => {
@@ -757,8 +763,13 @@ export function AccountCreateForm({
       return;
     }
 
-    const { accountType, institution, accountDetails, selectedCardType, creditCardBillingDetails } =
-      formStepperState;
+    const {
+      accountType,
+      institution,
+      accountDetails,
+      selectedCardType,
+      creditCardBillingDetails,
+    } = formStepperState;
 
     await createAccount({
       variables: {
@@ -778,7 +789,8 @@ export function AccountCreateForm({
                 ...(selectedCardType === CardType.Credit &&
                   creditCardBillingDetails && {
                     billingCycleDay: creditCardBillingDetails.billingCycleDay,
-                    billingPaymentDay: creditCardBillingDetails.billingPaymentDay,
+                    billingPaymentDay:
+                      creditCardBillingDetails.billingPaymentDay,
                     defaultLimit: creditCardBillingDetails.defaultLimit,
                   }),
               },
@@ -836,7 +848,8 @@ export function AccountCreateForm({
 
   const canProceedStep3 = formStepperState.accountDetailsValid;
   const canSubmitDebit = isDebitCardSelected; // Débito pode salvar no passo 4
-  const canSubmitCredit = isCreditCardSelected && formStepperState.creditCardBillingValid; // Crédito precisa do passo 5
+  const canSubmitCredit =
+    isCreditCardSelected && formStepperState.creditCardBillingValid; // Crédito precisa do passo 5
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>

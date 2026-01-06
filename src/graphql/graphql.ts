@@ -682,9 +682,129 @@ export type AgendaTransactionModel = {
   type: Scalars['String']['output'];
 };
 
+export enum AuthProviderName {
+  Google = 'GOOGLE',
+}
+
 export type AuthSignInInput = {
   password: Scalars['String']['input'];
   username: Scalars['String']['input'];
+};
+
+export type AuthUserProvider = {
+  __typename?: 'AuthUserProvider';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  providerId: Scalars['String']['output'];
+  providerName: AuthProviderName;
+  updatedAt: Scalars['DateTime']['output'];
+  user: User;
+  userId: Scalars['String']['output'];
+};
+
+export type AuthUserProviderCountAggregate = {
+  __typename?: 'AuthUserProviderCountAggregate';
+  _all: Scalars['Int']['output'];
+  createdAt: Scalars['Int']['output'];
+  id: Scalars['Int']['output'];
+  providerId: Scalars['Int']['output'];
+  providerName: Scalars['Int']['output'];
+  updatedAt: Scalars['Int']['output'];
+  userId: Scalars['Int']['output'];
+};
+
+export type AuthUserProviderCreateManyUserInput = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  providerId: Scalars['String']['input'];
+  providerName: AuthProviderName;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type AuthUserProviderCreateManyUserInputEnvelope = {
+  data: Array<AuthUserProviderCreateManyUserInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type AuthUserProviderCreateNestedManyWithoutUserInput = {
+  connect?: InputMaybe<Array<AuthUserProviderWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<
+    Array<AuthUserProviderCreateOrConnectWithoutUserInput>
+  >;
+  create?: InputMaybe<Array<AuthUserProviderCreateWithoutUserInput>>;
+  createMany?: InputMaybe<AuthUserProviderCreateManyUserInputEnvelope>;
+};
+
+export type AuthUserProviderCreateOrConnectWithoutUserInput = {
+  create: AuthUserProviderCreateWithoutUserInput;
+  where: AuthUserProviderWhereUniqueInput;
+};
+
+export type AuthUserProviderCreateWithoutUserInput = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  providerId: Scalars['String']['input'];
+  providerName: AuthProviderName;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type AuthUserProviderListRelationFilter = {
+  every?: InputMaybe<AuthUserProviderWhereInput>;
+  none?: InputMaybe<AuthUserProviderWhereInput>;
+  some?: InputMaybe<AuthUserProviderWhereInput>;
+};
+
+export type AuthUserProviderMaxAggregate = {
+  __typename?: 'AuthUserProviderMaxAggregate';
+  createdAt: Maybe<Scalars['DateTime']['output']>;
+  id: Maybe<Scalars['String']['output']>;
+  providerId: Maybe<Scalars['String']['output']>;
+  providerName: Maybe<AuthProviderName>;
+  updatedAt: Maybe<Scalars['DateTime']['output']>;
+  userId: Maybe<Scalars['String']['output']>;
+};
+
+export type AuthUserProviderMinAggregate = {
+  __typename?: 'AuthUserProviderMinAggregate';
+  createdAt: Maybe<Scalars['DateTime']['output']>;
+  id: Maybe<Scalars['String']['output']>;
+  providerId: Maybe<Scalars['String']['output']>;
+  providerName: Maybe<AuthProviderName>;
+  updatedAt: Maybe<Scalars['DateTime']['output']>;
+  userId: Maybe<Scalars['String']['output']>;
+};
+
+export type AuthUserProviderProviderNameProviderIdUserIdCompoundUniqueInput = {
+  providerId: Scalars['String']['input'];
+  providerName: AuthProviderName;
+  userId: Scalars['String']['input'];
+};
+
+export type AuthUserProviderWhereInput = {
+  AND?: InputMaybe<Array<AuthUserProviderWhereInput>>;
+  NOT?: InputMaybe<Array<AuthUserProviderWhereInput>>;
+  OR?: InputMaybe<Array<AuthUserProviderWhereInput>>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<StringFilter>;
+  providerId?: InputMaybe<StringFilter>;
+  providerName?: InputMaybe<EnumAuthProviderNameFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+  user?: InputMaybe<UserRelationFilter>;
+  userId?: InputMaybe<StringFilter>;
+};
+
+export type AuthUserProviderWhereUniqueInput = {
+  AND?: InputMaybe<Array<AuthUserProviderWhereInput>>;
+  NOT?: InputMaybe<Array<AuthUserProviderWhereInput>>;
+  OR?: InputMaybe<Array<AuthUserProviderWhereInput>>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  providerId?: InputMaybe<StringFilter>;
+  providerName?: InputMaybe<EnumAuthProviderNameFilter>;
+  providerName_providerId_userId?: InputMaybe<AuthUserProviderProviderNameProviderIdUserIdCompoundUniqueInput>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+  user?: InputMaybe<UserRelationFilter>;
+  userId?: InputMaybe<StringFilter>;
 };
 
 export type BalanceForecastModel = {
@@ -1361,6 +1481,13 @@ export type EnumAccountTypeNullableListFilter = {
   hasEvery?: InputMaybe<Array<AccountType>>;
   hasSome?: InputMaybe<Array<AccountType>>;
   isEmpty?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type EnumAuthProviderNameFilter = {
+  equals?: InputMaybe<AuthProviderName>;
+  in?: InputMaybe<Array<AuthProviderName>>;
+  not?: InputMaybe<NestedEnumAuthProviderNameFilter>;
+  notIn?: InputMaybe<Array<AuthProviderName>>;
 };
 
 export type EnumCardBillingStatusFilter = {
@@ -2207,6 +2334,7 @@ export type InvestmentWhereUniqueInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   authSignIn: SignIn;
+  authSignOut: Scalars['Boolean']['output'];
   cancelTransaction: TransactionModel;
   closeBilling: CardBilling;
   createAccount: AccountModel;
@@ -2219,7 +2347,9 @@ export type Mutation = {
   deleteRecurringTransaction: RecurringTransactionModel;
   endRecurringTransaction: RecurringTransactionModel;
   pauseRecurringTransaction: RecurringTransactionModel;
+  requestPasswordReset: Scalars['Boolean']['output'];
   rescheduleTransaction: TransactionModel;
+  resetPassword: Scalars['Boolean']['output'];
   resumeRecurringTransaction: RecurringTransactionModel;
   updateAccountCard: AccountCard;
   updateRecurringTransactionFromDate: RecurringTransactionModel;
@@ -2281,8 +2411,17 @@ export type MutationPauseRecurringTransactionArgs = {
   id: Scalars['String']['input'];
 };
 
+export type MutationRequestPasswordResetArgs = {
+  email: Scalars['String']['input'];
+};
+
 export type MutationRescheduleTransactionArgs = {
   data: RescheduleTransactionInput;
+};
+
+export type MutationResetPasswordArgs = {
+  newPassword: Scalars['String']['input'];
+  token: Scalars['String']['input'];
 };
 
 export type MutationResumeRecurringTransactionArgs = {
@@ -2353,6 +2492,13 @@ export type NestedEnumAccountTypeFilter = {
   in?: InputMaybe<Array<AccountType>>;
   not?: InputMaybe<NestedEnumAccountTypeFilter>;
   notIn?: InputMaybe<Array<AccountType>>;
+};
+
+export type NestedEnumAuthProviderNameFilter = {
+  equals?: InputMaybe<AuthProviderName>;
+  in?: InputMaybe<Array<AuthProviderName>>;
+  not?: InputMaybe<NestedEnumAuthProviderNameFilter>;
+  notIn?: InputMaybe<Array<AuthProviderName>>;
 };
 
 export type NestedEnumCardBillingStatusFilter = {
@@ -3338,7 +3484,6 @@ export enum Role {
 
 export type SignIn = {
   __typename?: 'SignIn';
-  accessToken: Scalars['String']['output'];
   user: Maybe<UserModel>;
 };
 
@@ -4226,13 +4371,14 @@ export type User = {
   __typename?: 'User';
   _count: UserCount;
   accounts: Maybe<Array<Account>>;
+  authUserProviders: Maybe<Array<AuthUserProvider>>;
   cardBillingStatusHistories: Maybe<Array<CardBillingHistory>>;
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   investments: Maybe<Array<Investment>>;
   name: Scalars['String']['output'];
-  password: Scalars['String']['output'];
+  password: Maybe<Scalars['String']['output']>;
   recurringTransactions: Maybe<Array<RecurringTransaction>>;
   role: Role;
   transactions: Maybe<Array<Transaction>>;
@@ -4248,6 +4394,7 @@ export type UserConnection = {
 export type UserCount = {
   __typename?: 'UserCount';
   accounts: Scalars['Int']['output'];
+  authUserProviders: Scalars['Int']['output'];
   cardBillingStatusHistories: Scalars['Int']['output'];
   investments: Scalars['Int']['output'];
   recurringTransactions: Scalars['Int']['output'];
@@ -4268,13 +4415,14 @@ export type UserCountAggregate = {
 
 export type UserCreateInput = {
   accounts?: InputMaybe<AccountCreateNestedManyWithoutUserInput>;
+  authUserProviders?: InputMaybe<AuthUserProviderCreateNestedManyWithoutUserInput>;
   cardBillingStatusHistories?: InputMaybe<CardBillingHistoryCreateNestedManyWithoutChangedByInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   email: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
   investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
   name: Scalars['String']['input'];
-  password: Scalars['String']['input'];
+  password?: InputMaybe<Scalars['String']['input']>;
   recurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutUserInput>;
   role: Role;
   transactions?: InputMaybe<TransactionCreateNestedManyWithoutUserInput>;
@@ -4337,13 +4485,14 @@ export type UserCreateOrConnectWithoutTransactionsInput = {
 };
 
 export type UserCreateWithoutAccountsInput = {
+  authUserProviders?: InputMaybe<AuthUserProviderCreateNestedManyWithoutUserInput>;
   cardBillingStatusHistories?: InputMaybe<CardBillingHistoryCreateNestedManyWithoutChangedByInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   email: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
   investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
   name: Scalars['String']['input'];
-  password: Scalars['String']['input'];
+  password?: InputMaybe<Scalars['String']['input']>;
   recurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutUserInput>;
   role: Role;
   transactions?: InputMaybe<TransactionCreateNestedManyWithoutUserInput>;
@@ -4352,12 +4501,13 @@ export type UserCreateWithoutAccountsInput = {
 
 export type UserCreateWithoutCardBillingStatusHistoriesInput = {
   accounts?: InputMaybe<AccountCreateNestedManyWithoutUserInput>;
+  authUserProviders?: InputMaybe<AuthUserProviderCreateNestedManyWithoutUserInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   email: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
   investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
   name: Scalars['String']['input'];
-  password: Scalars['String']['input'];
+  password?: InputMaybe<Scalars['String']['input']>;
   recurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutUserInput>;
   role: Role;
   transactions?: InputMaybe<TransactionCreateNestedManyWithoutUserInput>;
@@ -4366,12 +4516,13 @@ export type UserCreateWithoutCardBillingStatusHistoriesInput = {
 
 export type UserCreateWithoutInvestmentsInput = {
   accounts?: InputMaybe<AccountCreateNestedManyWithoutUserInput>;
+  authUserProviders?: InputMaybe<AuthUserProviderCreateNestedManyWithoutUserInput>;
   cardBillingStatusHistories?: InputMaybe<CardBillingHistoryCreateNestedManyWithoutChangedByInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   email: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
-  password: Scalars['String']['input'];
+  password?: InputMaybe<Scalars['String']['input']>;
   recurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutUserInput>;
   role: Role;
   transactions?: InputMaybe<TransactionCreateNestedManyWithoutUserInput>;
@@ -4380,13 +4531,14 @@ export type UserCreateWithoutInvestmentsInput = {
 
 export type UserCreateWithoutRecurringTransactionsInput = {
   accounts?: InputMaybe<AccountCreateNestedManyWithoutUserInput>;
+  authUserProviders?: InputMaybe<AuthUserProviderCreateNestedManyWithoutUserInput>;
   cardBillingStatusHistories?: InputMaybe<CardBillingHistoryCreateNestedManyWithoutChangedByInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   email: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
   investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
   name: Scalars['String']['input'];
-  password: Scalars['String']['input'];
+  password?: InputMaybe<Scalars['String']['input']>;
   role: Role;
   transactions?: InputMaybe<TransactionCreateNestedManyWithoutUserInput>;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -4394,13 +4546,14 @@ export type UserCreateWithoutRecurringTransactionsInput = {
 
 export type UserCreateWithoutTransactionsInput = {
   accounts?: InputMaybe<AccountCreateNestedManyWithoutUserInput>;
+  authUserProviders?: InputMaybe<AuthUserProviderCreateNestedManyWithoutUserInput>;
   cardBillingStatusHistories?: InputMaybe<CardBillingHistoryCreateNestedManyWithoutChangedByInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   email: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
   investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
   name: Scalars['String']['input'];
-  password: Scalars['String']['input'];
+  password?: InputMaybe<Scalars['String']['input']>;
   recurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutUserInput>;
   role: Role;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -4457,13 +4610,14 @@ export type UserWhereInput = {
   NOT?: InputMaybe<Array<UserWhereInput>>;
   OR?: InputMaybe<Array<UserWhereInput>>;
   accounts?: InputMaybe<AccountListRelationFilter>;
+  authUserProviders?: InputMaybe<AuthUserProviderListRelationFilter>;
   cardBillingStatusHistories?: InputMaybe<CardBillingHistoryListRelationFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   email?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
   investments?: InputMaybe<InvestmentListRelationFilter>;
   name?: InputMaybe<StringFilter>;
-  password?: InputMaybe<StringFilter>;
+  password?: InputMaybe<StringNullableFilter>;
   recurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
   role?: InputMaybe<EnumRoleFilter>;
   transactions?: InputMaybe<TransactionListRelationFilter>;
@@ -4475,13 +4629,14 @@ export type UserWhereUniqueInput = {
   NOT?: InputMaybe<Array<UserWhereInput>>;
   OR?: InputMaybe<Array<UserWhereInput>>;
   accounts?: InputMaybe<AccountListRelationFilter>;
+  authUserProviders?: InputMaybe<AuthUserProviderListRelationFilter>;
   cardBillingStatusHistories?: InputMaybe<CardBillingHistoryListRelationFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   email?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   investments?: InputMaybe<InvestmentListRelationFilter>;
   name?: InputMaybe<StringFilter>;
-  password?: InputMaybe<StringFilter>;
+  password?: InputMaybe<StringNullableFilter>;
   recurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
   role?: InputMaybe<EnumRoleFilter>;
   transactions?: InputMaybe<TransactionListRelationFilter>;
@@ -4775,7 +4930,6 @@ export type AuthSignInMutation = {
   __typename?: 'Mutation';
   authSignIn: {
     __typename?: 'SignIn';
-    accessToken: string;
     user: {
       __typename?: 'UserModel';
       id: string;
@@ -4783,6 +4937,13 @@ export type AuthSignInMutation = {
       name: string;
     } | null;
   };
+};
+
+export type AuthSignOutMutationVariables = Exact<{ [key: string]: never }>;
+
+export type AuthSignOutMutation = {
+  __typename?: 'Mutation';
+  authSignOut: boolean;
 };
 
 export type CreateUserMutationVariables = Exact<{
@@ -4793,9 +4954,27 @@ export type CreateUserMutation = {
   __typename?: 'Mutation';
   createUser: {
     __typename?: 'SignIn';
-    accessToken: string;
     user: { __typename?: 'UserModel'; id: string } | null;
   };
+};
+
+export type RequestPasswordResetMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+}>;
+
+export type RequestPasswordResetMutation = {
+  __typename?: 'Mutation';
+  requestPasswordReset: boolean;
+};
+
+export type ResetPasswordMutationVariables = Exact<{
+  token: Scalars['String']['input'];
+  newPassword: Scalars['String']['input'];
+}>;
+
+export type ResetPasswordMutation = {
+  __typename?: 'Mutation';
+  resetPassword: boolean;
 };
 
 export type UserQueryVariables = Exact<{ [key: string]: never }>;
@@ -7469,7 +7648,6 @@ export const AuthSignInDocument = {
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'accessToken' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'user' },
@@ -7490,6 +7668,22 @@ export const AuthSignInDocument = {
     },
   ],
 } as unknown as DocumentNode<AuthSignInMutation, AuthSignInMutationVariables>;
+export const AuthSignOutDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'AuthSignOut' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'authSignOut' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<AuthSignOutMutation, AuthSignOutMutationVariables>;
 export const CreateUserDocument = {
   kind: 'Document',
   definitions: [
@@ -7529,7 +7723,6 @@ export const CreateUserDocument = {
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'accessToken' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'user' },
@@ -7548,6 +7741,124 @@ export const CreateUserDocument = {
     },
   ],
 } as unknown as DocumentNode<CreateUserMutation, CreateUserMutationVariables>;
+export const RequestPasswordResetDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'RequestPasswordReset' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'email' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'requestPasswordReset' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'email' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'email' },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  RequestPasswordResetMutation,
+  RequestPasswordResetMutationVariables
+>;
+export const ResetPasswordDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'ResetPassword' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'token' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'newPassword' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'resetPassword' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'token' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'token' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'newPassword' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'newPassword' },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ResetPasswordMutation,
+  ResetPasswordMutationVariables
+>;
 export const UserDocument = {
   kind: 'Document',
   definitions: [

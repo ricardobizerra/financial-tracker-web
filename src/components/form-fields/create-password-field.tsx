@@ -60,7 +60,7 @@ export function CreatePasswordField({
   );
 
   useEffect(() => {
-    if (!!field.value && field.value !== confirmPassword) {
+    if (!!field.value && !!confirmPassword && field.value !== confirmPassword) {
       setError(field.name, {
         type: 'manual',
         message: 'As senhas devem ser iguais',

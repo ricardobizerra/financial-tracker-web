@@ -62,14 +62,17 @@ export function CashFlowFilters({
     },
   });
 
-  const accounts = accountsData?.accounts?.edges?.map((edge) => edge.node) || [];
+  const accounts =
+    accountsData?.accounts?.edges?.map((edge) => edge.node) || [];
 
   return (
     <div className="flex flex-wrap items-center gap-3">
       {/* Seletor de período */}
       <Select
         value={period}
-        onValueChange={(value) => onPeriodChange(value as BalanceForecastPeriod)}
+        onValueChange={(value) =>
+          onPeriodChange(value as BalanceForecastPeriod)
+        }
       >
         <SelectTrigger className="w-[160px]">
           <SelectValue placeholder="Período" />
@@ -124,7 +127,9 @@ export function CashFlowFilters({
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {customStartDate ? format(customStartDate, 'dd/MM/yy') : 'Início'}
+                {customStartDate
+                  ? format(customStartDate, 'dd/MM/yy')
+                  : 'Início'}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">

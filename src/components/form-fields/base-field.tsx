@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from '../ui/form';
 import { CircleXIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export interface BaseFieldProps {
   description?: string;
@@ -34,7 +35,9 @@ export function BaseField({
       disabled={disabled}
       render={() => (
         <FormItem className="flex flex-col gap-2 space-y-0">
-          <FormLabel>{label}</FormLabel>
+          <FormLabel className={cn(error && withError && 'text-destructive')}>
+            {label}
+          </FormLabel>
           <FormControl>{children}</FormControl>
           {!!description && <FormDescription>{description}</FormDescription>}
           {!!withError && !!error && (

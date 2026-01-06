@@ -2,6 +2,7 @@
 
 import { formFields, TsForm } from '@/components/ts-form';
 import { Button } from '@/components/ui/button';
+import { AuthOAuthOptions } from './auth-oauth-options';
 import {
   Card,
   CardContent,
@@ -11,12 +12,16 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Role } from '@/graphql/graphql';
-import { setAccessToken } from '@/lib/auth';
+import { getAccessToken } from '@/lib/auth';
+import { APP_CONFIG } from '@/lib/config';
 import { CreateUserMutation } from '@/modules/auth/graphql/auth-mutations';
 import { useMutation } from '@apollo/client';
+import { DollarSignIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import GoogleIcon from '@/static/google-icon.svg';
+import Link from 'next/link';
 
 const schema = z.object({
   name: formFields.text.describe('Nome // Insira aqui seu nome'),
@@ -41,10 +46,10 @@ export function AuthRegisterForm() {
         },
       },
       onCompleted: async (data) => {
-        if (data.createUser?.accessToken) {
-          await setAccessToken(data.createUser.accessToken);
+        const { token } = await getAccessToken();
 
-          router.push('/');
+        if (!!data.createUser && !!token) {
+          router.push(APP_CONFIG.redirects.signIn);
 
           toast.success('Conta criada com sucesso!', {
             description: 'Você será redirecionado em instantes.',
@@ -60,11 +65,17 @@ export function AuthRegisterForm() {
   }
 
   return (
-    <Card className="m-auto w-full max-w-[500px] p-4">
-      <CardHeader>
-        <CardTitle>Novo usuário</CardTitle>
+    <Card className="m-auto w-full max-w-sm p-0">
+      <div className="flex items-center justify-center gap-2 rounded-t-[inherit] border-b border-[inherit] bg-primary p-4 text-center text-primary-foreground">
+        <DollarSignIcon className="h-6 w-6" />
+        <p className="text-lg">
+          <span className="font-semibold">Financial</span>Tracker
+        </p>
+      </div>
+      <CardHeader className="space-y-1 text-center">
+        <CardTitle className="text-lg">Novo usuário</CardTitle>
         <CardDescription>
-          Insira seus dados para criar uma nova conta.
+          Insira seus dados para criar uma nova conta
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -72,12 +83,38 @@ export function AuthRegisterForm() {
           formProps={{ id: 'auth-register-form' }}
           schema={schema}
           onSubmit={handleSubmit}
-        />
+        >
+          {(fields) => (
+            <>
+              <AuthOAuthOptions action="register" />
+
+              <div className="flex flex-col gap-4">
+                {Object.entries(fields).map(([key, field]) => (
+                  <div key={key}>{field}</div>
+                ))}
+              </div>
+            </>
+          )}
+        </TsForm>
       </CardContent>
-      <CardFooter>
-        <Button type="submit" form="auth-register-form" loading={loading}>
+      <CardFooter className="flex-col gap-4">
+        <Button
+          type="submit"
+          form="auth-register-form"
+          loading={loading}
+          className="w-full"
+        >
           Criar conta
         </Button>
+        <p className="text-sm">
+          Já tem uma conta?{' '}
+          <Link
+            href="/login"
+            className="text-primary underline underline-offset-2"
+          >
+            Faça login
+          </Link>
+        </p>
       </CardFooter>
     </Card>
   );
