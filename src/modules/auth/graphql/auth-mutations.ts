@@ -27,3 +27,16 @@ export const CreateUserMutation = graphql(`
     }
   }
 `);
+
+export const RequestPasswordResetMutation = graphql(`
+  mutation RequestPasswordReset($email: String!) {
+    requestPasswordReset(email: $email)
+  }
+`);
+
+export const ResetPasswordMutation = graphql(`
+  mutation ResetPassword($token: String!, $newPassword: String!) {
+    resetPassword(token: $token, newPassword: $newPassword)
+  }
+`);
+

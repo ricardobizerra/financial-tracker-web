@@ -2347,7 +2347,9 @@ export type Mutation = {
   deleteRecurringTransaction: RecurringTransactionModel;
   endRecurringTransaction: RecurringTransactionModel;
   pauseRecurringTransaction: RecurringTransactionModel;
+  requestPasswordReset: Scalars['Boolean']['output'];
   rescheduleTransaction: TransactionModel;
+  resetPassword: Scalars['Boolean']['output'];
   resumeRecurringTransaction: RecurringTransactionModel;
   updateAccountCard: AccountCard;
   updateRecurringTransactionFromDate: RecurringTransactionModel;
@@ -2409,8 +2411,17 @@ export type MutationPauseRecurringTransactionArgs = {
   id: Scalars['String']['input'];
 };
 
+export type MutationRequestPasswordResetArgs = {
+  email: Scalars['String']['input'];
+};
+
 export type MutationRescheduleTransactionArgs = {
   data: RescheduleTransactionInput;
+};
+
+export type MutationResetPasswordArgs = {
+  newPassword: Scalars['String']['input'];
+  token: Scalars['String']['input'];
 };
 
 export type MutationResumeRecurringTransactionArgs = {
@@ -4945,6 +4956,25 @@ export type CreateUserMutation = {
     __typename?: 'SignIn';
     user: { __typename?: 'UserModel'; id: string } | null;
   };
+};
+
+export type RequestPasswordResetMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+}>;
+
+export type RequestPasswordResetMutation = {
+  __typename?: 'Mutation';
+  requestPasswordReset: boolean;
+};
+
+export type ResetPasswordMutationVariables = Exact<{
+  token: Scalars['String']['input'];
+  newPassword: Scalars['String']['input'];
+}>;
+
+export type ResetPasswordMutation = {
+  __typename?: 'Mutation';
+  resetPassword: boolean;
 };
 
 export type UserQueryVariables = Exact<{ [key: string]: never }>;
@@ -7711,6 +7741,124 @@ export const CreateUserDocument = {
     },
   ],
 } as unknown as DocumentNode<CreateUserMutation, CreateUserMutationVariables>;
+export const RequestPasswordResetDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'RequestPasswordReset' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'email' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'requestPasswordReset' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'email' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'email' },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  RequestPasswordResetMutation,
+  RequestPasswordResetMutationVariables
+>;
+export const ResetPasswordDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'ResetPassword' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'token' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'newPassword' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'resetPassword' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'token' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'token' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'newPassword' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'newPassword' },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ResetPasswordMutation,
+  ResetPasswordMutationVariables
+>;
 export const UserDocument = {
   kind: 'Document',
   definitions: [

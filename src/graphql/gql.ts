@@ -26,6 +26,8 @@ type Documents = {
   '\n  mutation AuthSignIn($data: AuthSignInInput!) {\n    authSignIn(data: $data) {\n      user {\n        id\n        email\n        name\n      }\n    }\n  }\n': typeof types.AuthSignInDocument;
   '\n  mutation AuthSignOut {\n    authSignOut\n  }\n': typeof types.AuthSignOutDocument;
   '\n  mutation CreateUser($data: UserCreateInput!) {\n    createUser(data: $data) {\n      user {\n        id\n      }\n    }\n  }\n': typeof types.CreateUserDocument;
+  '\n  mutation RequestPasswordReset($email: String!) {\n    requestPasswordReset(email: $email)\n  }\n': typeof types.RequestPasswordResetDocument;
+  '\n  mutation ResetPassword($token: String!, $newPassword: String!) {\n    resetPassword(token: $token, newPassword: $newPassword)\n  }\n': typeof types.ResetPasswordDocument;
   '\n  query User {\n    user {\n      id\n      name\n      email\n      role\n    }\n  }\n': typeof types.UserDocument;
   '\n  query BalanceForecast(\n    $accountId: String\n    $period: BalanceForecastPeriod!\n    $startDate: DateTime\n    $endDate: DateTime\n  ) {\n    balanceForecast(\n      accountId: $accountId\n      period: $period\n      startDate: $startDate\n      endDate: $endDate\n    ) {\n      dataPoints {\n        date\n        balance\n        isProjected\n        incomeAmount\n        expenseAmount\n        transactionCount\n        transactions {\n          id\n          description\n          amount\n          isIncome\n        }\n      }\n      currentBalance\n      projectedBalance\n      balanceTrend\n      startDate\n      endDate\n    }\n  }\n': typeof types.BalanceForecastDocument;
   '\n  query TransactionsSummaryForCashFlow(\n    $accountId: ID\n    $startDate: DateTime\n    $endDate: DateTime\n    $types: [TransactionType!]\n    $statuses: [TransactionStatus!]\n  ) {\n    transactionsSummary(\n      accountId: $accountId\n      startDate: $startDate\n      endDate: $endDate\n      types: $types\n      statuses: $statuses\n    ) {\n      totalIncome\n      totalExpense\n      balance\n      transactionCount\n      realizedIncome\n      realizedExpense\n      realizedBalance\n      forecastIncome\n      forecastExpense\n      forecastBalance\n    }\n  }\n': typeof types.TransactionsSummaryForCashFlowDocument;
@@ -88,6 +90,10 @@ const documents: Documents = {
     types.AuthSignOutDocument,
   '\n  mutation CreateUser($data: UserCreateInput!) {\n    createUser(data: $data) {\n      user {\n        id\n      }\n    }\n  }\n':
     types.CreateUserDocument,
+  '\n  mutation RequestPasswordReset($email: String!) {\n    requestPasswordReset(email: $email)\n  }\n':
+    types.RequestPasswordResetDocument,
+  '\n  mutation ResetPassword($token: String!, $newPassword: String!) {\n    resetPassword(token: $token, newPassword: $newPassword)\n  }\n':
+    types.ResetPasswordDocument,
   '\n  query User {\n    user {\n      id\n      name\n      email\n      role\n    }\n  }\n':
     types.UserDocument,
   '\n  query BalanceForecast(\n    $accountId: String\n    $period: BalanceForecastPeriod!\n    $startDate: DateTime\n    $endDate: DateTime\n  ) {\n    balanceForecast(\n      accountId: $accountId\n      period: $period\n      startDate: $startDate\n      endDate: $endDate\n    ) {\n      dataPoints {\n        date\n        balance\n        isProjected\n        incomeAmount\n        expenseAmount\n        transactionCount\n        transactions {\n          id\n          description\n          amount\n          isIncome\n        }\n      }\n      currentBalance\n      projectedBalance\n      balanceTrend\n      startDate\n      endDate\n    }\n  }\n':
@@ -248,6 +254,18 @@ export function graphql(
 export function graphql(
   source: '\n  mutation CreateUser($data: UserCreateInput!) {\n    createUser(data: $data) {\n      user {\n        id\n      }\n    }\n  }\n',
 ): (typeof documents)['\n  mutation CreateUser($data: UserCreateInput!) {\n    createUser(data: $data) {\n      user {\n        id\n      }\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  mutation RequestPasswordReset($email: String!) {\n    requestPasswordReset(email: $email)\n  }\n',
+): (typeof documents)['\n  mutation RequestPasswordReset($email: String!) {\n    requestPasswordReset(email: $email)\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  mutation ResetPassword($token: String!, $newPassword: String!) {\n    resetPassword(token: $token, newPassword: $newPassword)\n  }\n',
+): (typeof documents)['\n  mutation ResetPassword($token: String!, $newPassword: String!) {\n    resetPassword(token: $token, newPassword: $newPassword)\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

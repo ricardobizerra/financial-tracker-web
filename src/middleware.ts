@@ -2,7 +2,13 @@ import { NextResponse, NextRequest } from 'next/server';
 import { getAccessToken } from './lib/auth';
 import { APP_CONFIG } from './lib/config';
 
-const publicRoutes = [{ base: '/' }, { base: '/login' }, { base: '/register' }];
+const publicRoutes = [
+  { base: '/' },
+  { base: '/login' },
+  { base: '/register' },
+  { base: '/forgot-password' },
+  { base: '/reset-password' },
+];
 
 const authRoutes = [{ base: '/login' }, { base: '/register' }];
 

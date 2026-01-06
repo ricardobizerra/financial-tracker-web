@@ -98,6 +98,12 @@ export function AuthSignInForm() {
         >
           Fazer login
         </Button>
+        <Link
+          href="/forgot-password"
+          className="text-sm text-muted-foreground hover:text-primary"
+        >
+          Esqueci minha senha
+        </Link>
         <p className="text-sm">
           Não tem uma conta?{' '}
           <Link
