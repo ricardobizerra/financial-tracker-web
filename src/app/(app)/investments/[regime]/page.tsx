@@ -1,21 +1,10 @@
-'use client';
+import type { Metadata } from 'next';
+import { InvestmentRegimeContent } from './content';
 
-import { Regime } from '@/graphql/graphql';
-import { InvestmentsTable } from '@/modules/investments/components/investments-table';
-import { useParams, useSearchParams } from 'next/navigation';
+export const metadata: Metadata = {
+  title: 'Investimentos',
+};
 
 export default function InvestmentsPage() {
-  const params = useParams();
-  const searchParams = useSearchParams();
-  const regime = params.regime as string;
-  const accountId = searchParams.get('accountId');
-
-  const regimeEnum = regime.toUpperCase() as Regime;
-
-  return (
-    <InvestmentsTable
-      regime={regimeEnum}
-      accountIds={accountId ? [accountId] : undefined}
-    />
-  );
+  return <InvestmentRegimeContent />;
 }

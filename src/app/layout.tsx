@@ -8,7 +8,10 @@ import { Toaster } from '@/components/ui/sonner';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Financial Tracker - Seu Centro de Comando Financeiro',
+  title: {
+    template: '%s - FinancialTracker',
+    default: 'Financial Tracker - Seu Centro de Comando Financeiro',
+  },
   description:
     'Acompanhe contas, gerencie investimentos e visualize seu fluxo de caixa. Controle financeiro completo com suporte a PIX, boleto, cartões e investimentos.',
 };
