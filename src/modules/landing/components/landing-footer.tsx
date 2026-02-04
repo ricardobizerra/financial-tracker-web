@@ -1,7 +1,7 @@
 'use client';
 
-import RbIcon from '@/static/rb-icon.svg';
 import { Separator } from '@/components/ui/separator';
+import { ReceiptIcon } from 'lucide-react';
 
 export function LandingFooter() {
   const currentYear = new Date().getFullYear();
@@ -12,7 +12,7 @@ export function LandingFooter() {
         <div className="flex flex-col items-center gap-4 md:flex-row md:justify-between">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <RbIcon className="h-6 invert dark:invert-0" />
+            <ReceiptIcon className="h-6 invert dark:invert-0" />
             <span className="font-semibold">Financial Tracker</span>
           </div>
 

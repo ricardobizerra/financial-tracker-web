@@ -4,6 +4,7 @@ import {
   ArrowLeftRight,
   Landmark,
   PiggyBank,
+  ReceiptIcon,
   Repeat,
   TrendingUp,
 } from 'lucide-react';
@@ -23,7 +24,6 @@ import {
   SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar';
-import RbIcon from '@/static/rb-icon.svg';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from './user-avatar';
@@ -73,7 +73,7 @@ export function AppSidebar() {
           )}
         >
           <Link href="/">
-            <RbIcon
+            <ReceiptIcon
               className={cn(
                 state === 'collapsed' && 'mx-auto w-4/5',
                 state === 'expanded' && 'px-2',

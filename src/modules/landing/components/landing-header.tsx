@@ -2,9 +2,9 @@
 
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/theme-toggle';
-import RbIcon from '@/static/rb-icon.svg';
 import Link from 'next/link';
 import { APP_CONFIG } from '@/lib/config';
+import { ReceiptIcon } from 'lucide-react';
 
 export function LandingHeader() {
   return (
@@ -12,7 +12,7 @@ export function LandingHeader() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3">
-          <RbIcon className="h-7 invert dark:invert-0" />
+          <ReceiptIcon className="h-7 invert dark:invert-0" />
           <span className="text-lg font-semibold">Financial Tracker</span>
         </Link>
 
