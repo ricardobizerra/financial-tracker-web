@@ -1343,6 +1343,18 @@ export enum CardType {
   Debit = 'DEBIT',
 }
 
+export type CategorySuggestion = {
+  __typename?: 'CategorySuggestion';
+  category: TransactionCategory;
+  confidence: Scalars['Float']['output'];
+  reasoning: Maybe<Scalars['String']['output']>;
+};
+
+export type ChatResponse = {
+  __typename?: 'ChatResponse';
+  message: Scalars['String']['output'];
+};
+
 export type CreateAccountCardInfos = {
   billingCycleDay?: InputMaybe<Scalars['Float']['input']>;
   billingPaymentDay?: InputMaybe<Scalars['Float']['input']>;
@@ -1412,6 +1424,8 @@ export type CreateRecurringTransactionInput = {
 export type CreateTransactionInput = {
   amount: Scalars['Decimal']['input'];
   billingPayment?: InputMaybe<CardBillingCreateNestedOneWithoutPaymentTransactionInput>;
+  category?: InputMaybe<TransactionCategory>;
+  categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
   destinyAccountId?: InputMaybe<Scalars['ID']['input']>;
@@ -1558,6 +1572,13 @@ export type EnumRoleFilter = {
   in?: InputMaybe<Array<Role>>;
   not?: InputMaybe<NestedEnumRoleFilter>;
   notIn?: InputMaybe<Array<Role>>;
+};
+
+export type EnumTransactionCategoryNullableFilter = {
+  equals?: InputMaybe<TransactionCategory>;
+  in?: InputMaybe<Array<TransactionCategory>>;
+  not?: InputMaybe<NestedEnumTransactionCategoryNullableFilter>;
+  notIn?: InputMaybe<Array<TransactionCategory>>;
 };
 
 export type EnumTransactionStatusFilter = {
@@ -2336,6 +2357,7 @@ export type Mutation = {
   authSignIn: SignIn;
   authSignOut: Scalars['Boolean']['output'];
   cancelTransaction: TransactionModel;
+  chat: ChatResponse;
   closeBilling: CardBilling;
   createAccount: AccountModel;
   createInstallmentTransaction: TransactionModel;
@@ -2363,6 +2385,10 @@ export type MutationAuthSignInArgs = {
 
 export type MutationCancelTransactionArgs = {
   id: Scalars['String']['input'];
+};
+
+export type MutationChatArgs = {
+  message: Scalars['String']['input'];
 };
 
 export type MutationCloseBillingArgs = {
@@ -2571,6 +2597,13 @@ export type NestedEnumRoleFilter = {
   notIn?: InputMaybe<Array<Role>>;
 };
 
+export type NestedEnumTransactionCategoryNullableFilter = {
+  equals?: InputMaybe<TransactionCategory>;
+  in?: InputMaybe<Array<TransactionCategory>>;
+  not?: InputMaybe<NestedEnumTransactionCategoryNullableFilter>;
+  notIn?: InputMaybe<Array<TransactionCategory>>;
+};
+
 export type NestedEnumTransactionStatusFilter = {
   equals?: InputMaybe<TransactionStatus>;
   in?: InputMaybe<Array<TransactionStatus>>;
@@ -2745,6 +2778,8 @@ export enum OrdenationTransactionModel {
   CancelWarningMessage = 'cancelWarningMessage',
   CardBilling = 'cardBilling',
   CardBillingId = 'cardBillingId',
+  Category = 'category',
+  CategoryConfidence = 'categoryConfidence',
   CreatedAt = 'createdAt',
   Date = 'date',
   Description = 'description',
@@ -2813,6 +2848,7 @@ export type Query = {
   investments: InvestmentConnection;
   recurringTransaction: Maybe<RecurringTransactionModel>;
   recurringTransactions: RecurringTransactionConnection;
+  suggestCategory: CategorySuggestion;
   totalInvestments: TotalInvestmentsModel;
   transactions: TransactionConnection;
   transactionsCalendar: TransactionsCalendarModel;
@@ -2915,6 +2951,10 @@ export type QueryRecurringTransactionsArgs = {
   orderBy?: InputMaybe<OrdenationRecurringTransactionModel>;
   orderDirection?: InputMaybe<OrderDirection>;
   search?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type QuerySuggestCategoryArgs = {
+  description: Scalars['String']['input'];
 };
 
 export type QueryTransactionsArgs = {
@@ -3538,6 +3578,8 @@ export type Transaction = {
   billingPayment: Maybe<CardBilling>;
   cardBilling: Maybe<CardBilling>;
   cardBillingId: Maybe<Scalars['String']['output']>;
+  category: Maybe<TransactionCategory>;
+  categoryConfidence: Maybe<Scalars['Float']['output']>;
   createdAt: Scalars['DateTime']['output'];
   date: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];
@@ -3562,7 +3604,24 @@ export type Transaction = {
 export type TransactionAvgAggregate = {
   __typename?: 'TransactionAvgAggregate';
   amount: Maybe<Scalars['Decimal']['output']>;
+  categoryConfidence: Maybe<Scalars['Float']['output']>;
 };
+
+export enum TransactionCategory {
+  Education = 'EDUCATION',
+  Entertainment = 'ENTERTAINMENT',
+  FoodDining = 'FOOD_DINING',
+  Healthcare = 'HEALTHCARE',
+  Housing = 'HOUSING',
+  InvestmentIncome = 'INVESTMENT_INCOME',
+  Other = 'OTHER',
+  Salary = 'SALARY',
+  Shopping = 'SHOPPING',
+  Transfer = 'TRANSFER',
+  Transport = 'TRANSPORT',
+  Travel = 'TRAVEL',
+  Utilities = 'UTILITIES',
+}
 
 export type TransactionConnection = {
   __typename?: 'TransactionConnection';
@@ -3580,6 +3639,8 @@ export type TransactionCountAggregate = {
   _all: Scalars['Int']['output'];
   amount: Scalars['Int']['output'];
   cardBillingId: Scalars['Int']['output'];
+  category: Scalars['Int']['output'];
+  categoryConfidence: Scalars['Int']['output'];
   createdAt: Scalars['Int']['output'];
   date: Scalars['Int']['output'];
   description: Scalars['Int']['output'];
@@ -3598,6 +3659,8 @@ export type TransactionCountAggregate = {
 
 export type TransactionCreateManyCardBillingInput = {
   amount: Scalars['Decimal']['input'];
+  category?: InputMaybe<TransactionCategory>;
+  categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
@@ -3622,6 +3685,8 @@ export type TransactionCreateManyCardBillingInputEnvelope = {
 export type TransactionCreateManyDestinyAccountInput = {
   amount: Scalars['Decimal']['input'];
   cardBillingId?: InputMaybe<Scalars['String']['input']>;
+  category?: InputMaybe<TransactionCategory>;
+  categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
@@ -3645,6 +3710,8 @@ export type TransactionCreateManyDestinyAccountInputEnvelope = {
 export type TransactionCreateManyRecurringTransactionInput = {
   amount: Scalars['Decimal']['input'];
   cardBillingId?: InputMaybe<Scalars['String']['input']>;
+  category?: InputMaybe<TransactionCategory>;
+  categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
@@ -3668,6 +3735,8 @@ export type TransactionCreateManyRecurringTransactionInputEnvelope = {
 export type TransactionCreateManySourceAccountInput = {
   amount: Scalars['Decimal']['input'];
   cardBillingId?: InputMaybe<Scalars['String']['input']>;
+  category?: InputMaybe<TransactionCategory>;
+  categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
@@ -3691,6 +3760,8 @@ export type TransactionCreateManySourceAccountInputEnvelope = {
 export type TransactionCreateManyUserInput = {
   amount: Scalars['Decimal']['input'];
   cardBillingId?: InputMaybe<Scalars['String']['input']>;
+  category?: InputMaybe<TransactionCategory>;
+  categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
@@ -3806,6 +3877,8 @@ export type TransactionCreateOrConnectWithoutUserInput = {
 export type TransactionCreateWithoutBillingPaymentInput = {
   amount: Scalars['Decimal']['input'];
   cardBilling?: InputMaybe<CardBillingCreateNestedOneWithoutTransactionsInput>;
+  category?: InputMaybe<TransactionCategory>;
+  categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
@@ -3826,6 +3899,8 @@ export type TransactionCreateWithoutBillingPaymentInput = {
 export type TransactionCreateWithoutCardBillingInput = {
   amount: Scalars['Decimal']['input'];
   billingPayment?: InputMaybe<CardBillingCreateNestedOneWithoutPaymentTransactionInput>;
+  category?: InputMaybe<TransactionCategory>;
+  categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
@@ -3847,6 +3922,8 @@ export type TransactionCreateWithoutDestinyAccountInput = {
   amount: Scalars['Decimal']['input'];
   billingPayment?: InputMaybe<CardBillingCreateNestedOneWithoutPaymentTransactionInput>;
   cardBilling?: InputMaybe<CardBillingCreateNestedOneWithoutTransactionsInput>;
+  category?: InputMaybe<TransactionCategory>;
+  categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
@@ -3867,6 +3944,8 @@ export type TransactionCreateWithoutInstallmentsInput = {
   amount: Scalars['Decimal']['input'];
   billingPayment?: InputMaybe<CardBillingCreateNestedOneWithoutPaymentTransactionInput>;
   cardBilling?: InputMaybe<CardBillingCreateNestedOneWithoutTransactionsInput>;
+  category?: InputMaybe<TransactionCategory>;
+  categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
@@ -3887,6 +3966,8 @@ export type TransactionCreateWithoutRecurringTransactionInput = {
   amount: Scalars['Decimal']['input'];
   billingPayment?: InputMaybe<CardBillingCreateNestedOneWithoutPaymentTransactionInput>;
   cardBilling?: InputMaybe<CardBillingCreateNestedOneWithoutTransactionsInput>;
+  category?: InputMaybe<TransactionCategory>;
+  categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
@@ -3907,6 +3988,8 @@ export type TransactionCreateWithoutSourceAccountInput = {
   amount: Scalars['Decimal']['input'];
   billingPayment?: InputMaybe<CardBillingCreateNestedOneWithoutPaymentTransactionInput>;
   cardBilling?: InputMaybe<CardBillingCreateNestedOneWithoutTransactionsInput>;
+  category?: InputMaybe<TransactionCategory>;
+  categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
@@ -3927,6 +4010,8 @@ export type TransactionCreateWithoutUserInput = {
   amount: Scalars['Decimal']['input'];
   billingPayment?: InputMaybe<CardBillingCreateNestedOneWithoutPaymentTransactionInput>;
   cardBilling?: InputMaybe<CardBillingCreateNestedOneWithoutTransactionsInput>;
+  category?: InputMaybe<TransactionCategory>;
+  categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
   description: Scalars['String']['input'];
@@ -4135,6 +4220,8 @@ export type TransactionMaxAggregate = {
   __typename?: 'TransactionMaxAggregate';
   amount: Maybe<Scalars['Decimal']['output']>;
   cardBillingId: Maybe<Scalars['String']['output']>;
+  category: Maybe<TransactionCategory>;
+  categoryConfidence: Maybe<Scalars['Float']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   date: Maybe<Scalars['DateTime']['output']>;
   description: Maybe<Scalars['String']['output']>;
@@ -4155,6 +4242,8 @@ export type TransactionMinAggregate = {
   __typename?: 'TransactionMinAggregate';
   amount: Maybe<Scalars['Decimal']['output']>;
   cardBillingId: Maybe<Scalars['String']['output']>;
+  category: Maybe<TransactionCategory>;
+  categoryConfidence: Maybe<Scalars['Float']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   date: Maybe<Scalars['DateTime']['output']>;
   description: Maybe<Scalars['String']['output']>;
@@ -4181,6 +4270,8 @@ export type TransactionModel = {
   cancelWarningMessage: Maybe<Scalars['String']['output']>;
   cardBilling: Maybe<CardBilling>;
   cardBillingId: Maybe<Scalars['String']['output']>;
+  category: Maybe<TransactionCategory>;
+  categoryConfidence: Maybe<Scalars['Float']['output']>;
   createdAt: Scalars['DateTime']['output'];
   date: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];
@@ -4241,6 +4332,7 @@ export enum TransactionStatus {
 export type TransactionSumAggregate = {
   __typename?: 'TransactionSumAggregate';
   amount: Maybe<Scalars['Decimal']['output']>;
+  categoryConfidence: Maybe<Scalars['Float']['output']>;
 };
 
 export enum TransactionType {
@@ -4257,6 +4349,8 @@ export type TransactionWhereInput = {
   billingPayment?: InputMaybe<CardBillingNullableRelationFilter>;
   cardBilling?: InputMaybe<CardBillingNullableRelationFilter>;
   cardBillingId?: InputMaybe<StringNullableFilter>;
+  category?: InputMaybe<EnumTransactionCategoryNullableFilter>;
+  categoryConfidence?: InputMaybe<FloatNullableFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   date?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
@@ -4286,6 +4380,8 @@ export type TransactionWhereUniqueInput = {
   billingPayment?: InputMaybe<CardBillingNullableRelationFilter>;
   cardBilling?: InputMaybe<CardBillingNullableRelationFilter>;
   cardBillingId?: InputMaybe<StringNullableFilter>;
+  category?: InputMaybe<EnumTransactionCategoryNullableFilter>;
+  categoryConfidence?: InputMaybe<FloatNullableFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   date?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
@@ -4920,6 +5016,29 @@ export type BillingQuery = {
       }> | null;
     } | null;
   };
+};
+
+export type SuggestCategoryQueryVariables = Exact<{
+  description: Scalars['String']['input'];
+}>;
+
+export type SuggestCategoryQuery = {
+  __typename?: 'Query';
+  suggestCategory: {
+    __typename?: 'CategorySuggestion';
+    category: TransactionCategory;
+    confidence: number;
+    reasoning: string | null;
+  };
+};
+
+export type ChatMutationVariables = Exact<{
+  message: Scalars['String']['input'];
+}>;
+
+export type ChatMutation = {
+  __typename?: 'Mutation';
+  chat: { __typename?: 'ChatResponse'; message: string };
 };
 
 export type AuthSignInMutationVariables = Exact<{
@@ -7609,6 +7728,113 @@ export const BillingDocument = {
     },
   ],
 } as unknown as DocumentNode<BillingQuery, BillingQueryVariables>;
+export const SuggestCategoryDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'SuggestCategory' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'description' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'suggestCategory' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'description' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'description' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'category' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'confidence' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'reasoning' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  SuggestCategoryQuery,
+  SuggestCategoryQueryVariables
+>;
+export const ChatDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'Chat' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'message' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'chat' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'message' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'message' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'message' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ChatMutation, ChatMutationVariables>;
 export const AuthSignInDocument = {
   kind: 'Document',
   definitions: [

@@ -23,6 +23,8 @@ type Documents = {
   '\n  fragment InstitutionFragment on InstitutionModel {\n    id\n    code\n    name\n    logoUrl\n    color\n    createdAt\n    updatedAt\n  }\n': typeof types.InstitutionFragmentFragmentDoc;
   '\n  query Institutions(\n    $first: Int\n    $after: String\n    $search: String\n    $orderBy: OrdenationInstitutionModel\n    $orderDirection: OrderDirection\n    $types: [AccountType!]\n  ) {\n    institutions(\n      first: $first\n      after: $after\n      search: $search\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      types: $types\n    ) {\n      edges {\n        cursor\n        node {\n          ...InstitutionFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n': typeof types.InstitutionsDocument;
   '\n  query Billing($accountId: ID!, $id: ID) {\n    billing(accountId: $accountId, id: $id) {\n      billing {\n        id\n        periodStart\n        periodEnd\n        paymentDate\n        totalAmount\n        limit\n        usagePercentage\n        status\n        accountCardId\n        createdAt\n        updatedAt\n        accountCard {\n          id\n          lastFourDigits\n          billingCycleDay\n          billingPaymentDay\n          defaultLimit\n          type\n          accountId\n          createdAt\n          updatedAt\n        }\n        paymentTransaction {\n          id\n          description\n          amount\n          date\n          status\n          type\n          paymentMethod\n          sourceAccountId\n          destinyAccountId\n          cardBillingId\n          userId\n          createdAt\n          updatedAt\n        }\n        transactionsCount\n        transactions {\n          id\n          status\n        }\n      }\n      nextBillingId\n      previousBillingId\n    }\n  }\n': typeof types.BillingDocument;
+  '\n  query SuggestCategory($description: String!) {\n    suggestCategory(description: $description) {\n      category\n      confidence\n      reasoning\n    }\n  }\n': typeof types.SuggestCategoryDocument;
+  '\n  mutation Chat($message: String!) {\n    chat(message: $message) {\n      message\n    }\n  }\n': typeof types.ChatDocument;
   '\n  mutation AuthSignIn($data: AuthSignInInput!) {\n    authSignIn(data: $data) {\n      user {\n        id\n        email\n        name\n      }\n    }\n  }\n': typeof types.AuthSignInDocument;
   '\n  mutation AuthSignOut {\n    authSignOut\n  }\n': typeof types.AuthSignOutDocument;
   '\n  mutation CreateUser($data: UserCreateInput!) {\n    createUser(data: $data) {\n      user {\n        id\n      }\n    }\n  }\n': typeof types.CreateUserDocument;
@@ -84,6 +86,10 @@ const documents: Documents = {
     types.InstitutionsDocument,
   '\n  query Billing($accountId: ID!, $id: ID) {\n    billing(accountId: $accountId, id: $id) {\n      billing {\n        id\n        periodStart\n        periodEnd\n        paymentDate\n        totalAmount\n        limit\n        usagePercentage\n        status\n        accountCardId\n        createdAt\n        updatedAt\n        accountCard {\n          id\n          lastFourDigits\n          billingCycleDay\n          billingPaymentDay\n          defaultLimit\n          type\n          accountId\n          createdAt\n          updatedAt\n        }\n        paymentTransaction {\n          id\n          description\n          amount\n          date\n          status\n          type\n          paymentMethod\n          sourceAccountId\n          destinyAccountId\n          cardBillingId\n          userId\n          createdAt\n          updatedAt\n        }\n        transactionsCount\n        transactions {\n          id\n          status\n        }\n      }\n      nextBillingId\n      previousBillingId\n    }\n  }\n':
     types.BillingDocument,
+  '\n  query SuggestCategory($description: String!) {\n    suggestCategory(description: $description) {\n      category\n      confidence\n      reasoning\n    }\n  }\n':
+    types.SuggestCategoryDocument,
+  '\n  mutation Chat($message: String!) {\n    chat(message: $message) {\n      message\n    }\n  }\n':
+    types.ChatDocument,
   '\n  mutation AuthSignIn($data: AuthSignInInput!) {\n    authSignIn(data: $data) {\n      user {\n        id\n        email\n        name\n      }\n    }\n  }\n':
     types.AuthSignInDocument,
   '\n  mutation AuthSignOut {\n    authSignOut\n  }\n':
@@ -236,6 +242,18 @@ export function graphql(
 export function graphql(
   source: '\n  query Billing($accountId: ID!, $id: ID) {\n    billing(accountId: $accountId, id: $id) {\n      billing {\n        id\n        periodStart\n        periodEnd\n        paymentDate\n        totalAmount\n        limit\n        usagePercentage\n        status\n        accountCardId\n        createdAt\n        updatedAt\n        accountCard {\n          id\n          lastFourDigits\n          billingCycleDay\n          billingPaymentDay\n          defaultLimit\n          type\n          accountId\n          createdAt\n          updatedAt\n        }\n        paymentTransaction {\n          id\n          description\n          amount\n          date\n          status\n          type\n          paymentMethod\n          sourceAccountId\n          destinyAccountId\n          cardBillingId\n          userId\n          createdAt\n          updatedAt\n        }\n        transactionsCount\n        transactions {\n          id\n          status\n        }\n      }\n      nextBillingId\n      previousBillingId\n    }\n  }\n',
 ): (typeof documents)['\n  query Billing($accountId: ID!, $id: ID) {\n    billing(accountId: $accountId, id: $id) {\n      billing {\n        id\n        periodStart\n        periodEnd\n        paymentDate\n        totalAmount\n        limit\n        usagePercentage\n        status\n        accountCardId\n        createdAt\n        updatedAt\n        accountCard {\n          id\n          lastFourDigits\n          billingCycleDay\n          billingPaymentDay\n          defaultLimit\n          type\n          accountId\n          createdAt\n          updatedAt\n        }\n        paymentTransaction {\n          id\n          description\n          amount\n          date\n          status\n          type\n          paymentMethod\n          sourceAccountId\n          destinyAccountId\n          cardBillingId\n          userId\n          createdAt\n          updatedAt\n        }\n        transactionsCount\n        transactions {\n          id\n          status\n        }\n      }\n      nextBillingId\n      previousBillingId\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  query SuggestCategory($description: String!) {\n    suggestCategory(description: $description) {\n      category\n      confidence\n      reasoning\n    }\n  }\n',
+): (typeof documents)['\n  query SuggestCategory($description: String!) {\n    suggestCategory(description: $description) {\n      category\n      confidence\n      reasoning\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  mutation Chat($message: String!) {\n    chat(message: $message) {\n      message\n    }\n  }\n',
+): (typeof documents)['\n  mutation Chat($message: String!) {\n    chat(message: $message) {\n      message\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
