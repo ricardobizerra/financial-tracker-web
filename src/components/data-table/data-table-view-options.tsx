@@ -49,7 +49,7 @@ export function DataTableViewOptions() {
                   onCheckedChange={(value) => column.toggleVisibility(!!value)}
                   disabled={disabled}
                 >
-                  {columnHeaders[column.id]}
+                  {columnHeaders[column.id as keyof typeof columnHeaders]}
                 </DropdownMenuCheckboxItem>
               </div>
             </SimpleTooltip>
