@@ -1,4 +1,9 @@
 import { TransactionsCardView } from '@/modules/transactions/components/transactions-card-view';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Movimentações',
+};
 
 export default function Page() {
   return (

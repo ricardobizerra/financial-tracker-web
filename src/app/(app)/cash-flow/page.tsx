@@ -1,4 +1,9 @@
 import { CashFlowOverview } from '@/modules/cash-flow/components/cash-flow-overview';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Fluxo de Caixa',
+};
 
 export default function CashFlowPage() {
   return (
