@@ -18,13 +18,22 @@ export function LandingFooter() {
 
           {/* Links */}
           <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
-            <a href="#features" className="transition-colors hover:text-foreground">
+            <a
+              href="#features"
+              className="transition-colors hover:text-foreground"
+            >
               Recursos
             </a>
-            <a href="/login" className="transition-colors hover:text-foreground">
+            <a
+              href="/login"
+              className="transition-colors hover:text-foreground"
+            >
               Entrar
             </a>
-            <a href="/register" className="transition-colors hover:text-foreground">
+            <a
+              href="/register"
+              className="transition-colors hover:text-foreground"
+            >
               Criar Conta
             </a>
           </nav>
@@ -34,7 +43,10 @@ export function LandingFooter() {
 
         {/* Copyright */}
         <div className="text-center text-sm text-muted-foreground">
-          <p>&copy; {currentYear} Financial Tracker. Todos os direitos reservados.</p>
+          <p>
+            &copy; {currentYear} Financial Tracker. Todos os direitos
+            reservados.
+          </p>
         </div>
       </div>
     </footer>

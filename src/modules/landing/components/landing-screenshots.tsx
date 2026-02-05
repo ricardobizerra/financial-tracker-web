@@ -123,7 +123,7 @@ export function LandingScreenshots() {
                   'h-2 w-2 rounded-full transition-all duration-300',
                   index === currentIndex
                     ? 'w-8 bg-primary'
-                    : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                    : 'bg-muted-foreground/30 hover:bg-muted-foreground/50',
                 )}
                 onClick={() => setCurrentIndex(index)}
               >

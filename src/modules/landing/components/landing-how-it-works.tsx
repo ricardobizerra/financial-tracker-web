@@ -8,8 +8,7 @@ const steps = [
     number: '01',
     icon: UserPlus,
     title: 'Crie sua conta',
-    description:
-      'Cadastre-se gratuitamente em segundos com e-mail ou Google.',
+    description: 'Cadastre-se gratuitamente em segundos com e-mail ou Google.',
   },
   {
     number: '02',
