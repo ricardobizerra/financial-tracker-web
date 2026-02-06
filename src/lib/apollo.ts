@@ -18,6 +18,7 @@ export const makeAuthMiddleware = (token: string | null) => {
       headers: {
         ...headers,
         Authorization: token ? `Bearer ${token}` : '',
+        'x-requested-with': 'XmlHttpRequest',
       },
     };
   });
