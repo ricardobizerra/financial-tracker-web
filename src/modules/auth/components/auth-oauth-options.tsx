@@ -12,7 +12,7 @@ export function AuthOAuthOptions({ action }: AuthOAuthOptionsProps) {
     <>
       <div className="flex flex-col gap-4">
         <Button variant="outline" type="button" className="w-full" asChild>
-          <a href={`${process.env.NEXT_PUBLIC_API_URL}/auth/google`}>
+          <a href="/api/auth/google">
             <GoogleIcon />
             {actionText} com Google
           </a>

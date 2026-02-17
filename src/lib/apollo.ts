@@ -36,15 +36,22 @@ const hasSubscriptionOperation = ({ query }: Operation) => {
 
 export const createApolloClient = (token: string | null) => {
   const httpLink = createHttpLink({
-    uri: `${process.env.NEXT_PUBLIC_API_URL}/graphql`,
+    uri: '/api/graphql',
     credentials: 'include',
   });
 
   const authLink = makeAuthMiddleware(token);
 
+  const wsProtocol =
+    typeof window !== 'undefined' && window.location.protocol === 'https:'
+      ? 'wss:'
+      : 'ws:';
+  const wsHost = typeof window !== 'undefined' ? window.location.host : '';
+  const wsUrl = `${wsProtocol}//${wsHost}/api/subscriptions`;
+
   const wsLink = new GraphQLWsLink(
     createClient({
-      url: `${process.env.API_SUBSCRIPTION_URL}/subscriptions`,
+      url: wsUrl,
     }),
   );
 
