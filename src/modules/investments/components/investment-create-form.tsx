@@ -108,10 +108,10 @@ export function InvestmentCreateForm({
       first: 50,
       orderBy: OrdenationAccountModel.Name,
       orderDirection: OrderDirection.Asc,
-      type:
+      types:
         selectedRegime?.value === Regime.Poupanca
-          ? AccountType.Savings
-          : AccountType.Investment,
+          ? [AccountType.Savings]
+          : [AccountType.Investment],
     },
     skip: !open || !selectedRegime,
     notifyOnNetworkStatusChange: true,

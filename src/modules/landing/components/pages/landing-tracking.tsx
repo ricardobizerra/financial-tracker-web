@@ -1,20 +1,23 @@
-import { AppSidebar } from '@/components/app-sidebar';
 import { LandingHeader } from '../landing-header';
-import { SidebarProvider } from '@/components/ui/sidebar';
-import { getSidebarState } from '@/lib/sidebar';
-import { APP_CONFIG } from '@/lib/config';
-import { UsersTable } from '@/modules/users/components/users-table';
+import { LandingHero } from '../landing-hero';
+import { LandingFeatures } from '../landing-features';
+import { LandingScreenshots } from '../landing-screenshots';
+import { LandingHowItWorks } from '../landing-how-it-works';
+import { LandingCTA } from '../landing-cta';
+import { LandingFooter } from '../landing-footer';
 
-export async function LandingTracking() {
-  const defaultOpen = await getSidebarState();
-
+export function LandingTracking() {
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
-      {APP_CONFIG.sidebarAppearance === 'app-and-landing' && <AppSidebar />}
-      <main className="max-w-screen flex h-full w-screen flex-col gap-8 px-6 py-4">
-        <LandingHeader />
-        <UsersTable />
+    <div className="flex min-h-screen w-full flex-col">
+      <LandingHeader />
+      <main className="flex-1">
+        <LandingHero />
+        <LandingFeatures />
+        <LandingScreenshots />
+        <LandingHowItWorks />
+        <LandingCTA />
       </main>
-    </SidebarProvider>
+      <LandingFooter />
+    </div>
   );
 }
