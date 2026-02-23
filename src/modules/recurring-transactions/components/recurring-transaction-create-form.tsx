@@ -29,6 +29,7 @@ import {
   PaymentMethod,
   RecurrenceFrequency,
   AccountType,
+  TransactionCategory,
 } from '@/graphql/graphql';
 import { useCallback, useState, useMemo } from 'react';
 import { toast } from 'sonner';
@@ -44,7 +45,9 @@ import { Separator } from '@/components/ui/separator';
 import {
   paymentMethodLabel,
   transactionTypeLabels,
+  transactionCategoryLabels,
 } from '@/modules/transactions/transactions-constants';
+import { transactionCategoryIcons } from '@/modules/transactions/components/transaction-category-badge';
 import {
   recurrenceFrequencyLabels,
   monthLabels,
@@ -59,10 +62,28 @@ interface RecurringTransactionCreateFormProps {
   triggerSize?: ButtonProps['size'];
 }
 
+const categoryOptions = Object.values(TransactionCategory).map((c) => ({
+  value: c,
+  label: transactionCategoryLabels[c],
+}));
+
+const renderCategoryLabel = (option: { value: string; label: string }) => {
+  const Icon = transactionCategoryIcons[option.value as TransactionCategory];
+  return (
+    <div className="flex items-center gap-2">
+      <Icon className="h-5 w-5" />
+      <p>{option.label}</p>
+    </div>
+  );
+};
+
 const incomeRecurringSchema = z.object({
   description: formFields.text.describe(
     'Descrição * // Ex: Salário, Aluguel recebido',
   ),
+  category: formFields.select
+    .optional()
+    .describe('Categoria // Categoria da movimentação'),
   estimatedAmount: formFields.currency.describe(
     'Valor estimado * // Valor aproximado',
   ),
@@ -87,6 +108,9 @@ const expenseRecurringSchema = z.object({
   description: formFields.text.describe(
     'Descrição * // Ex: Netflix, Conta de luz',
   ),
+  category: formFields.select
+    .optional()
+    .describe('Categoria // Categoria da movimentação'),
   estimatedAmount: formFields.currency.describe(
     'Valor estimado * // Valor aproximado',
   ),
@@ -241,6 +265,10 @@ export function IncomeRecurringTransactionCreateForm({
           form={form}
           schema={incomeRecurringSchema}
           props={{
+            category: {
+              options: categoryOptions,
+              renderLabel: renderCategoryLabel,
+            } as any,
             frequency: {
               options: frequencyOptions,
               renderLabel: (option) => (
@@ -300,6 +328,9 @@ export function IncomeRecurringTransactionCreateForm({
                   type: TransactionType.Income,
                   destinyAccountId: data.destinyAccount.value,
                   paymentMethod: data.paymentMethod.value as PaymentMethod,
+                  category: data.category?.value as
+                    | TransactionCategory
+                    | undefined,
                   frequency: data.frequency.value as RecurrenceFrequency,
                   dayOfMonth: data.dayOfMonth,
                   monthOfYear: data.monthOfYear?.value
@@ -339,6 +370,7 @@ export function IncomeRecurringTransactionCreateForm({
           {({
             destinyAccount,
             description,
+            category,
             estimatedAmount,
             paymentMethod,
             frequency,
@@ -351,6 +383,7 @@ export function IncomeRecurringTransactionCreateForm({
               {destinyAccount}
               <Separator />
               {description}
+              {category}
               {estimatedAmount}
               {paymentMethod}
               <Separator />
@@ -517,6 +550,10 @@ export function ExpenseRecurringTransactionCreateForm({
           form={form}
           schema={expenseRecurringSchema}
           props={{
+            category: {
+              options: categoryOptions,
+              renderLabel: renderCategoryLabel,
+            } as any,
             frequency: {
               options: frequencyOptions,
               renderLabel: (option) => (
@@ -576,6 +613,9 @@ export function ExpenseRecurringTransactionCreateForm({
                   type: TransactionType.Expense,
                   sourceAccountId: data.sourceAccount.value,
                   paymentMethod: data.paymentMethod.value as PaymentMethod,
+                  category: data.category?.value as
+                    | TransactionCategory
+                    | undefined,
                   frequency: data.frequency.value as RecurrenceFrequency,
                   dayOfMonth: data.dayOfMonth,
                   monthOfYear: data.monthOfYear?.value
@@ -615,6 +655,7 @@ export function ExpenseRecurringTransactionCreateForm({
           {({
             sourceAccount,
             description,
+            category,
             estimatedAmount,
             paymentMethod,
             frequency,
@@ -627,6 +668,7 @@ export function ExpenseRecurringTransactionCreateForm({
               {sourceAccount}
               <Separator />
               {description}
+              {category}
               {estimatedAmount}
               {paymentMethod}
               <Separator />

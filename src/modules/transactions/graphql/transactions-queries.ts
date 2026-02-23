@@ -7,6 +7,7 @@ export const TransactionsFragment = graphql(`
     amount
     date
     type
+    category
     createdAt
     updatedAt
     sourceAccount {
