@@ -239,7 +239,9 @@ const incomeSchema = z.object({
   description: formFields.text.describe(
     'Descrição * // Insira a descrição da movimentação',
   ),
-  category: formFields.select.optional().describe('Categoria // Insira a categoria'),
+  category: formFields.select
+    .optional()
+    .describe('Categoria // Insira a categoria'),
   destinyAccount: formFields.select.describe(
     'Conta de destino * // Insira a conta',
   ),
@@ -259,7 +261,9 @@ const expenseSchema = z.object({
   description: formFields.text.describe(
     'Descrição * // Insira a descrição da movimentação',
   ),
-  category: formFields.select.optional().describe('Categoria // Insira a categoria'),
+  category: formFields.select
+    .optional()
+    .describe('Categoria // Insira a categoria'),
   type: formFields.select.describe('Tipo * // Insira o tipo da movimentação'),
   sourceAccount: formFields.select.describe(
     'Conta de origem * // Insira a conta',
@@ -286,7 +290,9 @@ const betweenAccountsSchema = z.object({
   description: formFields.text.describe(
     'Descrição * // Insira a descrição da movimentação',
   ),
-  category: formFields.select.optional().describe('Categoria // Insira a categoria'),
+  category: formFields.select
+    .optional()
+    .describe('Categoria // Insira a categoria'),
   type: formFields.select.describe('Tipo * // Insira o tipo da movimentação'),
   sourceAccount: formFields.select.describe(
     'Conta de origem * // Insira a conta',
@@ -311,7 +317,9 @@ const formStepperIncomeSchema = z.object({
   description: formFields.text.describe(
     'Descrição * // Insira a descrição da movimentação',
   ),
-  category: formFields.select.optional().describe('Categoria // Insira a categoria'),
+  category: formFields.select
+    .optional()
+    .describe('Categoria // Insira a categoria'),
   isCompleted: formFields.switch
     .optional()
     .describe('Já realizada // Marque se a transação já foi realizada'),
@@ -328,7 +336,9 @@ const formStepperExpenseSchema = z.object({
   description: formFields.text.describe(
     'Descrição * // Insira a descrição da movimentação',
   ),
-  category: formFields.select.optional().describe('Categoria // Insira a categoria'),
+  category: formFields.select
+    .optional()
+    .describe('Categoria // Insira a categoria'),
   isCompleted: formFields.switch
     .optional()
     .describe('Já realizada // Marque se a transação já foi realizada'),
@@ -351,7 +361,9 @@ const formStepperBetweenAccountsSchema = z.object({
   description: formFields.text.describe(
     'Descrição * // Insira a descrição da movimentação',
   ),
-  category: formFields.select.optional().describe('Categoria // Insira a categoria'),
+  category: formFields.select
+    .optional()
+    .describe('Categoria // Insira a categoria'),
   isCompleted: formFields.switch
     .optional()
     .describe('Já realizada // Marque se a transação já foi realizada'),
@@ -592,15 +604,11 @@ function IncomeTransactionFormDetails({
           description: editTransaction.description ?? '',
           isCompleted: editTransaction.status === TransactionStatus.Completed,
           category: editTransaction.category
-
             ? {
-
                 value: editTransaction.category,
 
                 label: transactionCategoryLabels[editTransaction.category],
-
               }
-
             : undefined,
 
           paymentMethod: editTransaction.paymentMethod
@@ -681,7 +689,9 @@ function IncomeTransactionFormDetails({
                 amount: data.amount,
                 isCompleted: data.isCompleted,
                 paymentMethod: data.paymentMethod?.value as PaymentMethod,
-                category: data.category?.value as TransactionCategory | undefined,
+                category: data.category?.value as
+                  | TransactionCategory
+                  | undefined,
               },
             },
             refetchQueries: [
@@ -717,7 +727,9 @@ function IncomeTransactionFormDetails({
                   destinyAccountId: destinyAccountId,
                   paymentMethod: data.paymentMethod?.value as PaymentMethod,
 
-                  category: data.category?.value as TransactionCategory | undefined,
+                  category: data.category?.value as
+                    | TransactionCategory
+                    | undefined,
                   frequency: recurrenceFrequency,
                   dayMode:
                     recurrenceFrequency === RecurrenceFrequency.Weekly ||
@@ -784,7 +796,9 @@ function IncomeTransactionFormDetails({
                   amount: data.amount,
                   paymentMethod: data.paymentMethod?.value as PaymentMethod,
 
-                  category: data.category?.value as TransactionCategory | undefined,
+                  category: data.category?.value as
+                    | TransactionCategory
+                    | undefined,
                 },
               },
               refetchQueries: [
@@ -866,7 +880,14 @@ function IncomeTransactionFormDetails({
         </DialogFooter>
       )}
     >
-      {({ date, isCompleted, amount, description, paymentMethod, category }) => (
+      {({
+        date,
+        isCompleted,
+        amount,
+        description,
+        paymentMethod,
+        category,
+      }) => (
         <>
           {!showRecurrenceStep && (
             <>
@@ -1399,15 +1420,11 @@ function ExpenseTransactionFormDetails({
           description: editTransaction.description ?? '',
           isCompleted: editTransaction.status === TransactionStatus.Completed,
           category: editTransaction.category
-
             ? {
-
                 value: editTransaction.category,
 
                 label: transactionCategoryLabels[editTransaction.category],
-
               }
-
             : undefined,
 
           paymentMethod: editTransaction.paymentMethod
@@ -1505,7 +1522,6 @@ function ExpenseTransactionFormDetails({
         category: {
           options: categoryOptions,
           renderLabel: renderCategoryLabel,
-
         } as any,
 
         paymentMethod: {
@@ -1544,7 +1560,9 @@ function ExpenseTransactionFormDetails({
                 isCompleted: data.isCompleted,
                 paymentMethod: data.paymentMethod?.value as PaymentMethod,
 
-                category: data.category?.value as TransactionCategory | undefined,
+                category: data.category?.value as
+                  | TransactionCategory
+                  | undefined,
               },
             },
             refetchQueries: [
@@ -1638,7 +1656,9 @@ function ExpenseTransactionFormDetails({
                   type: TransactionType.Expense,
                   paymentMethod: data.paymentMethod?.value as PaymentMethod,
 
-                  category: data.category?.value as TransactionCategory | undefined,
+                  category: data.category?.value as
+                    | TransactionCategory
+                    | undefined,
                 },
               },
               refetchQueries: [
@@ -2403,15 +2423,11 @@ function BetweenAccountsTransactionFormDetails({
           description: editTransaction.description ?? '',
           isCompleted: editTransaction.status === TransactionStatus.Completed,
           category: editTransaction.category
-
             ? {
-
                 value: editTransaction.category,
 
                 label: transactionCategoryLabels[editTransaction.category],
-
               }
-
             : undefined,
 
           paymentMethod: editTransaction.paymentMethod
@@ -2457,7 +2473,6 @@ function BetweenAccountsTransactionFormDetails({
         category: {
           options: categoryOptions,
           renderLabel: renderCategoryLabel,
-
         } as any,
 
         paymentMethod: {
@@ -2496,7 +2511,9 @@ function BetweenAccountsTransactionFormDetails({
                 isCompleted: data.isCompleted,
                 paymentMethod: data.paymentMethod?.value as PaymentMethod,
 
-                category: data.category?.value as TransactionCategory | undefined,
+                category: data.category?.value as
+                  | TransactionCategory
+                  | undefined,
               },
             },
             refetchQueries: [
@@ -2532,7 +2549,9 @@ function BetweenAccountsTransactionFormDetails({
                 amount: data.amount,
                 paymentMethod: data.paymentMethod?.value as PaymentMethod,
 
-                category: data.category?.value as TransactionCategory | undefined,
+                category: data.category?.value as
+                  | TransactionCategory
+                  | undefined,
               },
             },
             refetchQueries: [
@@ -2578,7 +2597,14 @@ function BetweenAccountsTransactionFormDetails({
         </DialogFooter>
       )}
     >
-      {({ date, isCompleted, amount, description, paymentMethod, category }) => (
+      {({
+        date,
+        isCompleted,
+        amount,
+        description,
+        paymentMethod,
+        category,
+      }) => (
         <>
           {date}
           {showIsCompleted && isCompleted}
@@ -3234,7 +3260,6 @@ function IncomeTransactionFormContent({
         category: {
           options: categoryOptions,
           renderLabel: renderCategoryLabel,
-
         } as any,
 
         paymentMethod: {
@@ -3387,7 +3412,6 @@ function ExpenseTransactionFormContent({
         category: {
           options: categoryOptions,
           renderLabel: renderCategoryLabel,
-
         } as any,
 
         paymentMethod: {
@@ -3455,7 +3479,9 @@ function ExpenseTransactionFormContent({
                 amount: data.amount,
                 paymentMethod: data.paymentMethod?.value as PaymentMethod,
 
-                category: data.category?.value as TransactionCategory | undefined,
+                category: data.category?.value as
+                  | TransactionCategory
+                  | undefined,
               },
             },
             refetchQueries: [
@@ -3573,7 +3599,6 @@ function BetweenAccountsTransactionFormContent({
         category: {
           options: categoryOptions,
           renderLabel: renderCategoryLabel,
-
         } as any,
 
         paymentMethod: {

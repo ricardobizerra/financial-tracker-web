@@ -81,7 +81,9 @@ const incomeRecurringSchema = z.object({
   description: formFields.text.describe(
     'Descrição * // Ex: Salário, Aluguel recebido',
   ),
-  category: formFields.select.optional().describe('Categoria // Categoria da movimentação'),
+  category: formFields.select
+    .optional()
+    .describe('Categoria // Categoria da movimentação'),
   estimatedAmount: formFields.currency.describe(
     'Valor estimado * // Valor aproximado',
   ),
@@ -106,7 +108,9 @@ const expenseRecurringSchema = z.object({
   description: formFields.text.describe(
     'Descrição * // Ex: Netflix, Conta de luz',
   ),
-  category: formFields.select.optional().describe('Categoria // Categoria da movimentação'),
+  category: formFields.select
+    .optional()
+    .describe('Categoria // Categoria da movimentação'),
   estimatedAmount: formFields.currency.describe(
     'Valor estimado * // Valor aproximado',
   ),
@@ -324,7 +328,9 @@ export function IncomeRecurringTransactionCreateForm({
                   type: TransactionType.Income,
                   destinyAccountId: data.destinyAccount.value,
                   paymentMethod: data.paymentMethod.value as PaymentMethod,
-                  category: data.category?.value as TransactionCategory | undefined,
+                  category: data.category?.value as
+                    | TransactionCategory
+                    | undefined,
                   frequency: data.frequency.value as RecurrenceFrequency,
                   dayOfMonth: data.dayOfMonth,
                   monthOfYear: data.monthOfYear?.value
@@ -607,7 +613,9 @@ export function ExpenseRecurringTransactionCreateForm({
                   type: TransactionType.Expense,
                   sourceAccountId: data.sourceAccount.value,
                   paymentMethod: data.paymentMethod.value as PaymentMethod,
-                  category: data.category?.value as TransactionCategory | undefined,
+                  category: data.category?.value as
+                    | TransactionCategory
+                    | undefined,
                   frequency: data.frequency.value as RecurrenceFrequency,
                   dayOfMonth: data.dayOfMonth,
                   monthOfYear: data.monthOfYear?.value

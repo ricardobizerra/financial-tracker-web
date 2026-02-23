@@ -83,7 +83,11 @@ export function TransactionCategoryBadge({
 
   return (
     <Badge
-      className={cn('gap-1 whitespace-nowrap transition-colors', colors, className)}
+      className={cn(
+        'gap-1 whitespace-nowrap transition-colors',
+        colors,
+        className,
+      )}
       variant="secondary"
       size="sm"
     >
