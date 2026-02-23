@@ -1403,6 +1403,7 @@ export type CreateInvestmentInput = {
 };
 
 export type CreateRecurringTransactionInput = {
+  category?: InputMaybe<TransactionCategory>;
   dayMode?: InputMaybe<DayMode>;
   dayOfMonth?: InputMaybe<Scalars['Int']['input']>;
   dayOfWeek?: InputMaybe<Scalars['Int']['input']>;
@@ -4454,6 +4455,7 @@ export type UpdateRecurringTransactionsInput = {
 
 export type UpdateTransactionInput = {
   amount?: InputMaybe<Scalars['Float']['input']>;
+  category?: InputMaybe<TransactionCategory>;
   date?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
@@ -5742,6 +5744,7 @@ export type TransactionFragmentFragment = {
   amount: any;
   date: any;
   type: TransactionType;
+  category: TransactionCategory | null;
   createdAt: any;
   updatedAt: any;
   status: TransactionStatus;
@@ -5850,6 +5853,7 @@ export type TransactionsQuery = {
         amount: any;
         date: any;
         type: TransactionType;
+        category: TransactionCategory | null;
         createdAt: any;
         updatedAt: any;
         status: TransactionStatus;
@@ -5989,6 +5993,7 @@ export type TransactionsGroupedByPeriodQuery = {
       amount: any;
       date: any;
       type: TransactionType;
+      category: TransactionCategory | null;
       createdAt: any;
       updatedAt: any;
       status: TransactionStatus;
@@ -6082,6 +6087,7 @@ export type BillingTransactionsQuery = {
     amount: any;
     date: any;
     type: TransactionType;
+    category: TransactionCategory | null;
     createdAt: any;
     updatedAt: any;
     status: TransactionStatus;
@@ -6452,6 +6458,7 @@ export const TransactionFragmentFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
           { kind: 'Field', name: { kind: 'Name', value: 'date' } },
           { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'category' } },
           { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
           { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
           {
@@ -10878,6 +10885,7 @@ export const TransactionsDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
           { kind: 'Field', name: { kind: 'Name', value: 'date' } },
           { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'category' } },
           { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
           { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
           {
@@ -11460,6 +11468,7 @@ export const TransactionsGroupedByPeriodDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
           { kind: 'Field', name: { kind: 'Name', value: 'date' } },
           { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'category' } },
           { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
           { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
           {
@@ -11713,6 +11722,7 @@ export const BillingTransactionsDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
           { kind: 'Field', name: { kind: 'Name', value: 'date' } },
           { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'category' } },
           { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
           { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
           {

@@ -2,6 +2,7 @@ import {
   PaymentMethod,
   TransactionStatus,
   TransactionType,
+  TransactionCategory,
 } from '@/graphql/graphql';
 
 export const transactionTypeLabels: Record<TransactionType, string> = {
@@ -24,3 +25,19 @@ export const paymentMethodLabel: Record<PaymentMethod, string> = {
   CASH: 'Dinheiro',
   PIX: 'Pix',
 };
+
+export const transactionCategoryLabels: Record<TransactionCategory, string> = {
+  [TransactionCategory.Education]: 'Educação',
+  [TransactionCategory.Entertainment]: 'Entretenimento',
+  [TransactionCategory.FoodDining]: 'Alimentação',
+  [TransactionCategory.Healthcare]: 'Saúde',
+  [TransactionCategory.Housing]: 'Moradia',
+  [TransactionCategory.InvestmentIncome]: 'Rendimentos',
+  [TransactionCategory.Other]: 'Outros',
+  [TransactionCategory.Salary]: 'Salário',
+  [TransactionCategory.Shopping]: 'Compras',
+  [TransactionCategory.Transfer]: 'Transferência',
+  [TransactionCategory.Transport]: 'Transporte',
+  [TransactionCategory.Travel]: 'Viagem',
+  [TransactionCategory.Utilities]: 'Serviços/Contas',
+} as const;
