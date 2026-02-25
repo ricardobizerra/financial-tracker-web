@@ -19,17 +19,21 @@ export const RecurringTransactionFragment = graphql(`
     sourceAccount {
       id
       name
-      institution {
-        name
-        logoUrl
+      institutionLink {
+        institution {
+          name
+          logoUrl
+        }
       }
     }
     destinyAccount {
       id
       name
-      institution {
-        name
-        logoUrl
+      institutionLink {
+        institution {
+          name
+          logoUrl
+        }
       }
     }
     createdAt

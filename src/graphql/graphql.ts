@@ -36,195 +36,24 @@ export type Scalars = {
 export type Account = {
   __typename?: 'Account';
   _count: AccountCount;
-  accountCard: Maybe<AccountCard>;
   createdAt: Scalars['DateTime']['output'];
   description: Maybe<Scalars['String']['output']>;
   destinyRecurringTransactions: Maybe<Array<RecurringTransaction>>;
   destinyTransactions: Maybe<Array<Transaction>>;
   id: Scalars['ID']['output'];
   initialBalance: Scalars['Decimal']['output'];
-  institution: Institution;
-  institutionId: Scalars['String']['output'];
-  investmentTransactions: Maybe<Array<InvestmentTransaction>>;
-  investments: Maybe<Array<Investment>>;
+  institutionLink: InstitutionLink;
+  institutionLinkId: Scalars['String']['output'];
   isActive: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   sourceRecurringTransactions: Maybe<Array<RecurringTransaction>>;
   sourceTransactions: Maybe<Array<Transaction>>;
-  type: AccountType;
   updatedAt: Scalars['DateTime']['output'];
-  user: User;
-  userId: Scalars['String']['output'];
 };
 
 export type AccountAvgAggregate = {
   __typename?: 'AccountAvgAggregate';
   initialBalance: Maybe<Scalars['Decimal']['output']>;
-};
-
-export type AccountCard = {
-  __typename?: 'AccountCard';
-  _count: AccountCardCount;
-  account: Account;
-  accountId: Scalars['String']['output'];
-  billingCycleDay: Scalars['Int']['output'];
-  billingPaymentDay: Scalars['Int']['output'];
-  billings: Maybe<Array<CardBilling>>;
-  createdAt: Scalars['DateTime']['output'];
-  defaultLimit: Scalars['Decimal']['output'];
-  id: Scalars['ID']['output'];
-  lastFourDigits: Maybe<Scalars['String']['output']>;
-  type: CardType;
-  updatedAt: Scalars['DateTime']['output'];
-};
-
-export type AccountCardAvgAggregate = {
-  __typename?: 'AccountCardAvgAggregate';
-  billingCycleDay: Maybe<Scalars['Float']['output']>;
-  billingPaymentDay: Maybe<Scalars['Float']['output']>;
-  defaultLimit: Maybe<Scalars['Decimal']['output']>;
-};
-
-export type AccountCardCount = {
-  __typename?: 'AccountCardCount';
-  billings: Scalars['Int']['output'];
-};
-
-export type AccountCardCountAggregate = {
-  __typename?: 'AccountCardCountAggregate';
-  _all: Scalars['Int']['output'];
-  accountId: Scalars['Int']['output'];
-  billingCycleDay: Scalars['Int']['output'];
-  billingPaymentDay: Scalars['Int']['output'];
-  createdAt: Scalars['Int']['output'];
-  defaultLimit: Scalars['Int']['output'];
-  id: Scalars['Int']['output'];
-  lastFourDigits: Scalars['Int']['output'];
-  type: Scalars['Int']['output'];
-  updatedAt: Scalars['Int']['output'];
-};
-
-export type AccountCardCreateNestedOneWithoutAccountInput = {
-  connect?: InputMaybe<AccountCardWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<AccountCardCreateOrConnectWithoutAccountInput>;
-  create?: InputMaybe<AccountCardCreateWithoutAccountInput>;
-};
-
-export type AccountCardCreateNestedOneWithoutBillingsInput = {
-  connect?: InputMaybe<AccountCardWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<AccountCardCreateOrConnectWithoutBillingsInput>;
-  create?: InputMaybe<AccountCardCreateWithoutBillingsInput>;
-};
-
-export type AccountCardCreateOrConnectWithoutAccountInput = {
-  create: AccountCardCreateWithoutAccountInput;
-  where: AccountCardWhereUniqueInput;
-};
-
-export type AccountCardCreateOrConnectWithoutBillingsInput = {
-  create: AccountCardCreateWithoutBillingsInput;
-  where: AccountCardWhereUniqueInput;
-};
-
-export type AccountCardCreateWithoutAccountInput = {
-  billingCycleDay: Scalars['Int']['input'];
-  billingPaymentDay: Scalars['Int']['input'];
-  billings?: InputMaybe<CardBillingCreateNestedManyWithoutAccountCardInput>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  defaultLimit: Scalars['Decimal']['input'];
-  id?: InputMaybe<Scalars['String']['input']>;
-  lastFourDigits?: InputMaybe<Scalars['String']['input']>;
-  type: CardType;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type AccountCardCreateWithoutBillingsInput = {
-  account: AccountCreateNestedOneWithoutAccountCardInput;
-  billingCycleDay: Scalars['Int']['input'];
-  billingPaymentDay: Scalars['Int']['input'];
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  defaultLimit: Scalars['Decimal']['input'];
-  id?: InputMaybe<Scalars['String']['input']>;
-  lastFourDigits?: InputMaybe<Scalars['String']['input']>;
-  type: CardType;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type AccountCardMaxAggregate = {
-  __typename?: 'AccountCardMaxAggregate';
-  accountId: Maybe<Scalars['String']['output']>;
-  billingCycleDay: Maybe<Scalars['Int']['output']>;
-  billingPaymentDay: Maybe<Scalars['Int']['output']>;
-  createdAt: Maybe<Scalars['DateTime']['output']>;
-  defaultLimit: Maybe<Scalars['Decimal']['output']>;
-  id: Maybe<Scalars['String']['output']>;
-  lastFourDigits: Maybe<Scalars['String']['output']>;
-  type: Maybe<CardType>;
-  updatedAt: Maybe<Scalars['DateTime']['output']>;
-};
-
-export type AccountCardMinAggregate = {
-  __typename?: 'AccountCardMinAggregate';
-  accountId: Maybe<Scalars['String']['output']>;
-  billingCycleDay: Maybe<Scalars['Int']['output']>;
-  billingPaymentDay: Maybe<Scalars['Int']['output']>;
-  createdAt: Maybe<Scalars['DateTime']['output']>;
-  defaultLimit: Maybe<Scalars['Decimal']['output']>;
-  id: Maybe<Scalars['String']['output']>;
-  lastFourDigits: Maybe<Scalars['String']['output']>;
-  type: Maybe<CardType>;
-  updatedAt: Maybe<Scalars['DateTime']['output']>;
-};
-
-export type AccountCardNullableRelationFilter = {
-  is?: InputMaybe<AccountCardWhereInput>;
-  isNot?: InputMaybe<AccountCardWhereInput>;
-};
-
-export type AccountCardRelationFilter = {
-  is?: InputMaybe<AccountCardWhereInput>;
-  isNot?: InputMaybe<AccountCardWhereInput>;
-};
-
-export type AccountCardSumAggregate = {
-  __typename?: 'AccountCardSumAggregate';
-  billingCycleDay: Maybe<Scalars['Int']['output']>;
-  billingPaymentDay: Maybe<Scalars['Int']['output']>;
-  defaultLimit: Maybe<Scalars['Decimal']['output']>;
-};
-
-export type AccountCardWhereInput = {
-  AND?: InputMaybe<Array<AccountCardWhereInput>>;
-  NOT?: InputMaybe<Array<AccountCardWhereInput>>;
-  OR?: InputMaybe<Array<AccountCardWhereInput>>;
-  account?: InputMaybe<AccountRelationFilter>;
-  accountId?: InputMaybe<StringFilter>;
-  billingCycleDay?: InputMaybe<IntFilter>;
-  billingPaymentDay?: InputMaybe<IntFilter>;
-  billings?: InputMaybe<CardBillingListRelationFilter>;
-  createdAt?: InputMaybe<DateTimeFilter>;
-  defaultLimit?: InputMaybe<DecimalFilter>;
-  id?: InputMaybe<StringFilter>;
-  lastFourDigits?: InputMaybe<StringNullableFilter>;
-  type?: InputMaybe<EnumCardTypeFilter>;
-  updatedAt?: InputMaybe<DateTimeFilter>;
-};
-
-export type AccountCardWhereUniqueInput = {
-  AND?: InputMaybe<Array<AccountCardWhereInput>>;
-  NOT?: InputMaybe<Array<AccountCardWhereInput>>;
-  OR?: InputMaybe<Array<AccountCardWhereInput>>;
-  account?: InputMaybe<AccountRelationFilter>;
-  accountId?: InputMaybe<Scalars['String']['input']>;
-  billingCycleDay?: InputMaybe<IntFilter>;
-  billingPaymentDay?: InputMaybe<IntFilter>;
-  billings?: InputMaybe<CardBillingListRelationFilter>;
-  createdAt?: InputMaybe<DateTimeFilter>;
-  defaultLimit?: InputMaybe<DecimalFilter>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  lastFourDigits?: InputMaybe<StringNullableFilter>;
-  type?: InputMaybe<EnumCardTypeFilter>;
-  updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
 export type AccountConnection = {
@@ -237,8 +66,6 @@ export type AccountCount = {
   __typename?: 'AccountCount';
   destinyRecurringTransactions: Scalars['Int']['output'];
   destinyTransactions: Scalars['Int']['output'];
-  investmentTransactions: Scalars['Int']['output'];
-  investments: Scalars['Int']['output'];
   sourceRecurringTransactions: Scalars['Int']['output'];
   sourceTransactions: Scalars['Int']['output'];
 };
@@ -250,42 +77,10 @@ export type AccountCountAggregate = {
   description: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
   initialBalance: Scalars['Int']['output'];
-  institutionId: Scalars['Int']['output'];
+  institutionLinkId: Scalars['Int']['output'];
   isActive: Scalars['Int']['output'];
   name: Scalars['Int']['output'];
-  type: Scalars['Int']['output'];
   updatedAt: Scalars['Int']['output'];
-  userId: Scalars['Int']['output'];
-};
-
-export type AccountCreateManyUserInput = {
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
-  institutionId: Scalars['String']['input'];
-  isActive?: InputMaybe<Scalars['Boolean']['input']>;
-  name: Scalars['String']['input'];
-  type: AccountType;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type AccountCreateManyUserInputEnvelope = {
-  data: Array<AccountCreateManyUserInput>;
-  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-export type AccountCreateNestedManyWithoutUserInput = {
-  connect?: InputMaybe<Array<AccountWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<Array<AccountCreateOrConnectWithoutUserInput>>;
-  create?: InputMaybe<Array<AccountCreateWithoutUserInput>>;
-  createMany?: InputMaybe<AccountCreateManyUserInputEnvelope>;
-};
-
-export type AccountCreateNestedOneWithoutAccountCardInput = {
-  connect?: InputMaybe<AccountWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<AccountCreateOrConnectWithoutAccountCardInput>;
-  create?: InputMaybe<AccountCreateWithoutAccountCardInput>;
 };
 
 export type AccountCreateNestedOneWithoutDestinyRecurringTransactionsInput = {
@@ -300,16 +95,10 @@ export type AccountCreateNestedOneWithoutDestinyTransactionsInput = {
   create?: InputMaybe<AccountCreateWithoutDestinyTransactionsInput>;
 };
 
-export type AccountCreateNestedOneWithoutInvestmentTransactionsInput = {
+export type AccountCreateNestedOneWithoutInstitutionLinkInput = {
   connect?: InputMaybe<AccountWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<AccountCreateOrConnectWithoutInvestmentTransactionsInput>;
-  create?: InputMaybe<AccountCreateWithoutInvestmentTransactionsInput>;
-};
-
-export type AccountCreateNestedOneWithoutInvestmentsInput = {
-  connect?: InputMaybe<AccountWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<AccountCreateOrConnectWithoutInvestmentsInput>;
-  create?: InputMaybe<AccountCreateWithoutInvestmentsInput>;
+  connectOrCreate?: InputMaybe<AccountCreateOrConnectWithoutInstitutionLinkInput>;
+  create?: InputMaybe<AccountCreateWithoutInstitutionLinkInput>;
 };
 
 export type AccountCreateNestedOneWithoutSourceRecurringTransactionsInput = {
@@ -324,11 +113,6 @@ export type AccountCreateNestedOneWithoutSourceTransactionsInput = {
   create?: InputMaybe<AccountCreateWithoutSourceTransactionsInput>;
 };
 
-export type AccountCreateOrConnectWithoutAccountCardInput = {
-  create: AccountCreateWithoutAccountCardInput;
-  where: AccountWhereUniqueInput;
-};
-
 export type AccountCreateOrConnectWithoutDestinyRecurringTransactionsInput = {
   create: AccountCreateWithoutDestinyRecurringTransactionsInput;
   where: AccountWhereUniqueInput;
@@ -339,13 +123,8 @@ export type AccountCreateOrConnectWithoutDestinyTransactionsInput = {
   where: AccountWhereUniqueInput;
 };
 
-export type AccountCreateOrConnectWithoutInvestmentTransactionsInput = {
-  create: AccountCreateWithoutInvestmentTransactionsInput;
-  where: AccountWhereUniqueInput;
-};
-
-export type AccountCreateOrConnectWithoutInvestmentsInput = {
-  create: AccountCreateWithoutInvestmentsInput;
+export type AccountCreateOrConnectWithoutInstitutionLinkInput = {
+  create: AccountCreateWithoutInstitutionLinkInput;
   where: AccountWhereUniqueInput;
 };
 
@@ -359,167 +138,74 @@ export type AccountCreateOrConnectWithoutSourceTransactionsInput = {
   where: AccountWhereUniqueInput;
 };
 
-export type AccountCreateOrConnectWithoutUserInput = {
-  create: AccountCreateWithoutUserInput;
-  where: AccountWhereUniqueInput;
-};
-
-export type AccountCreateWithoutAccountCardInput = {
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
-  destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
-  institution: InstitutionCreateNestedOneWithoutAccountsInput;
-  investmentTransactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutAccountInput>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
-  isActive?: InputMaybe<Scalars['Boolean']['input']>;
-  name: Scalars['String']['input'];
-  sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
-  sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
-  type: AccountType;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  user: UserCreateNestedOneWithoutAccountsInput;
-};
-
 export type AccountCreateWithoutDestinyRecurringTransactionsInput = {
-  accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
   id?: InputMaybe<Scalars['String']['input']>;
   initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
-  institution: InstitutionCreateNestedOneWithoutAccountsInput;
-  investmentTransactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutAccountInput>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
+  institutionLink: InstitutionLinkCreateNestedOneWithoutAccountInput;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
   sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
-  type: AccountType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  user: UserCreateNestedOneWithoutAccountsInput;
 };
 
 export type AccountCreateWithoutDestinyTransactionsInput = {
-  accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
   id?: InputMaybe<Scalars['String']['input']>;
   initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
-  institution: InstitutionCreateNestedOneWithoutAccountsInput;
-  investmentTransactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutAccountInput>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
+  institutionLink: InstitutionLinkCreateNestedOneWithoutAccountInput;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
   sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
-  type: AccountType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  user: UserCreateNestedOneWithoutAccountsInput;
 };
 
-export type AccountCreateWithoutInvestmentTransactionsInput = {
-  accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
+export type AccountCreateWithoutInstitutionLinkInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
   destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
   id?: InputMaybe<Scalars['String']['input']>;
   initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
-  institution: InstitutionCreateNestedOneWithoutAccountsInput;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
   sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
-  type: AccountType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  user: UserCreateNestedOneWithoutAccountsInput;
-};
-
-export type AccountCreateWithoutInvestmentsInput = {
-  accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
-  destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
-  institution: InstitutionCreateNestedOneWithoutAccountsInput;
-  investmentTransactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutAccountInput>;
-  isActive?: InputMaybe<Scalars['Boolean']['input']>;
-  name: Scalars['String']['input'];
-  sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
-  sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
-  type: AccountType;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  user: UserCreateNestedOneWithoutAccountsInput;
 };
 
 export type AccountCreateWithoutSourceRecurringTransactionsInput = {
-  accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
   destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
   id?: InputMaybe<Scalars['String']['input']>;
   initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
-  institution: InstitutionCreateNestedOneWithoutAccountsInput;
-  investmentTransactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutAccountInput>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
+  institutionLink: InstitutionLinkCreateNestedOneWithoutAccountInput;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
-  type: AccountType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  user: UserCreateNestedOneWithoutAccountsInput;
 };
 
 export type AccountCreateWithoutSourceTransactionsInput = {
-  accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
   destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
   id?: InputMaybe<Scalars['String']['input']>;
   initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
-  institution: InstitutionCreateNestedOneWithoutAccountsInput;
-  investmentTransactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutAccountInput>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
+  institutionLink: InstitutionLinkCreateNestedOneWithoutAccountInput;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
-  type: AccountType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  user: UserCreateNestedOneWithoutAccountsInput;
-};
-
-export type AccountCreateWithoutUserInput = {
-  accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
-  destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
-  institution: InstitutionCreateNestedOneWithoutAccountsInput;
-  investmentTransactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutAccountInput>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
-  isActive?: InputMaybe<Scalars['Boolean']['input']>;
-  name: Scalars['String']['input'];
-  sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
-  sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
-  type: AccountType;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type AccountListRelationFilter = {
-  every?: InputMaybe<AccountWhereInput>;
-  none?: InputMaybe<AccountWhereInput>;
-  some?: InputMaybe<AccountWhereInput>;
 };
 
 export type AccountMaxAggregate = {
@@ -528,12 +214,10 @@ export type AccountMaxAggregate = {
   description: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['String']['output']>;
   initialBalance: Maybe<Scalars['Decimal']['output']>;
-  institutionId: Maybe<Scalars['String']['output']>;
+  institutionLinkId: Maybe<Scalars['String']['output']>;
   isActive: Maybe<Scalars['Boolean']['output']>;
   name: Maybe<Scalars['String']['output']>;
-  type: Maybe<AccountType>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
-  userId: Maybe<Scalars['String']['output']>;
 };
 
 export type AccountMinAggregate = {
@@ -542,18 +226,15 @@ export type AccountMinAggregate = {
   description: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['String']['output']>;
   initialBalance: Maybe<Scalars['Decimal']['output']>;
-  institutionId: Maybe<Scalars['String']['output']>;
+  institutionLinkId: Maybe<Scalars['String']['output']>;
   isActive: Maybe<Scalars['Boolean']['output']>;
   name: Maybe<Scalars['String']['output']>;
-  type: Maybe<AccountType>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
-  userId: Maybe<Scalars['String']['output']>;
 };
 
 export type AccountModel = {
   __typename?: 'AccountModel';
   _count: AccountCount;
-  accountCard: Maybe<AccountCard>;
   balance: Maybe<Scalars['Decimal']['output']>;
   createdAt: Scalars['DateTime']['output'];
   currentBillingAmount: Maybe<Scalars['Decimal']['output']>;
@@ -562,16 +243,13 @@ export type AccountModel = {
   destinyTransactions: Maybe<Array<Transaction>>;
   id: Scalars['ID']['output'];
   initialBalance: Scalars['Decimal']['output'];
-  institution: Institution;
-  institutionId: Scalars['String']['output'];
-  investmentTransactions: Maybe<Array<InvestmentTransaction>>;
-  investments: Maybe<Array<Investment>>;
+  institutionLink: InstitutionLink;
+  institutionLinkId: Scalars['String']['output'];
   isActive: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   sourceRecurringTransactions: Maybe<Array<RecurringTransaction>>;
   sourceTransactions: Maybe<Array<Transaction>>;
   totalInvested: Maybe<Scalars['Decimal']['output']>;
-  type: AccountType;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -586,80 +264,53 @@ export type AccountNullableRelationFilter = {
   isNot?: InputMaybe<AccountWhereInput>;
 };
 
-export type AccountRelationFilter = {
-  is?: InputMaybe<AccountWhereInput>;
-  isNot?: InputMaybe<AccountWhereInput>;
-};
-
 export type AccountSumAggregate = {
   __typename?: 'AccountSumAggregate';
   initialBalance: Maybe<Scalars['Decimal']['output']>;
 };
 
-export enum AccountType {
-  Checking = 'CHECKING',
-  CreditCard = 'CREDIT_CARD',
-  Investment = 'INVESTMENT',
-  Other = 'OTHER',
-  Savings = 'SAVINGS',
-  Wallet = 'WALLET',
-}
-
 export type AccountWhereInput = {
   AND?: InputMaybe<Array<AccountWhereInput>>;
   NOT?: InputMaybe<Array<AccountWhereInput>>;
   OR?: InputMaybe<Array<AccountWhereInput>>;
-  accountCard?: InputMaybe<AccountCardNullableRelationFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringNullableFilter>;
   destinyRecurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
   destinyTransactions?: InputMaybe<TransactionListRelationFilter>;
   id?: InputMaybe<StringFilter>;
   initialBalance?: InputMaybe<DecimalFilter>;
-  institution?: InputMaybe<InstitutionRelationFilter>;
-  institutionId?: InputMaybe<StringFilter>;
-  investmentTransactions?: InputMaybe<InvestmentTransactionListRelationFilter>;
-  investments?: InputMaybe<InvestmentListRelationFilter>;
+  institutionLink?: InputMaybe<InstitutionLinkRelationFilter>;
+  institutionLinkId?: InputMaybe<StringFilter>;
   isActive?: InputMaybe<BoolFilter>;
   name?: InputMaybe<StringFilter>;
   sourceRecurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
   sourceTransactions?: InputMaybe<TransactionListRelationFilter>;
-  type?: InputMaybe<EnumAccountTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
-  user?: InputMaybe<UserRelationFilter>;
-  userId?: InputMaybe<StringFilter>;
 };
 
 export type AccountWhereUniqueInput = {
   AND?: InputMaybe<Array<AccountWhereInput>>;
   NOT?: InputMaybe<Array<AccountWhereInput>>;
   OR?: InputMaybe<Array<AccountWhereInput>>;
-  accountCard?: InputMaybe<AccountCardNullableRelationFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringNullableFilter>;
   destinyRecurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
   destinyTransactions?: InputMaybe<TransactionListRelationFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   initialBalance?: InputMaybe<DecimalFilter>;
-  institution?: InputMaybe<InstitutionRelationFilter>;
-  institutionId?: InputMaybe<StringFilter>;
-  investmentTransactions?: InputMaybe<InvestmentTransactionListRelationFilter>;
-  investments?: InputMaybe<InvestmentListRelationFilter>;
+  institutionLink?: InputMaybe<InstitutionLinkRelationFilter>;
+  institutionLinkId?: InputMaybe<Scalars['String']['input']>;
   isActive?: InputMaybe<BoolFilter>;
   name?: InputMaybe<StringFilter>;
   sourceRecurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
   sourceTransactions?: InputMaybe<TransactionListRelationFilter>;
-  type?: InputMaybe<EnumAccountTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
-  user?: InputMaybe<UserRelationFilter>;
-  userId?: InputMaybe<StringFilter>;
 };
 
 export type AccountWithInvestmentCount = {
   __typename?: 'AccountWithInvestmentCount';
   id: Scalars['String']['output'];
   institutionLogoUrl: Maybe<Scalars['String']['output']>;
-  institutionName: Maybe<Scalars['String']['output']>;
   investmentCount: Scalars['Int']['output'];
   name: Scalars['String']['output'];
 };
@@ -870,11 +521,37 @@ export type CalendarDayTransactionModel = {
   type: Scalars['String']['output'];
 };
 
+export type Card = {
+  __typename?: 'Card';
+  _count: CardCount;
+  billingCycleDay: Scalars['Int']['output'];
+  billingPaymentDay: Scalars['Int']['output'];
+  billings: Maybe<Array<CardBilling>>;
+  createdAt: Scalars['DateTime']['output'];
+  defaultLimit: Scalars['Decimal']['output'];
+  id: Scalars['ID']['output'];
+  institutionLink: InstitutionLink;
+  institutionLinkId: Scalars['String']['output'];
+  lastFourDigits: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  sourceRecurringTransactions: Maybe<Array<RecurringTransaction>>;
+  sourceTransactions: Maybe<Array<Transaction>>;
+  type: CardType;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type CardAvgAggregate = {
+  __typename?: 'CardAvgAggregate';
+  billingCycleDay: Maybe<Scalars['Float']['output']>;
+  billingPaymentDay: Maybe<Scalars['Float']['output']>;
+  defaultLimit: Maybe<Scalars['Decimal']['output']>;
+};
+
 export type CardBilling = {
   __typename?: 'CardBilling';
   _count: CardBillingCount;
-  accountCard: AccountCard;
-  accountCardId: Scalars['String']['output'];
+  card: Card;
+  cardId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   installments: Maybe<Array<TransactionInstallment>>;
@@ -890,14 +567,14 @@ export type CardBilling = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
-export type CardBillingAccountCardIdPeriodStartCompoundUniqueInput = {
-  accountCardId: Scalars['String']['input'];
-  periodStart: Scalars['DateTime']['input'];
-};
-
 export type CardBillingAvgAggregate = {
   __typename?: 'CardBillingAvgAggregate';
   limit: Maybe<Scalars['Decimal']['output']>;
+};
+
+export type CardBillingCardIdPeriodStartCompoundUniqueInput = {
+  cardId: Scalars['String']['input'];
+  periodStart: Scalars['DateTime']['input'];
 };
 
 export type CardBillingCount = {
@@ -910,7 +587,7 @@ export type CardBillingCount = {
 export type CardBillingCountAggregate = {
   __typename?: 'CardBillingCountAggregate';
   _all: Scalars['Int']['output'];
-  accountCardId: Scalars['Int']['output'];
+  cardId: Scalars['Int']['output'];
   createdAt: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
   limit: Scalars['Int']['output'];
@@ -922,7 +599,7 @@ export type CardBillingCountAggregate = {
   updatedAt: Scalars['Int']['output'];
 };
 
-export type CardBillingCreateManyAccountCardInput = {
+export type CardBillingCreateManyCardInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   limit: Scalars['Decimal']['input'];
@@ -934,18 +611,18 @@ export type CardBillingCreateManyAccountCardInput = {
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
-export type CardBillingCreateManyAccountCardInputEnvelope = {
-  data: Array<CardBillingCreateManyAccountCardInput>;
+export type CardBillingCreateManyCardInputEnvelope = {
+  data: Array<CardBillingCreateManyCardInput>;
   skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type CardBillingCreateNestedManyWithoutAccountCardInput = {
+export type CardBillingCreateNestedManyWithoutCardInput = {
   connect?: InputMaybe<Array<CardBillingWhereUniqueInput>>;
   connectOrCreate?: InputMaybe<
-    Array<CardBillingCreateOrConnectWithoutAccountCardInput>
+    Array<CardBillingCreateOrConnectWithoutCardInput>
   >;
-  create?: InputMaybe<Array<CardBillingCreateWithoutAccountCardInput>>;
-  createMany?: InputMaybe<CardBillingCreateManyAccountCardInputEnvelope>;
+  create?: InputMaybe<Array<CardBillingCreateWithoutCardInput>>;
+  createMany?: InputMaybe<CardBillingCreateManyCardInputEnvelope>;
 };
 
 export type CardBillingCreateNestedOneWithoutInstallmentsInput = {
@@ -960,20 +637,14 @@ export type CardBillingCreateNestedOneWithoutPaymentTransactionInput = {
   create?: InputMaybe<CardBillingCreateWithoutPaymentTransactionInput>;
 };
 
-export type CardBillingCreateNestedOneWithoutStatusHistoryInput = {
-  connect?: InputMaybe<CardBillingWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<CardBillingCreateOrConnectWithoutStatusHistoryInput>;
-  create?: InputMaybe<CardBillingCreateWithoutStatusHistoryInput>;
-};
-
 export type CardBillingCreateNestedOneWithoutTransactionsInput = {
   connect?: InputMaybe<CardBillingWhereUniqueInput>;
   connectOrCreate?: InputMaybe<CardBillingCreateOrConnectWithoutTransactionsInput>;
   create?: InputMaybe<CardBillingCreateWithoutTransactionsInput>;
 };
 
-export type CardBillingCreateOrConnectWithoutAccountCardInput = {
-  create: CardBillingCreateWithoutAccountCardInput;
+export type CardBillingCreateOrConnectWithoutCardInput = {
+  create: CardBillingCreateWithoutCardInput;
   where: CardBillingWhereUniqueInput;
 };
 
@@ -987,17 +658,12 @@ export type CardBillingCreateOrConnectWithoutPaymentTransactionInput = {
   where: CardBillingWhereUniqueInput;
 };
 
-export type CardBillingCreateOrConnectWithoutStatusHistoryInput = {
-  create: CardBillingCreateWithoutStatusHistoryInput;
-  where: CardBillingWhereUniqueInput;
-};
-
 export type CardBillingCreateOrConnectWithoutTransactionsInput = {
   create: CardBillingCreateWithoutTransactionsInput;
   where: CardBillingWhereUniqueInput;
 };
 
-export type CardBillingCreateWithoutAccountCardInput = {
+export type CardBillingCreateWithoutCardInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutCardBillingInput>;
@@ -1013,7 +679,7 @@ export type CardBillingCreateWithoutAccountCardInput = {
 };
 
 export type CardBillingCreateWithoutInstallmentsInput = {
-  accountCard: AccountCardCreateNestedOneWithoutBillingsInput;
+  card: CardCreateNestedOneWithoutBillingsInput;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   limit: Scalars['Decimal']['input'];
@@ -1028,7 +694,7 @@ export type CardBillingCreateWithoutInstallmentsInput = {
 };
 
 export type CardBillingCreateWithoutPaymentTransactionInput = {
-  accountCard: AccountCardCreateNestedOneWithoutBillingsInput;
+  card: CardCreateNestedOneWithoutBillingsInput;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutCardBillingInput>;
@@ -1042,23 +708,8 @@ export type CardBillingCreateWithoutPaymentTransactionInput = {
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
-export type CardBillingCreateWithoutStatusHistoryInput = {
-  accountCard: AccountCardCreateNestedOneWithoutBillingsInput;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutCardBillingInput>;
-  limit: Scalars['Decimal']['input'];
-  paymentDate?: InputMaybe<Scalars['DateTime']['input']>;
-  paymentTransaction?: InputMaybe<TransactionCreateNestedOneWithoutBillingPaymentInput>;
-  periodEnd?: InputMaybe<Scalars['DateTime']['input']>;
-  periodStart: Scalars['DateTime']['input'];
-  status: CardBillingStatus;
-  transactions?: InputMaybe<TransactionCreateNestedManyWithoutCardBillingInput>;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
 export type CardBillingCreateWithoutTransactionsInput = {
-  accountCard: AccountCardCreateNestedOneWithoutBillingsInput;
+  card: CardCreateNestedOneWithoutBillingsInput;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutCardBillingInput>;
@@ -1077,8 +728,6 @@ export type CardBillingHistory = {
   cardBilling: CardBilling;
   cardBillingId: Scalars['String']['output'];
   changedAt: Scalars['DateTime']['output'];
-  changedBy: Maybe<User>;
-  changedById: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   status: CardBillingStatus;
 };
@@ -1088,32 +737,18 @@ export type CardBillingHistoryCountAggregate = {
   _all: Scalars['Int']['output'];
   cardBillingId: Scalars['Int']['output'];
   changedAt: Scalars['Int']['output'];
-  changedById: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
   status: Scalars['Int']['output'];
 };
 
 export type CardBillingHistoryCreateManyCardBillingInput = {
   changedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  changedById?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   status: CardBillingStatus;
 };
 
 export type CardBillingHistoryCreateManyCardBillingInputEnvelope = {
   data: Array<CardBillingHistoryCreateManyCardBillingInput>;
-  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-export type CardBillingHistoryCreateManyChangedByInput = {
-  cardBillingId: Scalars['String']['input'];
-  changedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  status: CardBillingStatus;
-};
-
-export type CardBillingHistoryCreateManyChangedByInputEnvelope = {
-  data: Array<CardBillingHistoryCreateManyChangedByInput>;
   skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -1126,34 +761,12 @@ export type CardBillingHistoryCreateNestedManyWithoutCardBillingInput = {
   createMany?: InputMaybe<CardBillingHistoryCreateManyCardBillingInputEnvelope>;
 };
 
-export type CardBillingHistoryCreateNestedManyWithoutChangedByInput = {
-  connect?: InputMaybe<Array<CardBillingHistoryWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<CardBillingHistoryCreateOrConnectWithoutChangedByInput>
-  >;
-  create?: InputMaybe<Array<CardBillingHistoryCreateWithoutChangedByInput>>;
-  createMany?: InputMaybe<CardBillingHistoryCreateManyChangedByInputEnvelope>;
-};
-
 export type CardBillingHistoryCreateOrConnectWithoutCardBillingInput = {
   create: CardBillingHistoryCreateWithoutCardBillingInput;
   where: CardBillingHistoryWhereUniqueInput;
 };
 
-export type CardBillingHistoryCreateOrConnectWithoutChangedByInput = {
-  create: CardBillingHistoryCreateWithoutChangedByInput;
-  where: CardBillingHistoryWhereUniqueInput;
-};
-
 export type CardBillingHistoryCreateWithoutCardBillingInput = {
-  changedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  changedBy?: InputMaybe<UserCreateNestedOneWithoutCardBillingStatusHistoriesInput>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  status: CardBillingStatus;
-};
-
-export type CardBillingHistoryCreateWithoutChangedByInput = {
-  cardBilling: CardBillingCreateNestedOneWithoutStatusHistoryInput;
   changedAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   status: CardBillingStatus;
@@ -1169,7 +782,6 @@ export type CardBillingHistoryMaxAggregate = {
   __typename?: 'CardBillingHistoryMaxAggregate';
   cardBillingId: Maybe<Scalars['String']['output']>;
   changedAt: Maybe<Scalars['DateTime']['output']>;
-  changedById: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['String']['output']>;
   status: Maybe<CardBillingStatus>;
 };
@@ -1178,7 +790,6 @@ export type CardBillingHistoryMinAggregate = {
   __typename?: 'CardBillingHistoryMinAggregate';
   cardBillingId: Maybe<Scalars['String']['output']>;
   changedAt: Maybe<Scalars['DateTime']['output']>;
-  changedById: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['String']['output']>;
   status: Maybe<CardBillingStatus>;
 };
@@ -1190,8 +801,6 @@ export type CardBillingHistoryWhereInput = {
   cardBilling?: InputMaybe<CardBillingRelationFilter>;
   cardBillingId?: InputMaybe<StringFilter>;
   changedAt?: InputMaybe<DateTimeFilter>;
-  changedBy?: InputMaybe<UserNullableRelationFilter>;
-  changedById?: InputMaybe<StringNullableFilter>;
   id?: InputMaybe<StringFilter>;
   status?: InputMaybe<EnumCardBillingStatusFilter>;
 };
@@ -1203,8 +812,6 @@ export type CardBillingHistoryWhereUniqueInput = {
   cardBilling?: InputMaybe<CardBillingRelationFilter>;
   cardBillingId?: InputMaybe<StringFilter>;
   changedAt?: InputMaybe<DateTimeFilter>;
-  changedBy?: InputMaybe<UserNullableRelationFilter>;
-  changedById?: InputMaybe<StringNullableFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<EnumCardBillingStatusFilter>;
 };
@@ -1217,7 +824,7 @@ export type CardBillingListRelationFilter = {
 
 export type CardBillingMaxAggregate = {
   __typename?: 'CardBillingMaxAggregate';
-  accountCardId: Maybe<Scalars['String']['output']>;
+  cardId: Maybe<Scalars['String']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   id: Maybe<Scalars['String']['output']>;
   limit: Maybe<Scalars['Decimal']['output']>;
@@ -1231,7 +838,7 @@ export type CardBillingMaxAggregate = {
 
 export type CardBillingMinAggregate = {
   __typename?: 'CardBillingMinAggregate';
-  accountCardId: Maybe<Scalars['String']['output']>;
+  cardId: Maybe<Scalars['String']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   id: Maybe<Scalars['String']['output']>;
   limit: Maybe<Scalars['Decimal']['output']>;
@@ -1245,8 +852,8 @@ export type CardBillingMinAggregate = {
 
 export type CardBillingModel = {
   __typename?: 'CardBillingModel';
-  accountCard: AccountCard;
-  accountCardId: Scalars['String']['output'];
+  card: Card;
+  cardId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   installments: Maybe<Array<TransactionInstallment>>;
@@ -1299,8 +906,8 @@ export type CardBillingWhereInput = {
   AND?: InputMaybe<Array<CardBillingWhereInput>>;
   NOT?: InputMaybe<Array<CardBillingWhereInput>>;
   OR?: InputMaybe<Array<CardBillingWhereInput>>;
-  accountCard?: InputMaybe<AccountCardRelationFilter>;
-  accountCardId?: InputMaybe<StringFilter>;
+  card?: InputMaybe<CardRelationFilter>;
+  cardId?: InputMaybe<StringFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<StringFilter>;
   installments?: InputMaybe<TransactionInstallmentListRelationFilter>;
@@ -1320,9 +927,9 @@ export type CardBillingWhereUniqueInput = {
   AND?: InputMaybe<Array<CardBillingWhereInput>>;
   NOT?: InputMaybe<Array<CardBillingWhereInput>>;
   OR?: InputMaybe<Array<CardBillingWhereInput>>;
-  accountCard?: InputMaybe<AccountCardRelationFilter>;
-  accountCardId?: InputMaybe<StringFilter>;
-  accountCardId_periodStart?: InputMaybe<CardBillingAccountCardIdPeriodStartCompoundUniqueInput>;
+  card?: InputMaybe<CardRelationFilter>;
+  cardId?: InputMaybe<StringFilter>;
+  cardId_periodStart?: InputMaybe<CardBillingCardIdPeriodStartCompoundUniqueInput>;
   createdAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   installments?: InputMaybe<TransactionInstallmentListRelationFilter>;
@@ -1338,10 +945,247 @@ export type CardBillingWhereUniqueInput = {
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
+export type CardCount = {
+  __typename?: 'CardCount';
+  billings: Scalars['Int']['output'];
+  sourceRecurringTransactions: Scalars['Int']['output'];
+  sourceTransactions: Scalars['Int']['output'];
+};
+
+export type CardCountAggregate = {
+  __typename?: 'CardCountAggregate';
+  _all: Scalars['Int']['output'];
+  billingCycleDay: Scalars['Int']['output'];
+  billingPaymentDay: Scalars['Int']['output'];
+  createdAt: Scalars['Int']['output'];
+  defaultLimit: Scalars['Int']['output'];
+  id: Scalars['Int']['output'];
+  institutionLinkId: Scalars['Int']['output'];
+  lastFourDigits: Scalars['Int']['output'];
+  name: Scalars['Int']['output'];
+  type: Scalars['Int']['output'];
+  updatedAt: Scalars['Int']['output'];
+};
+
+export type CardCreateManyInstitutionLinkInput = {
+  billingCycleDay: Scalars['Int']['input'];
+  billingPaymentDay: Scalars['Int']['input'];
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  defaultLimit: Scalars['Decimal']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  lastFourDigits?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  type: CardType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type CardCreateManyInstitutionLinkInputEnvelope = {
+  data: Array<CardCreateManyInstitutionLinkInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type CardCreateNestedManyWithoutInstitutionLinkInput = {
+  connect?: InputMaybe<Array<CardWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<
+    Array<CardCreateOrConnectWithoutInstitutionLinkInput>
+  >;
+  create?: InputMaybe<Array<CardCreateWithoutInstitutionLinkInput>>;
+  createMany?: InputMaybe<CardCreateManyInstitutionLinkInputEnvelope>;
+};
+
+export type CardCreateNestedOneWithoutBillingsInput = {
+  connect?: InputMaybe<CardWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<CardCreateOrConnectWithoutBillingsInput>;
+  create?: InputMaybe<CardCreateWithoutBillingsInput>;
+};
+
+export type CardCreateNestedOneWithoutSourceRecurringTransactionsInput = {
+  connect?: InputMaybe<CardWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<CardCreateOrConnectWithoutSourceRecurringTransactionsInput>;
+  create?: InputMaybe<CardCreateWithoutSourceRecurringTransactionsInput>;
+};
+
+export type CardCreateNestedOneWithoutSourceTransactionsInput = {
+  connect?: InputMaybe<CardWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<CardCreateOrConnectWithoutSourceTransactionsInput>;
+  create?: InputMaybe<CardCreateWithoutSourceTransactionsInput>;
+};
+
+export type CardCreateOrConnectWithoutBillingsInput = {
+  create: CardCreateWithoutBillingsInput;
+  where: CardWhereUniqueInput;
+};
+
+export type CardCreateOrConnectWithoutInstitutionLinkInput = {
+  create: CardCreateWithoutInstitutionLinkInput;
+  where: CardWhereUniqueInput;
+};
+
+export type CardCreateOrConnectWithoutSourceRecurringTransactionsInput = {
+  create: CardCreateWithoutSourceRecurringTransactionsInput;
+  where: CardWhereUniqueInput;
+};
+
+export type CardCreateOrConnectWithoutSourceTransactionsInput = {
+  create: CardCreateWithoutSourceTransactionsInput;
+  where: CardWhereUniqueInput;
+};
+
+export type CardCreateWithoutBillingsInput = {
+  billingCycleDay: Scalars['Int']['input'];
+  billingPaymentDay: Scalars['Int']['input'];
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  defaultLimit: Scalars['Decimal']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  institutionLink: InstitutionLinkCreateNestedOneWithoutCardsInput;
+  lastFourDigits?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceCardInput>;
+  sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceCardInput>;
+  type: CardType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type CardCreateWithoutInstitutionLinkInput = {
+  billingCycleDay: Scalars['Int']['input'];
+  billingPaymentDay: Scalars['Int']['input'];
+  billings?: InputMaybe<CardBillingCreateNestedManyWithoutCardInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  defaultLimit: Scalars['Decimal']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  lastFourDigits?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceCardInput>;
+  sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceCardInput>;
+  type: CardType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type CardCreateWithoutSourceRecurringTransactionsInput = {
+  billingCycleDay: Scalars['Int']['input'];
+  billingPaymentDay: Scalars['Int']['input'];
+  billings?: InputMaybe<CardBillingCreateNestedManyWithoutCardInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  defaultLimit: Scalars['Decimal']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  institutionLink: InstitutionLinkCreateNestedOneWithoutCardsInput;
+  lastFourDigits?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceCardInput>;
+  type: CardType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type CardCreateWithoutSourceTransactionsInput = {
+  billingCycleDay: Scalars['Int']['input'];
+  billingPaymentDay: Scalars['Int']['input'];
+  billings?: InputMaybe<CardBillingCreateNestedManyWithoutCardInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  defaultLimit: Scalars['Decimal']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  institutionLink: InstitutionLinkCreateNestedOneWithoutCardsInput;
+  lastFourDigits?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceCardInput>;
+  type: CardType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type CardListRelationFilter = {
+  every?: InputMaybe<CardWhereInput>;
+  none?: InputMaybe<CardWhereInput>;
+  some?: InputMaybe<CardWhereInput>;
+};
+
+export type CardMaxAggregate = {
+  __typename?: 'CardMaxAggregate';
+  billingCycleDay: Maybe<Scalars['Int']['output']>;
+  billingPaymentDay: Maybe<Scalars['Int']['output']>;
+  createdAt: Maybe<Scalars['DateTime']['output']>;
+  defaultLimit: Maybe<Scalars['Decimal']['output']>;
+  id: Maybe<Scalars['String']['output']>;
+  institutionLinkId: Maybe<Scalars['String']['output']>;
+  lastFourDigits: Maybe<Scalars['String']['output']>;
+  name: Maybe<Scalars['String']['output']>;
+  type: Maybe<CardType>;
+  updatedAt: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type CardMinAggregate = {
+  __typename?: 'CardMinAggregate';
+  billingCycleDay: Maybe<Scalars['Int']['output']>;
+  billingPaymentDay: Maybe<Scalars['Int']['output']>;
+  createdAt: Maybe<Scalars['DateTime']['output']>;
+  defaultLimit: Maybe<Scalars['Decimal']['output']>;
+  id: Maybe<Scalars['String']['output']>;
+  institutionLinkId: Maybe<Scalars['String']['output']>;
+  lastFourDigits: Maybe<Scalars['String']['output']>;
+  name: Maybe<Scalars['String']['output']>;
+  type: Maybe<CardType>;
+  updatedAt: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type CardNullableRelationFilter = {
+  is?: InputMaybe<CardWhereInput>;
+  isNot?: InputMaybe<CardWhereInput>;
+};
+
+export type CardRelationFilter = {
+  is?: InputMaybe<CardWhereInput>;
+  isNot?: InputMaybe<CardWhereInput>;
+};
+
+export type CardSumAggregate = {
+  __typename?: 'CardSumAggregate';
+  billingCycleDay: Maybe<Scalars['Int']['output']>;
+  billingPaymentDay: Maybe<Scalars['Int']['output']>;
+  defaultLimit: Maybe<Scalars['Decimal']['output']>;
+};
+
 export enum CardType {
   Credit = 'CREDIT',
   Debit = 'DEBIT',
 }
+
+export type CardWhereInput = {
+  AND?: InputMaybe<Array<CardWhereInput>>;
+  NOT?: InputMaybe<Array<CardWhereInput>>;
+  OR?: InputMaybe<Array<CardWhereInput>>;
+  billingCycleDay?: InputMaybe<IntFilter>;
+  billingPaymentDay?: InputMaybe<IntFilter>;
+  billings?: InputMaybe<CardBillingListRelationFilter>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  defaultLimit?: InputMaybe<DecimalFilter>;
+  id?: InputMaybe<StringFilter>;
+  institutionLink?: InputMaybe<InstitutionLinkRelationFilter>;
+  institutionLinkId?: InputMaybe<StringFilter>;
+  lastFourDigits?: InputMaybe<StringNullableFilter>;
+  name?: InputMaybe<StringFilter>;
+  sourceRecurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
+  sourceTransactions?: InputMaybe<TransactionListRelationFilter>;
+  type?: InputMaybe<EnumCardTypeFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
+export type CardWhereUniqueInput = {
+  AND?: InputMaybe<Array<CardWhereInput>>;
+  NOT?: InputMaybe<Array<CardWhereInput>>;
+  OR?: InputMaybe<Array<CardWhereInput>>;
+  billingCycleDay?: InputMaybe<IntFilter>;
+  billingPaymentDay?: InputMaybe<IntFilter>;
+  billings?: InputMaybe<CardBillingListRelationFilter>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  defaultLimit?: InputMaybe<DecimalFilter>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  institutionLink?: InputMaybe<InstitutionLinkRelationFilter>;
+  institutionLinkId?: InputMaybe<StringFilter>;
+  lastFourDigits?: InputMaybe<StringNullableFilter>;
+  name?: InputMaybe<StringFilter>;
+  sourceRecurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
+  sourceTransactions?: InputMaybe<TransactionListRelationFilter>;
+  type?: InputMaybe<EnumCardTypeFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+};
 
 export type CategorySuggestion = {
   __typename?: 'CategorySuggestion';
@@ -1355,28 +1199,28 @@ export type ChatResponse = {
   message: Scalars['String']['output'];
 };
 
-export type CreateAccountCardInfos = {
+export type CreateAccountInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  initialBalance: Scalars['Decimal']['input'];
+  institutionLinkId: Scalars['ID']['input'];
+  isActive: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+};
+
+export type CreateCardInput = {
   billingCycleDay?: InputMaybe<Scalars['Float']['input']>;
   billingPaymentDay?: InputMaybe<Scalars['Float']['input']>;
   defaultLimit?: InputMaybe<Scalars['Decimal']['input']>;
-  type: CardType;
-};
-
-export type CreateAccountInput = {
-  cardInfos?: InputMaybe<CreateAccountCardInfos>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  initialBalance: Scalars['Decimal']['input'];
-  institutionId: Scalars['ID']['input'];
-  isActive: Scalars['Boolean']['input'];
+  institutionLinkId: Scalars['ID']['input'];
   name: Scalars['String']['input'];
-  type: AccountType;
+  type: CardType;
 };
 
 export type CreateInstallmentTransactionInput = {
   /** Descrição da transação */
   description: Scalars['String']['input'];
   /** ID da conta cartão de crédito */
-  sourceAccountId: Scalars['ID']['input'];
+  sourceCardId: Scalars['ID']['input'];
   /** Data da primeira parcela */
   startDate: Scalars['DateTime']['input'];
   /** Valor total da compra */
@@ -1386,13 +1230,13 @@ export type CreateInstallmentTransactionInput = {
 };
 
 export type CreateInvestmentInput = {
-  accountId: Scalars['ID']['input'];
   amount: Scalars['Float']['input'];
   correctedAmount?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
   finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
+  institutionLinkId: Scalars['ID']['input'];
   lastCorrectedAt?: InputMaybe<Scalars['DateTime']['input']>;
   regimeName: Regime;
   regimePercentage?: InputMaybe<Scalars['Float']['input']>;
@@ -1416,6 +1260,7 @@ export type CreateRecurringTransactionInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurrenceType?: InputMaybe<RecurrenceType>;
   sourceAccountId?: InputMaybe<Scalars['ID']['input']>;
+  sourceCardId?: InputMaybe<Scalars['ID']['input']>;
   startDate: Scalars['DateTime']['input'];
   totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
@@ -1438,6 +1283,7 @@ export type CreateTransactionInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccountId?: InputMaybe<Scalars['ID']['input']>;
+  sourceCardId?: InputMaybe<Scalars['ID']['input']>;
   status?: InputMaybe<TransactionStatus>;
   type: TransactionType;
 };
@@ -1483,21 +1329,6 @@ export type DecimalFilter = {
   notIn?: InputMaybe<Array<Scalars['Decimal']['input']>>;
 };
 
-export type EnumAccountTypeFilter = {
-  equals?: InputMaybe<AccountType>;
-  in?: InputMaybe<Array<AccountType>>;
-  not?: InputMaybe<NestedEnumAccountTypeFilter>;
-  notIn?: InputMaybe<Array<AccountType>>;
-};
-
-export type EnumAccountTypeNullableListFilter = {
-  equals?: InputMaybe<Array<AccountType>>;
-  has?: InputMaybe<AccountType>;
-  hasEvery?: InputMaybe<Array<AccountType>>;
-  hasSome?: InputMaybe<Array<AccountType>>;
-  isEmpty?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
 export type EnumAuthProviderNameFilter = {
   equals?: InputMaybe<AuthProviderName>;
   in?: InputMaybe<Array<AuthProviderName>>;
@@ -1524,6 +1355,14 @@ export type EnumDayModeFilter = {
   in?: InputMaybe<Array<DayMode>>;
   not?: InputMaybe<NestedEnumDayModeFilter>;
   notIn?: InputMaybe<Array<DayMode>>;
+};
+
+export type EnumInstitutionTypeNullableListFilter = {
+  equals?: InputMaybe<Array<InstitutionType>>;
+  has?: InputMaybe<InstitutionType>;
+  hasEvery?: InputMaybe<Array<InstitutionType>>;
+  hasSome?: InputMaybe<Array<InstitutionType>>;
+  isEmpty?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type EnumInvestmentStatusFilter = {
@@ -1630,14 +1469,14 @@ export type FloatNullableFilter = {
 export type Institution = {
   __typename?: 'Institution';
   _count: InstitutionCount;
-  accounts: Maybe<Array<Account>>;
   code: Scalars['String']['output'];
   color: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  institutionLinks: Maybe<Array<InstitutionLink>>;
   logoUrl: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
-  types: Maybe<Array<AccountType>>;
+  types: Maybe<Array<InstitutionType>>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -1649,7 +1488,7 @@ export type InstitutionConnection = {
 
 export type InstitutionCount = {
   __typename?: 'InstitutionCount';
-  accounts: Scalars['Int']['output'];
+  institutionLinks: Scalars['Int']['output'];
 };
 
 export type InstitutionCountAggregate = {
@@ -1665,18 +1504,18 @@ export type InstitutionCountAggregate = {
   updatedAt: Scalars['Int']['output'];
 };
 
-export type InstitutionCreateNestedOneWithoutAccountsInput = {
+export type InstitutionCreateNestedOneWithoutInstitutionLinksInput = {
   connect?: InputMaybe<InstitutionWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<InstitutionCreateOrConnectWithoutAccountsInput>;
-  create?: InputMaybe<InstitutionCreateWithoutAccountsInput>;
+  connectOrCreate?: InputMaybe<InstitutionCreateOrConnectWithoutInstitutionLinksInput>;
+  create?: InputMaybe<InstitutionCreateWithoutInstitutionLinksInput>;
 };
 
-export type InstitutionCreateOrConnectWithoutAccountsInput = {
-  create: InstitutionCreateWithoutAccountsInput;
+export type InstitutionCreateOrConnectWithoutInstitutionLinksInput = {
+  create: InstitutionCreateWithoutInstitutionLinksInput;
   where: InstitutionWhereUniqueInput;
 };
 
-export type InstitutionCreateWithoutAccountsInput = {
+export type InstitutionCreateWithoutInstitutionLinksInput = {
   code: Scalars['String']['input'];
   color?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -1688,7 +1527,213 @@ export type InstitutionCreateWithoutAccountsInput = {
 };
 
 export type InstitutionCreatetypesInput = {
-  set: Array<AccountType>;
+  set: Array<InstitutionType>;
+};
+
+export type InstitutionLink = {
+  __typename?: 'InstitutionLink';
+  _count: InstitutionLinkCount;
+  account: Maybe<Account>;
+  cards: Maybe<Array<Card>>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  institution: Institution;
+  institutionId: Scalars['String']['output'];
+  investments: Maybe<Array<Investment>>;
+  updatedAt: Scalars['DateTime']['output'];
+  user: User;
+  userId: Scalars['String']['output'];
+};
+
+export type InstitutionLinkConnection = {
+  __typename?: 'InstitutionLinkConnection';
+  edges: Maybe<Array<InstitutionLinkModelEdge>>;
+  pageInfo: Maybe<PageInfo>;
+};
+
+export type InstitutionLinkCount = {
+  __typename?: 'InstitutionLinkCount';
+  cards: Scalars['Int']['output'];
+  investments: Scalars['Int']['output'];
+};
+
+export type InstitutionLinkCountAggregate = {
+  __typename?: 'InstitutionLinkCountAggregate';
+  _all: Scalars['Int']['output'];
+  createdAt: Scalars['Int']['output'];
+  id: Scalars['Int']['output'];
+  institutionId: Scalars['Int']['output'];
+  updatedAt: Scalars['Int']['output'];
+  userId: Scalars['Int']['output'];
+};
+
+export type InstitutionLinkCreateManyUserInput = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  institutionId: Scalars['String']['input'];
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type InstitutionLinkCreateManyUserInputEnvelope = {
+  data: Array<InstitutionLinkCreateManyUserInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type InstitutionLinkCreateNestedManyWithoutUserInput = {
+  connect?: InputMaybe<Array<InstitutionLinkWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<
+    Array<InstitutionLinkCreateOrConnectWithoutUserInput>
+  >;
+  create?: InputMaybe<Array<InstitutionLinkCreateWithoutUserInput>>;
+  createMany?: InputMaybe<InstitutionLinkCreateManyUserInputEnvelope>;
+};
+
+export type InstitutionLinkCreateNestedOneWithoutAccountInput = {
+  connect?: InputMaybe<InstitutionLinkWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<InstitutionLinkCreateOrConnectWithoutAccountInput>;
+  create?: InputMaybe<InstitutionLinkCreateWithoutAccountInput>;
+};
+
+export type InstitutionLinkCreateNestedOneWithoutCardsInput = {
+  connect?: InputMaybe<InstitutionLinkWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<InstitutionLinkCreateOrConnectWithoutCardsInput>;
+  create?: InputMaybe<InstitutionLinkCreateWithoutCardsInput>;
+};
+
+export type InstitutionLinkCreateOrConnectWithoutAccountInput = {
+  create: InstitutionLinkCreateWithoutAccountInput;
+  where: InstitutionLinkWhereUniqueInput;
+};
+
+export type InstitutionLinkCreateOrConnectWithoutCardsInput = {
+  create: InstitutionLinkCreateWithoutCardsInput;
+  where: InstitutionLinkWhereUniqueInput;
+};
+
+export type InstitutionLinkCreateOrConnectWithoutUserInput = {
+  create: InstitutionLinkCreateWithoutUserInput;
+  where: InstitutionLinkWhereUniqueInput;
+};
+
+export type InstitutionLinkCreateWithoutAccountInput = {
+  cards?: InputMaybe<CardCreateNestedManyWithoutInstitutionLinkInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  institution: InstitutionCreateNestedOneWithoutInstitutionLinksInput;
+  investments?: InputMaybe<InvestmentCreateNestedManyWithoutInstitutionLinkInput>;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutInstitutionLinksInput;
+};
+
+export type InstitutionLinkCreateWithoutCardsInput = {
+  account?: InputMaybe<AccountCreateNestedOneWithoutInstitutionLinkInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  institution: InstitutionCreateNestedOneWithoutInstitutionLinksInput;
+  investments?: InputMaybe<InvestmentCreateNestedManyWithoutInstitutionLinkInput>;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutInstitutionLinksInput;
+};
+
+export type InstitutionLinkCreateWithoutUserInput = {
+  account?: InputMaybe<AccountCreateNestedOneWithoutInstitutionLinkInput>;
+  cards?: InputMaybe<CardCreateNestedManyWithoutInstitutionLinkInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  institution: InstitutionCreateNestedOneWithoutInstitutionLinksInput;
+  investments?: InputMaybe<InvestmentCreateNestedManyWithoutInstitutionLinkInput>;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type InstitutionLinkInstitutionIdUserIdCompoundUniqueInput = {
+  institutionId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+};
+
+export type InstitutionLinkListRelationFilter = {
+  every?: InputMaybe<InstitutionLinkWhereInput>;
+  none?: InputMaybe<InstitutionLinkWhereInput>;
+  some?: InputMaybe<InstitutionLinkWhereInput>;
+};
+
+export type InstitutionLinkMaxAggregate = {
+  __typename?: 'InstitutionLinkMaxAggregate';
+  createdAt: Maybe<Scalars['DateTime']['output']>;
+  id: Maybe<Scalars['String']['output']>;
+  institutionId: Maybe<Scalars['String']['output']>;
+  updatedAt: Maybe<Scalars['DateTime']['output']>;
+  userId: Maybe<Scalars['String']['output']>;
+};
+
+export type InstitutionLinkMinAggregate = {
+  __typename?: 'InstitutionLinkMinAggregate';
+  createdAt: Maybe<Scalars['DateTime']['output']>;
+  id: Maybe<Scalars['String']['output']>;
+  institutionId: Maybe<Scalars['String']['output']>;
+  updatedAt: Maybe<Scalars['DateTime']['output']>;
+  userId: Maybe<Scalars['String']['output']>;
+};
+
+export type InstitutionLinkModel = {
+  __typename?: 'InstitutionLinkModel';
+  _count: InstitutionLinkCount;
+  account: Maybe<Account>;
+  cards: Maybe<Array<Card>>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  institution: Institution;
+  institutionId: Scalars['String']['output'];
+  investments: Maybe<Array<Investment>>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type InstitutionLinkModelEdge = {
+  __typename?: 'InstitutionLinkModelEdge';
+  cursor: Scalars['String']['output'];
+  node: InstitutionLinkModel;
+};
+
+export type InstitutionLinkNullableRelationFilter = {
+  is?: InputMaybe<InstitutionLinkWhereInput>;
+  isNot?: InputMaybe<InstitutionLinkWhereInput>;
+};
+
+export type InstitutionLinkRelationFilter = {
+  is?: InputMaybe<InstitutionLinkWhereInput>;
+  isNot?: InputMaybe<InstitutionLinkWhereInput>;
+};
+
+export type InstitutionLinkWhereInput = {
+  AND?: InputMaybe<Array<InstitutionLinkWhereInput>>;
+  NOT?: InputMaybe<Array<InstitutionLinkWhereInput>>;
+  OR?: InputMaybe<Array<InstitutionLinkWhereInput>>;
+  account?: InputMaybe<AccountNullableRelationFilter>;
+  cards?: InputMaybe<CardListRelationFilter>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<StringFilter>;
+  institution?: InputMaybe<InstitutionRelationFilter>;
+  institutionId?: InputMaybe<StringFilter>;
+  investments?: InputMaybe<InvestmentListRelationFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+  user?: InputMaybe<UserRelationFilter>;
+  userId?: InputMaybe<StringFilter>;
+};
+
+export type InstitutionLinkWhereUniqueInput = {
+  AND?: InputMaybe<Array<InstitutionLinkWhereInput>>;
+  NOT?: InputMaybe<Array<InstitutionLinkWhereInput>>;
+  OR?: InputMaybe<Array<InstitutionLinkWhereInput>>;
+  account?: InputMaybe<AccountNullableRelationFilter>;
+  cards?: InputMaybe<CardListRelationFilter>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  institution?: InputMaybe<InstitutionRelationFilter>;
+  institutionId?: InputMaybe<StringFilter>;
+  institutionId_userId?: InputMaybe<InstitutionLinkInstitutionIdUserIdCompoundUniqueInput>;
+  investments?: InputMaybe<InvestmentListRelationFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+  user?: InputMaybe<UserRelationFilter>;
+  userId?: InputMaybe<StringFilter>;
 };
 
 export type InstitutionMaxAggregate = {
@@ -1715,14 +1760,14 @@ export type InstitutionMinAggregate = {
 
 export type InstitutionModel = {
   __typename?: 'InstitutionModel';
-  accounts: Maybe<Array<Account>>;
   code: Scalars['String']['output'];
   color: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  institutionLinks: Maybe<Array<InstitutionLink>>;
   logoUrl: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
-  types: Maybe<Array<AccountType>>;
+  types: Maybe<Array<InstitutionType>>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -1737,18 +1782,24 @@ export type InstitutionRelationFilter = {
   isNot?: InputMaybe<InstitutionWhereInput>;
 };
 
+export enum InstitutionType {
+  Card = 'CARD',
+  Checking = 'CHECKING',
+  Investment = 'INVESTMENT',
+}
+
 export type InstitutionWhereInput = {
   AND?: InputMaybe<Array<InstitutionWhereInput>>;
   NOT?: InputMaybe<Array<InstitutionWhereInput>>;
   OR?: InputMaybe<Array<InstitutionWhereInput>>;
-  accounts?: InputMaybe<AccountListRelationFilter>;
   code?: InputMaybe<StringFilter>;
   color?: InputMaybe<StringNullableFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<StringFilter>;
+  institutionLinks?: InputMaybe<InstitutionLinkListRelationFilter>;
   logoUrl?: InputMaybe<StringNullableFilter>;
   name?: InputMaybe<StringFilter>;
-  types?: InputMaybe<EnumAccountTypeNullableListFilter>;
+  types?: InputMaybe<EnumInstitutionTypeNullableListFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -1756,14 +1807,14 @@ export type InstitutionWhereUniqueInput = {
   AND?: InputMaybe<Array<InstitutionWhereInput>>;
   NOT?: InputMaybe<Array<InstitutionWhereInput>>;
   OR?: InputMaybe<Array<InstitutionWhereInput>>;
-  accounts?: InputMaybe<AccountListRelationFilter>;
   code?: InputMaybe<StringFilter>;
   color?: InputMaybe<StringNullableFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
+  institutionLinks?: InputMaybe<InstitutionLinkListRelationFilter>;
   logoUrl?: InputMaybe<StringNullableFilter>;
   name?: InputMaybe<StringFilter>;
-  types?: InputMaybe<EnumAccountTypeNullableListFilter>;
+  types?: InputMaybe<EnumInstitutionTypeNullableListFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -1792,14 +1843,14 @@ export type IntNullableFilter = {
 export type Investment = {
   __typename?: 'Investment';
   _count: InvestmentCount;
-  account: Account;
-  accountId: Scalars['String']['output'];
   amount: Scalars['Float']['output'];
   correctedAmount: Maybe<Scalars['Float']['output']>;
   createdAt: Scalars['DateTime']['output'];
   duration: Maybe<Scalars['Int']['output']>;
   finishedAt: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
+  institutionLink: Maybe<InstitutionLink>;
+  institutionLinkId: Scalars['String']['output'];
   lastCorrectedAt: Maybe<Scalars['DateTime']['output']>;
   regimeName: Regime;
   regimePercentage: Maybe<Scalars['Float']['output']>;
@@ -1808,8 +1859,6 @@ export type Investment = {
   taxedAmount: Maybe<Scalars['Float']['output']>;
   transactions: Maybe<Array<InvestmentTransaction>>;
   updatedAt: Scalars['DateTime']['output'];
-  user: User;
-  userId: Scalars['String']['output'];
 };
 
 export type InvestmentAvgAggregate = {
@@ -1835,13 +1884,13 @@ export type InvestmentCount = {
 export type InvestmentCountAggregate = {
   __typename?: 'InvestmentCountAggregate';
   _all: Scalars['Int']['output'];
-  accountId: Scalars['Int']['output'];
   amount: Scalars['Int']['output'];
   correctedAmount: Scalars['Int']['output'];
   createdAt: Scalars['Int']['output'];
   duration: Scalars['Int']['output'];
   finishedAt: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
+  institutionLinkId: Scalars['Int']['output'];
   lastCorrectedAt: Scalars['Int']['output'];
   regimeName: Scalars['Int']['output'];
   regimePercentage: Scalars['Int']['output'];
@@ -1849,10 +1898,9 @@ export type InvestmentCountAggregate = {
   status: Scalars['Int']['output'];
   taxedAmount: Scalars['Int']['output'];
   updatedAt: Scalars['Int']['output'];
-  userId: Scalars['Int']['output'];
 };
 
-export type InvestmentCreateManyAccountInput = {
+export type InvestmentCreateManyInstitutionLinkInput = {
   amount: Scalars['Float']['input'];
   correctedAmount?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -1866,113 +1914,28 @@ export type InvestmentCreateManyAccountInput = {
   status?: InputMaybe<InvestmentStatus>;
   taxedAmount?: InputMaybe<Scalars['Float']['input']>;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  userId: Scalars['String']['input'];
 };
 
-export type InvestmentCreateManyAccountInputEnvelope = {
-  data: Array<InvestmentCreateManyAccountInput>;
+export type InvestmentCreateManyInstitutionLinkInputEnvelope = {
+  data: Array<InvestmentCreateManyInstitutionLinkInput>;
   skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type InvestmentCreateManyUserInput = {
-  accountId: Scalars['String']['input'];
-  amount: Scalars['Float']['input'];
-  correctedAmount?: InputMaybe<Scalars['Float']['input']>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  duration?: InputMaybe<Scalars['Int']['input']>;
-  finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  lastCorrectedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  regimeName: Regime;
-  regimePercentage?: InputMaybe<Scalars['Float']['input']>;
-  startDate: Scalars['DateTime']['input'];
-  status?: InputMaybe<InvestmentStatus>;
-  taxedAmount?: InputMaybe<Scalars['Float']['input']>;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type InvestmentCreateManyUserInputEnvelope = {
-  data: Array<InvestmentCreateManyUserInput>;
-  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-export type InvestmentCreateNestedManyWithoutAccountInput = {
+export type InvestmentCreateNestedManyWithoutInstitutionLinkInput = {
   connect?: InputMaybe<Array<InvestmentWhereUniqueInput>>;
   connectOrCreate?: InputMaybe<
-    Array<InvestmentCreateOrConnectWithoutAccountInput>
+    Array<InvestmentCreateOrConnectWithoutInstitutionLinkInput>
   >;
-  create?: InputMaybe<Array<InvestmentCreateWithoutAccountInput>>;
-  createMany?: InputMaybe<InvestmentCreateManyAccountInputEnvelope>;
+  create?: InputMaybe<Array<InvestmentCreateWithoutInstitutionLinkInput>>;
+  createMany?: InputMaybe<InvestmentCreateManyInstitutionLinkInputEnvelope>;
 };
 
-export type InvestmentCreateNestedManyWithoutUserInput = {
-  connect?: InputMaybe<Array<InvestmentWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<InvestmentCreateOrConnectWithoutUserInput>
-  >;
-  create?: InputMaybe<Array<InvestmentCreateWithoutUserInput>>;
-  createMany?: InputMaybe<InvestmentCreateManyUserInputEnvelope>;
-};
-
-export type InvestmentCreateNestedOneWithoutTransactionsInput = {
-  connect?: InputMaybe<InvestmentWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<InvestmentCreateOrConnectWithoutTransactionsInput>;
-  create?: InputMaybe<InvestmentCreateWithoutTransactionsInput>;
-};
-
-export type InvestmentCreateOrConnectWithoutAccountInput = {
-  create: InvestmentCreateWithoutAccountInput;
+export type InvestmentCreateOrConnectWithoutInstitutionLinkInput = {
+  create: InvestmentCreateWithoutInstitutionLinkInput;
   where: InvestmentWhereUniqueInput;
 };
 
-export type InvestmentCreateOrConnectWithoutTransactionsInput = {
-  create: InvestmentCreateWithoutTransactionsInput;
-  where: InvestmentWhereUniqueInput;
-};
-
-export type InvestmentCreateOrConnectWithoutUserInput = {
-  create: InvestmentCreateWithoutUserInput;
-  where: InvestmentWhereUniqueInput;
-};
-
-export type InvestmentCreateWithoutAccountInput = {
-  amount: Scalars['Float']['input'];
-  correctedAmount?: InputMaybe<Scalars['Float']['input']>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  duration?: InputMaybe<Scalars['Int']['input']>;
-  finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  lastCorrectedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  regimeName: Regime;
-  regimePercentage?: InputMaybe<Scalars['Float']['input']>;
-  startDate: Scalars['DateTime']['input'];
-  status?: InputMaybe<InvestmentStatus>;
-  taxedAmount?: InputMaybe<Scalars['Float']['input']>;
-  transactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutInvestmentInput>;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  user: UserCreateNestedOneWithoutInvestmentsInput;
-};
-
-export type InvestmentCreateWithoutTransactionsInput = {
-  account: AccountCreateNestedOneWithoutInvestmentsInput;
-  amount: Scalars['Float']['input'];
-  correctedAmount?: InputMaybe<Scalars['Float']['input']>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  duration?: InputMaybe<Scalars['Int']['input']>;
-  finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  lastCorrectedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  regimeName: Regime;
-  regimePercentage?: InputMaybe<Scalars['Float']['input']>;
-  startDate: Scalars['DateTime']['input'];
-  status?: InputMaybe<InvestmentStatus>;
-  taxedAmount?: InputMaybe<Scalars['Float']['input']>;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  user: UserCreateNestedOneWithoutInvestmentsInput;
-};
-
-export type InvestmentCreateWithoutUserInput = {
-  account: AccountCreateNestedOneWithoutInvestmentsInput;
+export type InvestmentCreateWithoutInstitutionLinkInput = {
   amount: Scalars['Float']['input'];
   correctedAmount?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -2024,13 +1987,13 @@ export type InvestmentListRelationFilter = {
 
 export type InvestmentMaxAggregate = {
   __typename?: 'InvestmentMaxAggregate';
-  accountId: Maybe<Scalars['String']['output']>;
   amount: Maybe<Scalars['Float']['output']>;
   correctedAmount: Maybe<Scalars['Float']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   duration: Maybe<Scalars['Int']['output']>;
   finishedAt: Maybe<Scalars['DateTime']['output']>;
   id: Maybe<Scalars['String']['output']>;
+  institutionLinkId: Maybe<Scalars['String']['output']>;
   lastCorrectedAt: Maybe<Scalars['DateTime']['output']>;
   regimeName: Maybe<Regime>;
   regimePercentage: Maybe<Scalars['Float']['output']>;
@@ -2038,18 +2001,17 @@ export type InvestmentMaxAggregate = {
   status: Maybe<InvestmentStatus>;
   taxedAmount: Maybe<Scalars['Float']['output']>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
-  userId: Maybe<Scalars['String']['output']>;
 };
 
 export type InvestmentMinAggregate = {
   __typename?: 'InvestmentMinAggregate';
-  accountId: Maybe<Scalars['String']['output']>;
   amount: Maybe<Scalars['Float']['output']>;
   correctedAmount: Maybe<Scalars['Float']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   duration: Maybe<Scalars['Int']['output']>;
   finishedAt: Maybe<Scalars['DateTime']['output']>;
   id: Maybe<Scalars['String']['output']>;
+  institutionLinkId: Maybe<Scalars['String']['output']>;
   lastCorrectedAt: Maybe<Scalars['DateTime']['output']>;
   regimeName: Maybe<Regime>;
   regimePercentage: Maybe<Scalars['Float']['output']>;
@@ -2057,13 +2019,10 @@ export type InvestmentMinAggregate = {
   status: Maybe<InvestmentStatus>;
   taxedAmount: Maybe<Scalars['Float']['output']>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
-  userId: Maybe<Scalars['String']['output']>;
 };
 
 export type InvestmentModel = {
   __typename?: 'InvestmentModel';
-  account: Account;
-  accountId: Scalars['String']['output'];
   amount: Scalars['Float']['output'];
   correctedAmount: Maybe<Scalars['Float']['output']>;
   createdAt: Scalars['DateTime']['output'];
@@ -2071,6 +2030,8 @@ export type InvestmentModel = {
   duration: Maybe<Scalars['Int']['output']>;
   finishedAt: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
+  institutionLink: Maybe<InstitutionLink>;
+  institutionLinkId: Scalars['String']['output'];
   lastCorrectedAt: Maybe<Scalars['DateTime']['output']>;
   regimeName: Regime;
   regimePercentage: Maybe<Scalars['Float']['output']>;
@@ -2133,8 +2094,6 @@ export type InvestmentSumAggregate = {
 
 export type InvestmentTransaction = {
   __typename?: 'InvestmentTransaction';
-  account: Account;
-  accountId: Scalars['String']['output'];
   amount: Scalars['Decimal']['output'];
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
@@ -2152,7 +2111,6 @@ export type InvestmentTransactionAvgAggregate = {
 export type InvestmentTransactionCountAggregate = {
   __typename?: 'InvestmentTransactionCountAggregate';
   _all: Scalars['Int']['output'];
-  accountId: Scalars['Int']['output'];
   amount: Scalars['Int']['output'];
   createdAt: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
@@ -2161,22 +2119,7 @@ export type InvestmentTransactionCountAggregate = {
   updatedAt: Scalars['Int']['output'];
 };
 
-export type InvestmentTransactionCreateManyAccountInput = {
-  amount: Scalars['Decimal']['input'];
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  investmentId: Scalars['String']['input'];
-  role: InvestmentTransactionRole;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type InvestmentTransactionCreateManyAccountInputEnvelope = {
-  data: Array<InvestmentTransactionCreateManyAccountInput>;
-  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
 export type InvestmentTransactionCreateManyInvestmentInput = {
-  accountId: Scalars['String']['input'];
   amount: Scalars['Decimal']['input'];
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -2189,15 +2132,6 @@ export type InvestmentTransactionCreateManyInvestmentInputEnvelope = {
   skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type InvestmentTransactionCreateNestedManyWithoutAccountInput = {
-  connect?: InputMaybe<Array<InvestmentTransactionWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<InvestmentTransactionCreateOrConnectWithoutAccountInput>
-  >;
-  create?: InputMaybe<Array<InvestmentTransactionCreateWithoutAccountInput>>;
-  createMany?: InputMaybe<InvestmentTransactionCreateManyAccountInputEnvelope>;
-};
-
 export type InvestmentTransactionCreateNestedManyWithoutInvestmentInput = {
   connect?: InputMaybe<Array<InvestmentTransactionWhereUniqueInput>>;
   connectOrCreate?: InputMaybe<
@@ -2207,27 +2141,12 @@ export type InvestmentTransactionCreateNestedManyWithoutInvestmentInput = {
   createMany?: InputMaybe<InvestmentTransactionCreateManyInvestmentInputEnvelope>;
 };
 
-export type InvestmentTransactionCreateOrConnectWithoutAccountInput = {
-  create: InvestmentTransactionCreateWithoutAccountInput;
-  where: InvestmentTransactionWhereUniqueInput;
-};
-
 export type InvestmentTransactionCreateOrConnectWithoutInvestmentInput = {
   create: InvestmentTransactionCreateWithoutInvestmentInput;
   where: InvestmentTransactionWhereUniqueInput;
 };
 
-export type InvestmentTransactionCreateWithoutAccountInput = {
-  amount: Scalars['Decimal']['input'];
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  investment: InvestmentCreateNestedOneWithoutTransactionsInput;
-  role: InvestmentTransactionRole;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
 export type InvestmentTransactionCreateWithoutInvestmentInput = {
-  account: AccountCreateNestedOneWithoutInvestmentTransactionsInput;
   amount: Scalars['Decimal']['input'];
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -2243,7 +2162,6 @@ export type InvestmentTransactionListRelationFilter = {
 
 export type InvestmentTransactionMaxAggregate = {
   __typename?: 'InvestmentTransactionMaxAggregate';
-  accountId: Maybe<Scalars['String']['output']>;
   amount: Maybe<Scalars['Decimal']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   id: Maybe<Scalars['String']['output']>;
@@ -2254,7 +2172,6 @@ export type InvestmentTransactionMaxAggregate = {
 
 export type InvestmentTransactionMinAggregate = {
   __typename?: 'InvestmentTransactionMinAggregate';
-  accountId: Maybe<Scalars['String']['output']>;
   amount: Maybe<Scalars['Decimal']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   id: Maybe<Scalars['String']['output']>;
@@ -2279,8 +2196,6 @@ export type InvestmentTransactionWhereInput = {
   AND?: InputMaybe<Array<InvestmentTransactionWhereInput>>;
   NOT?: InputMaybe<Array<InvestmentTransactionWhereInput>>;
   OR?: InputMaybe<Array<InvestmentTransactionWhereInput>>;
-  account?: InputMaybe<AccountRelationFilter>;
-  accountId?: InputMaybe<StringFilter>;
   amount?: InputMaybe<DecimalFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<StringFilter>;
@@ -2294,8 +2209,6 @@ export type InvestmentTransactionWhereUniqueInput = {
   AND?: InputMaybe<Array<InvestmentTransactionWhereInput>>;
   NOT?: InputMaybe<Array<InvestmentTransactionWhereInput>>;
   OR?: InputMaybe<Array<InvestmentTransactionWhereInput>>;
-  account?: InputMaybe<AccountRelationFilter>;
-  accountId?: InputMaybe<StringFilter>;
   amount?: InputMaybe<DecimalFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -2309,14 +2222,14 @@ export type InvestmentWhereInput = {
   AND?: InputMaybe<Array<InvestmentWhereInput>>;
   NOT?: InputMaybe<Array<InvestmentWhereInput>>;
   OR?: InputMaybe<Array<InvestmentWhereInput>>;
-  account?: InputMaybe<AccountRelationFilter>;
-  accountId?: InputMaybe<StringFilter>;
   amount?: InputMaybe<FloatFilter>;
   correctedAmount?: InputMaybe<FloatNullableFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   duration?: InputMaybe<IntNullableFilter>;
   finishedAt?: InputMaybe<DateTimeNullableFilter>;
   id?: InputMaybe<StringFilter>;
+  institutionLink?: InputMaybe<InstitutionLinkNullableRelationFilter>;
+  institutionLinkId?: InputMaybe<StringFilter>;
   lastCorrectedAt?: InputMaybe<DateTimeNullableFilter>;
   regimeName?: InputMaybe<EnumRegimeFilter>;
   regimePercentage?: InputMaybe<FloatNullableFilter>;
@@ -2325,22 +2238,20 @@ export type InvestmentWhereInput = {
   taxedAmount?: InputMaybe<FloatNullableFilter>;
   transactions?: InputMaybe<InvestmentTransactionListRelationFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
-  user?: InputMaybe<UserRelationFilter>;
-  userId?: InputMaybe<StringFilter>;
 };
 
 export type InvestmentWhereUniqueInput = {
   AND?: InputMaybe<Array<InvestmentWhereInput>>;
   NOT?: InputMaybe<Array<InvestmentWhereInput>>;
   OR?: InputMaybe<Array<InvestmentWhereInput>>;
-  account?: InputMaybe<AccountRelationFilter>;
-  accountId?: InputMaybe<StringFilter>;
   amount?: InputMaybe<FloatFilter>;
   correctedAmount?: InputMaybe<FloatNullableFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   duration?: InputMaybe<IntNullableFilter>;
   finishedAt?: InputMaybe<DateTimeNullableFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
+  institutionLink?: InputMaybe<InstitutionLinkNullableRelationFilter>;
+  institutionLinkId?: InputMaybe<StringFilter>;
   lastCorrectedAt?: InputMaybe<DateTimeNullableFilter>;
   regimeName?: InputMaybe<EnumRegimeFilter>;
   regimePercentage?: InputMaybe<FloatNullableFilter>;
@@ -2349,8 +2260,6 @@ export type InvestmentWhereUniqueInput = {
   taxedAmount?: InputMaybe<FloatNullableFilter>;
   transactions?: InputMaybe<InvestmentTransactionListRelationFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
-  user?: InputMaybe<UserRelationFilter>;
-  userId?: InputMaybe<StringFilter>;
 };
 
 export type Mutation = {
@@ -2361,6 +2270,7 @@ export type Mutation = {
   chat: ChatResponse;
   closeBilling: CardBilling;
   createAccount: AccountModel;
+  createCard: Card;
   createInstallmentTransaction: TransactionModel;
   createInvestment: Investment;
   createRecurringTransaction: RecurringTransactionModel;
@@ -2374,7 +2284,7 @@ export type Mutation = {
   rescheduleTransaction: TransactionModel;
   resetPassword: Scalars['Boolean']['output'];
   resumeRecurringTransaction: RecurringTransactionModel;
-  updateAccountCard: AccountCard;
+  updateAccountCard: Card;
   updateRecurringTransactionFromDate: RecurringTransactionModel;
   updateRecurringTransactions: TransactionModel;
   updateTransaction: TransactionModel;
@@ -2399,6 +2309,10 @@ export type MutationCloseBillingArgs = {
 
 export type MutationCreateAccountArgs = {
   data: CreateAccountInput;
+};
+
+export type MutationCreateCardArgs = {
+  data: CreateCardInput;
 };
 
 export type MutationCreateInstallmentTransactionArgs = {
@@ -2512,13 +2426,6 @@ export type NestedDecimalFilter = {
   lte?: InputMaybe<Scalars['Decimal']['input']>;
   not?: InputMaybe<NestedDecimalFilter>;
   notIn?: InputMaybe<Array<Scalars['Decimal']['input']>>;
-};
-
-export type NestedEnumAccountTypeFilter = {
-  equals?: InputMaybe<AccountType>;
-  in?: InputMaybe<Array<AccountType>>;
-  not?: InputMaybe<NestedEnumAccountTypeFilter>;
-  notIn?: InputMaybe<Array<AccountType>>;
 };
 
 export type NestedEnumAuthProviderNameFilter = {
@@ -2693,32 +2600,37 @@ export type NestedStringNullableFilter = {
 
 export enum OrdenationAccountModel {
   Count = '_count',
-  AccountCard = 'accountCard',
   Balance = 'balance',
   CreatedAt = 'createdAt',
   CurrentBillingAmount = 'currentBillingAmount',
   DestinyRecurringTransactions = 'destinyRecurringTransactions',
   DestinyTransactions = 'destinyTransactions',
   InitialBalance = 'initialBalance',
-  Institution = 'institution',
-  InstitutionId = 'institutionId',
-  InvestmentTransactions = 'investmentTransactions',
-  Investments = 'investments',
+  InstitutionLink = 'institutionLink',
+  InstitutionLinkId = 'institutionLinkId',
   IsActive = 'isActive',
   Name = 'name',
   SourceRecurringTransactions = 'sourceRecurringTransactions',
   SourceTransactions = 'sourceTransactions',
   TotalInvested = 'totalInvested',
-  Type = 'type',
   UpdatedAt = 'updatedAt',
 }
 
+export enum OrdenationInstitutionLinkModel {
+  Count = '_count',
+  Account = 'account',
+  Cards = 'cards',
+  Institution = 'institution',
+  InstitutionId = 'institutionId',
+  Investments = 'investments',
+}
+
 export enum OrdenationInstitutionModel {
-  Accounts = 'accounts',
   Code = 'code',
   Color = 'color',
   CreatedAt = 'createdAt',
   Id = 'id',
+  InstitutionLinks = 'institutionLinks',
   LogoUrl = 'logoUrl',
   Name = 'name',
   Types = 'types',
@@ -2726,14 +2638,14 @@ export enum OrdenationInstitutionModel {
 }
 
 export enum OrdenationInvestmentModel {
-  Account = 'account',
-  AccountId = 'accountId',
   Amount = 'amount',
   CorrectedAmount = 'correctedAmount',
   CreatedAt = 'createdAt',
   Duration = 'duration',
   FinishedAt = 'finishedAt',
   Id = 'id',
+  InstitutionLink = 'institutionLink',
+  InstitutionLinkId = 'institutionLinkId',
   LastCorrectedAt = 'lastCorrectedAt',
   RegimeName = 'regimeName',
   RegimePercentage = 'regimePercentage',
@@ -2762,6 +2674,8 @@ export enum OrdenationRecurringTransactionModel {
   RecurrenceType = 'recurrenceType',
   SourceAccount = 'sourceAccount',
   SourceAccountId = 'sourceAccountId',
+  SourceCard = 'sourceCard',
+  SourceCardId = 'sourceCardId',
   StartDate = 'startDate',
   TotalInstallments = 'totalInstallments',
   Transactions = 'transactions',
@@ -2797,6 +2711,8 @@ export enum OrdenationTransactionModel {
   RecurringTransactionId = 'recurringTransactionId',
   SourceAccount = 'sourceAccount',
   SourceAccountId = 'sourceAccountId',
+  SourceCard = 'sourceCard',
+  SourceCardId = 'sourceCardId',
   Status = 'status',
   TotalInstallments = 'totalInstallments',
   Type = 'type',
@@ -2834,7 +2750,7 @@ export enum PaymentMethod {
 export type Query = {
   __typename?: 'Query';
   account: AccountModel;
-  accountCard: Maybe<AccountCard>;
+  accountCard: Maybe<Card>;
   accounts: AccountConnection;
   balanceForecast: BalanceForecastModel;
   billing: CardBillingOnDate;
@@ -2842,6 +2758,7 @@ export type Query = {
   financialAgenda: FinancialAgendaModel;
   health: Scalars['String']['output'];
   institution: InstitutionModel;
+  institutionLinks: InstitutionLinkConnection;
   institutions: InstitutionConnection;
   investmentAccounts: Array<AccountWithInvestmentCount>;
   investmentEvolution: InvestmentEvolutionModel;
@@ -2875,7 +2792,6 @@ export type QueryAccountsArgs = {
   orderBy?: InputMaybe<OrdenationAccountModel>;
   orderDirection?: InputMaybe<OrderDirection>;
   search?: InputMaybe<Scalars['String']['input']>;
-  types?: InputMaybe<Array<AccountType>>;
 };
 
 export type QueryBalanceForecastArgs = {
@@ -2903,6 +2819,17 @@ export type QueryInstitutionArgs = {
   id: Scalars['String']['input'];
 };
 
+export type QueryInstitutionLinksArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  institutionTypes?: InputMaybe<Array<InstitutionType>>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<OrdenationInstitutionLinkModel>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  search?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type QueryInstitutionsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -2911,7 +2838,7 @@ export type QueryInstitutionsArgs = {
   orderBy?: InputMaybe<OrdenationInstitutionModel>;
   orderDirection?: InputMaybe<OrderDirection>;
   search?: InputMaybe<Scalars['String']['input']>;
-  types?: InputMaybe<Array<AccountType>>;
+  types?: InputMaybe<Array<InstitutionType>>;
 };
 
 export type QueryInvestmentAccountsArgs = {
@@ -2924,7 +2851,7 @@ export type QueryInvestmentEvolutionArgs = {
 };
 
 export type QueryInvestmentRegimesArgs = {
-  accountId?: InputMaybe<Scalars['String']['input']>;
+  institutionLinkId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type QueryInvestmentsArgs = {
@@ -2946,6 +2873,7 @@ export type QueryRecurringTransactionsArgs = {
   accountId?: InputMaybe<Scalars['ID']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  cardId?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -2963,6 +2891,7 @@ export type QueryTransactionsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   cardBillingId?: InputMaybe<Scalars['ID']['input']>;
+  cardId?: InputMaybe<Scalars['ID']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -2983,6 +2912,7 @@ export type QueryTransactionsCalendarArgs = {
 export type QueryTransactionsGroupedByPeriodArgs = {
   accountId?: InputMaybe<Scalars['ID']['input']>;
   cardBillingId?: InputMaybe<Scalars['ID']['input']>;
+  cardId?: InputMaybe<Scalars['ID']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   limitPerGroup?: InputMaybe<Scalars['Int']['input']>;
   startDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -2993,6 +2923,7 @@ export type QueryTransactionsGroupedByPeriodArgs = {
 export type QueryTransactionsSummaryArgs = {
   accountId?: InputMaybe<Scalars['ID']['input']>;
   cardBillingId?: InputMaybe<Scalars['ID']['input']>;
+  cardId?: InputMaybe<Scalars['ID']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   startDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3047,6 +2978,8 @@ export type RecurringTransaction = {
   recurrenceType: RecurrenceType;
   sourceAccount: Maybe<Account>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
+  sourceCard: Maybe<Card>;
+  sourceCardId: Maybe<Scalars['String']['output']>;
   startDate: Scalars['DateTime']['output'];
   totalInstallments: Maybe<Scalars['Int']['output']>;
   transactions: Maybe<Array<Transaction>>;
@@ -3096,6 +3029,7 @@ export type RecurringTransactionCountAggregate = {
   paymentMethod: Scalars['Int']['output'];
   recurrenceType: Scalars['Int']['output'];
   sourceAccountId: Scalars['Int']['output'];
+  sourceCardId: Scalars['Int']['output'];
   startDate: Scalars['Int']['output'];
   totalInstallments: Scalars['Int']['output'];
   type: Scalars['Int']['output'];
@@ -3119,6 +3053,7 @@ export type RecurringTransactionCreateManyDestinyAccountInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurrenceType?: InputMaybe<RecurrenceType>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
+  sourceCardId?: InputMaybe<Scalars['String']['input']>;
   startDate: Scalars['DateTime']['input'];
   totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
@@ -3147,6 +3082,7 @@ export type RecurringTransactionCreateManySourceAccountInput = {
   monthOfYear?: InputMaybe<Scalars['Int']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurrenceType?: InputMaybe<RecurrenceType>;
+  sourceCardId?: InputMaybe<Scalars['String']['input']>;
   startDate: Scalars['DateTime']['input'];
   totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
@@ -3157,6 +3093,35 @@ export type RecurringTransactionCreateManySourceAccountInput = {
 
 export type RecurringTransactionCreateManySourceAccountInputEnvelope = {
   data: Array<RecurringTransactionCreateManySourceAccountInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type RecurringTransactionCreateManySourceCardInput = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  dayMode?: InputMaybe<DayMode>;
+  dayOfMonth?: InputMaybe<Scalars['Int']['input']>;
+  dayOfWeek?: InputMaybe<Scalars['Int']['input']>;
+  description: Scalars['String']['input'];
+  destinyAccountId?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  estimatedAmount: Scalars['Decimal']['input'];
+  frequency: RecurrenceFrequency;
+  id?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  monthOfYear?: InputMaybe<Scalars['Int']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  recurrenceType?: InputMaybe<RecurrenceType>;
+  sourceAccountId?: InputMaybe<Scalars['String']['input']>;
+  startDate: Scalars['DateTime']['input'];
+  totalInstallments?: InputMaybe<Scalars['Int']['input']>;
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  userId: Scalars['String']['input'];
+  weekOfMonth?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type RecurringTransactionCreateManySourceCardInputEnvelope = {
+  data: Array<RecurringTransactionCreateManySourceCardInput>;
   skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -3176,6 +3141,7 @@ export type RecurringTransactionCreateManyUserInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurrenceType?: InputMaybe<RecurrenceType>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
+  sourceCardId?: InputMaybe<Scalars['String']['input']>;
   startDate: Scalars['DateTime']['input'];
   totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
@@ -3210,6 +3176,15 @@ export type RecurringTransactionCreateNestedManyWithoutSourceAccountInput = {
   createMany?: InputMaybe<RecurringTransactionCreateManySourceAccountInputEnvelope>;
 };
 
+export type RecurringTransactionCreateNestedManyWithoutSourceCardInput = {
+  connect?: InputMaybe<Array<RecurringTransactionWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<
+    Array<RecurringTransactionCreateOrConnectWithoutSourceCardInput>
+  >;
+  create?: InputMaybe<Array<RecurringTransactionCreateWithoutSourceCardInput>>;
+  createMany?: InputMaybe<RecurringTransactionCreateManySourceCardInputEnvelope>;
+};
+
 export type RecurringTransactionCreateNestedManyWithoutUserInput = {
   connect?: InputMaybe<Array<RecurringTransactionWhereUniqueInput>>;
   connectOrCreate?: InputMaybe<
@@ -3232,6 +3207,11 @@ export type RecurringTransactionCreateOrConnectWithoutDestinyAccountInput = {
 
 export type RecurringTransactionCreateOrConnectWithoutSourceAccountInput = {
   create: RecurringTransactionCreateWithoutSourceAccountInput;
+  where: RecurringTransactionWhereUniqueInput;
+};
+
+export type RecurringTransactionCreateOrConnectWithoutSourceCardInput = {
+  create: RecurringTransactionCreateWithoutSourceCardInput;
   where: RecurringTransactionWhereUniqueInput;
 };
 
@@ -3260,6 +3240,7 @@ export type RecurringTransactionCreateWithoutDestinyAccountInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurrenceType?: InputMaybe<RecurrenceType>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceRecurringTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceRecurringTransactionsInput>;
   startDate: Scalars['DateTime']['input'];
   totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   transactions?: InputMaybe<TransactionCreateNestedManyWithoutRecurringTransactionInput>;
@@ -3284,6 +3265,32 @@ export type RecurringTransactionCreateWithoutSourceAccountInput = {
   monthOfYear?: InputMaybe<Scalars['Int']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurrenceType?: InputMaybe<RecurrenceType>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceRecurringTransactionsInput>;
+  startDate: Scalars['DateTime']['input'];
+  totalInstallments?: InputMaybe<Scalars['Int']['input']>;
+  transactions?: InputMaybe<TransactionCreateNestedManyWithoutRecurringTransactionInput>;
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutRecurringTransactionsInput;
+  weekOfMonth?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type RecurringTransactionCreateWithoutSourceCardInput = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  dayMode?: InputMaybe<DayMode>;
+  dayOfMonth?: InputMaybe<Scalars['Int']['input']>;
+  dayOfWeek?: InputMaybe<Scalars['Int']['input']>;
+  description: Scalars['String']['input'];
+  destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyRecurringTransactionsInput>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  estimatedAmount: Scalars['Decimal']['input'];
+  frequency: RecurrenceFrequency;
+  id?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  monthOfYear?: InputMaybe<Scalars['Int']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  recurrenceType?: InputMaybe<RecurrenceType>;
+  sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceRecurringTransactionsInput>;
   startDate: Scalars['DateTime']['input'];
   totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   transactions?: InputMaybe<TransactionCreateNestedManyWithoutRecurringTransactionInput>;
@@ -3309,6 +3316,7 @@ export type RecurringTransactionCreateWithoutTransactionsInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurrenceType?: InputMaybe<RecurrenceType>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceRecurringTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceRecurringTransactionsInput>;
   startDate: Scalars['DateTime']['input'];
   totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
@@ -3333,6 +3341,7 @@ export type RecurringTransactionCreateWithoutUserInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurrenceType?: InputMaybe<RecurrenceType>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceRecurringTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceRecurringTransactionsInput>;
   startDate: Scalars['DateTime']['input'];
   totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   transactions?: InputMaybe<TransactionCreateNestedManyWithoutRecurringTransactionInput>;
@@ -3364,6 +3373,7 @@ export type RecurringTransactionMaxAggregate = {
   paymentMethod: Maybe<PaymentMethod>;
   recurrenceType: Maybe<RecurrenceType>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
+  sourceCardId: Maybe<Scalars['String']['output']>;
   startDate: Maybe<Scalars['DateTime']['output']>;
   totalInstallments: Maybe<Scalars['Int']['output']>;
   type: Maybe<TransactionType>;
@@ -3389,6 +3399,7 @@ export type RecurringTransactionMinAggregate = {
   paymentMethod: Maybe<PaymentMethod>;
   recurrenceType: Maybe<RecurrenceType>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
+  sourceCardId: Maybe<Scalars['String']['output']>;
   startDate: Maybe<Scalars['DateTime']['output']>;
   totalInstallments: Maybe<Scalars['Int']['output']>;
   type: Maybe<TransactionType>;
@@ -3417,6 +3428,8 @@ export type RecurringTransactionModel = {
   recurrenceType: RecurrenceType;
   sourceAccount: Maybe<Account>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
+  sourceCard: Maybe<Card>;
+  sourceCardId: Maybe<Scalars['String']['output']>;
   startDate: Scalars['DateTime']['output'];
   totalInstallments: Maybe<Scalars['Int']['output']>;
   transactions: Maybe<Array<Transaction>>;
@@ -3467,6 +3480,8 @@ export type RecurringTransactionWhereInput = {
   recurrenceType?: InputMaybe<EnumRecurrenceTypeFilter>;
   sourceAccount?: InputMaybe<AccountNullableRelationFilter>;
   sourceAccountId?: InputMaybe<StringNullableFilter>;
+  sourceCard?: InputMaybe<CardNullableRelationFilter>;
+  sourceCardId?: InputMaybe<StringNullableFilter>;
   startDate?: InputMaybe<DateTimeFilter>;
   totalInstallments?: InputMaybe<IntNullableFilter>;
   transactions?: InputMaybe<TransactionListRelationFilter>;
@@ -3498,6 +3513,8 @@ export type RecurringTransactionWhereUniqueInput = {
   recurrenceType?: InputMaybe<EnumRecurrenceTypeFilter>;
   sourceAccount?: InputMaybe<AccountNullableRelationFilter>;
   sourceAccountId?: InputMaybe<StringNullableFilter>;
+  sourceCard?: InputMaybe<CardNullableRelationFilter>;
+  sourceCardId?: InputMaybe<StringNullableFilter>;
   startDate?: InputMaybe<DateTimeFilter>;
   totalInstallments?: InputMaybe<IntNullableFilter>;
   transactions?: InputMaybe<TransactionListRelationFilter>;
@@ -3595,6 +3612,8 @@ export type Transaction = {
   recurringTransactionId: Maybe<Scalars['String']['output']>;
   sourceAccount: Maybe<Account>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
+  sourceCard: Maybe<Card>;
+  sourceCardId: Maybe<Scalars['String']['output']>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt: Scalars['DateTime']['output'];
@@ -3652,6 +3671,7 @@ export type TransactionCountAggregate = {
   paymentMethod: Scalars['Int']['output'];
   recurringTransactionId: Scalars['Int']['output'];
   sourceAccountId: Scalars['Int']['output'];
+  sourceCardId: Scalars['Int']['output'];
   status: Scalars['Int']['output'];
   type: Scalars['Int']['output'];
   updatedAt: Scalars['Int']['output'];
@@ -3672,6 +3692,7 @@ export type TransactionCreateManyCardBillingInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransactionId?: InputMaybe<Scalars['String']['input']>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
+  sourceCardId?: InputMaybe<Scalars['String']['input']>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3697,6 +3718,7 @@ export type TransactionCreateManyDestinyAccountInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransactionId?: InputMaybe<Scalars['String']['input']>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
+  sourceCardId?: InputMaybe<Scalars['String']['input']>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3722,6 +3744,7 @@ export type TransactionCreateManyRecurringTransactionInput = {
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
+  sourceCardId?: InputMaybe<Scalars['String']['input']>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3747,6 +3770,7 @@ export type TransactionCreateManySourceAccountInput = {
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransactionId?: InputMaybe<Scalars['String']['input']>;
+  sourceCardId?: InputMaybe<Scalars['String']['input']>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3755,6 +3779,32 @@ export type TransactionCreateManySourceAccountInput = {
 
 export type TransactionCreateManySourceAccountInputEnvelope = {
   data: Array<TransactionCreateManySourceAccountInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type TransactionCreateManySourceCardInput = {
+  amount: Scalars['Decimal']['input'];
+  cardBillingId?: InputMaybe<Scalars['String']['input']>;
+  category?: InputMaybe<TransactionCategory>;
+  categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  date: Scalars['DateTime']['input'];
+  description: Scalars['String']['input'];
+  destinyAccountId?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  recurringTransactionId?: InputMaybe<Scalars['String']['input']>;
+  sourceAccountId?: InputMaybe<Scalars['String']['input']>;
+  status: TransactionStatus;
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  userId: Scalars['String']['input'];
+};
+
+export type TransactionCreateManySourceCardInputEnvelope = {
+  data: Array<TransactionCreateManySourceCardInput>;
   skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -3773,6 +3823,7 @@ export type TransactionCreateManyUserInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransactionId?: InputMaybe<Scalars['String']['input']>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
+  sourceCardId?: InputMaybe<Scalars['String']['input']>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3817,6 +3868,15 @@ export type TransactionCreateNestedManyWithoutSourceAccountInput = {
   >;
   create?: InputMaybe<Array<TransactionCreateWithoutSourceAccountInput>>;
   createMany?: InputMaybe<TransactionCreateManySourceAccountInputEnvelope>;
+};
+
+export type TransactionCreateNestedManyWithoutSourceCardInput = {
+  connect?: InputMaybe<Array<TransactionWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<
+    Array<TransactionCreateOrConnectWithoutSourceCardInput>
+  >;
+  create?: InputMaybe<Array<TransactionCreateWithoutSourceCardInput>>;
+  createMany?: InputMaybe<TransactionCreateManySourceCardInputEnvelope>;
 };
 
 export type TransactionCreateNestedManyWithoutUserInput = {
@@ -3870,6 +3930,11 @@ export type TransactionCreateOrConnectWithoutSourceAccountInput = {
   where: TransactionWhereUniqueInput;
 };
 
+export type TransactionCreateOrConnectWithoutSourceCardInput = {
+  create: TransactionCreateWithoutSourceCardInput;
+  where: TransactionWhereUniqueInput;
+};
+
 export type TransactionCreateOrConnectWithoutUserInput = {
   create: TransactionCreateWithoutUserInput;
   where: TransactionWhereUniqueInput;
@@ -3891,6 +3956,7 @@ export type TransactionCreateWithoutBillingPaymentInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3913,6 +3979,7 @@ export type TransactionCreateWithoutCardBillingInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3935,6 +4002,7 @@ export type TransactionCreateWithoutDestinyAccountInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3957,6 +4025,7 @@ export type TransactionCreateWithoutInstallmentsInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3979,6 +4048,7 @@ export type TransactionCreateWithoutRecurringTransactionInput = {
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -4001,6 +4071,30 @@ export type TransactionCreateWithoutSourceAccountInput = {
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceTransactionsInput>;
+  status: TransactionStatus;
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutTransactionsInput;
+};
+
+export type TransactionCreateWithoutSourceCardInput = {
+  amount: Scalars['Decimal']['input'];
+  billingPayment?: InputMaybe<CardBillingCreateNestedOneWithoutPaymentTransactionInput>;
+  cardBilling?: InputMaybe<CardBillingCreateNestedOneWithoutTransactionsInput>;
+  category?: InputMaybe<TransactionCategory>;
+  categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  date: Scalars['DateTime']['input'];
+  description: Scalars['String']['input'];
+  destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyTransactionsInput>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutTransactionInput>;
+  paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
+  sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -4024,6 +4118,7 @@ export type TransactionCreateWithoutUserInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -4233,6 +4328,7 @@ export type TransactionMaxAggregate = {
   paymentMethod: Maybe<PaymentMethod>;
   recurringTransactionId: Maybe<Scalars['String']['output']>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
+  sourceCardId: Maybe<Scalars['String']['output']>;
   status: Maybe<TransactionStatus>;
   type: Maybe<TransactionType>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
@@ -4255,6 +4351,7 @@ export type TransactionMinAggregate = {
   paymentMethod: Maybe<PaymentMethod>;
   recurringTransactionId: Maybe<Scalars['String']['output']>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
+  sourceCardId: Maybe<Scalars['String']['output']>;
   status: Maybe<TransactionStatus>;
   type: Maybe<TransactionType>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
@@ -4290,6 +4387,8 @@ export type TransactionModel = {
   recurringTransactionId: Maybe<Scalars['String']['output']>;
   sourceAccount: Maybe<Account>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
+  sourceCard: Maybe<Card>;
+  sourceCardId: Maybe<Scalars['String']['output']>;
   status: TransactionStatus;
   totalInstallments: Maybe<Scalars['Int']['output']>;
   type: TransactionType;
@@ -4366,6 +4465,8 @@ export type TransactionWhereInput = {
   recurringTransactionId?: InputMaybe<StringNullableFilter>;
   sourceAccount?: InputMaybe<AccountNullableRelationFilter>;
   sourceAccountId?: InputMaybe<StringNullableFilter>;
+  sourceCard?: InputMaybe<CardNullableRelationFilter>;
+  sourceCardId?: InputMaybe<StringNullableFilter>;
   status?: InputMaybe<EnumTransactionStatusFilter>;
   type?: InputMaybe<EnumTransactionTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
@@ -4397,6 +4498,8 @@ export type TransactionWhereUniqueInput = {
   recurringTransactionId?: InputMaybe<StringNullableFilter>;
   sourceAccount?: InputMaybe<AccountNullableRelationFilter>;
   sourceAccountId?: InputMaybe<StringNullableFilter>;
+  sourceCard?: InputMaybe<CardNullableRelationFilter>;
+  sourceCardId?: InputMaybe<StringNullableFilter>;
   status?: InputMaybe<EnumTransactionStatusFilter>;
   type?: InputMaybe<EnumTransactionTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
@@ -4443,6 +4546,7 @@ export type UpdateRecurringTransactionInput = {
   monthOfYear?: InputMaybe<Scalars['Int']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   sourceAccountId?: InputMaybe<Scalars['ID']['input']>;
+  sourceCardId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type UpdateRecurringTransactionsInput = {
@@ -4468,13 +4572,11 @@ export type UpdateTransactionInput = {
 export type User = {
   __typename?: 'User';
   _count: UserCount;
-  accounts: Maybe<Array<Account>>;
   authUserProviders: Maybe<Array<AuthUserProvider>>;
-  cardBillingStatusHistories: Maybe<Array<CardBillingHistory>>;
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  investments: Maybe<Array<Investment>>;
+  institutionLinks: Maybe<Array<InstitutionLink>>;
   name: Scalars['String']['output'];
   password: Maybe<Scalars['String']['output']>;
   recurringTransactions: Maybe<Array<RecurringTransaction>>;
@@ -4491,10 +4593,8 @@ export type UserConnection = {
 
 export type UserCount = {
   __typename?: 'UserCount';
-  accounts: Scalars['Int']['output'];
   authUserProviders: Scalars['Int']['output'];
-  cardBillingStatusHistories: Scalars['Int']['output'];
-  investments: Scalars['Int']['output'];
+  institutionLinks: Scalars['Int']['output'];
   recurringTransactions: Scalars['Int']['output'];
   transactions: Scalars['Int']['output'];
 };
@@ -4512,13 +4612,11 @@ export type UserCountAggregate = {
 };
 
 export type UserCreateInput = {
-  accounts?: InputMaybe<AccountCreateNestedManyWithoutUserInput>;
   authUserProviders?: InputMaybe<AuthUserProviderCreateNestedManyWithoutUserInput>;
-  cardBillingStatusHistories?: InputMaybe<CardBillingHistoryCreateNestedManyWithoutChangedByInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   email: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
+  institutionLinks?: InputMaybe<InstitutionLinkCreateNestedManyWithoutUserInput>;
   name: Scalars['String']['input'];
   password?: InputMaybe<Scalars['String']['input']>;
   recurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutUserInput>;
@@ -4527,22 +4625,10 @@ export type UserCreateInput = {
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
-export type UserCreateNestedOneWithoutAccountsInput = {
+export type UserCreateNestedOneWithoutInstitutionLinksInput = {
   connect?: InputMaybe<UserWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutAccountsInput>;
-  create?: InputMaybe<UserCreateWithoutAccountsInput>;
-};
-
-export type UserCreateNestedOneWithoutCardBillingStatusHistoriesInput = {
-  connect?: InputMaybe<UserWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutCardBillingStatusHistoriesInput>;
-  create?: InputMaybe<UserCreateWithoutCardBillingStatusHistoriesInput>;
-};
-
-export type UserCreateNestedOneWithoutInvestmentsInput = {
-  connect?: InputMaybe<UserWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutInvestmentsInput>;
-  create?: InputMaybe<UserCreateWithoutInvestmentsInput>;
+  connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutInstitutionLinksInput>;
+  create?: InputMaybe<UserCreateWithoutInstitutionLinksInput>;
 };
 
 export type UserCreateNestedOneWithoutRecurringTransactionsInput = {
@@ -4557,18 +4643,8 @@ export type UserCreateNestedOneWithoutTransactionsInput = {
   create?: InputMaybe<UserCreateWithoutTransactionsInput>;
 };
 
-export type UserCreateOrConnectWithoutAccountsInput = {
-  create: UserCreateWithoutAccountsInput;
-  where: UserWhereUniqueInput;
-};
-
-export type UserCreateOrConnectWithoutCardBillingStatusHistoriesInput = {
-  create: UserCreateWithoutCardBillingStatusHistoriesInput;
-  where: UserWhereUniqueInput;
-};
-
-export type UserCreateOrConnectWithoutInvestmentsInput = {
-  create: UserCreateWithoutInvestmentsInput;
+export type UserCreateOrConnectWithoutInstitutionLinksInput = {
+  create: UserCreateWithoutInstitutionLinksInput;
   where: UserWhereUniqueInput;
 };
 
@@ -4582,40 +4658,8 @@ export type UserCreateOrConnectWithoutTransactionsInput = {
   where: UserWhereUniqueInput;
 };
 
-export type UserCreateWithoutAccountsInput = {
+export type UserCreateWithoutInstitutionLinksInput = {
   authUserProviders?: InputMaybe<AuthUserProviderCreateNestedManyWithoutUserInput>;
-  cardBillingStatusHistories?: InputMaybe<CardBillingHistoryCreateNestedManyWithoutChangedByInput>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  email: Scalars['String']['input'];
-  id?: InputMaybe<Scalars['String']['input']>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
-  name: Scalars['String']['input'];
-  password?: InputMaybe<Scalars['String']['input']>;
-  recurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutUserInput>;
-  role: Role;
-  transactions?: InputMaybe<TransactionCreateNestedManyWithoutUserInput>;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type UserCreateWithoutCardBillingStatusHistoriesInput = {
-  accounts?: InputMaybe<AccountCreateNestedManyWithoutUserInput>;
-  authUserProviders?: InputMaybe<AuthUserProviderCreateNestedManyWithoutUserInput>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  email: Scalars['String']['input'];
-  id?: InputMaybe<Scalars['String']['input']>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
-  name: Scalars['String']['input'];
-  password?: InputMaybe<Scalars['String']['input']>;
-  recurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutUserInput>;
-  role: Role;
-  transactions?: InputMaybe<TransactionCreateNestedManyWithoutUserInput>;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type UserCreateWithoutInvestmentsInput = {
-  accounts?: InputMaybe<AccountCreateNestedManyWithoutUserInput>;
-  authUserProviders?: InputMaybe<AuthUserProviderCreateNestedManyWithoutUserInput>;
-  cardBillingStatusHistories?: InputMaybe<CardBillingHistoryCreateNestedManyWithoutChangedByInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   email: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
@@ -4628,13 +4672,11 @@ export type UserCreateWithoutInvestmentsInput = {
 };
 
 export type UserCreateWithoutRecurringTransactionsInput = {
-  accounts?: InputMaybe<AccountCreateNestedManyWithoutUserInput>;
   authUserProviders?: InputMaybe<AuthUserProviderCreateNestedManyWithoutUserInput>;
-  cardBillingStatusHistories?: InputMaybe<CardBillingHistoryCreateNestedManyWithoutChangedByInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   email: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
+  institutionLinks?: InputMaybe<InstitutionLinkCreateNestedManyWithoutUserInput>;
   name: Scalars['String']['input'];
   password?: InputMaybe<Scalars['String']['input']>;
   role: Role;
@@ -4643,13 +4685,11 @@ export type UserCreateWithoutRecurringTransactionsInput = {
 };
 
 export type UserCreateWithoutTransactionsInput = {
-  accounts?: InputMaybe<AccountCreateNestedManyWithoutUserInput>;
   authUserProviders?: InputMaybe<AuthUserProviderCreateNestedManyWithoutUserInput>;
-  cardBillingStatusHistories?: InputMaybe<CardBillingHistoryCreateNestedManyWithoutChangedByInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   email: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
+  institutionLinks?: InputMaybe<InstitutionLinkCreateNestedManyWithoutUserInput>;
   name: Scalars['String']['input'];
   password?: InputMaybe<Scalars['String']['input']>;
   recurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutUserInput>;
@@ -4693,11 +4733,6 @@ export type UserModelEdge = {
   node: UserModel;
 };
 
-export type UserNullableRelationFilter = {
-  is?: InputMaybe<UserWhereInput>;
-  isNot?: InputMaybe<UserWhereInput>;
-};
-
 export type UserRelationFilter = {
   is?: InputMaybe<UserWhereInput>;
   isNot?: InputMaybe<UserWhereInput>;
@@ -4707,13 +4742,11 @@ export type UserWhereInput = {
   AND?: InputMaybe<Array<UserWhereInput>>;
   NOT?: InputMaybe<Array<UserWhereInput>>;
   OR?: InputMaybe<Array<UserWhereInput>>;
-  accounts?: InputMaybe<AccountListRelationFilter>;
   authUserProviders?: InputMaybe<AuthUserProviderListRelationFilter>;
-  cardBillingStatusHistories?: InputMaybe<CardBillingHistoryListRelationFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   email?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
-  investments?: InputMaybe<InvestmentListRelationFilter>;
+  institutionLinks?: InputMaybe<InstitutionLinkListRelationFilter>;
   name?: InputMaybe<StringFilter>;
   password?: InputMaybe<StringNullableFilter>;
   recurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
@@ -4726,13 +4759,11 @@ export type UserWhereUniqueInput = {
   AND?: InputMaybe<Array<UserWhereInput>>;
   NOT?: InputMaybe<Array<UserWhereInput>>;
   OR?: InputMaybe<Array<UserWhereInput>>;
-  accounts?: InputMaybe<AccountListRelationFilter>;
   authUserProviders?: InputMaybe<AuthUserProviderListRelationFilter>;
-  cardBillingStatusHistories?: InputMaybe<CardBillingHistoryListRelationFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   email?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
-  investments?: InputMaybe<InvestmentListRelationFilter>;
+  institutionLinks?: InputMaybe<InstitutionLinkListRelationFilter>;
   name?: InputMaybe<StringFilter>;
   password?: InputMaybe<StringNullableFilter>;
   recurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
@@ -4765,7 +4796,7 @@ export type CloseBillingMutation = {
     paymentDate: any | null;
     limit: any;
     status: CardBillingStatus;
-    accountCardId: string;
+    cardId: string;
     paymentTransactionId: string | null;
     createdAt: any;
     updatedAt: any;
@@ -4782,14 +4813,14 @@ export type UpdateAccountCardMutationVariables = Exact<{
 export type UpdateAccountCardMutation = {
   __typename?: 'Mutation';
   updateAccountCard: {
-    __typename?: 'AccountCard';
+    __typename?: 'Card';
     id: string;
     lastFourDigits: string | null;
     billingCycleDay: number;
     billingPaymentDay: number;
     type: CardType;
     defaultLimit: any;
-    accountId: string;
+    institutionLinkId: string;
     createdAt: any;
     updatedAt: any;
   };
@@ -4799,24 +4830,24 @@ export type AccountFragmentFragment = {
   __typename?: 'AccountModel';
   id: string;
   name: string;
-  type: AccountType;
   balance: any | null;
-  currentBillingAmount: any | null;
-  totalInvested: any | null;
   description: string | null;
   isActive: boolean;
-  institutionId: string;
+  institutionLinkId: string;
   createdAt: any;
   updatedAt: any;
-  institution: {
-    __typename?: 'Institution';
-    id: string;
-    code: string;
-    name: string;
-    logoUrl: string | null;
-    color: string | null;
-    createdAt: any;
-    updatedAt: any;
+  institutionLink: {
+    __typename?: 'InstitutionLink';
+    institution: {
+      __typename?: 'Institution';
+      id: string;
+      code: string;
+      name: string;
+      logoUrl: string | null;
+      color: string | null;
+      createdAt: any;
+      updatedAt: any;
+    };
   };
 };
 
@@ -4828,7 +4859,6 @@ export type AccountsQueryVariables = Exact<{
   search?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  types?: InputMaybe<Array<AccountType> | AccountType>;
 }>;
 
 export type AccountsQuery = {
@@ -4842,24 +4872,24 @@ export type AccountsQuery = {
         __typename?: 'AccountModel';
         id: string;
         name: string;
-        type: AccountType;
         balance: any | null;
-        currentBillingAmount: any | null;
-        totalInvested: any | null;
         description: string | null;
         isActive: boolean;
-        institutionId: string;
+        institutionLinkId: string;
         createdAt: any;
         updatedAt: any;
-        institution: {
-          __typename?: 'Institution';
-          id: string;
-          code: string;
-          name: string;
-          logoUrl: string | null;
-          color: string | null;
-          createdAt: any;
-          updatedAt: any;
+        institutionLink: {
+          __typename?: 'InstitutionLink';
+          institution: {
+            __typename?: 'Institution';
+            id: string;
+            code: string;
+            name: string;
+            logoUrl: string | null;
+            color: string | null;
+            createdAt: any;
+            updatedAt: any;
+          };
         };
       };
     }> | null;
@@ -4883,29 +4913,25 @@ export type AccountQuery = {
     __typename?: 'AccountModel';
     id: string;
     name: string;
-    type: AccountType;
     balance: any | null;
-    currentBillingAmount: any | null;
-    totalInvested: any | null;
     description: string | null;
     isActive: boolean;
-    institutionId: string;
+    institutionLinkId: string;
     createdAt: any;
     updatedAt: any;
-    accountCard: {
-      __typename?: 'AccountCard';
-      id: string;
-      type: CardType;
-    } | null;
-    institution: {
-      __typename?: 'Institution';
-      id: string;
-      code: string;
-      name: string;
-      logoUrl: string | null;
-      color: string | null;
-      createdAt: any;
-      updatedAt: any;
+    institutionLink: {
+      __typename?: 'InstitutionLink';
+      cards: Array<{ __typename?: 'Card'; id: string; type: CardType }> | null;
+      institution: {
+        __typename?: 'Institution';
+        id: string;
+        code: string;
+        name: string;
+        logoUrl: string | null;
+        color: string | null;
+        createdAt: any;
+        updatedAt: any;
+      };
     };
   };
 };
@@ -4927,7 +4953,7 @@ export type InstitutionsQueryVariables = Exact<{
   search?: InputMaybe<Scalars['String']['input']>;
   orderBy?: InputMaybe<OrdenationInstitutionModel>;
   orderDirection?: InputMaybe<OrderDirection>;
-  types?: InputMaybe<Array<AccountType> | AccountType>;
+  types?: InputMaybe<Array<InstitutionType> | InstitutionType>;
 }>;
 
 export type InstitutionsQuery = {
@@ -4979,19 +5005,19 @@ export type BillingQuery = {
       limit: any;
       usagePercentage: number;
       status: CardBillingStatus;
-      accountCardId: string;
+      cardId: string;
       createdAt: any;
       updatedAt: any;
       transactionsCount: number;
-      accountCard: {
-        __typename?: 'AccountCard';
+      card: {
+        __typename?: 'Card';
         id: string;
         lastFourDigits: string | null;
         billingCycleDay: number;
         billingPaymentDay: number;
         defaultLimit: any;
         type: CardType;
-        accountId: string;
+        institutionLinkId: string;
         createdAt: any;
         updatedAt: any;
       };
@@ -5193,7 +5219,7 @@ export type CreateInvestmentMutation = {
     duration: number | null;
     regimeName: Regime;
     regimePercentage: number | null;
-    userId: string;
+    institutionLinkId: string;
     createdAt: any;
     updatedAt: any;
   };
@@ -5292,7 +5318,7 @@ export type InvestmentRegimeSummaryFragmentFragment = {
 };
 
 export type InvestmentRegimesQueryVariables = Exact<{
-  accountId?: InputMaybe<Scalars['String']['input']>;
+  institutionLinkId?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 export type InvestmentRegimesQuery = {
@@ -5351,7 +5377,6 @@ export type InvestmentAccountsQuery = {
     __typename?: 'AccountWithInvestmentCount';
     id: string;
     name: string;
-    institutionName: string | null;
     institutionLogoUrl: string | null;
     investmentCount: number;
   }>;
@@ -5458,20 +5483,26 @@ export type RecurringTransactionFragmentFragment = {
     __typename?: 'Account';
     id: string;
     name: string;
-    institution: {
-      __typename?: 'Institution';
-      name: string;
-      logoUrl: string | null;
+    institutionLink: {
+      __typename?: 'InstitutionLink';
+      institution: {
+        __typename?: 'Institution';
+        name: string;
+        logoUrl: string | null;
+      };
     };
   } | null;
   destinyAccount: {
     __typename?: 'Account';
     id: string;
     name: string;
-    institution: {
-      __typename?: 'Institution';
-      name: string;
-      logoUrl: string | null;
+    institutionLink: {
+      __typename?: 'InstitutionLink';
+      institution: {
+        __typename?: 'Institution';
+        name: string;
+        logoUrl: string | null;
+      };
     };
   } | null;
 };
@@ -5517,20 +5548,26 @@ export type RecurringTransactionsQuery = {
           __typename?: 'Account';
           id: string;
           name: string;
-          institution: {
-            __typename?: 'Institution';
-            name: string;
-            logoUrl: string | null;
+          institutionLink: {
+            __typename?: 'InstitutionLink';
+            institution: {
+              __typename?: 'Institution';
+              name: string;
+              logoUrl: string | null;
+            };
           };
         } | null;
         destinyAccount: {
           __typename?: 'Account';
           id: string;
           name: string;
-          institution: {
-            __typename?: 'Institution';
-            name: string;
-            logoUrl: string | null;
+          institutionLink: {
+            __typename?: 'InstitutionLink';
+            institution: {
+              __typename?: 'Institution';
+              name: string;
+              logoUrl: string | null;
+            };
           };
         } | null;
       };
@@ -5573,20 +5610,26 @@ export type RecurringTransactionQuery = {
       __typename?: 'Account';
       id: string;
       name: string;
-      institution: {
-        __typename?: 'Institution';
-        name: string;
-        logoUrl: string | null;
+      institutionLink: {
+        __typename?: 'InstitutionLink';
+        institution: {
+          __typename?: 'Institution';
+          name: string;
+          logoUrl: string | null;
+        };
       };
     } | null;
     destinyAccount: {
       __typename?: 'Account';
       id: string;
       name: string;
-      institution: {
-        __typename?: 'Institution';
-        name: string;
-        logoUrl: string | null;
+      institutionLink: {
+        __typename?: 'InstitutionLink';
+        institution: {
+          __typename?: 'Institution';
+          name: string;
+          logoUrl: string | null;
+        };
       };
     } | null;
   } | null;
@@ -5761,24 +5804,28 @@ export type TransactionFragmentFragment = {
     __typename?: 'Account';
     id: string;
     name: string;
-    type: AccountType;
-    institution: {
-      __typename?: 'Institution';
-      id: string;
-      name: string;
-      logoUrl: string | null;
+    institutionLink: {
+      __typename?: 'InstitutionLink';
+      institution: {
+        __typename?: 'Institution';
+        id: string;
+        name: string;
+        logoUrl: string | null;
+      };
     };
   } | null;
   destinyAccount: {
     __typename?: 'Account';
     id: string;
     name: string;
-    type: AccountType;
-    institution: {
-      __typename?: 'Institution';
-      id: string;
-      name: string;
-      logoUrl: string | null;
+    institutionLink: {
+      __typename?: 'InstitutionLink';
+      institution: {
+        __typename?: 'Institution';
+        id: string;
+        name: string;
+        logoUrl: string | null;
+      };
     };
   } | null;
   billingPayment: {
@@ -5789,13 +5836,12 @@ export type TransactionFragmentFragment = {
     periodEnd: any | null;
     paymentDate: any | null;
     limit: any;
-    accountCard: {
-      __typename?: 'AccountCard';
+    card: {
+      __typename?: 'Card';
       lastFourDigits: string | null;
-      account: {
-        __typename?: 'Account';
-        id: string;
-        name: string;
+      institutionLink: {
+        __typename?: 'InstitutionLink';
+        account: { __typename?: 'Account'; id: string; name: string } | null;
         institution: {
           __typename?: 'Institution';
           id: string;
@@ -5870,24 +5916,28 @@ export type TransactionsQuery = {
           __typename?: 'Account';
           id: string;
           name: string;
-          type: AccountType;
-          institution: {
-            __typename?: 'Institution';
-            id: string;
-            name: string;
-            logoUrl: string | null;
+          institutionLink: {
+            __typename?: 'InstitutionLink';
+            institution: {
+              __typename?: 'Institution';
+              id: string;
+              name: string;
+              logoUrl: string | null;
+            };
           };
         } | null;
         destinyAccount: {
           __typename?: 'Account';
           id: string;
           name: string;
-          type: AccountType;
-          institution: {
-            __typename?: 'Institution';
-            id: string;
-            name: string;
-            logoUrl: string | null;
+          institutionLink: {
+            __typename?: 'InstitutionLink';
+            institution: {
+              __typename?: 'Institution';
+              id: string;
+              name: string;
+              logoUrl: string | null;
+            };
           };
         } | null;
         billingPayment: {
@@ -5898,13 +5948,16 @@ export type TransactionsQuery = {
           periodEnd: any | null;
           paymentDate: any | null;
           limit: any;
-          accountCard: {
-            __typename?: 'AccountCard';
+          card: {
+            __typename?: 'Card';
             lastFourDigits: string | null;
-            account: {
-              __typename?: 'Account';
-              id: string;
-              name: string;
+            institutionLink: {
+              __typename?: 'InstitutionLink';
+              account: {
+                __typename?: 'Account';
+                id: string;
+                name: string;
+              } | null;
               institution: {
                 __typename?: 'Institution';
                 id: string;
@@ -6010,24 +6063,28 @@ export type TransactionsGroupedByPeriodQuery = {
         __typename?: 'Account';
         id: string;
         name: string;
-        type: AccountType;
-        institution: {
-          __typename?: 'Institution';
-          id: string;
-          name: string;
-          logoUrl: string | null;
+        institutionLink: {
+          __typename?: 'InstitutionLink';
+          institution: {
+            __typename?: 'Institution';
+            id: string;
+            name: string;
+            logoUrl: string | null;
+          };
         };
       } | null;
       destinyAccount: {
         __typename?: 'Account';
         id: string;
         name: string;
-        type: AccountType;
-        institution: {
-          __typename?: 'Institution';
-          id: string;
-          name: string;
-          logoUrl: string | null;
+        institutionLink: {
+          __typename?: 'InstitutionLink';
+          institution: {
+            __typename?: 'Institution';
+            id: string;
+            name: string;
+            logoUrl: string | null;
+          };
         };
       } | null;
       billingPayment: {
@@ -6038,13 +6095,16 @@ export type TransactionsGroupedByPeriodQuery = {
         periodEnd: any | null;
         paymentDate: any | null;
         limit: any;
-        accountCard: {
-          __typename?: 'AccountCard';
+        card: {
+          __typename?: 'Card';
           lastFourDigits: string | null;
-          account: {
-            __typename?: 'Account';
-            id: string;
-            name: string;
+          institutionLink: {
+            __typename?: 'InstitutionLink';
+            account: {
+              __typename?: 'Account';
+              id: string;
+              name: string;
+            } | null;
             institution: {
               __typename?: 'Institution';
               id: string;
@@ -6104,24 +6164,28 @@ export type BillingTransactionsQuery = {
       __typename?: 'Account';
       id: string;
       name: string;
-      type: AccountType;
-      institution: {
-        __typename?: 'Institution';
-        id: string;
-        name: string;
-        logoUrl: string | null;
+      institutionLink: {
+        __typename?: 'InstitutionLink';
+        institution: {
+          __typename?: 'Institution';
+          id: string;
+          name: string;
+          logoUrl: string | null;
+        };
       };
     } | null;
     destinyAccount: {
       __typename?: 'Account';
       id: string;
       name: string;
-      type: AccountType;
-      institution: {
-        __typename?: 'Institution';
-        id: string;
-        name: string;
-        logoUrl: string | null;
+      institutionLink: {
+        __typename?: 'InstitutionLink';
+        institution: {
+          __typename?: 'Institution';
+          id: string;
+          name: string;
+          logoUrl: string | null;
+        };
       };
     } | null;
     billingPayment: {
@@ -6132,13 +6196,12 @@ export type BillingTransactionsQuery = {
       periodEnd: any | null;
       paymentDate: any | null;
       limit: any;
-      accountCard: {
-        __typename?: 'AccountCard';
+      card: {
+        __typename?: 'Card';
         lastFourDigits: string | null;
-        account: {
-          __typename?: 'Account';
-          id: string;
-          name: string;
+        institutionLink: {
+          __typename?: 'InstitutionLink';
+          account: { __typename?: 'Account'; id: string; name: string } | null;
           institution: {
             __typename?: 'Institution';
             id: string;
@@ -6217,31 +6280,43 @@ export const AccountFragmentFragmentDoc = {
         selections: [
           { kind: 'Field', name: { kind: 'Name', value: 'id' } },
           { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
           { kind: 'Field', name: { kind: 'Name', value: 'balance' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'currentBillingAmount' },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'totalInvested' } },
           { kind: 'Field', name: { kind: 'Name', value: 'description' } },
           { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'institutionId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'institutionLinkId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
           { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
           {
             kind: 'Field',
-            name: { kind: 'Name', value: 'institution' },
+            name: { kind: 'Name', value: 'institutionLink' },
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'code' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'logoUrl' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'color' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institution' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'logoUrl' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'color' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'createdAt' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'updatedAt' },
+                      },
+                    ],
+                  },
+                },
               ],
             },
           },
@@ -6393,14 +6468,26 @@ export const RecurringTransactionFragmentFragmentDoc = {
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
+                  name: { kind: 'Name', value: 'institutionLink' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
+                        name: { kind: 'Name', value: 'institution' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'logoUrl' },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },
@@ -6418,14 +6505,26 @@ export const RecurringTransactionFragmentFragmentDoc = {
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
+                  name: { kind: 'Name', value: 'institutionLink' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
+                        name: { kind: 'Name', value: 'institution' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'logoUrl' },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },
@@ -6469,18 +6568,32 @@ export const TransactionFragmentFragmentDoc = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
+                  name: { kind: 'Name', value: 'institutionLink' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
+                        name: { kind: 'Name', value: 'institution' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'logoUrl' },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },
@@ -6496,18 +6609,32 @@ export const TransactionFragmentFragmentDoc = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
+                  name: { kind: 'Name', value: 'institutionLink' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
+                        name: { kind: 'Name', value: 'institution' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'logoUrl' },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },
@@ -6529,7 +6656,7 @@ export const TransactionFragmentFragmentDoc = {
                 { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'accountCard' },
+                  name: { kind: 'Name', value: 'card' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
@@ -6539,17 +6666,26 @@ export const TransactionFragmentFragmentDoc = {
                       },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'account' },
+                        name: { kind: 'Name', value: 'institutionLink' },
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
                             {
                               kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'name' },
+                              name: { kind: 'Name', value: 'account' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'id' },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'name' },
+                                  },
+                                ],
+                              },
                             },
                             {
                               kind: 'Field',
@@ -6763,10 +6899,7 @@ export const CloseBillingDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'paymentDate' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'accountCardId' },
-                },
+                { kind: 'Field', name: { kind: 'Name', value: 'cardId' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'paymentTransactionId' },
@@ -6889,7 +7022,10 @@ export const UpdateAccountCardDocument = {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'defaultLimit' },
                 },
-                { kind: 'Field', name: { kind: 'Name', value: 'accountId' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institutionLinkId' },
+                },
                 { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
               ],
@@ -6970,23 +7106,6 @@ export const AccountsDocument = {
           },
           type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
         },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'types' },
-          },
-          type: {
-            kind: 'ListType',
-            type: {
-              kind: 'NonNullType',
-              type: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'AccountType' },
-              },
-            },
-          },
-        },
       ],
       selectionSet: {
         kind: 'SelectionSet',
@@ -7051,14 +7170,6 @@ export const AccountsDocument = {
                   name: { kind: 'Name', value: 'before' },
                 },
               },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'types' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'types' },
-                },
-              },
             ],
             selectionSet: {
               kind: 'SelectionSet',
@@ -7120,31 +7231,43 @@ export const AccountsDocument = {
         selections: [
           { kind: 'Field', name: { kind: 'Name', value: 'id' } },
           { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
           { kind: 'Field', name: { kind: 'Name', value: 'balance' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'currentBillingAmount' },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'totalInvested' } },
           { kind: 'Field', name: { kind: 'Name', value: 'description' } },
           { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'institutionId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'institutionLinkId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
           { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
           {
             kind: 'Field',
-            name: { kind: 'Name', value: 'institution' },
+            name: { kind: 'Name', value: 'institutionLink' },
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'code' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'logoUrl' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'color' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institution' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'logoUrl' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'color' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'createdAt' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'updatedAt' },
+                      },
+                    ],
+                  },
+                },
               ],
             },
           },
@@ -7212,12 +7335,27 @@ export const AccountDocument = {
                 },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'accountCard' },
+                  name: { kind: 'Name', value: 'institutionLink' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'cards' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'type' },
+                            },
+                          ],
+                        },
+                      },
                     ],
                   },
                 },
@@ -7239,31 +7377,43 @@ export const AccountDocument = {
         selections: [
           { kind: 'Field', name: { kind: 'Name', value: 'id' } },
           { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
           { kind: 'Field', name: { kind: 'Name', value: 'balance' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'currentBillingAmount' },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'totalInvested' } },
           { kind: 'Field', name: { kind: 'Name', value: 'description' } },
           { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'institutionId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'institutionLinkId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
           { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
           {
             kind: 'Field',
-            name: { kind: 'Name', value: 'institution' },
+            name: { kind: 'Name', value: 'institutionLink' },
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'code' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'logoUrl' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'color' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institution' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'logoUrl' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'color' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'createdAt' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'updatedAt' },
+                      },
+                    ],
+                  },
+                },
               ],
             },
           },
@@ -7338,7 +7488,7 @@ export const InstitutionsDocument = {
               kind: 'NonNullType',
               type: {
                 kind: 'NamedType',
-                name: { kind: 'Name', value: 'AccountType' },
+                name: { kind: 'Name', value: 'InstitutionType' },
               },
             },
           },
@@ -7576,7 +7726,7 @@ export const BillingDocument = {
                       },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'accountCardId' },
+                        name: { kind: 'Name', value: 'cardId' },
                       },
                       {
                         kind: 'Field',
@@ -7588,7 +7738,7 @@ export const BillingDocument = {
                       },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'accountCard' },
+                        name: { kind: 'Name', value: 'card' },
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
@@ -7621,7 +7771,10 @@ export const BillingDocument = {
                             },
                             {
                               kind: 'Field',
-                              name: { kind: 'Name', value: 'accountId' },
+                              name: {
+                                kind: 'Name',
+                                value: 'institutionLinkId',
+                              },
                             },
                             {
                               kind: 'Field',
@@ -8513,7 +8666,10 @@ export const CreateInvestmentDocument = {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'regimePercentage' },
                 },
-                { kind: 'Field', name: { kind: 'Name', value: 'userId' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institutionLinkId' },
+                },
                 { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
               ],
@@ -8875,7 +9031,7 @@ export const InvestmentRegimesDocument = {
           kind: 'VariableDefinition',
           variable: {
             kind: 'Variable',
-            name: { kind: 'Name', value: 'accountId' },
+            name: { kind: 'Name', value: 'institutionLinkId' },
           },
           type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
         },
@@ -8889,10 +9045,10 @@ export const InvestmentRegimesDocument = {
             arguments: [
               {
                 kind: 'Argument',
-                name: { kind: 'Name', value: 'accountId' },
+                name: { kind: 'Name', value: 'institutionLinkId' },
                 value: {
                   kind: 'Variable',
-                  name: { kind: 'Name', value: 'accountId' },
+                  name: { kind: 'Name', value: 'institutionLinkId' },
                 },
               },
             ],
@@ -9118,10 +9274,6 @@ export const InvestmentAccountsDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'institutionName' },
-                },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'institutionLogoUrl' },
@@ -9766,14 +9918,26 @@ export const RecurringTransactionsDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
+                  name: { kind: 'Name', value: 'institutionLink' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
+                        name: { kind: 'Name', value: 'institution' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'logoUrl' },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },
@@ -9791,14 +9955,26 @@ export const RecurringTransactionsDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
+                  name: { kind: 'Name', value: 'institutionLink' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
+                        name: { kind: 'Name', value: 'institution' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'logoUrl' },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },
@@ -9916,14 +10092,26 @@ export const RecurringTransactionDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
+                  name: { kind: 'Name', value: 'institutionLink' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
+                        name: { kind: 'Name', value: 'institution' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'logoUrl' },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },
@@ -9941,14 +10129,26 @@ export const RecurringTransactionDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
+                  name: { kind: 'Name', value: 'institutionLink' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
+                        name: { kind: 'Name', value: 'institution' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'logoUrl' },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },
@@ -10896,18 +11096,32 @@ export const TransactionsDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
+                  name: { kind: 'Name', value: 'institutionLink' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
+                        name: { kind: 'Name', value: 'institution' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'logoUrl' },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },
@@ -10923,18 +11137,32 @@ export const TransactionsDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
+                  name: { kind: 'Name', value: 'institutionLink' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
+                        name: { kind: 'Name', value: 'institution' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'logoUrl' },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },
@@ -10956,7 +11184,7 @@ export const TransactionsDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'accountCard' },
+                  name: { kind: 'Name', value: 'card' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
@@ -10966,17 +11194,26 @@ export const TransactionsDocument = {
                       },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'account' },
+                        name: { kind: 'Name', value: 'institutionLink' },
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
                             {
                               kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'name' },
+                              name: { kind: 'Name', value: 'account' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'id' },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'name' },
+                                  },
+                                ],
+                              },
                             },
                             {
                               kind: 'Field',
@@ -11479,18 +11716,32 @@ export const TransactionsGroupedByPeriodDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
+                  name: { kind: 'Name', value: 'institutionLink' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
+                        name: { kind: 'Name', value: 'institution' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'logoUrl' },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },
@@ -11506,18 +11757,32 @@ export const TransactionsGroupedByPeriodDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
+                  name: { kind: 'Name', value: 'institutionLink' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
+                        name: { kind: 'Name', value: 'institution' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'logoUrl' },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },
@@ -11539,7 +11804,7 @@ export const TransactionsGroupedByPeriodDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'accountCard' },
+                  name: { kind: 'Name', value: 'card' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
@@ -11549,17 +11814,26 @@ export const TransactionsGroupedByPeriodDocument = {
                       },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'account' },
+                        name: { kind: 'Name', value: 'institutionLink' },
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
                             {
                               kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'name' },
+                              name: { kind: 'Name', value: 'account' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'id' },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'name' },
+                                  },
+                                ],
+                              },
                             },
                             {
                               kind: 'Field',
@@ -11733,18 +12007,32 @@ export const BillingTransactionsDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
+                  name: { kind: 'Name', value: 'institutionLink' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
+                        name: { kind: 'Name', value: 'institution' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'logoUrl' },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },
@@ -11760,18 +12048,32 @@ export const BillingTransactionsDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
+                  name: { kind: 'Name', value: 'institutionLink' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
+                        name: { kind: 'Name', value: 'institution' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'logoUrl' },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },
@@ -11793,7 +12095,7 @@ export const BillingTransactionsDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'accountCard' },
+                  name: { kind: 'Name', value: 'card' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
@@ -11803,17 +12105,26 @@ export const BillingTransactionsDocument = {
                       },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'account' },
+                        name: { kind: 'Name', value: 'institutionLink' },
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
                             {
                               kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'name' },
+                              name: { kind: 'Name', value: 'account' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'id' },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'name' },
+                                  },
+                                ],
+                              },
                             },
                             {
                               kind: 'Field',

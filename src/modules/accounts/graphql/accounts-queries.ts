@@ -4,23 +4,22 @@ export const AccountFragment = graphql(`
   fragment AccountFragment on AccountModel {
     id
     name
-    type
     balance
-    currentBillingAmount
-    totalInvested
     description
     isActive
-    institutionId
+    institutionLinkId
     createdAt
     updatedAt
-    institution {
-      id
-      code
-      name
-      logoUrl
-      color
-      createdAt
-      updatedAt
+    institutionLink {
+      institution {
+        id
+        code
+        name
+        logoUrl
+        color
+        createdAt
+        updatedAt
+      }
     }
   }
 `);
@@ -34,7 +33,6 @@ export const AccountsQuery = graphql(`
     $search: String
     $last: Int
     $before: String
-    $types: [AccountType!]
   ) {
     accounts(
       orderBy: $orderBy
@@ -44,7 +42,6 @@ export const AccountsQuery = graphql(`
       search: $search
       last: $last
       before: $before
-      types: $types
     ) {
       edges {
         cursor
@@ -63,9 +60,11 @@ export const AccountQuery = graphql(`
   query Account($id: ID!) {
     account(id: $id) {
       ...AccountFragment
-      accountCard {
-        id
-        type
+      institutionLink {
+        cards {
+          id
+          type
+        }
       }
     }
   }
@@ -90,7 +89,7 @@ export const InstitutionsQuery = graphql(`
     $search: String
     $orderBy: OrdenationInstitutionModel
     $orderDirection: OrderDirection
-    $types: [AccountType!]
+    $types: [InstitutionType!]
   ) {
     institutions(
       first: $first
@@ -125,17 +124,17 @@ export const BillingQuery = graphql(`
         limit
         usagePercentage
         status
-        accountCardId
+        cardId
         createdAt
         updatedAt
-        accountCard {
+        card {
           id
           lastFourDigits
           billingCycleDay
           billingPaymentDay
           defaultLimit
           type
-          accountId
+          institutionLinkId
           createdAt
           updatedAt
         }

@@ -13,21 +13,23 @@ export const TransactionsFragment = graphql(`
     sourceAccount {
       id
       name
-      type
-      institution {
-        id
-        name
-        logoUrl
+      institutionLink {
+        institution {
+          id
+          name
+          logoUrl
+        }
       }
     }
     destinyAccount {
       id
       name
-      type
-      institution {
-        id
-        name
-        logoUrl
+      institutionLink {
+        institution {
+          id
+          name
+          logoUrl
+        }
       }
     }
     billingPayment {
@@ -37,11 +39,13 @@ export const TransactionsFragment = graphql(`
       periodEnd
       paymentDate
       limit
-      accountCard {
+      card {
         lastFourDigits
-        account {
-          id
-          name
+        institutionLink {
+          account {
+            id
+            name
+          }
           institution {
             id
             name

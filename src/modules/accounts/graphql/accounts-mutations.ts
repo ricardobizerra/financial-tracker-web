@@ -17,7 +17,7 @@ export const CloseBillingMutation = graphql(`
       paymentDate
       limit
       status
-      accountCardId
+      cardId
       paymentTransactionId
       createdAt
       updatedAt
@@ -44,7 +44,7 @@ export const UpdateAccountCardMutation = graphql(`
       billingPaymentDay
       type
       defaultLimit
-      accountId
+      institutionLinkId
       createdAt
       updatedAt
     }

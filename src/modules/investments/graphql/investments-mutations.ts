@@ -9,7 +9,7 @@ export const CreateInvestmentMutation = graphql(`
       duration
       regimeName
       regimePercentage
-      userId
+      institutionLinkId
       createdAt
       updatedAt
     }
