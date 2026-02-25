@@ -1,4 +1,4 @@
-import { AccountsTracking } from '@/modules/accounts/components/pages/accounts-tracking';
+import { InstitutionLinksTracking } from '@/modules/institution-link/components/institution-links-tracking';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -6,5 +6,5 @@ export const metadata: Metadata = {
 };
 
 export default function AccountsPage() {
-  return <AccountsTracking />;
+  return <InstitutionLinksTracking />;
 }

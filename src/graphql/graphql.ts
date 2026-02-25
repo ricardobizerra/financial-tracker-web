@@ -5205,6 +5205,148 @@ export type PageInfoFragmentFragment = {
   hasNextPage: boolean;
 };
 
+export type InstitutionLinkFragmentFragment = {
+  __typename?: 'InstitutionLinkModel';
+  id: string;
+  institutionId: string;
+  createdAt: any;
+  updatedAt: any;
+  institution: {
+    __typename?: 'Institution';
+    id: string;
+    code: string;
+    name: string;
+    logoUrl: string | null;
+    color: string | null;
+  };
+  account: {
+    __typename?: 'Account';
+    id: string;
+    name: string;
+    initialBalance: any;
+    description: string | null;
+    isActive: boolean;
+  } | null;
+  cards: Array<{
+    __typename?: 'Card';
+    id: string;
+    name: string;
+    lastFourDigits: string | null;
+    billingCycleDay: number;
+    billingPaymentDay: number;
+    type: CardType;
+    defaultLimit: any;
+    billings: Array<{
+      __typename?: 'CardBilling';
+      id: string;
+      status: CardBillingStatus;
+      limit: any;
+      periodStart: any;
+      periodEnd: any | null;
+      paymentDate: any | null;
+      transactions: Array<{
+        __typename?: 'Transaction';
+        amount: any;
+        type: TransactionType;
+      }> | null;
+    }> | null;
+  }> | null;
+  investments: Array<{
+    __typename?: 'Investment';
+    id: string;
+    amount: number;
+    startDate: any;
+    duration: number | null;
+    status: InvestmentStatus;
+    regimeName: Regime;
+    regimePercentage: number | null;
+  }> | null;
+};
+
+export type InstitutionLinksQueryVariables = Exact<{
+  first?: InputMaybe<Scalars['Int']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  orderBy?: InputMaybe<OrdenationInstitutionLinkModel>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  institutionTypes?: InputMaybe<Array<InstitutionType> | InstitutionType>;
+}>;
+
+export type InstitutionLinksQuery = {
+  __typename?: 'Query';
+  institutionLinks: {
+    __typename?: 'InstitutionLinkConnection';
+    edges: Array<{
+      __typename?: 'InstitutionLinkModelEdge';
+      cursor: string;
+      node: {
+        __typename?: 'InstitutionLinkModel';
+        id: string;
+        institutionId: string;
+        createdAt: any;
+        updatedAt: any;
+        institution: {
+          __typename?: 'Institution';
+          id: string;
+          code: string;
+          name: string;
+          logoUrl: string | null;
+          color: string | null;
+        };
+        account: {
+          __typename?: 'Account';
+          id: string;
+          name: string;
+          initialBalance: any;
+          description: string | null;
+          isActive: boolean;
+        } | null;
+        cards: Array<{
+          __typename?: 'Card';
+          id: string;
+          name: string;
+          lastFourDigits: string | null;
+          billingCycleDay: number;
+          billingPaymentDay: number;
+          type: CardType;
+          defaultLimit: any;
+          billings: Array<{
+            __typename?: 'CardBilling';
+            id: string;
+            status: CardBillingStatus;
+            limit: any;
+            periodStart: any;
+            periodEnd: any | null;
+            paymentDate: any | null;
+            transactions: Array<{
+              __typename?: 'Transaction';
+              amount: any;
+              type: TransactionType;
+            }> | null;
+          }> | null;
+        }> | null;
+        investments: Array<{
+          __typename?: 'Investment';
+          id: string;
+          amount: number;
+          startDate: any;
+          duration: number | null;
+          status: InvestmentStatus;
+          regimeName: Regime;
+          regimePercentage: number | null;
+        }> | null;
+      };
+    }> | null;
+    pageInfo: {
+      __typename?: 'PageInfo';
+      startCursor: string | null;
+      endCursor: string | null;
+      hasPreviousPage: boolean;
+      hasNextPage: boolean;
+    } | null;
+  };
+};
+
 export type CreateInvestmentMutationVariables = Exact<{
   data: CreateInvestmentInput;
 }>;
@@ -6372,6 +6514,150 @@ export const PageInfoFragmentFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<PageInfoFragmentFragment, unknown>;
+export const InstitutionLinkFragmentFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'InstitutionLinkFragment' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'InstitutionLinkModel' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'institutionId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'institution' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'logoUrl' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'color' } },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'account' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'initialBalance' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'cards' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'lastFourDigits' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'billingCycleDay' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'billingPaymentDay' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'defaultLimit' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'billings' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'status' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'periodStart' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'periodEnd' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'paymentDate' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'transactions' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'amount' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'type' },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'investments' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'regimeName' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'regimePercentage' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<InstitutionLinkFragmentFragment, unknown>;
 export const InvestmentFragmentFragmentDoc = {
   kind: 'Document',
   definitions: [
@@ -8617,6 +8903,346 @@ export const TransactionsSummaryForCashFlowDocument = {
 } as unknown as DocumentNode<
   TransactionsSummaryForCashFlowQuery,
   TransactionsSummaryForCashFlowQueryVariables
+>;
+export const InstitutionLinksDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'InstitutionLinks' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'first' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'after' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'search' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'orderBy' },
+          },
+          type: {
+            kind: 'NamedType',
+            name: { kind: 'Name', value: 'OrdenationInstitutionLinkModel' },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'orderDirection' },
+          },
+          type: {
+            kind: 'NamedType',
+            name: { kind: 'Name', value: 'OrderDirection' },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'institutionTypes' },
+          },
+          type: {
+            kind: 'ListType',
+            type: {
+              kind: 'NonNullType',
+              type: {
+                kind: 'NamedType',
+                name: { kind: 'Name', value: 'InstitutionType' },
+              },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'institutionLinks' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'first' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'first' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'after' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'after' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'search' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'search' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderBy' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'orderBy' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderDirection' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'orderDirection' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'institutionTypes' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'institutionTypes' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'edges' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'cursor' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'node' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'FragmentSpread',
+                              name: {
+                                kind: 'Name',
+                                value: 'InstitutionLinkFragment',
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'pageInfo' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'PageInfoFragment' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'InstitutionLinkFragment' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'InstitutionLinkModel' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'institutionId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'institution' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'logoUrl' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'color' } },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'account' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'initialBalance' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'cards' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'lastFourDigits' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'billingCycleDay' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'billingPaymentDay' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'defaultLimit' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'billings' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'status' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'periodStart' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'periodEnd' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'paymentDate' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'transactions' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'amount' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'type' },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'investments' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'regimeName' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'regimePercentage' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'PageInfoFragment' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'PageInfo' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'startCursor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'endCursor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'hasPreviousPage' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'hasNextPage' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  InstitutionLinksQuery,
+  InstitutionLinksQueryVariables
 >;
 export const CreateInvestmentDocument = {
   kind: 'Document',
