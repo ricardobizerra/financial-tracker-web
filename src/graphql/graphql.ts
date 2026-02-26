@@ -945,6 +945,12 @@ export type CardBillingWhereUniqueInput = {
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
+export type CardConnection = {
+  __typename?: 'CardConnection';
+  edges: Maybe<Array<CardEdge>>;
+  pageInfo: Maybe<PageInfo>;
+};
+
 export type CardCount = {
   __typename?: 'CardCount';
   billings: Scalars['Int']['output'];
@@ -1089,6 +1095,12 @@ export type CardCreateWithoutSourceTransactionsInput = {
   sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceCardInput>;
   type: CardType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type CardEdge = {
+  __typename?: 'CardEdge';
+  cursor: Scalars['String']['output'];
+  node: Card;
 };
 
 export type CardListRelationFilter = {
@@ -2625,6 +2637,18 @@ export enum OrdenationAccountModel {
   UpdatedAt = 'updatedAt',
 }
 
+export enum OrdenationCard {
+  BillingCycleDay = 'billingCycleDay',
+  BillingPaymentDay = 'billingPaymentDay',
+  CreatedAt = 'createdAt',
+  DefaultLimit = 'defaultLimit',
+  Id = 'id',
+  InstitutionLinkId = 'institutionLinkId',
+  LastFourDigits = 'lastFourDigits',
+  Name = 'name',
+  Type = 'type',
+}
+
 export enum OrdenationInstitutionLinkModel {
   Count = '_count',
   Account = 'account',
@@ -2759,11 +2783,12 @@ export enum PaymentMethod {
 export type Query = {
   __typename?: 'Query';
   account: AccountModel;
-  accountCard: Maybe<Card>;
   accounts: AccountConnection;
   balanceForecast: BalanceForecastModel;
   billing: CardBillingOnDate;
   billingTransactions: Array<TransactionModel>;
+  card: Maybe<Card>;
+  cards: CardConnection;
   financialAgenda: FinancialAgendaModel;
   health: Scalars['String']['output'];
   institution: InstitutionModel;
@@ -2787,10 +2812,6 @@ export type Query = {
 
 export type QueryAccountArgs = {
   id: Scalars['ID']['input'];
-};
-
-export type QueryAccountCardArgs = {
-  id: Scalars['String']['input'];
 };
 
 export type QueryAccountsArgs = {
@@ -2817,6 +2838,22 @@ export type QueryBillingArgs = {
 
 export type QueryBillingTransactionsArgs = {
   billingId: Scalars['ID']['input'];
+};
+
+export type QueryCardArgs = {
+  id: Scalars['ID']['input'];
+};
+
+export type QueryCardsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  institutionLinkId?: InputMaybe<Scalars['String']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<OrdenationCard>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  types?: InputMaybe<Array<CardType>>;
 };
 
 export type QueryFinancialAgendaArgs = {
@@ -4954,6 +4991,128 @@ export type AccountQuery = {
   };
 };
 
+export type CardFragmentFragment = {
+  __typename?: 'Card';
+  id: string;
+  name: string;
+  lastFourDigits: string | null;
+  billingCycleDay: number;
+  billingPaymentDay: number;
+  defaultLimit: any;
+  type: CardType;
+  institutionLinkId: string;
+  createdAt: any;
+  updatedAt: any;
+  institutionLink: {
+    __typename?: 'InstitutionLink';
+    institution: {
+      __typename?: 'Institution';
+      id: string;
+      code: string;
+      name: string;
+      logoUrl: string | null;
+      color: string | null;
+      createdAt: any;
+      updatedAt: any;
+    };
+    cards: Array<{ __typename?: 'Card'; id: string; type: CardType }> | null;
+  };
+};
+
+export type CardQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export type CardQuery = {
+  __typename?: 'Query';
+  card: {
+    __typename?: 'Card';
+    id: string;
+    name: string;
+    lastFourDigits: string | null;
+    billingCycleDay: number;
+    billingPaymentDay: number;
+    defaultLimit: any;
+    type: CardType;
+    institutionLinkId: string;
+    createdAt: any;
+    updatedAt: any;
+    institutionLink: {
+      __typename?: 'InstitutionLink';
+      institution: {
+        __typename?: 'Institution';
+        id: string;
+        code: string;
+        name: string;
+        logoUrl: string | null;
+        color: string | null;
+        createdAt: any;
+        updatedAt: any;
+      };
+      cards: Array<{ __typename?: 'Card'; id: string; type: CardType }> | null;
+    };
+  } | null;
+};
+
+export type CardsQueryVariables = Exact<{
+  orderBy?: InputMaybe<OrdenationCard>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+export type CardsQuery = {
+  __typename?: 'Query';
+  cards: {
+    __typename?: 'CardConnection';
+    edges: Array<{
+      __typename?: 'CardEdge';
+      cursor: string;
+      node: {
+        __typename?: 'Card';
+        id: string;
+        name: string;
+        lastFourDigits: string | null;
+        billingCycleDay: number;
+        billingPaymentDay: number;
+        defaultLimit: any;
+        type: CardType;
+        institutionLinkId: string;
+        createdAt: any;
+        updatedAt: any;
+        institutionLink: {
+          __typename?: 'InstitutionLink';
+          institution: {
+            __typename?: 'Institution';
+            id: string;
+            code: string;
+            name: string;
+            logoUrl: string | null;
+            color: string | null;
+            createdAt: any;
+            updatedAt: any;
+          };
+          cards: Array<{
+            __typename?: 'Card';
+            id: string;
+            type: CardType;
+          }> | null;
+        };
+      };
+    }> | null;
+    pageInfo: {
+      __typename?: 'PageInfo';
+      startCursor: string | null;
+      endCursor: string | null;
+      hasPreviousPage: boolean;
+      hasNextPage: boolean;
+    } | null;
+  };
+};
+
 export type InstitutionFragmentFragment = {
   __typename?: 'InstitutionModel';
   id: string;
@@ -5990,6 +6149,21 @@ export type TransactionFragmentFragment = {
       };
     };
   } | null;
+  sourceCard: {
+    __typename?: 'Card';
+    id: string;
+    name: string;
+    type: CardType;
+    institutionLink: {
+      __typename?: 'InstitutionLink';
+      institution: {
+        __typename?: 'Institution';
+        id: string;
+        name: string;
+        logoUrl: string | null;
+      };
+    };
+  } | null;
   destinyAccount: {
     __typename?: 'Account';
     id: string;
@@ -6017,6 +6191,7 @@ export type TransactionFragmentFragment = {
       lastFourDigits: string | null;
       institutionLink: {
         __typename?: 'InstitutionLink';
+        id: string;
         account: { __typename?: 'Account'; id: string; name: string } | null;
         institution: {
           __typename?: 'Institution';
@@ -6035,6 +6210,20 @@ export type TransactionFragmentFragment = {
     paymentTransaction: {
       __typename?: 'Transaction';
       description: string;
+      sourceAccount: {
+        __typename?: 'Account';
+        id: string;
+        name: string;
+        institutionLink: {
+          __typename?: 'InstitutionLink';
+          institution: {
+            __typename?: 'Institution';
+            id: string;
+            name: string;
+            logoUrl: string | null;
+          };
+        };
+      } | null;
     } | null;
   } | null;
   installments: Array<{
@@ -6102,6 +6291,21 @@ export type TransactionsQuery = {
             };
           };
         } | null;
+        sourceCard: {
+          __typename?: 'Card';
+          id: string;
+          name: string;
+          type: CardType;
+          institutionLink: {
+            __typename?: 'InstitutionLink';
+            institution: {
+              __typename?: 'Institution';
+              id: string;
+              name: string;
+              logoUrl: string | null;
+            };
+          };
+        } | null;
         destinyAccount: {
           __typename?: 'Account';
           id: string;
@@ -6129,6 +6333,7 @@ export type TransactionsQuery = {
             lastFourDigits: string | null;
             institutionLink: {
               __typename?: 'InstitutionLink';
+              id: string;
               account: {
                 __typename?: 'Account';
                 id: string;
@@ -6151,6 +6356,20 @@ export type TransactionsQuery = {
           paymentTransaction: {
             __typename?: 'Transaction';
             description: string;
+            sourceAccount: {
+              __typename?: 'Account';
+              id: string;
+              name: string;
+              institutionLink: {
+                __typename?: 'InstitutionLink';
+                institution: {
+                  __typename?: 'Institution';
+                  id: string;
+                  name: string;
+                  logoUrl: string | null;
+                };
+              };
+            } | null;
           } | null;
         } | null;
         installments: Array<{
@@ -6249,6 +6468,21 @@ export type TransactionsGroupedByPeriodQuery = {
           };
         };
       } | null;
+      sourceCard: {
+        __typename?: 'Card';
+        id: string;
+        name: string;
+        type: CardType;
+        institutionLink: {
+          __typename?: 'InstitutionLink';
+          institution: {
+            __typename?: 'Institution';
+            id: string;
+            name: string;
+            logoUrl: string | null;
+          };
+        };
+      } | null;
       destinyAccount: {
         __typename?: 'Account';
         id: string;
@@ -6276,6 +6510,7 @@ export type TransactionsGroupedByPeriodQuery = {
           lastFourDigits: string | null;
           institutionLink: {
             __typename?: 'InstitutionLink';
+            id: string;
             account: {
               __typename?: 'Account';
               id: string;
@@ -6298,6 +6533,20 @@ export type TransactionsGroupedByPeriodQuery = {
         paymentTransaction: {
           __typename?: 'Transaction';
           description: string;
+          sourceAccount: {
+            __typename?: 'Account';
+            id: string;
+            name: string;
+            institutionLink: {
+              __typename?: 'InstitutionLink';
+              institution: {
+                __typename?: 'Institution';
+                id: string;
+                name: string;
+                logoUrl: string | null;
+              };
+            };
+          } | null;
         } | null;
       } | null;
       installments: Array<{
@@ -6350,6 +6599,21 @@ export type BillingTransactionsQuery = {
         };
       };
     } | null;
+    sourceCard: {
+      __typename?: 'Card';
+      id: string;
+      name: string;
+      type: CardType;
+      institutionLink: {
+        __typename?: 'InstitutionLink';
+        institution: {
+          __typename?: 'Institution';
+          id: string;
+          name: string;
+          logoUrl: string | null;
+        };
+      };
+    } | null;
     destinyAccount: {
       __typename?: 'Account';
       id: string;
@@ -6377,6 +6641,7 @@ export type BillingTransactionsQuery = {
         lastFourDigits: string | null;
         institutionLink: {
           __typename?: 'InstitutionLink';
+          id: string;
           account: { __typename?: 'Account'; id: string; name: string } | null;
           institution: {
             __typename?: 'Institution';
@@ -6395,6 +6660,20 @@ export type BillingTransactionsQuery = {
       paymentTransaction: {
         __typename?: 'Transaction';
         description: string;
+        sourceAccount: {
+          __typename?: 'Account';
+          id: string;
+          name: string;
+          institutionLink: {
+            __typename?: 'InstitutionLink';
+            institution: {
+              __typename?: 'Institution';
+              id: string;
+              name: string;
+              logoUrl: string | null;
+            };
+          };
+        } | null;
       } | null;
     } | null;
     installments: Array<{
@@ -6501,6 +6780,79 @@ export const AccountFragmentFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<AccountFragmentFragment, unknown>;
+export const CardFragmentFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'CardFragment' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'Card' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'lastFourDigits' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'billingCycleDay' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'billingPaymentDay' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'defaultLimit' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'institutionLinkId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'institutionLink' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institution' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'logoUrl' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'color' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'createdAt' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'updatedAt' },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'cards' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<CardFragmentFragment, unknown>;
 export const InstitutionFragmentFragmentDoc = {
   kind: 'Document',
   definitions: [
@@ -6924,6 +7276,48 @@ export const TransactionFragmentFragmentDoc = {
           },
           {
             kind: 'Field',
+            name: { kind: 'Name', value: 'sourceCard' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institutionLink' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'institution' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'logoUrl' },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
             name: { kind: 'Name', value: 'destinyAccount' },
             selectionSet: {
               kind: 'SelectionSet',
@@ -6993,6 +7387,10 @@ export const TransactionFragmentFragmentDoc = {
                           selections: [
                             {
                               kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
                               name: { kind: 'Name', value: 'account' },
                               selectionSet: {
                                 kind: 'SelectionSet',
@@ -7056,6 +7454,59 @@ export const TransactionFragmentFragmentDoc = {
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'description' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'sourceAccount' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'institutionLink' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  {
+                                    kind: 'Field',
+                                    name: {
+                                      kind: 'Name',
+                                      value: 'institution',
+                                    },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'id' },
+                                        },
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'name' },
+                                        },
+                                        {
+                                          kind: 'Field',
+                                          name: {
+                                            kind: 'Name',
+                                            value: 'logoUrl',
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },
@@ -7791,6 +8242,389 @@ export const AccountDocument = {
     },
   ],
 } as unknown as DocumentNode<AccountQuery, AccountQueryVariables>;
+export const CardDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'Card' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'card' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'FragmentSpread',
+                  name: { kind: 'Name', value: 'CardFragment' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'CardFragment' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'Card' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'lastFourDigits' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'billingCycleDay' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'billingPaymentDay' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'defaultLimit' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'institutionLinkId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'institutionLink' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institution' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'logoUrl' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'color' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'createdAt' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'updatedAt' },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'cards' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<CardQuery, CardQueryVariables>;
+export const CardsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'Cards' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'orderBy' },
+          },
+          type: {
+            kind: 'NamedType',
+            name: { kind: 'Name', value: 'OrdenationCard' },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'orderDirection' },
+          },
+          type: {
+            kind: 'NamedType',
+            name: { kind: 'Name', value: 'OrderDirection' },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'first' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'after' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'search' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'last' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'before' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'cards' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderBy' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'orderBy' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderDirection' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'orderDirection' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'first' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'first' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'after' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'after' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'search' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'search' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'last' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'last' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'before' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'before' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'edges' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'cursor' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'node' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'FragmentSpread',
+                              name: { kind: 'Name', value: 'CardFragment' },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'pageInfo' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'PageInfoFragment' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'CardFragment' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'Card' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'lastFourDigits' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'billingCycleDay' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'billingPaymentDay' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'defaultLimit' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'institutionLinkId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'institutionLink' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institution' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'logoUrl' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'color' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'createdAt' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'updatedAt' },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'cards' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'PageInfoFragment' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'PageInfo' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'startCursor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'endCursor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'hasPreviousPage' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'hasNextPage' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<CardsQuery, CardsQueryVariables>;
 export const InstitutionsDocument = {
   kind: 'Document',
   definitions: [
@@ -11891,6 +12725,48 @@ export const TransactionsDocument = {
           },
           {
             kind: 'Field',
+            name: { kind: 'Name', value: 'sourceCard' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institutionLink' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'institution' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'logoUrl' },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
             name: { kind: 'Name', value: 'destinyAccount' },
             selectionSet: {
               kind: 'SelectionSet',
@@ -11960,6 +12836,10 @@ export const TransactionsDocument = {
                           selections: [
                             {
                               kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
                               name: { kind: 'Name', value: 'account' },
                               selectionSet: {
                                 kind: 'SelectionSet',
@@ -12023,6 +12903,59 @@ export const TransactionsDocument = {
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'description' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'sourceAccount' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'institutionLink' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  {
+                                    kind: 'Field',
+                                    name: {
+                                      kind: 'Name',
+                                      value: 'institution',
+                                    },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'id' },
+                                        },
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'name' },
+                                        },
+                                        {
+                                          kind: 'Field',
+                                          name: {
+                                            kind: 'Name',
+                                            value: 'logoUrl',
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },
@@ -12511,6 +13444,48 @@ export const TransactionsGroupedByPeriodDocument = {
           },
           {
             kind: 'Field',
+            name: { kind: 'Name', value: 'sourceCard' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institutionLink' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'institution' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'logoUrl' },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
             name: { kind: 'Name', value: 'destinyAccount' },
             selectionSet: {
               kind: 'SelectionSet',
@@ -12580,6 +13555,10 @@ export const TransactionsGroupedByPeriodDocument = {
                           selections: [
                             {
                               kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
                               name: { kind: 'Name', value: 'account' },
                               selectionSet: {
                                 kind: 'SelectionSet',
@@ -12643,6 +13622,59 @@ export const TransactionsGroupedByPeriodDocument = {
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'description' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'sourceAccount' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'institutionLink' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  {
+                                    kind: 'Field',
+                                    name: {
+                                      kind: 'Name',
+                                      value: 'institution',
+                                    },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'id' },
+                                        },
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'name' },
+                                        },
+                                        {
+                                          kind: 'Field',
+                                          name: {
+                                            kind: 'Name',
+                                            value: 'logoUrl',
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },
@@ -12802,6 +13834,48 @@ export const BillingTransactionsDocument = {
           },
           {
             kind: 'Field',
+            name: { kind: 'Name', value: 'sourceCard' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'institutionLink' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'institution' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'logoUrl' },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
             name: { kind: 'Name', value: 'destinyAccount' },
             selectionSet: {
               kind: 'SelectionSet',
@@ -12871,6 +13945,10 @@ export const BillingTransactionsDocument = {
                           selections: [
                             {
                               kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
                               name: { kind: 'Name', value: 'account' },
                               selectionSet: {
                                 kind: 'SelectionSet',
@@ -12934,6 +14012,59 @@ export const BillingTransactionsDocument = {
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'description' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'sourceAccount' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'id' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'institutionLink' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  {
+                                    kind: 'Field',
+                                    name: {
+                                      kind: 'Name',
+                                      value: 'institution',
+                                    },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'id' },
+                                        },
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'name' },
+                                        },
+                                        {
+                                          kind: 'Field',
+                                          name: {
+                                            kind: 'Name',
+                                            value: 'logoUrl',
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },

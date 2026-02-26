@@ -70,6 +70,76 @@ export const AccountQuery = graphql(`
   }
 `);
 
+export const CardFragment = graphql(`
+  fragment CardFragment on Card {
+    id
+    name
+    lastFourDigits
+    billingCycleDay
+    billingPaymentDay
+    defaultLimit
+    type
+    institutionLinkId
+    createdAt
+    updatedAt
+    institutionLink {
+      institution {
+        id
+        code
+        name
+        logoUrl
+        color
+        createdAt
+        updatedAt
+      }
+      cards {
+        id
+        type
+      }
+    }
+  }
+`);
+
+export const CardQuery = graphql(`
+  query Card($id: ID!) {
+    card(id: $id) {
+      ...CardFragment
+    }
+  }
+`);
+
+export const CardsQuery = graphql(`
+  query Cards(
+    $orderBy: OrdenationCard
+    $orderDirection: OrderDirection
+    $first: Int
+    $after: String
+    $search: String
+    $last: Int
+    $before: String
+  ) {
+    cards(
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      first: $first
+      after: $after
+      search: $search
+      last: $last
+      before: $before
+    ) {
+      edges {
+        cursor
+        node {
+          ...CardFragment
+        }
+      }
+      pageInfo {
+        ...PageInfoFragment
+      }
+    }
+  }
+`);
+
 export const InstitutionFragment = graphql(`
   fragment InstitutionFragment on InstitutionModel {
     id

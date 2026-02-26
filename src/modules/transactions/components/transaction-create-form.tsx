@@ -24,6 +24,7 @@ import {
   LucideIcon,
   PlusIcon,
   Receipt,
+  Wallet2,
 } from 'lucide-react';
 import { TypeSelectionCard } from '@/components/form-stepper-shared';
 import { BRAND, z } from 'zod';
@@ -35,12 +36,13 @@ import {
   OrdenationAccountModel,
   TransactionStatus,
   PaymentMethod,
-  AccountType,
+  InstitutionType,
   RecurrenceFrequency,
   RecurrenceType,
   CardType,
   DayMode,
   TransactionCategory,
+  OrdenationCard,
 } from '@/graphql/graphql';
 import {
   PropsWithChildren,
@@ -69,6 +71,8 @@ import {
   AccountQuery,
   AccountsQuery,
   BillingQuery,
+  CardQuery,
+  CardsQuery,
 } from '@/modules/accounts/graphql/accounts-queries';
 import { TransactionStatusBadge } from './transaction-status-badge';
 import { Separator } from '@/components/ui/separator';
@@ -94,6 +98,7 @@ import { ptBR } from 'date-fns/locale';
 
 interface TransactionCreateFormProps {
   accountId?: string;
+  cardId?: string;
   triggerClassName?: string;
   triggerSize?: ButtonProps['size'];
   /** Para modo de edição: transação a ser editada */
@@ -401,8 +406,7 @@ export function IncomeTransactionCreateForm({
       ? {
           id: editTransaction.destinyAccount.id,
           name: editTransaction.destinyAccount.name,
-          institution: editTransaction.destinyAccount.institution,
-          type: editTransaction.destinyAccount.type,
+          institution: editTransaction.destinyAccount.institutionLink.institution,
         }
       : null,
   );
@@ -1142,6 +1146,7 @@ function IncomeTransactionFormDetails({
 export function ExpenseTransactionCreateForm({
   triggerClassName,
   accountId,
+  cardId,
   triggerSize,
   hiddenFields = [],
   minDate,
@@ -1164,19 +1169,31 @@ export function ExpenseTransactionCreateForm({
   const setOpen = externalOnOpenChange ?? setInternalOpen;
   const isEditMode = !!editTransaction;
 
-  // Form stepper state - skip to step 2 if accountId provided or in edit mode
+  // Form stepper state - skip to step 3 if accountId or cardId provided or in edit mode
   const hasPreselectedAccount = !!accountId || isEditMode;
-  const [currentStep, setCurrentStep] = useState(hasPreselectedAccount ? 2 : 1);
+  const hasPreselectedCard = !!cardId || isEditMode;
+  const hasPreselected = hasPreselectedAccount || hasPreselectedCard;
+
+  const [currentStep, setCurrentStep] = useState(hasPreselected ? 3 : 1);
+
+  const [selectedCardOrAccountStepType, setSelectedCardOrAccountStepType] = useState<TransactionCardOrAccountStepType | undefined>();
+
   const [selectedAccount, setSelectedAccount] = useState<AccountData | null>(
     editTransaction?.sourceAccount
       ? {
           id: editTransaction.sourceAccount.id,
           name: editTransaction.sourceAccount.name,
-          institution: editTransaction.sourceAccount.institution,
-          type: editTransaction.sourceAccount.type,
+          institution: editTransaction.sourceAccount.institutionLink.institution,
         }
       : null,
   );
+
+  const [selectedCard, setSelectedCard] = useState<CardData | null>(editTransaction?.sourceCard ? {
+    id: editTransaction.sourceCard.id,
+    name: editTransaction.sourceCard.name,
+    institution: editTransaction.sourceCard.institutionLink.institution,
+    type: editTransaction.sourceCard.type,
+  } : null);
 
   // If accountId provided, fetch its data
   const { data: preselectedAccountData } = useQuery(AccountQuery, {
@@ -1186,31 +1203,69 @@ export function ExpenseTransactionCreateForm({
     skip: !accountId || !!selectedAccount,
   });
 
+  // If cardId provided, fetch its data
+  const { data: preselectedCardData } = useQuery(CardQuery, {
+    variables: {
+      id: cardId!,
+    },
+    skip: !cardId || !!selectedCard,
+  });
+
   // Set the account when data is fetched
   useEffect(() => {
     if (accountId && preselectedAccountData?.account && !selectedAccount) {
-      const account = preselectedAccountData.account as AccountData;
-      setSelectedAccount(account);
+      const account = preselectedAccountData.account;
+      setSelectedAccount({
+        id: account.id,
+        name: account.name,
+        institution: account.institutionLink.institution,
+      });
     }
   }, [accountId, preselectedAccountData, selectedAccount]);
+
+  // Set the card when data is fetched
+  useEffect(() => {
+    if (cardId && preselectedCardData?.card && !selectedCard) {
+      const card = preselectedCardData.card;
+      setSelectedCard({
+        id: card.id,
+        name: card.name,
+        institution: card.institutionLink.institution,
+        type: card.type,
+      });
+    }
+  }, [cardId, preselectedCardData, selectedCard]);
 
   const handleOpenChange = useCallback(
     (isOpen: boolean) => {
       setOpen(isOpen);
       if (!isOpen) {
         setTimeout(() => {
-          if (!isEditMode && !hasPreselectedAccount) {
+          if (!isEditMode && !hasPreselected) {
             setCurrentStep(1);
             setSelectedAccount(null);
+            setSelectedCard(null);
           }
         }, 200);
       }
     },
-    [setOpen, isEditMode, hasPreselectedAccount],
+    [setOpen, isEditMode, hasPreselected],
   );
 
   const handleAccountSelect = useCallback((account: AccountData) => {
     setSelectedAccount(account);
+    setSelectedCard(null);
+    setCurrentStep(3);
+  }, []);
+
+  const handleCardSelect = useCallback((card: CardData) => {
+    setSelectedCard(card);
+    setSelectedAccount(null);
+    setCurrentStep(3);
+  }, []);
+
+  const handleCardOrAccountStepSelect = useCallback((type: TransactionCardOrAccountStepType) => {
+    setSelectedCardOrAccountStepType(type);
     setCurrentStep(2);
   }, []);
 
@@ -1218,23 +1273,24 @@ export function ExpenseTransactionCreateForm({
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   }, []);
 
-  const isCreditCardAccount = selectedAccount?.type === AccountType.CreditCard;
-  const isDebitCard = selectedAccount?.accountCard?.type === CardType.Debit;
+  const isCardAccount = !!selectedCard;
+  const isDebitCard = selectedCard?.type === CardType.Debit;
 
   // Step indicator for form stepper
   const renderStepIndicator = () => {
-    if (isEditMode || hasPreselectedAccount) return null;
+    if (isEditMode || hasPreselected) return null;
 
     const steps = [
-      { number: 1, label: 'Conta' },
-      { number: 2, label: 'Dados' },
+      { number: 1, label: 'Tipo' },
+      { number: 2, label: !selectedCardOrAccountStepType ? 'Conta ou cartão' : selectedCardOrAccountStepType === TransactionCardOrAccountStepType.Account ? 'Conta' : 'Cartão' },
+      { number: 3, label: 'Dados' },
     ];
 
-    const step1Completed = currentStep > 1 && selectedAccount;
+    const step2Completed = currentStep > 2 && (selectedAccount || selectedCard);
 
     return (
       <div className="flex flex-col gap-2">
-        {step1Completed && (
+        {step2Completed && selectedAccount && (
           <div className="flex items-center gap-2 rounded-md border border-muted px-3 py-1 text-sm text-foreground">
             <span className="font-semibold text-muted-foreground">Conta</span>
             <div className="flex items-center gap-1">
@@ -1249,12 +1305,27 @@ export function ExpenseTransactionCreateForm({
           </div>
         )}
 
+        {step2Completed && selectedCard && (
+          <div className="flex items-center gap-2 rounded-md border border-muted px-3 py-1 text-sm text-foreground">
+            <span className="font-semibold text-muted-foreground">Cartão</span>
+            <div className="flex items-center gap-1">
+              <InstitutionLogo
+                logoUrl={selectedCard.institution.logoUrl}
+                name={selectedCard.institution.name}
+                color={selectedCard.institution.color}
+                size="xs"
+              />
+              <span>{selectedCard.name}</span>
+            </div>
+          </div>
+        )}
+
         <div className="flex items-center justify-center gap-2">
           {steps.map((step) => {
             const isCompleted = currentStep > step.number;
             const isCurrent = currentStep === step.number;
 
-            if (step.number === 1 && step1Completed) return null;
+            if (step.number <= 2 && step2Completed) return null;
 
             return (
               <div
@@ -1314,7 +1385,7 @@ export function ExpenseTransactionCreateForm({
           <DialogDescription>
             {isEditMode
               ? 'Edite os campos da despesa abaixo.'
-              : currentStep === 1
+              : currentStep === 2
                 ? 'Selecione a conta de origem para a despesa.'
                 : 'Preencha os dados da movimentação.'}
           </DialogDescription>
@@ -1322,19 +1393,38 @@ export function ExpenseTransactionCreateForm({
 
         {renderStepIndicator()}
 
-        {currentStep === 1 && !isEditMode && !hasPreselectedAccount && (
-          <TransactionAccountStep
-            transactionType={TransactionType.Expense}
-            selectedAccountId={selectedAccount?.id}
-            onSelect={handleAccountSelect}
+        {currentStep === 1 && !isEditMode && !hasPreselected && (
+          <TransactionCardOrAccountStep
+            selectedType={selectedCardOrAccountStepType}
+            onSelect={handleCardOrAccountStepSelect}
           />
         )}
 
-        {(currentStep === 2 || isEditMode || hasPreselectedAccount) &&
-          selectedAccount && (
+        {currentStep === 2 && !isEditMode && !hasPreselected && (
+          <>
+            {selectedCardOrAccountStepType === TransactionCardOrAccountStepType.Account && (
+              <TransactionAccountStep
+                transactionType={TransactionType.Expense}
+                selectedAccountId={selectedAccount?.id}
+                onSelect={handleAccountSelect}
+              />
+            )}
+            {selectedCardOrAccountStepType === TransactionCardOrAccountStepType.Card && (
+              <TransactionCardStep
+                transactionType={TransactionType.Expense}
+                selectedCardId={selectedCard?.id}
+                onSelect={handleCardSelect}
+              />
+            )}
+          </>
+        )}
+
+        {(currentStep === 3 || isEditMode || hasPreselected) &&
+          (selectedAccount || selectedCard) && (
             <ExpenseTransactionFormDetails
-              sourceAccountId={selectedAccount.id}
-              isCreditCardAccount={isCreditCardAccount}
+              sourceAccountId={selectedAccount?.id}
+              sourceCardId={selectedCard?.id}
+              isCardAccount={isCardAccount}
               isDebitCard={isDebitCard}
               editTransaction={editTransaction}
               hiddenFields={hiddenFields}
@@ -1344,16 +1434,10 @@ export function ExpenseTransactionCreateForm({
               onBeforeSubmit={onBeforeSubmit}
               onClose={() => handleOpenChange(false)}
               onBack={
-                !isEditMode && !hasPreselectedAccount ? prevStep : undefined
+                !isEditMode && !hasPreselected ? prevStep : undefined
               }
             />
           )}
-
-        {currentStep === 1 && !isEditMode && !hasPreselectedAccount && (
-          <DialogFooter className="flex-row justify-between gap-2 sm:justify-between">
-            <div />
-          </DialogFooter>
-        )}
       </DialogContent>
     </Dialog>
   );
@@ -1362,7 +1446,8 @@ export function ExpenseTransactionCreateForm({
 // Expense Form Details (for form step 2 and edit mode)
 function ExpenseTransactionFormDetails({
   sourceAccountId,
-  isCreditCardAccount,
+  sourceCardId,
+  isCardAccount,
   isDebitCard,
   editTransaction,
   hiddenFields = [],
@@ -1373,8 +1458,9 @@ function ExpenseTransactionFormDetails({
   onClose,
   onBack,
 }: {
-  sourceAccountId: string;
-  isCreditCardAccount?: boolean;
+  sourceAccountId?: string;
+  sourceCardId?: string;
+  isCardAccount?: boolean;
   isDebitCard?: boolean;
   editTransaction?: TransactionFragmentFragment;
   hiddenFields?: Array<keyof typeof expenseSchema.shape>;
@@ -1440,7 +1526,7 @@ function ExpenseTransactionFormDetails({
           isCompleted: false,
           isInstallment: false,
           // For credit/debit card accounts, auto-set payment method based on card type
-          paymentMethod: isCreditCardAccount
+          paymentMethod: isCardAccount
             ? isDebitCard
               ? {
                   value: PaymentMethod.DebitCard,
@@ -1492,7 +1578,7 @@ function ExpenseTransactionFormDetails({
   });
 
   const showIsCompleted = selectedDate && isToday(selectedDate);
-  const showPaymentMethod = !isCreditCardAccount;
+  const showPaymentMethod = !isCardAccount;
 
   const paymentMethodOptions = Object.values(PaymentMethod)
     .filter((m) => !['CREDIT_CARD', 'DEBIT_CARD'].includes(m))
@@ -1600,7 +1686,7 @@ function ExpenseTransactionFormDetails({
                   totalAmount: data.amount,
                   totalInstallments: data.installmentCount,
                   startDate: data.date,
-                  sourceAccountId: sourceAccountId,
+                  sourceCardId: sourceCardId!,
                 },
               },
               refetchQueries: [
@@ -1696,7 +1782,7 @@ function ExpenseTransactionFormDetails({
                   isCompleted: data.isCompleted,
                   description: data.description,
                   amount: data.amount,
-                  paymentMethod: isCreditCardAccount
+                  paymentMethod: isCardAccount
                     ? undefined
                     : (data.paymentMethod?.value as PaymentMethod),
                 },
@@ -1768,7 +1854,7 @@ function ExpenseTransactionFormDetails({
             {!showInstallmentStep &&
               !showRecurrenceStep &&
               !isEditMode &&
-              isCreditCardAccount &&
+              isCardAccount &&
               !isDebitCard && (
                 <Button
                   type="button"
@@ -2166,8 +2252,7 @@ export function BetweenAccountsTransactionCreateForm({
       ? {
           id: editTransaction.sourceAccount.id,
           name: editTransaction.sourceAccount.name,
-          institution: editTransaction.sourceAccount.institution,
-          type: editTransaction.sourceAccount.type,
+          institution: editTransaction.sourceAccount.institutionLink.institution,
         }
       : null,
   );
@@ -2176,8 +2261,7 @@ export function BetweenAccountsTransactionCreateForm({
       ? {
           id: editTransaction.destinyAccount.id,
           name: editTransaction.destinyAccount.name,
-          institution: editTransaction.destinyAccount.institution,
-          type: editTransaction.destinyAccount.type,
+          institution: editTransaction.destinyAccount.institutionLink.institution,
         }
       : null,
   );
@@ -2674,10 +2758,10 @@ interface AccountData {
     logoUrl?: string | null;
     color?: string | null;
   };
-  type: AccountType;
-  accountCard?: {
-    type: CardType;
-  } | null;
+}
+
+interface CardData extends AccountData {
+  type: CardType;
 }
 
 interface TransactionWizardState {
@@ -2687,6 +2771,51 @@ interface TransactionWizardState {
 }
 
 const initialTransactionWizardState: TransactionWizardState = {};
+
+enum TransactionCardOrAccountStepType {
+  Account = 'account',
+  Card = 'card',
+}
+
+const transactionCardOrAccountStepTypeIcons: Record<TransactionCardOrAccountStepType, LucideIcon> = {
+  [TransactionCardOrAccountStepType.Account]: Wallet2,
+  [TransactionCardOrAccountStepType.Card]: CreditCard,
+};
+
+const transactionCardOrAccountStepTypeLabels: Record<TransactionCardOrAccountStepType, string> = {
+  [TransactionCardOrAccountStepType.Account]: 'Conta',
+  [TransactionCardOrAccountStepType.Card]: 'Cartão',
+};
+
+const transactionCardOrAccountStepTypeDescriptions: Record<TransactionCardOrAccountStepType, string> = {
+  [TransactionCardOrAccountStepType.Account]: 'Conta-corrente',
+  [TransactionCardOrAccountStepType.Card]: 'Cartão de crédito ou débito',
+};
+
+function TransactionCardOrAccountStep({
+  selectedType,
+  onSelect,
+}: {
+  selectedType?: TransactionCardOrAccountStepType;
+  onSelect: (type: TransactionCardOrAccountStepType) => void;
+}) {
+  const orderedCardTypes = [TransactionCardOrAccountStepType.Account, TransactionCardOrAccountStepType.Card];
+
+  return (
+    <div className="flex flex-col gap-2">
+      {orderedCardTypes.map((cardType) => (
+        <TypeSelectionCard
+          key={cardType}
+          icon={transactionCardOrAccountStepTypeIcons[cardType]}
+          label={transactionCardOrAccountStepTypeLabels[cardType]}
+          description={transactionCardOrAccountStepTypeDescriptions[cardType]}
+          isSelected={selectedType === cardType}
+          onClick={() => onSelect(cardType)}
+        />
+      ))}
+    </div>
+  );
+}
 
 function TransactionAccountCard({
   account,
@@ -2731,6 +2860,49 @@ function TransactionAccountCard({
   );
 }
 
+function TransactionCardCard({
+  card,
+  isSelected,
+  onClick,
+}: {
+  card: CardData;
+  isSelected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'flex w-full cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-all duration-200 hover:bg-accent',
+        isSelected
+          ? 'border-primary bg-primary/5'
+          : 'border-transparent bg-muted/50',
+      )}
+    >
+      <InstitutionLogo
+        logoUrl={card.institution.logoUrl}
+        name={card.institution.name}
+        color={card.institution.color}
+        size="lg"
+      />
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        <div
+          className="h-8 w-1 flex-shrink-0 rounded"
+          style={{ backgroundColor: card.institution.color || '#888' }}
+        />
+        <div className="flex flex-col items-start">
+          <span className="truncate font-semibold">{card.name}</span>
+          <span className="truncate text-sm text-muted-foreground">
+            {card.institution.name}
+          </span>
+        </div>
+      </div>
+      {isSelected && <Check className="h-5 w-5 flex-shrink-0 text-primary" />}
+    </button>
+  );
+}
+
 interface TransactionAccountStepProps {
   transactionType: TransactionType;
   selectedAccountId?: string;
@@ -2744,42 +2916,22 @@ function TransactionAccountStep({
   excludeAccountId,
   onSelect,
 }: TransactionAccountStepProps) {
-  const accountTypeFilter = useMemo(() => {
-    if (transactionType === TransactionType.Income) {
-      return Object.values(AccountType).filter(
-        (t) =>
-          t !== AccountType.CreditCard &&
-          t !== AccountType.Savings &&
-          t !== AccountType.Investment,
-      );
-    }
-    if (transactionType === TransactionType.Expense) {
-      return Object.values(AccountType).filter(
-        (t) => t !== AccountType.Savings && t !== AccountType.Investment,
-      );
-    }
-    if (transactionType === TransactionType.BetweenAccounts) {
-      // Card accounts cannot participate in between-accounts transactions
-      return Object.values(AccountType).filter(
-        (t) => t !== AccountType.CreditCard,
-      );
-    }
-    return undefined;
-  }, [transactionType]);
-
   const { data, loading, fetchMore, networkStatus } = useQuery(AccountsQuery, {
     variables: {
       first: 50,
       orderBy: OrdenationAccountModel.Name,
       orderDirection: OrderDirection.Asc,
-      types: accountTypeFilter,
     },
     notifyOnNetworkStatusChange: true,
   });
 
   const accounts = useMemo(() => {
     const allAccounts =
-      data?.accounts.edges?.map((edge) => edge.node as AccountData) || [];
+      data?.accounts.edges?.map((edge) => ({
+        id: edge.node.id,
+        name: edge.node.name,
+        institution: edge.node.institutionLink.institution,
+      })) || [];
     if (excludeAccountId) {
       return allAccounts.filter((a) => a.id !== excludeAccountId);
     }
@@ -2831,6 +2983,106 @@ function TransactionAccountStep({
             key={account.id}
             account={account}
             isSelected={selectedAccountId === account.id}
+            onClick={() => onSelect(account)}
+          />
+        ))}
+      </div>
+      {pageInfo?.hasNextPage && (
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full"
+          onClick={paginate}
+          disabled={networkStatus === 3}
+        >
+          Carregar mais
+        </Button>
+      )}
+    </div>
+  );
+}
+
+interface TransactionCardStepProps {
+  transactionType: TransactionType;
+  selectedCardId?: string;
+  excludeCardId?: string;
+  onSelect: (card: CardData) => void;
+}
+
+function TransactionCardStep({
+  transactionType,
+  selectedCardId,
+  excludeCardId,
+  onSelect,
+}: TransactionCardStepProps) {
+  const { data, loading, fetchMore, networkStatus } = useQuery(CardsQuery, {
+    variables: {
+      first: 50,
+      orderBy: OrdenationCard.Name,
+      orderDirection: OrderDirection.Asc,
+    },
+    notifyOnNetworkStatusChange: true,
+  });
+
+  const accounts = useMemo(() => {
+    const allAccounts =
+      data?.cards.edges?.map((edge) => ({
+        id: edge.node.id,
+        name: edge.node.name,
+        institution: edge.node.institutionLink.institution,
+        type: edge.node.type,
+      })) || [];
+    if (excludeCardId) {
+      return allAccounts.filter((a) => a.id !== excludeCardId);
+    }
+    return allAccounts;
+  }, [data?.cards.edges, excludeCardId]);
+
+  const pageInfo = data?.cards.pageInfo;
+
+  const paginate = useCallback(() => {
+    fetchMore({
+      variables: {
+        after: pageInfo?.endCursor,
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev;
+        return {
+          ...prev,
+          cards: {
+            ...prev.cards,
+            ...fetchMoreResult.cards,
+            edges: [
+              ...(prev.cards.edges || []),
+              ...(fetchMoreResult.cards.edges || []),
+            ],
+          },
+        };
+      },
+    });
+  }, [fetchMore, pageInfo]);
+
+  if (loading && accounts.length === 0) {
+    return (
+      <div className="grid grid-cols-1 gap-2">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div
+            key={i}
+            className="h-14 w-full animate-pulse rounded-lg bg-muted"
+          />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="max-h-[300px] space-y-2 overflow-y-auto">
+        {accounts.map((account) => (
+          <TransactionCardCard
+            key={account.id}
+            card={account}
+            isSelected={selectedCardId === account.id}
             onClick={() => onSelect(account)}
           />
         ))}
@@ -3103,6 +3355,7 @@ export function TransactionCreateForm({
       return (
         <ExpenseTransactionFormContent
           sourceAccountId={wizardState.sourceAccount.id}
+          sourceCardId={wizardState.sourceAccount.id}
           onClose={onClose}
         />
       );
@@ -3334,9 +3587,11 @@ function IncomeTransactionFormContent({
 
 function ExpenseTransactionFormContent({
   sourceAccountId,
+  sourceCardId,
   onClose,
 }: {
   sourceAccountId: string;
+  sourceCardId: string;
   onClose: () => void;
 }) {
   const [createTransaction, { loading: createLoading }] = useMutation(
@@ -3440,7 +3695,7 @@ function ExpenseTransactionFormContent({
                 totalAmount: data.amount,
                 totalInstallments: data.installmentCount,
                 startDate: data.date,
-                sourceAccountId: sourceAccountId,
+                sourceCardId: sourceCardId,
               },
             },
             refetchQueries: [
@@ -3454,7 +3709,7 @@ function ExpenseTransactionFormContent({
             ],
             onCompleted: () => {
               toast.success(
-                `Parcelamento criado em ${data.installmentCount}x!`,
+                `Parcelamento criado em ${data.installmentCount} vezes`,
                 {
                   description: 'As parcelas foram geradas com sucesso.',
                 },
@@ -3473,7 +3728,8 @@ function ExpenseTransactionFormContent({
               data: {
                 date: data.date,
                 type: TransactionType.Expense,
-                sourceAccountId: sourceAccountId,
+                sourceAccountId: sourceAccountId || undefined,
+                sourceCardId: sourceCardId || undefined,
                 isCompleted: data.isCompleted,
                 description: data.description,
                 amount: data.amount,

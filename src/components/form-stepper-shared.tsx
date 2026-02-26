@@ -183,13 +183,16 @@ export function TypeSelectionCard({
           : 'border-transparent bg-muted/50',
       )}
     >
-      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted">
-        <Icon className="h-6 w-6 text-foreground" />
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted">
+          <Icon className="h-6 w-6 text-foreground" />
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <span className="text-sm font-semibold text-foreground">{label}</span>
+          <span className="text-xs text-muted-foreground">{description}</span>
+        </div>
       </div>
-      <div className="flex flex-col gap-0.5">
-        <span className="text-sm font-semibold text-foreground">{label}</span>
-        <span className="text-xs text-muted-foreground">{description}</span>
-      </div>
+      {isSelected && <Check className="h-5 w-5 flex-shrink-0 text-primary" />}
     </button>
   );
 }

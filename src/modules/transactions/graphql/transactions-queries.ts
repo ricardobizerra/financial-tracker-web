@@ -21,6 +21,18 @@ export const TransactionsFragment = graphql(`
         }
       }
     }
+    sourceCard {
+      id
+      name
+      type
+      institutionLink {
+        institution {
+          id
+          name
+          logoUrl
+        }
+      }
+    }
     destinyAccount {
       id
       name
@@ -42,6 +54,7 @@ export const TransactionsFragment = graphql(`
       card {
         lastFourDigits
         institutionLink {
+          id
           account {
             id
             name
@@ -60,6 +73,17 @@ export const TransactionsFragment = graphql(`
       periodEnd
       paymentTransaction {
         description
+        sourceAccount {
+          id
+          name
+          institutionLink {
+            institution {
+              id
+              name
+              logoUrl
+            }
+          }
+        }
       }
     }
     status
