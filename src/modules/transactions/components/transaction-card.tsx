@@ -250,7 +250,7 @@ export function TransactionCard({
     billingStatus === CardBillingStatus.Closed ||
     billingStatus === CardBillingStatus.Overdue;
   const isBillingOpen = billingStatus === CardBillingStatus.Pending;
-  const billingAccountId = transaction.billingPayment?.accountCard?.account?.id;
+  const billingAccountId = transaction.billingPayment?.card?.institutionLink?.id;
 
   // Transação é editável: tudo exceto CANCELED
   // Backend faz as validações de fatura e recalculações necessárias
@@ -360,8 +360,8 @@ export function TransactionCard({
 
   const getAccountDisplay = () => {
     if (isBetweenAccounts) {
-      const sourceInst = transaction.sourceAccount?.institution;
-      const destInst = transaction.destinyAccount?.institution;
+      const sourceInst = transaction.sourceAccount?.institutionLink?.institution;
+      const destInst = transaction.destinyAccount?.institutionLink?.institution;
       return (
         <div className="flex items-center gap-1 text-sm font-medium text-muted-foreground">
           {sourceInst && (
@@ -390,11 +390,11 @@ export function TransactionCard({
     const account = isIncome
       ? transaction.destinyAccount
       : transaction.sourceAccount ||
-        transaction.billingPayment?.accountCard?.account;
+        transaction.cardBilling?.paymentTransaction?.sourceAccount;
 
     if (!account) return null;
 
-    const institution = account.institution;
+    const institution = account.institutionLink?.institution;
 
     return (
       <div className="flex items-center gap-1 text-sm font-semibold text-muted-foreground">
@@ -420,8 +420,8 @@ export function TransactionCard({
             {transaction.sourceAccount && (
               <div className="flex items-center gap-1">
                 <InstitutionLogo
-                  logoUrl={transaction.sourceAccount.institution.logoUrl}
-                  name={transaction.sourceAccount.institution.name}
+                  logoUrl={transaction.sourceAccount.institutionLink?.institution?.logoUrl}
+                  name={transaction.sourceAccount.institutionLink?.institution?.name}
                   size="sm"
                 />
                 <span className="text-sm font-medium">
@@ -433,8 +433,8 @@ export function TransactionCard({
             {transaction.destinyAccount && (
               <div className="flex items-center gap-1">
                 <InstitutionLogo
-                  logoUrl={transaction.destinyAccount.institution.logoUrl}
-                  name={transaction.destinyAccount.institution.name}
+                  logoUrl={transaction.destinyAccount.institutionLink?.institution?.logoUrl}
+                  name={transaction.destinyAccount.institutionLink?.institution?.name}
                   size="sm"
                 />
                 <span className="text-sm font-medium">
@@ -453,8 +453,8 @@ export function TransactionCard({
           <span className="text-sm text-muted-foreground">Creditada em</span>
           <div className="flex items-center gap-2">
             <InstitutionLogo
-              logoUrl={transaction.destinyAccount.institution.logoUrl}
-              name={transaction.destinyAccount.institution.name}
+              logoUrl={transaction.destinyAccount.institutionLink?.institution?.logoUrl}
+              name={transaction.destinyAccount.institutionLink?.institution?.name}
               size="sm"
             />
             <span className="text-sm font-medium">
@@ -468,15 +468,15 @@ export function TransactionCard({
     if (isExpense) {
       const account =
         transaction.sourceAccount ||
-        transaction.billingPayment?.accountCard?.account;
+        transaction.cardBilling?.paymentTransaction?.sourceAccount;
       if (account) {
         return (
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Debitada de</span>
             <div className="flex items-center gap-2">
               <InstitutionLogo
-                logoUrl={account.institution.logoUrl}
-                name={account.institution.name}
+                logoUrl={account.institutionLink?.institution?.logoUrl}
+                name={account.institutionLink?.institution?.name}
                 size="sm"
               />
               <span className="text-sm font-medium">{account.name}</span>
