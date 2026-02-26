@@ -14,8 +14,9 @@ import { z } from 'zod';
 import { CreateInvestmentMutation } from '../graphql/investments-mutations';
 import { useMutation, useQuery } from '@apollo/client';
 import {
-  AccountType,
+  InstitutionType,
   OrdenationAccountModel,
+  OrdenationInstitutionLinkModel,
   OrderDirection,
   Regime,
 } from '@/graphql/graphql';
@@ -31,45 +32,23 @@ import { AccountsQuery } from '@/modules/accounts/graphql/accounts-queries';
 import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AccountCreateForm } from '@/modules/accounts/components/account-create-form';
+import { InstitutionLinksQuery } from '@/modules/institution-link/graphql/institution-links-queries';
 
-const schema = z
-  .object({
-    amount: formFields.currency.describe('Valor // '),
-    duration: formFields.number.describe(
-      'Duração em dias // Insira aqui a duração em dias',
-    ),
-    regimeName: formFields.select.describe('Regime // '),
-    regimePercentage: formFields.number
-      .describe('Percentual do regime // ')
-      .min(0, 'Percentual deve ser entre 0 e 100')
-      .max(100, 'Percentual deve ser entre 0 e 100'),
-    startDate: formFields.date.describe('Data de início // '),
-    account: formFields.select.describe('Conta * // Insira a conta'),
-  })
-  .refine(
-    (data) => {
-      const regimeName = data.regimeName?.value;
-      const accountType = data.account?.data?.type;
-
-      return (
-        (regimeName === Regime.Poupanca &&
-          accountType === AccountType.Savings) ||
-        (regimeName !== Regime.Poupanca &&
-          accountType === AccountType.Investment)
-      );
-    },
-    (data) => {
-      const regimeName = data.regimeName?.value;
-      return {
-        message:
-          regimeName === Regime.Poupanca
-            ? 'Conta de poupança inválida'
-            : 'Conta de investimento inválida',
-        path: ['account'],
-      };
-    },
-  );
+const schema = z.object({
+  amount: formFields.currency.describe('Valor // '),
+  duration: formFields.number.describe(
+    'Duração em dias // Insira aqui a duração em dias',
+  ),
+  regimeName: formFields.select.describe('Regime // '),
+  regimePercentage: formFields.number
+    .describe('Percentual do regime // ')
+    .min(0, 'Percentual deve ser entre 0 e 100')
+    .max(100, 'Percentual deve ser entre 0 e 100'),
+  startDate: formFields.date.describe('Data de início // '),
+  institutionLink: formFields.select.describe(
+    'Conexão * // Insira a conexão',
+  ),
+});
 
 export function InvestmentCreateForm({
   defaultRegime,
@@ -103,53 +82,50 @@ export function InvestmentCreateForm({
     label: investmentRegimeLabel[regime],
   }));
 
-  const accountsQueryOptions = useQuery(AccountsQuery, {
+  const institutionLinksQueryOptions = useQuery(InstitutionLinksQuery, {
     variables: {
       first: 50,
-      orderBy: OrdenationAccountModel.Name,
+      orderBy: OrdenationInstitutionLinkModel.InstitutionId,
       orderDirection: OrderDirection.Asc,
-      types:
-        selectedRegime?.value === Regime.Poupanca
-          ? [AccountType.Savings]
-          : [AccountType.Investment],
+      institutionTypes: [InstitutionType.Investment],
     },
     skip: !open || !selectedRegime,
     notifyOnNetworkStatusChange: true,
   });
 
-  const accountsOptions =
-    accountsQueryOptions.data?.accounts.edges?.map((edge) => ({
+  const institutionLinksOptions =
+    institutionLinksQueryOptions.data?.institutionLinks.edges?.map((edge) => ({
       value: edge.node.id,
-      label: edge.node.name,
+      label: edge.node.institution.name,
       data: {
         ...edge.node,
       },
     })) || [];
 
-  const accountsPageInfo = accountsQueryOptions.data?.accounts.pageInfo;
+  const institutionLinksPageInfo = institutionLinksQueryOptions.data?.institutionLinks.pageInfo;
 
   const paginate = useCallback(() => {
-    accountsQueryOptions.fetchMore({
+    institutionLinksQueryOptions.fetchMore({
       variables: {
-        after: accountsPageInfo?.endCursor,
+        after: institutionLinksPageInfo?.endCursor,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) return prev;
 
         return {
           ...prev,
-          accounts: {
-            ...prev.accounts,
-            ...fetchMoreResult.accounts,
+          institutionLinks: {
+            ...prev.institutionLinks,
+            ...fetchMoreResult.institutionLinks,
             edges: [
-              ...(prev.accounts.edges || []),
-              ...(fetchMoreResult.accounts.edges || []),
+              ...(prev.institutionLinks.edges || []),
+              ...(fetchMoreResult.institutionLinks.edges || []),
             ],
           },
         };
       },
     });
-  }, [accountsQueryOptions, accountsPageInfo]);
+  }, [institutionLinksQueryOptions, institutionLinksPageInfo]);
 
   useEffect(() => {
     if (selectedRegime?.value === Regime.Poupanca) {
@@ -195,8 +171,8 @@ export function InvestmentCreateForm({
               options: investmentRegimeOptions,
               disabled: !!defaultRegime,
             },
-            account: {
-              options: accountsOptions,
+            institutionLink: {
+              options: institutionLinksOptions,
               renderLabel: (option) => (
                 <div className="flex items-center gap-3 px-2 py-1.5">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
@@ -206,31 +182,17 @@ export function InvestmentCreateForm({
                       size="sm"
                     />
                   </div>
-                  <div className="flex min-w-0 flex-1 flex-col items-start">
-                    <p className="truncate text-sm font-medium">
-                      {option.data.name}
-                    </p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {option.data.institution.name}
-                    </p>
-                  </div>
+                  <p className="truncate text-sm font-medium">
+                    {option.data.institution.name}
+                  </p>
                 </div>
               ),
               fetchMore: paginate,
-              networkStatus: accountsQueryOptions.networkStatus,
-              hasMore: accountsPageInfo?.hasNextPage,
+              networkStatus: institutionLinksQueryOptions.networkStatus,
+              hasMore: institutionLinksPageInfo?.hasNextPage,
               description: !selectedRegime?.value
                 ? 'Selecione o regime de investimento para visualizar as contas disponíveis'
                 : undefined,
-              NoResultAction: (
-                <AccountCreateForm
-                  type={
-                    selectedRegime?.value === Regime.Poupanca
-                      ? AccountType.Savings
-                      : AccountType.Investment
-                  }
-                />
-              ),
             },
           }}
           onSubmit={async (data) => {
@@ -242,7 +204,7 @@ export function InvestmentCreateForm({
                   regimeName: data.regimeName?.value as Regime,
                   regimePercentage: data.regimePercentage,
                   startDate: data.startDate,
-                  accountId: data.account.value,
+                  institutionLinkId: data.institutionLink.value,
                 },
               },
               refetchQueries: [InvestmentsQuery, InvestmentRegimesQuery],
@@ -273,11 +235,11 @@ export function InvestmentCreateForm({
             duration,
             regimePercentage,
             startDate,
-            account,
+            institutionLink,
           }) => (
             <>
               {regimeName}
-              {account}
+              {institutionLink}
               {amount}
               {selectedRegime?.value !== Regime.Poupanca && duration}
               {selectedRegime?.value !== Regime.Poupanca && regimePercentage}
