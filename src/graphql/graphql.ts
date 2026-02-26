@@ -1229,6 +1229,10 @@ export type CreateInstallmentTransactionInput = {
   totalInstallments: Scalars['Int']['input'];
 };
 
+export type CreateInstitutionLinkInput = {
+  institutionId: Scalars['String']['input'];
+};
+
 export type CreateInvestmentInput = {
   amount: Scalars['Float']['input'];
   correctedAmount?: InputMaybe<Scalars['Float']['input']>;
@@ -2272,6 +2276,7 @@ export type Mutation = {
   createAccount: AccountModel;
   createCard: Card;
   createInstallmentTransaction: TransactionModel;
+  createInstitutionLink: InstitutionLinkModel;
   createInvestment: Investment;
   createRecurringTransaction: RecurringTransactionModel;
   createTransaction: TransactionModel;
@@ -2317,6 +2322,10 @@ export type MutationCreateCardArgs = {
 
 export type MutationCreateInstallmentTransactionArgs = {
   data: CreateInstallmentTransactionInput;
+};
+
+export type MutationCreateInstitutionLinkArgs = {
+  data: CreateInstitutionLinkInput;
 };
 
 export type MutationCreateInvestmentArgs = {
@@ -5203,6 +5212,20 @@ export type PageInfoFragmentFragment = {
   endCursor: string | null;
   hasPreviousPage: boolean;
   hasNextPage: boolean;
+};
+
+export type CreateInstitutionLinkMutationVariables = Exact<{
+  data: CreateInstitutionLinkInput;
+}>;
+
+export type CreateInstitutionLinkMutation = {
+  __typename?: 'Mutation';
+  createInstitutionLink: {
+    __typename?: 'InstitutionLinkModel';
+    id: string;
+    createdAt: any;
+    updatedAt: any;
+  };
 };
 
 export type InstitutionLinkFragmentFragment = {
@@ -8903,6 +8926,59 @@ export const TransactionsSummaryForCashFlowDocument = {
 } as unknown as DocumentNode<
   TransactionsSummaryForCashFlowQuery,
   TransactionsSummaryForCashFlowQueryVariables
+>;
+export const CreateInstitutionLinkDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CreateInstitutionLink' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'CreateInstitutionLinkInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createInstitutionLink' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'data' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'data' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreateInstitutionLinkMutation,
+  CreateInstitutionLinkMutationVariables
 >;
 export const InstitutionLinksDocument = {
   kind: 'Document',
