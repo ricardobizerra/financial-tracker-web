@@ -9,6 +9,7 @@ import { CreditCard, TrendingUp, Wallet } from 'lucide-react';
 import { InstitutionLinkFragmentFragment, CardType } from '@/graphql/graphql';
 import { getTextColorForBackground } from '@/lib/color';
 import { AccountCreateForm } from '@/modules/accounts/components/account-create-form';
+import { CardCreateForm } from '@/modules/accounts/components/card-create-form';
 
 function calculateCardBillingTotal(
   billings:
@@ -249,6 +250,11 @@ export function InstitutionLinkCard({
               </div>
             </div>
             <div className="flex justify-end border-t bg-muted/30 px-4 py-3">
+              <CardCreateForm institutionLinkId={institutionLink.id}>
+                <Button variant="outline" size="sm">
+                  Adicionar cartão
+                </Button>
+              </CardCreateForm>
             </div>
           </div>
         )}

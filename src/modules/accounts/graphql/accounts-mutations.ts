@@ -8,6 +8,14 @@ export const CreateAccountMutation = graphql(`
   }
 `);
 
+export const CreateCardMutation = graphql(`
+  mutation CreateCard($data: CreateCardInput!) {
+    createCard(data: $data) {
+      id
+    }
+  }
+`);
+
 export const CloseBillingMutation = graphql(`
   mutation CloseBilling($billingId: String!, $closingDate: DateTime) {
     closeBilling(billingId: $billingId, closingDate: $closingDate) {

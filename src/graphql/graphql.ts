@@ -4790,6 +4790,15 @@ export type CreateAccountMutation = {
   createAccount: { __typename?: 'AccountModel'; id: string };
 };
 
+export type CreateCardMutationVariables = Exact<{
+  data: CreateCardInput;
+}>;
+
+export type CreateCardMutation = {
+  __typename?: 'Mutation';
+  createCard: { __typename?: 'Card'; id: string };
+};
+
 export type CloseBillingMutationVariables = Exact<{
   billingId: Scalars['String']['input'];
   closingDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -7141,6 +7150,54 @@ export const CreateAccountDocument = {
   CreateAccountMutation,
   CreateAccountMutationVariables
 >;
+export const CreateCardDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CreateCard' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'CreateCardInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createCard' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'data' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'data' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<CreateCardMutation, CreateCardMutationVariables>;
 export const CloseBillingDocument = {
   kind: 'Document',
   definitions: [
