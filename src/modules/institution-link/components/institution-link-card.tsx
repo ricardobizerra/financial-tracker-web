@@ -112,12 +112,12 @@ export function InstitutionLinkCard({
               <div className="mt-2 text-2xl font-bold tracking-tight">
                 <div
                   className={cn(
-                    Number(account.initialBalance) >= 0
+                    Number(account.balance) >= 0
                       ? 'text-emerald-600 dark:text-emerald-500'
                       : 'text-red-600 dark:text-red-500',
                   )}
                 >
-                  {formatCurrency(Number(account.initialBalance || 0))}
+                  {formatCurrency(Number(account.balance || 0))}
                 </div>
                 <div className="mt-0.5 text-xs font-normal text-muted-foreground">
                   {account.name}

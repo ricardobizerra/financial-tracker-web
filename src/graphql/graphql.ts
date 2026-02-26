@@ -1681,7 +1681,7 @@ export type InstitutionLinkMinAggregate = {
 export type InstitutionLinkModel = {
   __typename?: 'InstitutionLinkModel';
   _count: InstitutionLinkCount;
-  account: Maybe<Account>;
+  account: Maybe<AccountModel>;
   cards: Maybe<Array<Card>>;
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
@@ -5252,10 +5252,11 @@ export type InstitutionLinkFragmentFragment = {
     color: string | null;
   };
   account: {
-    __typename?: 'Account';
+    __typename?: 'AccountModel';
     id: string;
     name: string;
     initialBalance: any;
+    balance: any | null;
     description: string | null;
     isActive: boolean;
   } | null;
@@ -5326,10 +5327,11 @@ export type InstitutionLinksQuery = {
           color: string | null;
         };
         account: {
-          __typename?: 'Account';
+          __typename?: 'AccountModel';
           id: string;
           name: string;
           initialBalance: any;
+          balance: any | null;
           description: string | null;
           isActive: boolean;
         } | null;
@@ -6589,6 +6591,7 @@ export const InstitutionLinkFragmentFragmentDoc = {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'initialBalance' },
                 },
+                { kind: 'Field', name: { kind: 'Name', value: 'balance' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'description' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
               ],
@@ -9256,6 +9259,7 @@ export const InstitutionLinksDocument = {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'initialBalance' },
                 },
+                { kind: 'Field', name: { kind: 'Name', value: 'balance' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'description' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
               ],

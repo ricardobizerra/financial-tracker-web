@@ -17,6 +17,7 @@ export const InstitutionLinkFragment = graphql(`
       id
       name
       initialBalance
+      balance
       description
       isActive
     }
