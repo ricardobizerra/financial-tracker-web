@@ -15,7 +15,7 @@ export function InvestmentRegimeContent() {
   return (
     <InvestmentsTable
       regime={regimeEnum}
-      accountIds={accountId ? [accountId] : undefined}
+      institutionLinkIds={accountId ? [accountId] : undefined}
     />
   );
 }

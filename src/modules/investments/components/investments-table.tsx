@@ -14,17 +14,17 @@ import { InvestmentsFilters, InvestmentFilters } from './investments-filters';
 
 interface InvestmentsTableProps {
   regime: Regime;
-  accountIds?: string[];
+  institutionLinkIds?: string[];
   showFilters?: boolean;
 }
 
 export function InvestmentsTable({
   regime,
-  accountIds: initialAccountIds,
+  institutionLinkIds: initialInstitutionLinkIds,
   showFilters = true,
 }: InvestmentsTableProps) {
   const [filters, setFilters] = useState<InvestmentFilters>({
-    accountIds: initialAccountIds,
+    institutionLinkIds: initialInstitutionLinkIds,
   });
 
   return (
@@ -42,7 +42,7 @@ export function InvestmentsTable({
         query={InvestmentsQuery}
         variables={{
           regime: regime,
-          accountIds: filters.accountIds,
+          institutionLinkIds: filters.institutionLinkIds,
         }}
         initialSorting={{
           key: OrdenationInvestmentModel.CorrectedAmount,

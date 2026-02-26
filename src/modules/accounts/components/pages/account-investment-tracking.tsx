@@ -532,7 +532,7 @@ export function AccountInvestmentTracking({
           {isSavings ? (
             <InvestmentsTable
               regime={Regime.Poupanca}
-              accountIds={[account.id]}
+              institutionLinkIds={[account.id]}
               showFilters={false}
             />
           ) : (

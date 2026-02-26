@@ -2864,10 +2864,10 @@ export type QueryInvestmentRegimesArgs = {
 };
 
 export type QueryInvestmentsArgs = {
-  accountIds?: InputMaybe<Array<Scalars['String']['input']>>;
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  institutionLinkIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<OrdenationInvestmentModel>;
   orderDirection?: InputMaybe<OrderDirection>;
@@ -5432,8 +5432,8 @@ export type InvestmentsQueryVariables = Exact<{
   last?: InputMaybe<Scalars['Int']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   regime?: InputMaybe<Regime>;
-  accountIds?: InputMaybe<
-    Array<Scalars['String']['input']> | Scalars['String']['input']
+  institutionLinkIds?: InputMaybe<
+    Array<Scalars['ID']['input']> | Scalars['ID']['input']
   >;
 }>;
 
@@ -9559,16 +9559,13 @@ export const InvestmentsDocument = {
           kind: 'VariableDefinition',
           variable: {
             kind: 'Variable',
-            name: { kind: 'Name', value: 'accountIds' },
+            name: { kind: 'Name', value: 'institutionLinkIds' },
           },
           type: {
             kind: 'ListType',
             type: {
               kind: 'NonNullType',
-              type: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'String' },
-              },
+              type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
             },
           },
         },
@@ -9638,10 +9635,10 @@ export const InvestmentsDocument = {
               },
               {
                 kind: 'Argument',
-                name: { kind: 'Name', value: 'accountIds' },
+                name: { kind: 'Name', value: 'institutionLinkIds' },
                 value: {
                   kind: 'Variable',
-                  name: { kind: 'Name', value: 'accountIds' },
+                  name: { kind: 'Name', value: 'institutionLinkIds' },
                 },
               },
             ],
