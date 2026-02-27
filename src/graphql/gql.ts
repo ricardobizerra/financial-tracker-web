@@ -14,11 +14,11 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
-  '\n  mutation CreateAccount($data: CreateAccountInput!) {\n    createAccount(data: $data) {\n      id\n    }\n  }\n': typeof types.CreateAccountDocument;
+  '\n  mutation CreateAccount($data: CreateAccountInput!) {\n    createAccount(data: $data) {\n      id\n      startDate\n    }\n  }\n': typeof types.CreateAccountDocument;
   '\n  mutation CreateCard($data: CreateCardInput!) {\n    createCard(data: $data) {\n      id\n    }\n  }\n': typeof types.CreateCardDocument;
   '\n  mutation CloseBilling($billingId: String!, $closingDate: DateTime) {\n    closeBilling(billingId: $billingId, closingDate: $closingDate) {\n      id\n      periodStart\n      periodEnd\n      paymentDate\n      limit\n      status\n      cardId\n      paymentTransactionId\n      createdAt\n      updatedAt\n    }\n  }\n': typeof types.CloseBillingDocument;
   '\n  mutation UpdateAccountCard(\n    $cardId: ID!\n    $billingCycleDay: Float\n    $billingPaymentDay: Float\n    $defaultLimit: Float\n  ) {\n    updateAccountCard(\n      cardId: $cardId\n      billingCycleDay: $billingCycleDay\n      billingPaymentDay: $billingPaymentDay\n      defaultLimit: $defaultLimit\n    ) {\n      id\n      lastFourDigits\n      billingCycleDay\n      billingPaymentDay\n      type\n      defaultLimit\n      institutionLinkId\n      createdAt\n      updatedAt\n    }\n  }\n': typeof types.UpdateAccountCardDocument;
-  '\n  fragment AccountFragment on AccountModel {\n    id\n    name\n    balance\n    description\n    isActive\n    institutionLinkId\n    createdAt\n    updatedAt\n    institutionLink {\n      institution {\n        id\n        code\n        name\n        logoUrl\n        color\n        createdAt\n        updatedAt\n      }\n    }\n  }\n': typeof types.AccountFragmentFragmentDoc;
+  '\n  fragment AccountFragment on AccountModel {\n    id\n    name\n    balance\n    description\n    isActive\n    startDate\n    institutionLinkId\n    createdAt\n    updatedAt\n    institutionLink {\n      institution {\n        id\n        code\n        name\n        logoUrl\n        color\n        createdAt\n        updatedAt\n      }\n    }\n  }\n': typeof types.AccountFragmentFragmentDoc;
   '\n  query Accounts(\n    $orderBy: OrdenationAccountModel\n    $orderDirection: OrderDirection\n    $first: Int\n    $after: String\n    $search: String\n    $last: Int\n    $before: String\n  ) {\n    accounts(\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      first: $first\n      after: $after\n      search: $search\n      last: $last\n      before: $before\n    ) {\n      edges {\n        cursor\n        node {\n          ...AccountFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n': typeof types.AccountsDocument;
   '\n  query Account($id: ID!) {\n    account(id: $id) {\n      ...AccountFragment\n      institutionLink {\n        cards {\n          id\n          type\n        }\n      }\n    }\n  }\n': typeof types.AccountDocument;
   '\n  fragment CardFragment on Card {\n    id\n    name\n    lastFourDigits\n    billingCycleDay\n    billingPaymentDay\n    defaultLimit\n    type\n    institutionLinkId\n    createdAt\n    updatedAt\n    institutionLink {\n      institution {\n        id\n        code\n        name\n        logoUrl\n        color\n        createdAt\n        updatedAt\n      }\n      cards {\n        id\n        type\n      }\n    }\n  }\n': typeof types.CardFragmentFragmentDoc;
@@ -75,7 +75,7 @@ type Documents = {
   '\n  query Users(\n    $first: Int\n    $after: String\n    $search: String\n    $before: String\n    $last: Int\n    $orderBy: OrdenationUserModel\n    $orderDirection: OrderDirection\n  ) {\n    users(\n      first: $first\n      after: $after\n      search: $search\n      before: $before\n      last: $last\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n    ) {\n      edges {\n        cursor\n        node {\n          id\n          email\n          name\n          role\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n': typeof types.UsersDocument;
 };
 const documents: Documents = {
-  '\n  mutation CreateAccount($data: CreateAccountInput!) {\n    createAccount(data: $data) {\n      id\n    }\n  }\n':
+  '\n  mutation CreateAccount($data: CreateAccountInput!) {\n    createAccount(data: $data) {\n      id\n      startDate\n    }\n  }\n':
     types.CreateAccountDocument,
   '\n  mutation CreateCard($data: CreateCardInput!) {\n    createCard(data: $data) {\n      id\n    }\n  }\n':
     types.CreateCardDocument,
@@ -83,7 +83,7 @@ const documents: Documents = {
     types.CloseBillingDocument,
   '\n  mutation UpdateAccountCard(\n    $cardId: ID!\n    $billingCycleDay: Float\n    $billingPaymentDay: Float\n    $defaultLimit: Float\n  ) {\n    updateAccountCard(\n      cardId: $cardId\n      billingCycleDay: $billingCycleDay\n      billingPaymentDay: $billingPaymentDay\n      defaultLimit: $defaultLimit\n    ) {\n      id\n      lastFourDigits\n      billingCycleDay\n      billingPaymentDay\n      type\n      defaultLimit\n      institutionLinkId\n      createdAt\n      updatedAt\n    }\n  }\n':
     types.UpdateAccountCardDocument,
-  '\n  fragment AccountFragment on AccountModel {\n    id\n    name\n    balance\n    description\n    isActive\n    institutionLinkId\n    createdAt\n    updatedAt\n    institutionLink {\n      institution {\n        id\n        code\n        name\n        logoUrl\n        color\n        createdAt\n        updatedAt\n      }\n    }\n  }\n':
+  '\n  fragment AccountFragment on AccountModel {\n    id\n    name\n    balance\n    description\n    isActive\n    startDate\n    institutionLinkId\n    createdAt\n    updatedAt\n    institutionLink {\n      institution {\n        id\n        code\n        name\n        logoUrl\n        color\n        createdAt\n        updatedAt\n      }\n    }\n  }\n':
     types.AccountFragmentFragmentDoc,
   '\n  query Accounts(\n    $orderBy: OrdenationAccountModel\n    $orderDirection: OrderDirection\n    $first: Int\n    $after: String\n    $search: String\n    $last: Int\n    $before: String\n  ) {\n    accounts(\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      first: $first\n      after: $after\n      search: $search\n      last: $last\n      before: $before\n    ) {\n      edges {\n        cursor\n        node {\n          ...AccountFragment\n        }\n      }\n      pageInfo {\n        ...PageInfoFragment\n      }\n    }\n  }\n':
     types.AccountsDocument,
@@ -213,8 +213,8 @@ export function graphql(source: string): unknown;
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n  mutation CreateAccount($data: CreateAccountInput!) {\n    createAccount(data: $data) {\n      id\n    }\n  }\n',
-): (typeof documents)['\n  mutation CreateAccount($data: CreateAccountInput!) {\n    createAccount(data: $data) {\n      id\n    }\n  }\n'];
+  source: '\n  mutation CreateAccount($data: CreateAccountInput!) {\n    createAccount(data: $data) {\n      id\n      startDate\n    }\n  }\n',
+): (typeof documents)['\n  mutation CreateAccount($data: CreateAccountInput!) {\n    createAccount(data: $data) {\n      id\n      startDate\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -237,8 +237,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n  fragment AccountFragment on AccountModel {\n    id\n    name\n    balance\n    description\n    isActive\n    institutionLinkId\n    createdAt\n    updatedAt\n    institutionLink {\n      institution {\n        id\n        code\n        name\n        logoUrl\n        color\n        createdAt\n        updatedAt\n      }\n    }\n  }\n',
-): (typeof documents)['\n  fragment AccountFragment on AccountModel {\n    id\n    name\n    balance\n    description\n    isActive\n    institutionLinkId\n    createdAt\n    updatedAt\n    institutionLink {\n      institution {\n        id\n        code\n        name\n        logoUrl\n        color\n        createdAt\n        updatedAt\n      }\n    }\n  }\n'];
+  source: '\n  fragment AccountFragment on AccountModel {\n    id\n    name\n    balance\n    description\n    isActive\n    startDate\n    institutionLinkId\n    createdAt\n    updatedAt\n    institutionLink {\n      institution {\n        id\n        code\n        name\n        logoUrl\n        color\n        createdAt\n        updatedAt\n      }\n    }\n  }\n',
+): (typeof documents)['\n  fragment AccountFragment on AccountModel {\n    id\n    name\n    balance\n    description\n    isActive\n    startDate\n    institutionLinkId\n    createdAt\n    updatedAt\n    institutionLink {\n      institution {\n        id\n        code\n        name\n        logoUrl\n        color\n        createdAt\n        updatedAt\n      }\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

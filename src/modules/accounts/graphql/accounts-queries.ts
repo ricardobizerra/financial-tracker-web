@@ -7,6 +7,7 @@ export const AccountFragment = graphql(`
     balance
     description
     isActive
+    startDate
     institutionLinkId
     createdAt
     updatedAt

@@ -32,9 +32,20 @@ const accountDetailsSchema = z.object({
   initialBalance: formFields.currency.describe(
     'Saldo inicial * // Insira o saldo inicial da conta',
   ),
+  startDate: formFields.date.describe(
+    'Data inicial * // Data de referência do saldo inicial',
+  ),
   isActive: formFields.switch.describe(
     'Conta ativa? // Indica se a conta está ativa e visível no sistema',
   ),
+}).refine((data) => {
+  if (data.initialBalance === 0 && !data.startDate) {
+    return {
+      code: 'initialBalanceAndStartDateRequired',
+      message: 'startDate is required when initialBalance is not 0',
+    };
+  }
+  return true;
 });
 
 type AccountDetailsFormData = z.infer<typeof accountDetailsSchema>;
@@ -142,6 +153,7 @@ export function AccountCreateForm({
     defaultValues: {
       isActive: true,
       initialBalance: 0,
+      startDate: new Date(),
     },
     mode: 'onSubmit',
   });
@@ -171,6 +183,7 @@ export function AccountCreateForm({
             isActive: formData.isActive,
             description: formData.description,
             initialBalance: formData.initialBalance,
+            startDate: formData.startDate,
           },
         },
         refetchQueries: [InstitutionLinksQuery],
@@ -290,11 +303,12 @@ export function AccountCreateForm({
                 onSubmit={handleSubmit}
                 renderAfter={() => null}
               >
-                {({ name, description, initialBalance, isActive }) => (
+                {({ name, description, initialBalance, startDate, isActive }) => (
                   <>
                     {name}
                     {description}
                     {initialBalance}
+                    {startDate}
                     {isActive}
                   </>
                 )}
