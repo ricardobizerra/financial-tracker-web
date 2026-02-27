@@ -20,7 +20,6 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@apollo/client';
 import { AccountsQuery } from '@/modules/accounts/graphql/accounts-queries';
-import { AccountType } from '@/graphql/graphql';
 import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
 
 interface CashFlowFiltersProps {
@@ -58,7 +57,6 @@ export function CashFlowFilters({
   const { data: accountsData } = useQuery(AccountsQuery, {
     variables: {
       first: 100,
-      types: [AccountType.Checking, AccountType.Wallet],
     },
   });
 
@@ -102,8 +100,8 @@ export function CashFlowFilters({
             <SelectItem key={account.id} value={account.id}>
               <div className="flex items-center gap-2">
                 <InstitutionLogo
-                  logoUrl={account.institution?.logoUrl}
-                  name={account.institution?.name || account.name}
+                  logoUrl={account.institutionLink?.institution?.logoUrl}
+                  name={account.institutionLink?.institution?.name || account.name}
                   size="sm"
                 />
                 <span>{account.name}</span>
