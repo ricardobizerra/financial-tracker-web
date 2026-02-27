@@ -1,7 +1,7 @@
 import { graphql } from '@/graphql';
 
 export const BalanceForecastQuery = graphql(`
-  query BalanceForecast(
+  query CashFlowBalanceForecast(
     $accountId: String
     $period: BalanceForecastPeriod!
     $startDate: DateTime
@@ -17,6 +17,7 @@ export const BalanceForecastQuery = graphql(`
         date
         balance
         isProjected
+        isInitialBalance
         incomeAmount
         expenseAmount
         transactionCount
