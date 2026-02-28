@@ -10,6 +10,7 @@ import {
   PaymentMethod,
   TransactionStatus,
   TransactionType,
+  CardFragmentFragment,
 } from '@/graphql/graphql';
 import { TransactionsCardList } from '@/modules/transactions/components/transactions-card-list';
 import { useMutation, useQuery } from '@apollo/client';
@@ -55,9 +56,9 @@ const closeBillingSchema = z.object({
 });
 
 export function AccountCreditCardTracking({
-  account,
+  card,
 }: {
-  account: AccountFragmentFragment;
+  card: CardFragmentFragment;
 }) {
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -69,7 +70,7 @@ export function AccountCreditCardTracking({
 
   const { data, loading, refetch } = useQuery(BillingQuery, {
     variables: {
-      accountId: account.id,
+      cardId: card.id,
       id: billingIdFromUrl || undefined,
     },
     fetchPolicy: 'cache-and-network',
@@ -129,7 +130,7 @@ export function AccountCreditCardTracking({
   };
 
   const loadBilling = async (billingId: string) => {
-    await refetch({ accountId: account.id, id: billingId });
+    await refetch({ cardId: card.id, id: billingId });
   };
 
   const isMobile = useIsMobile();
@@ -159,17 +160,18 @@ export function AccountCreditCardTracking({
         className="overflow-hidden"
         style={{
           backgroundColor:
-            account.institution.color ?? 'hsl(var(--background))',
+            card.institutionLink?.institution.color ??
+            'hsl(var(--background))',
         }}
       >
         <CardContent className="p-5 sm:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex items-center gap-4">
-              {account.institution?.logoUrl ? (
+              {card.institutionLink?.institution.logoUrl ? (
                 <div className="h-14 w-14 flex-shrink-0 rounded-xl bg-white p-2 shadow-sm sm:h-16 sm:w-16">
                   <InstitutionLogo
-                    logoUrl={account.institution.logoUrl}
-                    name={account.institution.name}
+                    logoUrl={card.institutionLink?.institution.logoUrl}
+                    name={card.institutionLink?.institution.name}
                     size="lg"
                     className="h-full w-full bg-transparent"
                   />
@@ -185,7 +187,7 @@ export function AccountCreditCardTracking({
                     className="h-7 w-7 sm:h-8 sm:w-8"
                     style={{
                       color: getTextColorForBackground(
-                        account.institution.color,
+                        card.institutionLink?.institution.color,
                       ),
                     }}
                   />
@@ -197,45 +199,32 @@ export function AccountCreditCardTracking({
                     className="truncate text-xl font-bold leading-tight sm:text-2xl md:text-3xl"
                     style={{
                       color: getTextColorForBackground(
-                        account.institution.color,
+                        card.institutionLink?.institution.color,
                       ),
                     }}
                   >
-                    {account.name}
+                    {card.name}
                   </h1>
-                  <Badge
-                    variant="secondary"
-                    className="flex-shrink-0 text-xs"
-                    style={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                      color: getTextColorForBackground(
-                        account.institution.color,
-                      ),
-                    }}
-                  >
-                    {billing.accountCard.type === CardType.Credit
-                      ? 'Crédito'
-                      : 'Débito'}
-                  </Badge>
                 </div>
                 <div className="mt-1 flex items-center gap-2">
                   <p
                     className="truncate text-sm opacity-90 sm:text-base"
                     style={{
                       color: getTextColorForBackground(
-                        account.institution.color,
+                        card.institutionLink?.institution.color,
                       ),
                     }}
                   >
-                    {account.institution?.name || 'Instituição não informada'}
+                    {card.institutionLink?.institution.name ||
+                      'Instituição não informada'}
                   </p>
-                  {billing.accountCard.lastFourDigits && (
+                  {billing.card.lastFourDigits && (
                     <>
                       <span
                         className="text-sm opacity-60"
                         style={{
                           color: getTextColorForBackground(
-                            account.institution.color,
+                            card.institutionLink?.institution.color,
                           ),
                         }}
                       >
@@ -245,11 +234,11 @@ export function AccountCreditCardTracking({
                         className="font-mono text-sm opacity-90"
                         style={{
                           color: getTextColorForBackground(
-                            account.institution.color,
+                            card.institutionLink?.institution.color,
                           ),
                         }}
                       >
-                        •••• {billing.accountCard.lastFourDigits}
+                        •••• {billing.card.lastFourDigits}
                       </span>
                     </>
                   )}
@@ -264,7 +253,9 @@ export function AccountCreditCardTracking({
                 <div
                   className="text-xs font-medium uppercase tracking-wide opacity-75"
                   style={{
-                    color: getTextColorForBackground(account.institution.color),
+                    color: getTextColorForBackground(
+                      card.institutionLink?.institution.color,
+                    ),
                   }}
                 >
                   Fechamento
@@ -272,10 +263,12 @@ export function AccountCreditCardTracking({
                 <div
                   className="mt-1 text-lg font-bold sm:text-xl"
                   style={{
-                    color: getTextColorForBackground(account.institution.color),
+                    color: getTextColorForBackground(
+                      card.institutionLink?.institution.color,
+                    ),
                   }}
                 >
-                  Dia {billing.accountCard.billingCycleDay}
+                  Dia {billing.card.billingCycleDay}
                 </div>
               </div>
 
@@ -284,7 +277,9 @@ export function AccountCreditCardTracking({
                 <div
                   className="text-xs font-medium uppercase tracking-wide opacity-75"
                   style={{
-                    color: getTextColorForBackground(account.institution.color),
+                    color: getTextColorForBackground(
+                      card.institutionLink?.institution.color,
+                    ),
                   }}
                 >
                   Vencimento
@@ -292,23 +287,25 @@ export function AccountCreditCardTracking({
                 <div
                   className="mt-1 text-lg font-bold sm:text-xl"
                   style={{
-                    color: getTextColorForBackground(account.institution.color),
+                    color: getTextColorForBackground(
+                      card.institutionLink?.institution.color,
+                    ),
                   }}
                 >
-                  Dia {billing.accountCard.billingPaymentDay}
+                  Dia {billing.card.billingPaymentDay}
                 </div>
               </div>
 
               {/* Settings Button */}
               <CardSettingsEditDialog
-                cardId={billing.accountCard.id}
-                accountId={account.id}
+                cardId={billing.card.id}
+                accountId={card.id}
                 currentSettings={{
-                  billingCycleDay: billing.accountCard.billingCycleDay,
-                  billingPaymentDay: billing.accountCard.billingPaymentDay,
-                  defaultLimit: Number(billing.accountCard.defaultLimit),
+                  billingCycleDay: billing.card.billingCycleDay,
+                  billingPaymentDay: billing.card.billingPaymentDay,
+                  defaultLimit: Number(billing.card.defaultLimit),
                 }}
-                institutionColor={account.institution.color}
+                institutionColor={card.institutionLink?.institution.color}
               />
             </div>
           </div>
@@ -501,16 +498,16 @@ export function AccountCreditCardTracking({
             {isPending && (
               <>
                 <ExpenseTransactionCreateForm
-                  accountId={account.id}
+                  cardId={card.id}
                   triggerSize="sm"
                   triggerClassName="flex-1 sm:flex-none"
                   minDate={new Date(billing.periodStart)}
                   maxDate={new Date(billing.periodEnd)}
                   status={TransactionStatus.Completed}
                   paymentMethod={
-                    billing.accountCard.type === CardType.Credit
+                    billing.card.type === CardType.Credit
                       ? PaymentMethod.CreditCard
-                      : billing.accountCard.type === CardType.Debit
+                      : billing.card.type === CardType.Debit
                         ? PaymentMethod.DebitCard
                         : undefined
                   }

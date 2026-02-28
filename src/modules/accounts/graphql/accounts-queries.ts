@@ -184,8 +184,8 @@ export const InstitutionsQuery = graphql(`
 `);
 
 export const BillingQuery = graphql(`
-  query Billing($accountId: ID!, $id: ID) {
-    billing(accountId: $accountId, id: $id) {
+  query Billing($cardId: ID!, $id: ID) {
+    billing(cardId: $cardId, id: $id) {
       billing {
         id
         periodStart

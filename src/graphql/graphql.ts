@@ -2847,7 +2847,7 @@ export type QueryBalanceForecastArgs = {
 };
 
 export type QueryBillingArgs = {
-  accountId: Scalars['ID']['input'];
+  cardId: Scalars['ID']['input'];
   id?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -5184,7 +5184,7 @@ export type InstitutionsQuery = {
 };
 
 export type BillingQueryVariables = Exact<{
-  accountId: Scalars['ID']['input'];
+  cardId: Scalars['ID']['input'];
   id?: InputMaybe<Scalars['ID']['input']>;
 }>;
 
@@ -6247,6 +6247,7 @@ export type TransactionFragmentFragment = {
     limit: any;
     card: {
       __typename?: 'Card';
+      id: string;
       lastFourDigits: string | null;
       institutionLink: {
         __typename?: 'InstitutionLink';
@@ -6389,6 +6390,7 @@ export type TransactionsQuery = {
           limit: any;
           card: {
             __typename?: 'Card';
+            id: string;
             lastFourDigits: string | null;
             institutionLink: {
               __typename?: 'InstitutionLink';
@@ -6566,6 +6568,7 @@ export type TransactionsGroupedByPeriodQuery = {
         limit: any;
         card: {
           __typename?: 'Card';
+          id: string;
           lastFourDigits: string | null;
           institutionLink: {
             __typename?: 'InstitutionLink';
@@ -6697,6 +6700,7 @@ export type BillingTransactionsQuery = {
       limit: any;
       card: {
         __typename?: 'Card';
+        id: string;
         lastFourDigits: string | null;
         institutionLink: {
           __typename?: 'InstitutionLink';
@@ -7435,6 +7439,7 @@ export const TransactionFragmentFragmentDoc = {
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'lastFourDigits' },
@@ -8918,7 +8923,7 @@ export const BillingDocument = {
           kind: 'VariableDefinition',
           variable: {
             kind: 'Variable',
-            name: { kind: 'Name', value: 'accountId' },
+            name: { kind: 'Name', value: 'cardId' },
           },
           type: {
             kind: 'NonNullType',
@@ -8940,10 +8945,10 @@ export const BillingDocument = {
             arguments: [
               {
                 kind: 'Argument',
-                name: { kind: 'Name', value: 'accountId' },
+                name: { kind: 'Name', value: 'cardId' },
                 value: {
                   kind: 'Variable',
-                  name: { kind: 'Name', value: 'accountId' },
+                  name: { kind: 'Name', value: 'cardId' },
                 },
               },
               {
@@ -13071,6 +13076,7 @@ export const TransactionsDocument = {
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'lastFourDigits' },
@@ -13790,6 +13796,7 @@ export const TransactionsGroupedByPeriodDocument = {
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'lastFourDigits' },
@@ -14180,6 +14187,7 @@ export const BillingTransactionsDocument = {
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'lastFourDigits' },

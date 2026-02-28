@@ -250,7 +250,7 @@ export function TransactionCard({
     billingStatus === CardBillingStatus.Closed ||
     billingStatus === CardBillingStatus.Overdue;
   const isBillingOpen = billingStatus === CardBillingStatus.Pending;
-  const billingAccountId = transaction.billingPayment?.card?.institutionLink?.id;
+  const cardId = transaction.billingPayment?.card?.id;
 
   // Transação é editável: tudo exceto CANCELED
   // Backend faz as validações de fatura e recalculações necessárias
@@ -503,7 +503,7 @@ export function TransactionCard({
             className="min-w-[120px] flex-1"
           >
             <Link
-              href={`/accounts/${billingAccountId}?billingId=${transaction.billingPayment?.id}`}
+              href={`/cards/${cardId}?billingId=${transaction.billingPayment?.id}`}
             >
               <Eye className="h-4 w-4" />
               Ver fatura
