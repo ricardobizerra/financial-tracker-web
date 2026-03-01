@@ -12,6 +12,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import {
+  AlertTriangleIcon,
   ArrowDown,
   ArrowLeft,
   ArrowLeftRight,
@@ -1037,6 +1038,18 @@ function IncomeTransactionFormDetails({
                   )}
                 </p>
               </div>
+
+              {/* Warning for days >= 29 */}
+              {dayMode === DayMode.SpecificDay &&
+                (recurrenceFrequency === RecurrenceFrequency.Monthly ||
+                  recurrenceFrequency === RecurrenceFrequency.Yearly) &&
+                selectedDate &&
+                selectedDate.getDate() >= 29 && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400">
+                    <AlertTriangleIcon className="inline w-4 h-4" /> Nos meses com menos de {selectedDate.getDate()} dias, a
+                    transação será criada no último dia do mês.
+                  </p>
+                )}
             </div>
           )}
         </>
@@ -2106,6 +2119,18 @@ function ExpenseTransactionFormDetails({
                     )}
                   </p>
                 </div>
+
+                {/* Warning for days >= 29 */}
+                {dayMode === DayMode.SpecificDay &&
+                  (recurrenceFrequency === RecurrenceFrequency.Monthly ||
+                    recurrenceFrequency === RecurrenceFrequency.Yearly) &&
+                  selectedDate &&
+                  selectedDate.getDate() >= 29 && (
+                    <p className="text-xs text-amber-600 dark:text-amber-400">
+                      <AlertTriangleIcon className="inline w-4 h-4" /> Nos meses com menos de {selectedDate.getDate()} dias, a
+                      transação será criada no último dia do mês.
+                    </p>
+                  )}
               </div>
             </>
           )}
