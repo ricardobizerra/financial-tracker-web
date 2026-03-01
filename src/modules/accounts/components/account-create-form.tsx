@@ -38,14 +38,6 @@ const accountDetailsSchema = z.object({
   isActive: formFields.switch.describe(
     'Conta ativa? // Indica se a conta está ativa e visível no sistema',
   ),
-}).refine((data) => {
-  if (data.initialBalance === 0 && !data.startDate) {
-    return {
-      code: 'initialBalanceAndStartDateRequired',
-      message: 'startDate is required when initialBalance is not 0',
-    };
-  }
-  return true;
 });
 
 type AccountDetailsFormData = z.infer<typeof accountDetailsSchema>;
