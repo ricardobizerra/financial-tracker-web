@@ -28,7 +28,6 @@ import {
   OrderDirection,
   PaymentMethod,
   RecurrenceFrequency,
-  AccountType,
   TransactionCategory,
 } from '@/graphql/graphql';
 import { useCallback, useState, useMemo } from 'react';
@@ -173,9 +172,6 @@ export function IncomeRecurringTransactionCreateForm({
       first: 50,
       orderBy: OrdenationAccountModel.Name,
       orderDirection: OrderDirection.Asc,
-      types: Object.values(AccountType).filter(
-        (t) => t !== AccountType.CreditCard,
-      ),
     },
     skip: !open,
     notifyOnNetworkStatusChange: true,
@@ -299,8 +295,8 @@ export function IncomeRecurringTransactionCreateForm({
                 <div className="flex items-center gap-3 py-1.5">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
                     <InstitutionLogo
-                      logoUrl={option.data.institution.logoUrl}
-                      name={option.data.institution.name}
+                      logoUrl={option.data.institutionLink?.institution?.logoUrl}
+                      name={option.data.institutionLink?.institution?.name}
                       size="sm"
                     />
                   </div>
@@ -309,7 +305,7 @@ export function IncomeRecurringTransactionCreateForm({
                       {option.data.name}
                     </p>
                     <p className="truncate text-xs text-muted-foreground">
-                      {option.data.institution.name}
+                      {option.data.institutionLink?.institution?.name}
                     </p>
                   </div>
                 </div>
@@ -479,15 +475,12 @@ export function ExpenseRecurringTransactionCreateForm({
   );
 
   const paymentMethodOptions = useMemo(() => {
-    if (selectedAccount?.data?.type !== AccountType.CreditCard) {
-      return allPaymentMethodOptions.filter(
-        (option) =>
-          ![PaymentMethod.CreditCard, PaymentMethod.DebitCard].includes(
-            option.value as PaymentMethod,
-          ),
-      );
-    }
-    return allPaymentMethodOptions;
+    return allPaymentMethodOptions.filter(
+      (option) =>
+        ![PaymentMethod.CreditCard, PaymentMethod.DebitCard].includes(
+          option.value as PaymentMethod,
+        ),
+    );
   }, [selectedAccount?.data?.type, allPaymentMethodOptions]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -584,8 +577,8 @@ export function ExpenseRecurringTransactionCreateForm({
                 <div className="flex items-center gap-3 py-1.5">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
                     <InstitutionLogo
-                      logoUrl={option.data.institution.logoUrl}
-                      name={option.data.institution.name}
+                      logoUrl={option.data.institutionLink?.institution?.logoUrl}
+                      name={option.data.institutionLink?.institution?.name}
                       size="sm"
                     />
                   </div>
@@ -594,7 +587,7 @@ export function ExpenseRecurringTransactionCreateForm({
                       {option.data.name}
                     </p>
                     <p className="truncate text-xs text-muted-foreground">
-                      {option.data.institution.name}
+                      {option.data.institutionLink?.institution?.name}
                     </p>
                   </div>
                 </div>
