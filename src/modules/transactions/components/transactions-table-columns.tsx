@@ -261,8 +261,8 @@ export const transactionsTableColumns: InitialColumnDef<TransactionFragmentFragm
           return (
             <AccountCell
               account={{
-                name: sourceCard?.institutionLink?.institution?.name ?? '-',
-                institutionLink: sourceCard?.institutionLink ?? null,
+                name: billingPayment?.card?.institutionLink?.institution?.name,
+                institutionLink: billingPayment?.card?.institutionLink,
               }}
             />
           );
