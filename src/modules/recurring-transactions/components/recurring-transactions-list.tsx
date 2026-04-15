@@ -204,7 +204,10 @@ export function RecurringTransactionsList() {
                   <div className="flex items-center gap-2">
                     <InstitutionLogo
                       logoUrl={account.institutionLink?.institution?.logoUrl}
-                      name={account.institutionLink?.institution?.name || account.name}
+                      name={
+                        account.institutionLink?.institution?.name ||
+                        account.name
+                      }
                       size="sm"
                     />
                     <span className="text-sm">{account.name}</span>

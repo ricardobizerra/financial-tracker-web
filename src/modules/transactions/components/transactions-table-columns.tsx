@@ -36,7 +36,9 @@ function AccountCell({
 }: {
   account?: {
     name: string;
-    institution: { name: string; logoUrl: string | null };
+    institutionLink: {
+      institution: { name: string; logoUrl: string | null } | null;
+    } | null;
   } | null;
 }) {
   if (!account) return <span className="text-muted-foreground">—</span>;
@@ -44,8 +46,8 @@ function AccountCell({
   return (
     <div className="flex items-center gap-2">
       <InstitutionLogo
-        logoUrl={account.institution.logoUrl}
-        name={account.institution.name}
+        logoUrl={account.institutionLink?.institution?.logoUrl}
+        name={account.institutionLink?.institution?.name ?? ''}
         size="sm"
       />
       <span className="truncate text-sm">{account.name}</span>
@@ -240,8 +242,14 @@ export const transactionsTableColumns: InitialColumnDef<TransactionFragmentFragm
       accessorKey: 'account',
       title: 'Conta',
       cell: ({ row }) => {
-        const { type, status, sourceAccount, destinyAccount, billingPayment } =
-          row.original;
+        const {
+          type,
+          status,
+          sourceAccount,
+          destinyAccount,
+          billingPayment,
+          sourceCard,
+        } = row.original;
 
         // Pagamento de fatura agendado: ainda não sabe a conta de origem
         // Mostra apenas a conta do cartão (destino)
@@ -250,7 +258,14 @@ export const transactionsTableColumns: InitialColumnDef<TransactionFragmentFragm
           status === TransactionStatus.Planned &&
           !sourceAccount
         ) {
-          return <AccountCell account={billingPayment.accountCard?.account} />;
+          return (
+            <AccountCell
+              account={{
+                name: sourceCard?.institutionLink?.institution?.name ?? '-',
+                institutionLink: sourceCard?.institutionLink ?? null,
+              }}
+            />
+          );
         }
 
         if (type === TransactionType.BetweenAccounts) {

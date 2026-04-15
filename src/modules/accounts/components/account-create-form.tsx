@@ -295,7 +295,13 @@ export function AccountCreateForm({
                 onSubmit={handleSubmit}
                 renderAfter={() => null}
               >
-                {({ name, description, initialBalance, startDate, isActive }) => (
+                {({
+                  name,
+                  description,
+                  initialBalance,
+                  startDate,
+                  isActive,
+                }) => (
                   <>
                     {name}
                     {description}

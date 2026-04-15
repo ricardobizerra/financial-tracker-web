@@ -360,7 +360,8 @@ export function TransactionCard({
 
   const getAccountDisplay = () => {
     if (isBetweenAccounts) {
-      const sourceInst = transaction.sourceAccount?.institutionLink?.institution;
+      const sourceInst =
+        transaction.sourceAccount?.institutionLink?.institution;
       const destInst = transaction.destinyAccount?.institutionLink?.institution;
       return (
         <div className="flex items-center gap-1 text-sm font-medium text-muted-foreground">
@@ -420,8 +421,13 @@ export function TransactionCard({
             {transaction.sourceAccount && (
               <div className="flex items-center gap-1">
                 <InstitutionLogo
-                  logoUrl={transaction.sourceAccount.institutionLink?.institution?.logoUrl}
-                  name={transaction.sourceAccount.institutionLink?.institution?.name}
+                  logoUrl={
+                    transaction.sourceAccount.institutionLink?.institution
+                      ?.logoUrl
+                  }
+                  name={
+                    transaction.sourceAccount.institutionLink?.institution?.name
+                  }
                   size="sm"
                 />
                 <span className="text-sm font-medium">
@@ -433,8 +439,14 @@ export function TransactionCard({
             {transaction.destinyAccount && (
               <div className="flex items-center gap-1">
                 <InstitutionLogo
-                  logoUrl={transaction.destinyAccount.institutionLink?.institution?.logoUrl}
-                  name={transaction.destinyAccount.institutionLink?.institution?.name}
+                  logoUrl={
+                    transaction.destinyAccount.institutionLink?.institution
+                      ?.logoUrl
+                  }
+                  name={
+                    transaction.destinyAccount.institutionLink?.institution
+                      ?.name
+                  }
                   size="sm"
                 />
                 <span className="text-sm font-medium">
@@ -453,8 +465,12 @@ export function TransactionCard({
           <span className="text-sm text-muted-foreground">Creditada em</span>
           <div className="flex items-center gap-2">
             <InstitutionLogo
-              logoUrl={transaction.destinyAccount.institutionLink?.institution?.logoUrl}
-              name={transaction.destinyAccount.institutionLink?.institution?.name}
+              logoUrl={
+                transaction.destinyAccount.institutionLink?.institution?.logoUrl
+              }
+              name={
+                transaction.destinyAccount.institutionLink?.institution?.name
+              }
               size="sm"
             />
             <span className="text-sm font-medium">

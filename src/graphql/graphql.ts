@@ -48,7 +48,7 @@ export type Account = {
   name: Scalars['String']['output'];
   sourceRecurringTransactions: Maybe<Array<RecurringTransaction>>;
   sourceTransactions: Maybe<Array<Transaction>>;
-  startDate: Maybe<Scalars['DateTime']['output']>;
+  startDate: Scalars['DateTime']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -151,7 +151,7 @@ export type AccountCreateWithoutDestinyRecurringTransactionsInput = {
   name: Scalars['String']['input'];
   sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
   sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
-  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  startDate: Scalars['DateTime']['input'];
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
@@ -166,7 +166,7 @@ export type AccountCreateWithoutDestinyTransactionsInput = {
   name: Scalars['String']['input'];
   sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
   sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
-  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  startDate: Scalars['DateTime']['input'];
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
@@ -181,7 +181,7 @@ export type AccountCreateWithoutInstitutionLinkInput = {
   name: Scalars['String']['input'];
   sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
   sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
-  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  startDate: Scalars['DateTime']['input'];
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
@@ -196,7 +196,7 @@ export type AccountCreateWithoutSourceRecurringTransactionsInput = {
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
-  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  startDate: Scalars['DateTime']['input'];
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
@@ -211,7 +211,7 @@ export type AccountCreateWithoutSourceTransactionsInput = {
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
-  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  startDate: Scalars['DateTime']['input'];
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
@@ -258,7 +258,7 @@ export type AccountModel = {
   name: Scalars['String']['output'];
   sourceRecurringTransactions: Maybe<Array<RecurringTransaction>>;
   sourceTransactions: Maybe<Array<Transaction>>;
-  startDate: Maybe<Scalars['DateTime']['output']>;
+  startDate: Scalars['DateTime']['output'];
   totalInvested: Maybe<Scalars['Decimal']['output']>;
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -295,7 +295,7 @@ export type AccountWhereInput = {
   name?: InputMaybe<StringFilter>;
   sourceRecurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
   sourceTransactions?: InputMaybe<TransactionListRelationFilter>;
-  startDate?: InputMaybe<DateTimeNullableFilter>;
+  startDate?: InputMaybe<DateTimeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -315,7 +315,7 @@ export type AccountWhereUniqueInput = {
   name?: InputMaybe<StringFilter>;
   sourceRecurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
   sourceTransactions?: InputMaybe<TransactionListRelationFilter>;
-  startDate?: InputMaybe<DateTimeNullableFilter>;
+  startDate?: InputMaybe<DateTimeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -472,11 +472,8 @@ export type AuthUserProviderWhereUniqueInput = {
 
 export type BalanceForecastModel = {
   __typename?: 'BalanceForecastModel';
-  balanceTrend: Scalars['Float']['output'];
-  currentBalance: Scalars['Float']['output'];
-  dataPoints: Array<BalanceForecastPointModel>;
+  accountSeries: Array<BalanceForecastSeriesModel>;
   endDate: Scalars['DateTime']['output'];
-  projectedBalance: Scalars['Float']['output'];
   startDate: Scalars['DateTime']['output'];
 };
 
@@ -500,6 +497,17 @@ export type BalanceForecastPointModel = {
   isProjected: Scalars['Boolean']['output'];
   transactionCount: Scalars['Float']['output'];
   transactions: Array<BalanceForecastTransactionModel>;
+};
+
+export type BalanceForecastSeriesModel = {
+  __typename?: 'BalanceForecastSeriesModel';
+  accountId: Scalars['String']['output'];
+  accountName: Scalars['String']['output'];
+  balanceTrend: Scalars['Float']['output'];
+  color: Maybe<Scalars['String']['output']>;
+  currentBalance: Scalars['Float']['output'];
+  dataPoints: Array<BalanceForecastPointModel>;
+  projectedBalance: Scalars['Float']['output'];
 };
 
 export type BalanceForecastTransactionModel = {
@@ -2311,6 +2319,7 @@ export type Mutation = {
   deleteRecurringTransaction: RecurringTransactionModel;
   endRecurringTransaction: RecurringTransactionModel;
   pauseRecurringTransaction: RecurringTransactionModel;
+  redeemInvestment: Investment;
   requestPasswordReset: Scalars['Boolean']['output'];
   rescheduleTransaction: TransactionModel;
   resetPassword: Scalars['Boolean']['output'];
@@ -2385,6 +2394,10 @@ export type MutationEndRecurringTransactionArgs = {
 
 export type MutationPauseRecurringTransactionArgs = {
   id: Scalars['String']['input'];
+};
+
+export type MutationRedeemInvestmentArgs = {
+  data: RedeemInvestmentInput;
 };
 
 export type MutationRequestPasswordResetArgs = {
@@ -3584,6 +3597,11 @@ export type RecurringTransactionWhereUniqueInput = {
   user?: InputMaybe<UserRelationFilter>;
   userId?: InputMaybe<StringFilter>;
   weekOfMonth?: InputMaybe<IntNullableFilter>;
+};
+
+export type RedeemInvestmentInput = {
+  finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  investmentId: Scalars['ID']['input'];
 };
 
 export enum Regime {
@@ -4839,11 +4857,7 @@ export type CreateAccountMutationVariables = Exact<{
 
 export type CreateAccountMutation = {
   __typename?: 'Mutation';
-  createAccount: {
-    __typename?: 'AccountModel';
-    id: string;
-    startDate: any | null;
-  };
+  createAccount: { __typename?: 'AccountModel'; id: string; startDate: any };
 };
 
 export type CreateCardMutationVariables = Exact<{
@@ -4907,7 +4921,7 @@ export type AccountFragmentFragment = {
   balance: any | null;
   description: string | null;
   isActive: boolean;
-  startDate: any | null;
+  startDate: any;
   institutionLinkId: string;
   createdAt: any;
   updatedAt: any;
@@ -4950,7 +4964,7 @@ export type AccountsQuery = {
         balance: any | null;
         description: string | null;
         isActive: boolean;
-        startDate: any | null;
+        startDate: any;
         institutionLinkId: string;
         createdAt: any;
         updatedAt: any;
@@ -4992,7 +5006,7 @@ export type AccountQuery = {
     balance: any | null;
     description: string | null;
     isActive: boolean;
-    startDate: any | null;
+    startDate: any;
     institutionLinkId: string;
     createdAt: any;
     updatedAt: any;
@@ -5347,26 +5361,32 @@ export type CashFlowBalanceForecastQuery = {
   __typename?: 'Query';
   balanceForecast: {
     __typename?: 'BalanceForecastModel';
-    currentBalance: number;
-    projectedBalance: number;
-    balanceTrend: number;
     startDate: any;
     endDate: any;
-    dataPoints: Array<{
-      __typename?: 'BalanceForecastPointModel';
-      date: any;
-      balance: number;
-      isProjected: boolean;
-      isInitialBalance: boolean | null;
-      incomeAmount: number;
-      expenseAmount: number;
-      transactionCount: number;
-      transactions: Array<{
-        __typename?: 'BalanceForecastTransactionModel';
-        id: string;
-        description: string;
-        amount: number;
-        isIncome: boolean;
+    accountSeries: Array<{
+      __typename?: 'BalanceForecastSeriesModel';
+      accountId: string;
+      accountName: string;
+      color: string | null;
+      currentBalance: number;
+      projectedBalance: number;
+      balanceTrend: number;
+      dataPoints: Array<{
+        __typename?: 'BalanceForecastPointModel';
+        date: any;
+        balance: number;
+        isProjected: boolean;
+        isInitialBalance: boolean | null;
+        incomeAmount: number;
+        expenseAmount: number;
+        transactionCount: number;
+        transactions: Array<{
+          __typename?: 'BalanceForecastTransactionModel';
+          id: string;
+          description: string;
+          amount: number;
+          isIncome: boolean;
+        }>;
       }>;
     }>;
   };
@@ -6004,26 +6024,32 @@ export type BalanceForecastQuery = {
   __typename?: 'Query';
   balanceForecast: {
     __typename?: 'BalanceForecastModel';
-    currentBalance: number;
-    projectedBalance: number;
-    balanceTrend: number;
     startDate: any;
     endDate: any;
-    dataPoints: Array<{
-      __typename?: 'BalanceForecastPointModel';
-      date: any;
-      balance: number;
-      isProjected: boolean;
-      isInitialBalance: boolean | null;
-      incomeAmount: number;
-      expenseAmount: number;
-      transactionCount: number;
-      transactions: Array<{
-        __typename?: 'BalanceForecastTransactionModel';
-        id: string;
-        description: string;
-        amount: number;
-        isIncome: boolean;
+    accountSeries: Array<{
+      __typename?: 'BalanceForecastSeriesModel';
+      accountId: string;
+      accountName: string;
+      color: string | null;
+      currentBalance: number;
+      projectedBalance: number;
+      balanceTrend: number;
+      dataPoints: Array<{
+        __typename?: 'BalanceForecastPointModel';
+        date: any;
+        balance: number;
+        isProjected: boolean;
+        isInitialBalance: boolean | null;
+        incomeAmount: number;
+        expenseAmount: number;
+        transactionCount: number;
+        transactions: Array<{
+          __typename?: 'BalanceForecastTransactionModel';
+          id: string;
+          description: string;
+          amount: number;
+          isIncome: boolean;
+        }>;
       }>;
     }>;
   };
@@ -9642,74 +9668,98 @@ export const CashFlowBalanceForecastDocument = {
               selections: [
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'dataPoints' },
+                  name: { kind: 'Name', value: 'accountSeries' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'date' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'balance' },
+                        name: { kind: 'Name', value: 'accountId' },
                       },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'isProjected' },
+                        name: { kind: 'Name', value: 'accountName' },
                       },
+                      { kind: 'Field', name: { kind: 'Name', value: 'color' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'isInitialBalance' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'incomeAmount' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'expenseAmount' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'transactionCount' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'transactions' },
+                        name: { kind: 'Name', value: 'dataPoints' },
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
                             {
                               kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
+                              name: { kind: 'Name', value: 'date' },
                             },
                             {
                               kind: 'Field',
-                              name: { kind: 'Name', value: 'description' },
+                              name: { kind: 'Name', value: 'balance' },
                             },
                             {
                               kind: 'Field',
-                              name: { kind: 'Name', value: 'amount' },
+                              name: { kind: 'Name', value: 'isProjected' },
                             },
                             {
                               kind: 'Field',
-                              name: { kind: 'Name', value: 'isIncome' },
+                              name: { kind: 'Name', value: 'isInitialBalance' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'incomeAmount' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'expenseAmount' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'transactionCount' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'transactions' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'id' },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: {
+                                      kind: 'Name',
+                                      value: 'description',
+                                    },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'amount' },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'isIncome' },
+                                  },
+                                ],
+                              },
                             },
                           ],
                         },
                       },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'currentBalance' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'projectedBalance' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'balanceTrend' },
+                      },
                     ],
                   },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'currentBalance' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'projectedBalance' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'balanceTrend' },
                 },
                 { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
@@ -11930,74 +11980,98 @@ export const BalanceForecastDocument = {
               selections: [
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'dataPoints' },
+                  name: { kind: 'Name', value: 'accountSeries' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'date' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'balance' },
+                        name: { kind: 'Name', value: 'accountId' },
                       },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'isProjected' },
+                        name: { kind: 'Name', value: 'accountName' },
                       },
+                      { kind: 'Field', name: { kind: 'Name', value: 'color' } },
                       {
                         kind: 'Field',
-                        name: { kind: 'Name', value: 'isInitialBalance' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'incomeAmount' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'expenseAmount' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'transactionCount' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'transactions' },
+                        name: { kind: 'Name', value: 'dataPoints' },
                         selectionSet: {
                           kind: 'SelectionSet',
                           selections: [
                             {
                               kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
+                              name: { kind: 'Name', value: 'date' },
                             },
                             {
                               kind: 'Field',
-                              name: { kind: 'Name', value: 'description' },
+                              name: { kind: 'Name', value: 'balance' },
                             },
                             {
                               kind: 'Field',
-                              name: { kind: 'Name', value: 'amount' },
+                              name: { kind: 'Name', value: 'isProjected' },
                             },
                             {
                               kind: 'Field',
-                              name: { kind: 'Name', value: 'isIncome' },
+                              name: { kind: 'Name', value: 'isInitialBalance' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'incomeAmount' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'expenseAmount' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'transactionCount' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'transactions' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'id' },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: {
+                                      kind: 'Name',
+                                      value: 'description',
+                                    },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'amount' },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'isIncome' },
+                                  },
+                                ],
+                              },
                             },
                           ],
                         },
                       },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'currentBalance' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'projectedBalance' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'balanceTrend' },
+                      },
                     ],
                   },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'currentBalance' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'projectedBalance' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'balanceTrend' },
                 },
                 { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },

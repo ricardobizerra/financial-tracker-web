@@ -167,9 +167,7 @@ function RecurrenceConfigStep({
         <div className="grid grid-cols-2 gap-2">
           <button
             type="button"
-            onClick={() =>
-              setRecurrenceFrequency(RecurrenceFrequency.Weekly)
-            }
+            onClick={() => setRecurrenceFrequency(RecurrenceFrequency.Weekly)}
             className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
               recurrenceFrequency === RecurrenceFrequency.Weekly
                 ? 'border-primary bg-primary/5 text-primary'
@@ -180,9 +178,7 @@ function RecurrenceConfigStep({
           </button>
           <button
             type="button"
-            onClick={() =>
-              setRecurrenceFrequency(RecurrenceFrequency.BiWeekly)
-            }
+            onClick={() => setRecurrenceFrequency(RecurrenceFrequency.BiWeekly)}
             className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
               recurrenceFrequency === RecurrenceFrequency.BiWeekly
                 ? 'border-primary bg-primary/5 text-primary'
@@ -193,9 +189,7 @@ function RecurrenceConfigStep({
           </button>
           <button
             type="button"
-            onClick={() =>
-              setRecurrenceFrequency(RecurrenceFrequency.Monthly)
-            }
+            onClick={() => setRecurrenceFrequency(RecurrenceFrequency.Monthly)}
             className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
               recurrenceFrequency === RecurrenceFrequency.Monthly
                 ? 'border-primary bg-primary/5 text-primary'
@@ -206,9 +200,7 @@ function RecurrenceConfigStep({
           </button>
           <button
             type="button"
-            onClick={() =>
-              setRecurrenceFrequency(RecurrenceFrequency.Yearly)
-            }
+            onClick={() => setRecurrenceFrequency(RecurrenceFrequency.Yearly)}
             className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
               recurrenceFrequency === RecurrenceFrequency.Yearly
                 ? 'border-primary bg-primary/5 text-primary'
@@ -322,9 +314,7 @@ function RecurrenceConfigStep({
           recurrenceFrequency === RecurrenceFrequency.Yearly) && (
           <>
             <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Qual semana?
-              </label>
+              <label className="text-sm font-medium">Qual semana?</label>
               <div className="flex gap-2">
                 {['1ª', '2ª', '3ª', '4ª', '5ª'].map((week, index) => (
                   <button
@@ -343,9 +333,7 @@ function RecurrenceConfigStep({
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Dia da semana
-              </label>
+              <label className="text-sm font-medium">Dia da semana</label>
               <div className="flex flex-wrap gap-1">
                 {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(
                   (day, index) => (
@@ -389,8 +377,9 @@ function RecurrenceConfigStep({
         startDate &&
         startDate.getDate() >= 29 && (
           <p className="text-xs text-amber-600 dark:text-amber-400">
-            <AlertTriangleIcon className="inline w-4 h-4" /> Nos meses com menos de {startDate.getDate()} dias, a transação
-            será criada no último dia do mês.
+            <AlertTriangleIcon className="inline h-4 w-4" /> Nos meses com menos
+            de {startDate.getDate()} dias, a transação será criada no último dia
+            do mês.
           </p>
         )}
     </div>
@@ -409,8 +398,7 @@ function buildRecurrenceData(
     recurrenceFrequency === RecurrenceFrequency.Weekly ||
     recurrenceFrequency === RecurrenceFrequency.BiWeekly;
   const isYearly = recurrenceFrequency === RecurrenceFrequency.Yearly;
-  const needsDayOfWeek =
-    isWeeklyOrBiWeekly || dayMode === DayMode.NthWeekday;
+  const needsDayOfWeek = isWeeklyOrBiWeekly || dayMode === DayMode.NthWeekday;
   const needsDayOfMonth =
     dayMode === DayMode.SpecificDay && !isWeeklyOrBiWeekly;
 
@@ -590,7 +578,9 @@ export function IncomeRecurringTransactionCreateForm({
                 <div className="flex items-center gap-3 py-1.5">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
                     <InstitutionLogo
-                      logoUrl={option.data.institutionLink?.institution?.logoUrl}
+                      logoUrl={
+                        option.data.institutionLink?.institution?.logoUrl
+                      }
                       name={option.data.institutionLink?.institution?.name}
                       size="sm"
                     />
@@ -918,7 +908,9 @@ export function ExpenseRecurringTransactionCreateForm({
                 <div className="flex items-center gap-3 py-1.5">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
                     <InstitutionLogo
-                      logoUrl={option.data.institutionLink?.institution?.logoUrl}
+                      logoUrl={
+                        option.data.institutionLink?.institution?.logoUrl
+                      }
                       name={option.data.institutionLink?.institution?.name}
                       size="sm"
                     />

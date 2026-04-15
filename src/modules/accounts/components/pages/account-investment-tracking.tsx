@@ -2,7 +2,8 @@
 
 import {
   AccountFragmentFragment,
-  AccountType,
+  InstitutionLinkFragmentFragment,
+  InstitutionType,
   InvestmentEvolutionPeriod,
   Regime,
 } from '@/graphql/graphql';
@@ -56,7 +57,7 @@ import {
 } from '@/components/ui/select';
 
 interface AccountInvestmentTrackingProps {
-  account: AccountFragmentFragment;
+  account: InstitutionLinkFragmentFragment;
 }
 
 const COLORS = [
@@ -95,14 +96,14 @@ export function AccountInvestmentTracking({
   // Query para regimes na distribuição - filtrada por conta
   const { data: distributionRegimesData, loading: distributionLoading } =
     useQuery(InvestmentRegimesQuery, {
-      variables: { accountId: account.id },
+      variables: { institutionLinkId: account.id },
       skip: activeTab !== 'distribution',
     });
 
   // Query para regimes na tab investimentos - filtrada por conta
   const { data: investmentsRegimesData, loading: investmentsLoading } =
     useQuery(InvestmentRegimesQuery, {
-      variables: { accountId: account.id },
+      variables: { institutionLinkId: account.id },
       skip: activeTab !== 'investments',
     });
 
@@ -132,55 +133,38 @@ export function AccountInvestmentTracking({
     color: COLORS[index % COLORS.length],
   }));
 
-  const defaultRegime =
-    account.type === AccountType.Savings ? Regime.Poupanca : undefined;
-  const isSavings = account.type === AccountType.Savings;
-
   return (
     <div className="space-y-6">
       {/* Account Header Card */}
       <Card>
         <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center">
           <InstitutionLogo
-            logoUrl={account.institution?.logoUrl}
-            name={account.institution?.name || 'Sem instituição'}
-            color={account.institution?.color}
+            logoUrl={account?.institution?.logoUrl}
+            name={account?.institution?.name || 'Sem instituição'}
+            color={account?.institution?.color}
             size="xl"
           />
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold">{account.name}</h1>
-              <AccountTypeBadge type={account.type} />
-              {!account.isActive && <Badge variant="secondary">Inativa</Badge>}
+              <h1 className="text-2xl font-bold">
+                {account.institution?.name}
+              </h1>
+              <AccountTypeBadge type={InstitutionType.Investment} />
             </div>
-            <p className="text-muted-foreground">
-              {account.institution?.name}
-              {account.description && ` • ${account.description}`}
-            </p>
           </div>
         </CardContent>
       </Card>
 
       {/* Summary Cards - sempre visíveis */}
       {evolutionLoading ? (
-        <div
-          className={cn(
-            'grid grid-cols-2 gap-4',
-            isSavings ? 'md:grid-cols-3' : 'md:grid-cols-4',
-          )}
-        >
+        <div className={cn('grid grid-cols-2 gap-4')}>
           <Skeleton className="h-28" />
           <Skeleton className="h-28" />
           <Skeleton className="h-28" />
-          {!isSavings && <Skeleton className="h-28" />}
+          <Skeleton className="h-28" />
         </div>
       ) : evolution ? (
-        <div
-          className={cn(
-            'grid grid-cols-2 gap-4',
-            isSavings ? 'md:grid-cols-3' : 'md:grid-cols-4',
-          )}
-        >
+        <div className={cn('grid grid-cols-2 gap-4')}>
           <Card className="border-l-4 border-l-muted-foreground">
             <CardContent className="p-4">
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -220,18 +204,16 @@ export function AccountInvestmentTracking({
             </CardContent>
           </Card>
 
-          {!isSavings && (
-            <Card className="border-l-4 border-l-amber-500">
-              <CardContent className="p-4">
-                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Após IRPF
-                </p>
-                <p className="mt-1 text-2xl font-bold text-amber-600">
-                  {formatCurrency(evolution.totalTaxedAmount)}
-                </p>
-              </CardContent>
-            </Card>
-          )}
+          <Card className="border-l-4 border-l-amber-500">
+            <CardContent className="p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Após IRPF
+              </p>
+              <p className="mt-1 text-2xl font-bold text-amber-600">
+                {formatCurrency(evolution.totalTaxedAmount)}
+              </p>
+            </CardContent>
+          </Card>
         </div>
       ) : null}
 
@@ -402,7 +384,7 @@ export function AccountInvestmentTracking({
                       com investimentos registrados.
                     </p>
                   </div>
-                  <InvestmentCreateForm defaultRegime={defaultRegime} />
+                  <InvestmentCreateForm />
                 </div>
               )}
             </CardContent>
@@ -529,21 +511,13 @@ export function AccountInvestmentTracking({
 
         {/* Investments Tab - Cards de Regimes ou Tabela para Savings */}
         <TabsContent value="investments" className="mt-0">
-          {isSavings ? (
-            <InvestmentsTable
-              regime={Regime.Poupanca}
-              institutionLinkIds={[account.id]}
-              showFilters={false}
-            />
-          ) : (
-            <InvestmentRegimeCardsGrid
-              regimes={investmentsRegimes}
-              loading={investmentsLoading}
-              emptyMessage="Nenhum investimento registrado nesta conta"
-              columns={3}
-              accountId={account.id}
-            />
-          )}
+          <InvestmentRegimeCardsGrid
+            regimes={investmentsRegimes}
+            loading={investmentsLoading}
+            emptyMessage="Nenhum investimento registrado nesta conta"
+            columns={3}
+            accountId={account.id}
+          />
         </TabsContent>
       </Tabs>
     </div>

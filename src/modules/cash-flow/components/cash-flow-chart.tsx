@@ -21,6 +21,7 @@ import { TrendingUp, TrendingDown, Loader2 } from 'lucide-react';
 
 interface CashFlowChartProps {
   accountId?: string;
+  type: 'balance' | 'cash-flow';
   period: BalanceForecastPeriod;
   customStartDate?: Date;
   customEndDate?: Date;
@@ -28,6 +29,7 @@ interface CashFlowChartProps {
 
 export function CashFlowChart({
   accountId,
+  type,
   period,
   customStartDate,
   customEndDate,
@@ -46,22 +48,81 @@ export function CashFlowChart({
 
   const forecast = data?.balanceForecast;
 
-  const chartData =
-    forecast?.dataPoints?.map((point) => ({
-      date: new Date(point.date),
-      dateLabel: format(new Date(point.date), 'dd/MM', { locale: ptBR }),
-      balance: point.balance,
-      isProjected: point.isProjected,
-      incomeAmount: point.incomeAmount,
-      expenseAmount: point.expenseAmount,
-      transactionCount: point.transactionCount,
-      transactions: point.transactions,
-    })) || [];
+  // Flatten the accountSeries data by date
+  const chartDataByDate = new Map<string, any>();
+  const availableAccounts: { id: string; name: string; color: string }[] = [];
 
-  const minBalance =
-    chartData.length > 0 ? Math.min(...chartData.map((d) => d.balance)) : 0;
-  const maxBalance =
-    chartData.length > 0 ? Math.max(...chartData.map((d) => d.balance)) : 0;
+  const FALLBACK_COLORS = [
+    'hsl(var(--primary))',
+    '#3b82f6', // blue
+    '#10b981', // emerald
+    '#f59e0b', // amber
+    '#8b5cf6', // violet
+    '#ec4899', // pink
+    '#14b8a6', // teal
+    '#f43f5e', // rose
+  ];
+
+  if (forecast?.accountSeries) {
+    forecast.accountSeries.forEach((series, idx) => {
+      const color =
+        series.color || FALLBACK_COLORS[idx % FALLBACK_COLORS.length];
+      availableAccounts.push({
+        id: series.accountId,
+        name: series.accountName,
+        color,
+      });
+
+      series.dataPoints.forEach((point) => {
+        const dateKey = point.date.toString();
+
+        if (!chartDataByDate.has(dateKey)) {
+          chartDataByDate.set(dateKey, {
+            date: new Date(point.date),
+            dateLabel: format(new Date(point.date), 'dd/MM', { locale: ptBR }),
+            isProjected: point.isProjected,
+            transactions: [],
+          });
+        }
+
+        const existingPoint = chartDataByDate.get(dateKey);
+        existingPoint[`balance_${series.accountId}`] = point.balance;
+
+        if (point.transactions && point.transactions.length > 0) {
+          existingPoint.transactions.push(
+            ...point.transactions.map((tx: any) => ({
+              ...tx,
+              accountName: series.accountName,
+            })),
+          );
+        }
+      });
+    });
+  }
+
+  const chartData = Array.from(chartDataByDate.values()).sort(
+    (a, b) => a.date.getTime() - b.date.getTime(),
+  );
+
+  let minBalance = 0;
+  let maxBalance = 0;
+
+  if (chartData.length > 0) {
+    const allBalances: number[] = [];
+    chartData.forEach((point) => {
+      availableAccounts.forEach((account) => {
+        if (point[`balance_${account.id}`] !== undefined) {
+          allBalances.push(point[`balance_${account.id}`]);
+        }
+      });
+    });
+
+    if (allBalances.length > 0) {
+      minBalance = Math.min(...allBalances);
+      maxBalance = Math.max(...allBalances);
+    }
+  }
+
   const hasNegativeBalance = minBalance < 0;
 
   const yDomain = [
@@ -69,7 +130,12 @@ export function CashFlowChart({
     Math.ceil(maxBalance * 1.1),
   ];
 
-  const balanceTrend = forecast?.balanceTrend || 0;
+  // Sum balance trends across all returned series
+  const balanceTrend =
+    forecast?.accountSeries?.reduce(
+      (sum, series) => sum + series.balanceTrend,
+      0,
+    ) || 0;
 
   if (error) {
     return (
@@ -129,133 +195,253 @@ export function CashFlowChart({
             <p className="text-muted-foreground">
               {isCustomPeriod && (!customStartDate || !customEndDate)
                 ? 'Selecione as datas de início e fim'
-                : 'Nenhuma transação no período'}
+                : 'Nenhum dado no período'}
             </p>
           </div>
         ) : (
-          <div className="h-[300px] w-full">
+          <div className="mt-4 h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ left: 12, right: 12 }}>
-                <defs>
-                  <linearGradient
-                    id="cashFlowBalanceGradient"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop
-                      offset="5%"
-                      stopColor="hsl(var(--primary))"
-                      stopOpacity={0.3}
-                    />
-                    <stop
-                      offset="95%"
-                      stopColor="hsl(var(--primary))"
-                      stopOpacity={0}
-                    />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                  stroke="hsl(var(--border))"
-                />
-                <XAxis
-                  dataKey="dateLabel"
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={8}
-                  tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
-                  interval="preserveStartEnd"
-                />
-                <YAxis
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={8}
-                  tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
-                  tickFormatter={(value) => formatCurrency(value)}
-                  domain={yDomain}
-                  width={80}
-                />
-                <Tooltip
-                  content={({ active, payload }) => {
-                    if (!active || !payload?.[0]) return null;
-                    const point = payload[0].payload as (typeof chartData)[0];
-                    return (
-                      <div className="max-w-xs rounded-lg border bg-background p-3 shadow-lg">
-                        <p className="font-medium">
-                          {format(point.date, "dd 'de' MMMM", { locale: ptBR })}
-                        </p>
-                        <p
-                          className={`text-lg font-bold ${point.balance >= 0 ? 'text-emerald-600' : 'text-red-600'}`}
-                        >
-                          {formatCurrency(point.balance)}
-                        </p>
-                        {point.isProjected && (
-                          <p className="text-xs text-muted-foreground">
-                            Saldo projetado
-                          </p>
-                        )}
-                        {point.transactions &&
-                          point.transactions.length > 0 && (
-                            <div className="mt-2 space-y-1 border-t pt-2">
-                              {point.transactions.map((tx) => (
-                                <div
-                                  key={tx.id}
-                                  className="flex items-center justify-between gap-3 text-sm"
-                                >
-                                  <span className="truncate text-muted-foreground">
-                                    {tx.description}
-                                  </span>
-                                  <span
-                                    className={`shrink-0 font-medium ${
-                                      tx.isIncome
-                                        ? 'text-emerald-600'
-                                        : 'text-red-600'
-                                    }`}
-                                  >
-                                    {tx.isIncome ? '+' : '-'}
-                                    {formatCurrency(tx.amount)}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                      </div>
-                    );
-                  }}
-                />
-                {hasNegativeBalance && (
-                  <ReferenceLine
-                    y={0}
-                    stroke="hsl(var(--muted-foreground))"
+              {type === 'balance' ? (
+                <AreaChart
+                  data={chartData}
+                  margin={{ left: 12, right: 12, top: 12, bottom: 20 }}
+                >
+                  <defs>
+                    {availableAccounts.map((account) => (
+                      <linearGradient
+                        key={`gradient-${account.id}`}
+                        id={`balanceGradient-${account.id}`}
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor={account.color}
+                          stopOpacity={0.3}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor={account.color}
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    ))}
+                  </defs>
+                  <CartesianGrid
                     strokeDasharray="3 3"
-                    strokeWidth={1}
+                    vertical={false}
+                    stroke="hsl(var(--border))"
                   />
-                )}
-                <ReferenceLine
-                  x={format(new Date(), 'dd/MM', { locale: ptBR })}
-                  stroke="hsl(var(--primary))"
-                  strokeDasharray="5 5"
-                  strokeWidth={2}
-                  label={{
-                    value: 'Hoje',
-                    position: 'insideTopRight',
-                    fill: 'hsl(var(--primary))',
-                    fontSize: 12,
-                    fontWeight: 600,
-                    offset: 10,
-                  }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="balance"
-                  stroke="hsl(var(--primary))"
-                  fill="url(#cashFlowBalanceGradient)"
-                  strokeWidth={2}
-                />
-              </AreaChart>
+                  <XAxis
+                    dataKey="dateLabel"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    tick={{
+                      fontSize: 12,
+                      fill: 'hsl(var(--muted-foreground))',
+                    }}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    tick={{
+                      fontSize: 12,
+                      fill: 'hsl(var(--muted-foreground))',
+                    }}
+                    tickFormatter={(value) => formatCurrency(value)}
+                    domain={yDomain}
+                    width={80}
+                  />
+                  <Tooltip
+                    content={({ active, payload }) => {
+                      if (!active || !payload?.[0]) return null;
+                      const point = payload[0].payload as (typeof chartData)[0];
+                      return (
+                        <div className="max-w-[350px] rounded-lg border bg-background p-3 shadow-lg">
+                          <p className="font-medium">
+                            {format(point.date, "dd 'de' MMMM", {
+                              locale: ptBR,
+                            })}
+                            {point.isProjected && (
+                              <span className="ml-2 text-xs text-muted-foreground">
+                                (Projetado)
+                              </span>
+                            )}
+                          </p>
+                          <div className="mt-2 space-y-2">
+                            {availableAccounts.map((account) => {
+                              const val = point[`balance_${account.id}`];
+                              if (val === undefined) return null;
+                              return (
+                                <div key={account.id} className="flex flex-col">
+                                  <div className="flex items-center justify-between gap-4">
+                                    <div className="flex min-w-[120px] items-center gap-1.5">
+                                      <div
+                                        className="h-2.5 w-2.5 rounded-full"
+                                        style={{
+                                          backgroundColor: account.color,
+                                        }}
+                                      />
+                                      <span
+                                        className="truncate text-xs text-muted-foreground"
+                                        title={account.name}
+                                      >
+                                        {account.name}
+                                      </span>
+                                    </div>
+                                    <span
+                                      className={`text-sm font-bold ${val >= 0 ? 'text-emerald-600' : 'text-red-600'}`}
+                                    >
+                                      {formatCurrency(val)}
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    }}
+                  />
+                  {hasNegativeBalance && (
+                    <ReferenceLine
+                      y={0}
+                      stroke="hsl(var(--muted-foreground))"
+                      strokeDasharray="3 3"
+                    />
+                  )}
+                  <ReferenceLine
+                    x={format(new Date(), 'dd/MM', { locale: ptBR })}
+                    stroke="hsl(var(--primary))"
+                    strokeDasharray="5 5"
+                    strokeWidth={2}
+                    label={{
+                      value: 'Hoje',
+                      position: 'insideTopRight',
+                      fill: 'hsl(var(--primary))',
+                      fontSize: 12,
+                      fontWeight: 600,
+                      offset: 10,
+                    }}
+                  />
+
+                  {availableAccounts.map((account) => (
+                    <Area
+                      key={`area-${account.id}`}
+                      type="monotone"
+                      dataKey={`balance_${account.id}`}
+                      name={account.name}
+                      stroke={account.color}
+                      fill={`url(#balanceGradient-${account.id})`}
+                      strokeWidth={2}
+                      activeDot={{ r: 6, strokeWidth: 0, fill: account.color }}
+                    />
+                  ))}
+                </AreaChart>
+              ) : (
+                <AreaChart data={chartData} margin={{ left: 12, right: 12 }}>
+                  <defs>
+                    <linearGradient
+                      id="incomeGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient
+                      id="expenseGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="hsl(var(--border))"
+                  />
+                  <XAxis
+                    dataKey="dateLabel"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    tick={{
+                      fontSize: 12,
+                      fill: 'hsl(var(--muted-foreground))',
+                    }}
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    tick={{
+                      fontSize: 12,
+                      fill: 'hsl(var(--muted-foreground))',
+                    }}
+                    tickFormatter={(value) => formatCurrency(value)}
+                    width={80}
+                  />
+                  <Tooltip
+                    content={({ active, payload }) => {
+                      if (!active || !payload?.[0]) return null;
+                      const point = payload[0].payload as (typeof chartData)[0];
+                      return (
+                        <div className="rounded-lg border bg-background p-3 shadow-lg">
+                          <p className="mb-2 font-medium">
+                            {format(point.date, "dd 'de' MMMM", {
+                              locale: ptBR,
+                            })}
+                          </p>
+                          <div className="space-y-1">
+                            <div className="flex items-center justify-between gap-4">
+                              <span className="text-muted-foreground">
+                                Entradas
+                              </span>
+                              <span className="font-bold text-emerald-600">
+                                {formatCurrency(point.totalIncome)}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between gap-4">
+                              <span className="text-muted-foreground">
+                                Saídas
+                              </span>
+                              <span className="font-bold text-red-600">
+                                {formatCurrency(point.totalExpense)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="totalIncome"
+                    stroke="#10b981"
+                    fill="url(#incomeGradient)"
+                    strokeWidth={2}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="totalExpense"
+                    stroke="#ef4444"
+                    fill="url(#expenseGradient)"
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              )}
             </ResponsiveContainer>
           </div>
         )}

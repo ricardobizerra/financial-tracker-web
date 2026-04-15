@@ -46,9 +46,7 @@ export const getRecurrenceSummary = (
         case DayMode.SpecificDay:
           if (selectedDate) {
             const dayFormat =
-              frequency === RecurrenceFrequency.Monthly
-                ? 'dd'
-                : "dd 'de' MMMM";
+              frequency === RecurrenceFrequency.Monthly ? 'dd' : "dd 'de' MMMM";
             return `Esta transação será repetida ${periodText} no dia ${format(selectedDate, dayFormat, { locale: ptBR })}`;
           }
           return `Esta transação será repetida ${periodText}`;

@@ -121,8 +121,6 @@ interface TransactionCreateFormProps {
   }) => Promise<boolean>;
 }
 
-
-
 const categoryOptions = Object.values(TransactionCategory).map((c) => ({
   value: c,
   label: transactionCategoryLabels[c],
@@ -309,7 +307,8 @@ export function IncomeTransactionCreateForm({
       ? {
           id: editTransaction.destinyAccount.id,
           name: editTransaction.destinyAccount.name,
-          institution: editTransaction.destinyAccount.institutionLink.institution,
+          institution:
+            editTransaction.destinyAccount.institutionLink.institution,
         }
       : null,
   );
@@ -1046,8 +1045,9 @@ function IncomeTransactionFormDetails({
                 selectedDate &&
                 selectedDate.getDate() >= 29 && (
                   <p className="text-xs text-amber-600 dark:text-amber-400">
-                    <AlertTriangleIcon className="inline w-4 h-4" /> Nos meses com menos de {selectedDate.getDate()} dias, a
-                    transação será criada no último dia do mês.
+                    <AlertTriangleIcon className="inline h-4 w-4" /> Nos meses
+                    com menos de {selectedDate.getDate()} dias, a transação será
+                    criada no último dia do mês.
                   </p>
                 )}
             </div>
@@ -1091,24 +1091,30 @@ export function ExpenseTransactionCreateForm({
 
   const [currentStep, setCurrentStep] = useState(hasPreselected ? 3 : 1);
 
-  const [selectedCardOrAccountStepType, setSelectedCardOrAccountStepType] = useState<TransactionCardOrAccountStepType | undefined>();
+  const [selectedCardOrAccountStepType, setSelectedCardOrAccountStepType] =
+    useState<TransactionCardOrAccountStepType | undefined>();
 
   const [selectedAccount, setSelectedAccount] = useState<AccountData | null>(
     editTransaction?.sourceAccount
       ? {
           id: editTransaction.sourceAccount.id,
           name: editTransaction.sourceAccount.name,
-          institution: editTransaction.sourceAccount.institutionLink.institution,
+          institution:
+            editTransaction.sourceAccount.institutionLink.institution,
         }
       : null,
   );
 
-  const [selectedCard, setSelectedCard] = useState<CardData | null>(editTransaction?.sourceCard ? {
-    id: editTransaction.sourceCard.id,
-    name: editTransaction.sourceCard.name,
-    institution: editTransaction.sourceCard.institutionLink.institution,
-    type: editTransaction.sourceCard.type,
-  } : null);
+  const [selectedCard, setSelectedCard] = useState<CardData | null>(
+    editTransaction?.sourceCard
+      ? {
+          id: editTransaction.sourceCard.id,
+          name: editTransaction.sourceCard.name,
+          institution: editTransaction.sourceCard.institutionLink.institution,
+          type: editTransaction.sourceCard.type,
+        }
+      : null,
+  );
 
   // If accountId provided, fetch its data
   const { data: preselectedAccountData } = useQuery(AccountQuery, {
@@ -1179,10 +1185,13 @@ export function ExpenseTransactionCreateForm({
     setCurrentStep(3);
   }, []);
 
-  const handleCardOrAccountStepSelect = useCallback((type: TransactionCardOrAccountStepType) => {
-    setSelectedCardOrAccountStepType(type);
-    setCurrentStep(2);
-  }, []);
+  const handleCardOrAccountStepSelect = useCallback(
+    (type: TransactionCardOrAccountStepType) => {
+      setSelectedCardOrAccountStepType(type);
+      setCurrentStep(2);
+    },
+    [],
+  );
 
   const prevStep = useCallback(() => {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
@@ -1197,7 +1206,15 @@ export function ExpenseTransactionCreateForm({
 
     const steps = [
       { number: 1, label: 'Tipo' },
-      { number: 2, label: !selectedCardOrAccountStepType ? 'Conta ou cartão' : selectedCardOrAccountStepType === TransactionCardOrAccountStepType.Account ? 'Conta' : 'Cartão' },
+      {
+        number: 2,
+        label: !selectedCardOrAccountStepType
+          ? 'Conta ou cartão'
+          : selectedCardOrAccountStepType ===
+              TransactionCardOrAccountStepType.Account
+            ? 'Conta'
+            : 'Cartão',
+      },
       { number: 3, label: 'Dados' },
     ];
 
@@ -1317,14 +1334,16 @@ export function ExpenseTransactionCreateForm({
 
         {currentStep === 2 && !isEditMode && !hasPreselected && (
           <>
-            {selectedCardOrAccountStepType === TransactionCardOrAccountStepType.Account && (
+            {selectedCardOrAccountStepType ===
+              TransactionCardOrAccountStepType.Account && (
               <TransactionAccountStep
                 transactionType={TransactionType.Expense}
                 selectedAccountId={selectedAccount?.id}
                 onSelect={handleAccountSelect}
               />
             )}
-            {selectedCardOrAccountStepType === TransactionCardOrAccountStepType.Card && (
+            {selectedCardOrAccountStepType ===
+              TransactionCardOrAccountStepType.Card && (
               <TransactionCardStep
                 transactionType={TransactionType.Expense}
                 selectedCardId={selectedCard?.id}
@@ -1348,9 +1367,7 @@ export function ExpenseTransactionCreateForm({
               presetPaymentMethod={paymentMethod}
               onBeforeSubmit={onBeforeSubmit}
               onClose={() => handleOpenChange(false)}
-              onBack={
-                !isEditMode && !hasPreselected ? prevStep : undefined
-              }
+              onBack={!isEditMode && !hasPreselected ? prevStep : undefined}
             />
           )}
       </DialogContent>
@@ -1694,6 +1711,7 @@ function ExpenseTransactionFormDetails({
                   date: data.date,
                   type: TransactionType.Expense,
                   sourceAccountId: sourceAccountId,
+                  sourceCardId: sourceCardId,
                   isCompleted: data.isCompleted,
                   description: data.description,
                   amount: data.amount,
@@ -2127,8 +2145,9 @@ function ExpenseTransactionFormDetails({
                   selectedDate &&
                   selectedDate.getDate() >= 29 && (
                     <p className="text-xs text-amber-600 dark:text-amber-400">
-                      <AlertTriangleIcon className="inline w-4 h-4" /> Nos meses com menos de {selectedDate.getDate()} dias, a
-                      transação será criada no último dia do mês.
+                      <AlertTriangleIcon className="inline h-4 w-4" /> Nos meses
+                      com menos de {selectedDate.getDate()} dias, a transação
+                      será criada no último dia do mês.
                     </p>
                   )}
               </div>
@@ -2179,7 +2198,8 @@ export function BetweenAccountsTransactionCreateForm({
       ? {
           id: editTransaction.sourceAccount.id,
           name: editTransaction.sourceAccount.name,
-          institution: editTransaction.sourceAccount.institutionLink.institution,
+          institution:
+            editTransaction.sourceAccount.institutionLink.institution,
         }
       : null,
   );
@@ -2188,7 +2208,8 @@ export function BetweenAccountsTransactionCreateForm({
       ? {
           id: editTransaction.destinyAccount.id,
           name: editTransaction.destinyAccount.name,
-          institution: editTransaction.destinyAccount.institutionLink.institution,
+          institution:
+            editTransaction.destinyAccount.institutionLink.institution,
         }
       : null,
   );
@@ -2704,17 +2725,26 @@ enum TransactionCardOrAccountStepType {
   Card = 'card',
 }
 
-const transactionCardOrAccountStepTypeIcons: Record<TransactionCardOrAccountStepType, LucideIcon> = {
+const transactionCardOrAccountStepTypeIcons: Record<
+  TransactionCardOrAccountStepType,
+  LucideIcon
+> = {
   [TransactionCardOrAccountStepType.Account]: Wallet2,
   [TransactionCardOrAccountStepType.Card]: CreditCard,
 };
 
-const transactionCardOrAccountStepTypeLabels: Record<TransactionCardOrAccountStepType, string> = {
+const transactionCardOrAccountStepTypeLabels: Record<
+  TransactionCardOrAccountStepType,
+  string
+> = {
   [TransactionCardOrAccountStepType.Account]: 'Conta',
   [TransactionCardOrAccountStepType.Card]: 'Cartão',
 };
 
-const transactionCardOrAccountStepTypeDescriptions: Record<TransactionCardOrAccountStepType, string> = {
+const transactionCardOrAccountStepTypeDescriptions: Record<
+  TransactionCardOrAccountStepType,
+  string
+> = {
   [TransactionCardOrAccountStepType.Account]: 'Conta-corrente',
   [TransactionCardOrAccountStepType.Card]: 'Cartão de crédito ou débito',
 };
@@ -2726,7 +2756,10 @@ function TransactionCardOrAccountStep({
   selectedType?: TransactionCardOrAccountStepType;
   onSelect: (type: TransactionCardOrAccountStepType) => void;
 }) {
-  const orderedCardTypes = [TransactionCardOrAccountStepType.Account, TransactionCardOrAccountStepType.Card];
+  const orderedCardTypes = [
+    TransactionCardOrAccountStepType.Account,
+    TransactionCardOrAccountStepType.Card,
+  ];
 
   return (
     <div className="flex flex-col gap-2">

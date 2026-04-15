@@ -13,24 +13,29 @@ export const BalanceForecastQuery = graphql(`
       startDate: $startDate
       endDate: $endDate
     ) {
-      dataPoints {
-        date
-        balance
-        isProjected
-        isInitialBalance
-        incomeAmount
-        expenseAmount
-        transactionCount
-        transactions {
-          id
-          description
-          amount
-          isIncome
+      accountSeries {
+        accountId
+        accountName
+        color
+        dataPoints {
+          date
+          balance
+          isProjected
+          isInitialBalance
+          incomeAmount
+          expenseAmount
+          transactionCount
+          transactions {
+            id
+            description
+            amount
+            isIncome
+          }
         }
+        currentBalance
+        projectedBalance
+        balanceTrend
       }
-      currentBalance
-      projectedBalance
-      balanceTrend
       startDate
       endDate
     }

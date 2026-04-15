@@ -39,7 +39,8 @@ export function InvestmentsFilters({
 
   const accounts = data?.investmentAccounts || [];
 
-  const hasActiveFilters = filters.institutionLinkIds && filters.institutionLinkIds.length > 0;
+  const hasActiveFilters =
+    filters.institutionLinkIds && filters.institutionLinkIds.length > 0;
 
   const handleAccountChange = (accountId: string, checked: boolean) => {
     const currentAccountIds = filters.institutionLinkIds || [];
@@ -72,11 +73,12 @@ export function InvestmentsFilters({
           >
             <Building2 className="h-4 w-4" />
             Conta
-            {filters.institutionLinkIds && filters.institutionLinkIds.length > 0 && (
-              <span className="ml-1 rounded-full bg-primary px-1.5 text-xs text-primary-foreground">
-                {filters.institutionLinkIds.length}
-              </span>
-            )}
+            {filters.institutionLinkIds &&
+              filters.institutionLinkIds.length > 0 && (
+                <span className="ml-1 rounded-full bg-primary px-1.5 text-xs text-primary-foreground">
+                  {filters.institutionLinkIds.length}
+                </span>
+              )}
           </Button>
         </PopoverTrigger>
         <PopoverContent align="start">
@@ -90,7 +92,9 @@ export function InvestmentsFilters({
                 <div key={account.id} className="flex items-center space-x-2">
                   <Checkbox
                     id={`account-${account.id}`}
-                    checked={filters.institutionLinkIds?.includes(account.id) || false}
+                    checked={
+                      filters.institutionLinkIds?.includes(account.id) || false
+                    }
                     onCheckedChange={(checked) =>
                       handleAccountChange(account.id, checked as boolean)
                     }

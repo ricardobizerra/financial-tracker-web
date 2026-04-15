@@ -45,9 +45,7 @@ const schema = z.object({
     .min(0, 'Percentual deve ser entre 0 e 100')
     .max(100, 'Percentual deve ser entre 0 e 100'),
   startDate: formFields.date.describe('Data de início // '),
-  institutionLink: formFields.select.describe(
-    'Conexão * // Insira a conexão',
-  ),
+  institutionLink: formFields.select.describe('Conexão * // Insira a conexão'),
 });
 
 export function InvestmentCreateForm({
@@ -102,7 +100,8 @@ export function InvestmentCreateForm({
       },
     })) || [];
 
-  const institutionLinksPageInfo = institutionLinksQueryOptions.data?.institutionLinks.pageInfo;
+  const institutionLinksPageInfo =
+    institutionLinksQueryOptions.data?.institutionLinks.pageInfo;
 
   const paginate = useCallback(() => {
     institutionLinksQueryOptions.fetchMore({

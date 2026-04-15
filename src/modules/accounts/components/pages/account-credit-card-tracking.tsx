@@ -160,8 +160,7 @@ export function AccountCreditCardTracking({
         className="overflow-hidden"
         style={{
           backgroundColor:
-            card.institutionLink?.institution.color ??
-            'hsl(var(--background))',
+            card.institutionLink?.institution.color ?? 'hsl(var(--background))',
         }}
       >
         <CardContent className="p-5 sm:p-6">
