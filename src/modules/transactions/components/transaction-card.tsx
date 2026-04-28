@@ -76,6 +76,42 @@ interface TransactionCardProps {
   showType?: boolean;
 }
 
+function normalizeTransactionForEdit(
+  transaction: TransactionFragmentFragment,
+): TransactionFragmentFragment {
+  const totalInstallments = transaction.totalInstallments ?? 0;
+  const installmentNumber = transaction.installmentNumber ?? 0;
+
+  if (totalInstallments <= 0 || installmentNumber <= 0) {
+    return transaction;
+  }
+
+  const currentInstallment =
+    transaction.installments?.find((i) =>
+      transaction.installmentId
+        ? i.id === transaction.installmentId
+        : i.installmentNumber === installmentNumber,
+    ) ?? null;
+
+  if (!currentInstallment) {
+    return transaction;
+  }
+
+  const currentAmount = Number(transaction.amount);
+  const installmentAmount = Number(currentInstallment.amount);
+
+  // Billing queries override transaction.amount with installment amount.
+  // For edit mutation we must send the full transaction amount.
+  if (Math.abs(currentAmount - installmentAmount) < 0.000001) {
+    return {
+      ...transaction,
+      amount: installmentAmount * totalInstallments,
+    };
+  }
+
+  return transaction;
+}
+
 // Formatar data com mês por extenso e ano só se não for o ano atual
 // ou se for diferente do ano de referência (para parcelas)
 function formatDateExtended(
@@ -323,13 +359,14 @@ export function TransactionCard({
   };
 
   const renderEditForm = () => {
+    const normalizedTransaction = normalizeTransactionForEdit(transaction);
     const onBeforeSubmit = isRecurring ? handleBeforeSubmit : undefined;
 
     switch (transaction.type) {
       case TransactionType.Income:
         return (
           <IncomeTransactionCreateForm
-            editTransaction={transaction}
+            editTransaction={normalizedTransaction}
             open={editOpen}
             onOpenChange={setEditOpen}
             onBeforeSubmit={onBeforeSubmit}
@@ -338,7 +375,7 @@ export function TransactionCard({
       case TransactionType.Expense:
         return (
           <ExpenseTransactionCreateForm
-            editTransaction={transaction}
+            editTransaction={normalizedTransaction}
             open={editOpen}
             onOpenChange={setEditOpen}
             onBeforeSubmit={onBeforeSubmit}
@@ -347,7 +384,7 @@ export function TransactionCard({
       case TransactionType.BetweenAccounts:
         return (
           <BetweenAccountsTransactionCreateForm
-            editTransaction={transaction}
+            editTransaction={normalizedTransaction}
             open={editOpen}
             onOpenChange={setEditOpen}
             onBeforeSubmit={onBeforeSubmit}

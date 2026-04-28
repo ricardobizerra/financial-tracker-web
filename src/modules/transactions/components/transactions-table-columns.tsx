@@ -99,6 +99,38 @@ function TransactionActionsCell({
   const isImmutable = isCompleted || isCanceled;
   const isRecurring = !!transaction.recurringTransactionId;
 
+  const normalizedTransactionForEdit = React.useMemo(() => {
+    const totalInstallments = transaction.totalInstallments ?? 0;
+    const installmentNumber = transaction.installmentNumber ?? 0;
+
+    if (totalInstallments <= 0 || installmentNumber <= 0) {
+      return transaction;
+    }
+
+    const currentInstallment =
+      transaction.installments?.find((i) =>
+        transaction.installmentId
+          ? i.id === transaction.installmentId
+          : i.installmentNumber === installmentNumber,
+      ) ?? null;
+
+    if (!currentInstallment) {
+      return transaction;
+    }
+
+    const currentAmount = Number(transaction.amount);
+    const installmentAmount = Number(currentInstallment.amount);
+
+    if (Math.abs(currentAmount - installmentAmount) < 0.000001) {
+      return {
+        ...transaction,
+        amount: installmentAmount * totalInstallments,
+      };
+    }
+
+    return transaction;
+  }, [transaction]);
+
   const handleEdit = () => {
     if (isImmutable) {
       setDescriptionEditOpen(true);
@@ -174,7 +206,7 @@ function TransactionActionsCell({
       case TransactionType.Income:
         return (
           <IncomeTransactionCreateForm
-            editTransaction={transaction}
+            editTransaction={normalizedTransactionForEdit}
             open={editOpen}
             onOpenChange={setEditOpen}
             onBeforeSubmit={onBeforeSubmit}
@@ -183,7 +215,7 @@ function TransactionActionsCell({
       case TransactionType.Expense:
         return (
           <ExpenseTransactionCreateForm
-            editTransaction={transaction}
+            editTransaction={normalizedTransactionForEdit}
             open={editOpen}
             onOpenChange={setEditOpen}
             onBeforeSubmit={onBeforeSubmit}
@@ -192,7 +224,7 @@ function TransactionActionsCell({
       case TransactionType.BetweenAccounts:
         return (
           <BetweenAccountsTransactionCreateForm
-            editTransaction={transaction}
+            editTransaction={normalizedTransactionForEdit}
             open={editOpen}
             onOpenChange={setEditOpen}
             onBeforeSubmit={onBeforeSubmit}
