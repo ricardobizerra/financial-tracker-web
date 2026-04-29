@@ -109,6 +109,10 @@ export function BalanceForecastChart({ accountId }: BalanceForecastChartProps) {
 
         const existingPoint = chartDataByDate.get(dateKey);
         existingPoint[`balance_${series.accountId}`] = point.balance;
+        existingPoint.totalIncome =
+          (existingPoint.totalIncome || 0) + point.incomeAmount;
+        existingPoint.totalExpense =
+          (existingPoint.totalExpense || 0) + point.expenseAmount;
 
         if (point.transactions && point.transactions.length > 0) {
           existingPoint.transactions.push(
@@ -428,7 +432,6 @@ export function BalanceForecastChart({ accountId }: BalanceForecastChartProps) {
                     );
                   }}
                 />
-                <div />{' '}
                 {/* Replaces Legend dynamically if needed, or we implement custom legend */}
                 {/* Linha de referência Y=0 quando há valores negativos */}
                 {hasNegativeBalance && (

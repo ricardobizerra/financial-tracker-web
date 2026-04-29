@@ -81,12 +81,18 @@ export function CashFlowChart({
             date: new Date(point.date),
             dateLabel: format(new Date(point.date), 'dd/MM', { locale: ptBR }),
             isProjected: point.isProjected,
+            totalIncome: 0,
+            totalExpense: 0,
+            totalBalance: 0,
             transactions: [],
           });
         }
 
         const existingPoint = chartDataByDate.get(dateKey);
         existingPoint[`balance_${series.accountId}`] = point.balance;
+        existingPoint.totalIncome += point.incomeAmount;
+        existingPoint.totalExpense += point.expenseAmount;
+        existingPoint.totalBalance += point.balance;
 
         if (point.transactions && point.transactions.length > 0) {
           existingPoint.transactions.push(
@@ -108,18 +114,23 @@ export function CashFlowChart({
   let maxBalance = 0;
 
   if (chartData.length > 0) {
-    const allBalances: number[] = [];
+    const valuesForDomain: number[] = [];
     chartData.forEach((point) => {
-      availableAccounts.forEach((account) => {
-        if (point[`balance_${account.id}`] !== undefined) {
-          allBalances.push(point[`balance_${account.id}`]);
-        }
-      });
+      if (type === 'balance') {
+        availableAccounts.forEach((account) => {
+          if (point[`balance_${account.id}`] !== undefined) {
+            valuesForDomain.push(point[`balance_${account.id}`]);
+          }
+        });
+      } else {
+        valuesForDomain.push(point.totalIncome);
+        valuesForDomain.push(point.totalExpense);
+      }
     });
 
-    if (allBalances.length > 0) {
-      minBalance = Math.min(...allBalances);
-      maxBalance = Math.max(...allBalances);
+    if (valuesForDomain.length > 0) {
+      minBalance = Math.min(...valuesForDomain);
+      maxBalance = Math.max(...valuesForDomain);
     }
   }
 
