@@ -5,7 +5,8 @@ import {
   TransactionsQuery,
   BillingTransactionsQuery,
 } from '../graphql/transactions-queries';
-import { TransactionCard } from './transaction-card';
+import { TransactionsTimelineList } from './transactions-timeline-list';
+import { TransactionFragmentFragment } from '@/graphql/graphql';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -67,18 +68,13 @@ export function TransactionsCardList({
   }
 
   return (
-    <div className="space-y-2">
-      {transactions.map((transaction) => (
-        <TransactionCard
-          key={transaction.id}
-          transaction={transaction}
-          hideAccount={hideAccount}
-          hideActions={[]}
-          compact={false}
-          hideWarnings={true}
-          showType={false}
-        />
-      ))}
-    </div>
+    <TransactionsTimelineList
+      transactions={transactions as TransactionFragmentFragment[]}
+      hideAccount={hideAccount}
+      hideActions={[]}
+      compact={false}
+      hideWarnings={true}
+      showType={false}
+    />
   );
 }

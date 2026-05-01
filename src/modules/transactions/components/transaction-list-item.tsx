@@ -10,7 +10,7 @@ import {
   PaymentMethod,
   CardBillingStatus,
 } from '@/graphql/graphql';
-import { Card, CardContent } from '@/components/ui/card';
+
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/lib/formatters/currency';
 import { cn } from '@/lib/utils';
@@ -19,12 +19,13 @@ import {
   ArrowDown,
   ArrowLeftRight,
   ArrowRight,
-  Check,
   Pencil,
   X,
-  CreditCard,
   Eye,
-  HelpCircle,
+  Clock,
+  CheckCircle2,
+  Ban,
+  AlertTriangle,
 } from 'lucide-react';
 import Link from 'next/link';
 import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
@@ -61,19 +62,28 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+
 import { Separator } from '@/components/ui/separator';
 import { BillingQuery } from '@/modules/accounts/graphql/accounts-queries';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { SimpleTooltip } from '@/components/simple-tooltip';
+import {
+  paymentMethodIcons,
+  paymentMethodLabel,
+  transactionStatusLabel,
+} from '../transactions-constants';
+import { TransactionCategoryBadge } from './transaction-category-badge';
+import { TransactionStatusBadge } from './transaction-status-badge';
 
-interface TransactionCardProps {
+interface TransactionListItemProps {
   transaction: TransactionFragmentFragment;
   hideAccount?: boolean;
   hideActions?: ('confirm' | 'edit' | 'cancel')[];
   compact?: boolean;
   hideWarnings?: boolean;
   showType?: boolean;
+  refetchVariables?: any;
 }
 
 function normalizeTransactionForEdit(
@@ -194,14 +204,15 @@ function getBillingStatusInfo(status: CardBillingStatus): {
   }
 }
 
-export function TransactionCard({
+export function TransactionListItem({
   transaction,
   hideAccount = false,
   hideActions = [],
   compact = false,
   hideWarnings = false,
   showType = true,
-}: TransactionCardProps) {
+  refetchVariables,
+}: TransactionListItemProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [descriptionEditOpen, setDescriptionEditOpen] = useState(false);
   const [scopeDialogOpen, setScopeDialogOpen] = useState(false);
@@ -222,7 +233,9 @@ export function TransactionCard({
     UpdateRecurringTransactionsMutation,
     {
       refetchQueries: [
-        TransactionsQuery,
+        refetchVariables
+          ? { query: TransactionsQuery, variables: refetchVariables }
+          : TransactionsQuery,
         TransactionsSummaryQuery,
         TransactionsGroupedByPeriodQuery,
       ],
@@ -370,6 +383,7 @@ export function TransactionCard({
             open={editOpen}
             onOpenChange={setEditOpen}
             onBeforeSubmit={onBeforeSubmit}
+            refetchVariables={refetchVariables}
           />
         );
       case TransactionType.Expense:
@@ -379,6 +393,7 @@ export function TransactionCard({
             open={editOpen}
             onOpenChange={setEditOpen}
             onBeforeSubmit={onBeforeSubmit}
+            refetchVariables={refetchVariables}
           />
         );
       case TransactionType.BetweenAccounts:
@@ -388,6 +403,7 @@ export function TransactionCard({
             open={editOpen}
             onOpenChange={setEditOpen}
             onBeforeSubmit={onBeforeSubmit}
+            refetchVariables={refetchVariables}
           />
         );
       default:
@@ -396,12 +412,62 @@ export function TransactionCard({
   };
 
   const getAccountDisplay = () => {
+    if (isBillingPayment) {
+      const card = transaction.billingPayment?.card;
+      const cardInstitution = card?.institutionLink?.institution;
+      const account = transaction.sourceAccount;
+      const accountInstitution = account?.institutionLink?.institution;
+      if (!card) return null;
+      return (
+        <>
+          <div className="flex items-center gap-1.5">
+            {cardInstitution && (
+              <InstitutionLogo
+                logoUrl={cardInstitution.logoUrl}
+                name={cardInstitution.name}
+                size="sm"
+              />
+            )}
+            <p className="text-sm font-medium">
+              <span className="text-muted-foreground">Cartão</span>{' '}
+              <span>{card.name}</span>
+            </p>
+          </div>
+          {account ? (
+            <div className="flex items-center gap-1.5">
+              <p className="text-sm font-medium text-muted-foreground">
+                {transaction.status === TransactionStatus.Completed
+                  ? 'Paga'
+                  : 'A pagar'}{' '}
+                via
+              </p>
+              {accountInstitution && (
+                <InstitutionLogo
+                  logoUrl={accountInstitution.logoUrl}
+                  name={accountInstitution.name}
+                  size="sm"
+                />
+              )}
+              <p className="text-sm font-medium">
+                <span className="text-muted-foreground">Conta</span>{' '}
+                <span>{account.name}</span>
+              </p>
+            </div>
+          ) : (
+            <p className="text-sm font-medium text-muted-foreground">
+              Conta de pagamento não definida
+            </p>
+          )}
+        </>
+      );
+    }
+
     if (isBetweenAccounts) {
       const sourceInst =
         transaction.sourceAccount?.institutionLink?.institution;
       const destInst = transaction.destinyAccount?.institutionLink?.institution;
       return (
-        <div className="flex items-center gap-1 text-sm font-medium text-muted-foreground">
+        <div className="flex items-center gap-1.5">
           {sourceInst && (
             <>
               <InstitutionLogo
@@ -409,7 +475,10 @@ export function TransactionCard({
                 name={sourceInst.name}
                 size="sm"
               />
-              <span>{transaction.sourceAccount?.name}</span>
+              <p className="text-sm font-medium">
+                <span className="text-muted-foreground">Conta</span>{' '}
+                <span>{transaction.sourceAccount?.name}</span>
+              </p>
               <ArrowRight className="h-3 w-3" />
             </>
           )}
@@ -420,22 +489,26 @@ export function TransactionCard({
               size="sm"
             />
           )}
-          <span>{transaction.destinyAccount?.name}</span>
+          <p className="text-sm font-medium">
+            <span className="text-muted-foreground">Conta</span>{' '}
+            <span>{transaction.destinyAccount?.name}</span>
+          </p>
         </div>
       );
     }
 
     const account = isIncome
       ? transaction.destinyAccount
-      : transaction.sourceAccount ||
-        transaction.cardBilling?.paymentTransaction?.sourceAccount;
+      : (transaction.sourceAccount ??
+        (transaction.sourceCard as typeof transaction.sourceAccount | null) ??
+        transaction.cardBilling?.paymentTransaction?.sourceAccount);
 
     if (!account) return null;
 
     const institution = account.institutionLink?.institution;
 
     return (
-      <div className="flex items-center gap-1 text-sm font-semibold text-muted-foreground">
+      <div className="flex items-center gap-1.5">
         {institution && (
           <InstitutionLogo
             logoUrl={institution.logoUrl}
@@ -443,7 +516,51 @@ export function TransactionCard({
             size="sm"
           />
         )}
-        <span>{account.name}</span>
+        <div className="flex flex-col">
+          <p className="text-sm font-medium">
+            <span className="text-muted-foreground">
+              {transaction.sourceCard ? 'Cartão' : 'Conta'}
+            </span>{' '}
+            <span>{account.name}</span>
+          </p>
+          {isExpenseForBilling && !hideWarnings && transaction.cardBilling && (
+            <span className="text-xs font-normal">
+              {(transaction.installments?.length ?? 0) > 0 ? (
+                <>
+                  Parcelado em{' '}
+                  <span className="font-semibold">
+                    {transaction.installments?.length}x
+                  </span>{' '}
+                  a partir da fatura de{' '}
+                  {format(transaction.cardBilling.periodEnd, "MMMM 'de' yyyy", {
+                    locale: ptBR,
+                  })}
+                </>
+              ) : (
+                <>
+                  Fatura de{' '}
+                  {format(transaction.cardBilling.periodEnd, "MMMM 'de' yyyy", {
+                    locale: ptBR,
+                  })}
+                  {transaction.cardBilling.paymentDate && (
+                    <>
+                      {' '}
+                      ·{' '}
+                      <span className="font-semibold">
+                        A ser paga até{' '}
+                        {format(
+                          transaction.cardBilling.paymentDate,
+                          "dd 'de' MMMM 'de' yyyy",
+                          { locale: ptBR },
+                        )}
+                      </span>
+                    </>
+                  )}
+                </>
+              )}
+            </span>
+          )}
+        </div>
       </div>
     );
   };
@@ -542,206 +659,51 @@ export function TransactionCard({
     return null;
   };
 
-  // Renderizar botões de ação
-  const renderActionButtons = () => {
-    // Transação de pagamento de fatura
-    if (isBillingPayment) {
-      // Botão para ver detalhes da fatura
+  const TypeIcon = () => {
+    if (isIncome) {
       return (
-        <div className="flex w-full flex-wrap items-center gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            asChild
-            className="min-w-[120px] flex-1"
-          >
-            <Link
-              href={`/cards/${cardId}?billingId=${transaction.billingPayment?.id}`}
-            >
-              <Eye className="h-4 w-4" />
-              Ver fatura
-            </Link>
-          </Button>
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
+          <ArrowUp className="h-5 w-5" />
         </div>
       );
     }
-
-    // Transação normal
-    return (
-      <div className="flex w-full flex-wrap items-center gap-2">
-        {/* Editar */}
-        {!hideActions.includes('edit') && (
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={handleEdit}
-            className="min-w-[100px] flex-1"
-          >
-            <Pencil className="h-4 w-4" />
-            Editar
-          </Button>
-        )}
-
-        {/* Cancelar */}
-        {canEditFully &&
-          !hideActions.includes('cancel') &&
-          (transaction.canCancel ? (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => setCancelDialogOpen(true)}
-              className="min-w-[100px] flex-1"
-            >
-              <X className="h-4 w-4" />
-              Cancelar
-            </Button>
-          ) : transaction.cancelReason ? (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="min-w-[100px] flex-1">
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    disabled
-                    className="w-full"
-                  >
-                    <X className="h-4 w-4" />
-                    Cancelar
-                  </Button>
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{transaction.cancelReason}</p>
-              </TooltipContent>
-            </Tooltip>
-          ) : null)}
-      </div>
-    );
+    if (isExpense) {
+      return (
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
+          <ArrowDown className="h-5 w-5" />
+        </div>
+      );
+    }
+    if (isBetweenAccounts) {
+      return (
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+          <ArrowLeftRight className="h-5 w-5" />
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
     <>
-      <Card
+      <div
         className={cn(
-          'overflow-hidden transition-all hover:shadow-md',
-          isOverdue &&
-            'border-red-300 bg-red-50/50 dark:border-red-800 dark:bg-red-950/20',
+          'group flex items-center justify-between gap-4 border-b border-border/50 bg-card p-4 transition-colors last:border-b-0 hover:bg-muted/50',
+          isOverdue && 'bg-red-50/30 dark:bg-red-950/10',
           (transaction.cardBilling ||
             (transaction.totalInstallments ?? 0) > 0) &&
             !hideWarnings &&
-            'border-dashed',
+            '',
         )}
       >
-        {/* Ícone do tipo */}
-        {showType && (
-          <SimpleTooltip
-            hidden={!isExpenseForBilling}
-            label={
-              transaction.cardBilling ? (
-                <>
-                  Este pagamento está incluído na fatura de{' '}
-                  <span className="font-semibold">
-                    {format(
-                      transaction.cardBilling?.periodEnd,
-                      "MMMM 'de' yyyy",
-                      {
-                        locale: ptBR,
-                      },
-                    )}
-                  </span>{' '}
-                  do cartão{' '}
-                  <span className="font-semibold">
-                    {transaction.sourceAccount?.name}
-                  </span>
-                </>
-              ) : (
-                <>
-                  Este pagamento está incluído{' '}
-                  {(transaction.totalInstallments ?? 0) > 0 ? 'nas' : 'na'}{' '}
-                  <span className="font-semibold">
-                    {transaction.totalInstallments}{' '}
-                    {(transaction.totalInstallments ?? 0) > 0
-                      ? 'próximas faturas'
-                      : 'próxima fatura'}
-                  </span>
-                  , a partir da data da operação
-                </>
-              )
-            }
-            side="top"
-          >
-            <div
-              className={cn(
-                'flex shrink-0 cursor-default items-center justify-center gap-1 py-1 text-xs font-medium',
-                isIncome &&
-                  'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
-                isExpense &&
-                  'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
-                isExpenseForBilling &&
-                  'text-muted-foreground dark:text-muted-foreground',
-                isBetweenAccounts &&
-                  'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
-              )}
-            >
-              {isIncome && (
-                <>
-                  <ArrowUp className="h-4 w-4" />
-                  <span>Entrada</span>
-                </>
-              )}
-              {isExpense && (
-                <>
-                  {isExpenseForBilling ? (
-                    <HelpCircle className="h-4 w-4" />
-                  ) : (
-                    <ArrowDown className="h-4 w-4" />
-                  )}
-                  <span>
-                    {isExpenseForBilling ? 'Despesa para fatura' : 'Despesa'}
-                  </span>
-                </>
-              )}
-              {isBetweenAccounts && (
-                <>
-                  <ArrowLeftRight className="h-4 w-4" />
-                  <span>Transferência</span>
-                </>
-              )}
-            </div>
-          </SimpleTooltip>
-        )}
+        <div className="flex flex-1 items-center gap-4 overflow-hidden">
+          {/* Ícone do tipo */}
+          {showType && <TypeIcon />}
 
-        <CardContent className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:gap-3">
-          {/* Mobile: ícone + valor na linha superior */}
-          <div className="flex items-center justify-between sm:contents">
-            {/* Valor - aparece à direita em mobile, no final em desktop */}
-            <div
-              className={cn(
-                'shrink-0 text-lg font-semibold sm:order-last sm:text-base',
-                isIncome && 'text-emerald-600 dark:text-emerald-400',
-                isExpense && 'text-red-600 dark:text-red-400',
-                isBetweenAccounts && 'text-blue-600 dark:text-blue-400',
-                (transaction.cardBilling ||
-                  (transaction.totalInstallments ?? 0) > 0) &&
-                  !hideWarnings &&
-                  'text-muted-foreground dark:text-muted-foreground',
-              )}
-            >
-              {isExpense && '-'}
-              {formatCurrency(Number(transaction.amount))}
-            </div>
-          </div>
-
-          {/* Descrição, data e conta - ocupa toda a largura em mobile */}
+          {/* Descrição e Conta */}
           <div className="flex min-w-0 flex-1 flex-col">
-            <span className="text-xs text-muted-foreground">
-              {formatDateExtended(
-                transaction.installmentStartDate ?? transaction.date,
-                transaction.installmentStartDate ? transaction.date : null,
-              )}
-            </span>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm font-semibold sm:text-base">
+              <span className="truncate text-base font-semibold">
                 {isBillingPayment ? (
                   <>
                     <span className="text-muted-foreground">Fatura </span>
@@ -762,22 +724,143 @@ export function TransactionCard({
                   transaction.description || 'Sem descrição'
                 )}
               </span>
-              {transaction.installments &&
-                (transaction.totalInstallments ?? 0) > 0 &&
+              {(transaction.totalInstallments ?? 0) > 0 &&
                 (transaction.installmentNumber ?? 0) > 0 && (
                   <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
                     {transaction.installmentNumber}/
                     {transaction.totalInstallments}
                   </span>
                 )}
+              {transaction.category &&
+                !isBillingPayment &&
+                !isBetweenAccounts && (
+                  <TransactionCategoryBadge
+                    category={transaction.category}
+                    className="ml-1"
+                  />
+                )}
             </div>
-            {!hideAccount && getAccountDisplay()}
+            {(!hideAccount || isBillingPayment) && getAccountDisplay()}
           </div>
-        </CardContent>
+        </div>
 
-        {/* Footer com botões de ação */}
-        <div className="bg-muted/30 px-3 py-2">{renderActionButtons()}</div>
-      </Card>
+        {/* Valor & Ações */}
+        <div className="flex shrink-0 items-center gap-4">
+          {/* Método de pagamento */}
+          {transaction.paymentMethod &&
+            !isBillingPayment &&
+            (() => {
+              const PayIcon =
+                paymentMethodIcons[
+                  transaction.paymentMethod as keyof typeof paymentMethodIcons
+                ];
+              return PayIcon ? (
+                <SimpleTooltip
+                  label={
+                    paymentMethodLabel[
+                      transaction.paymentMethod as keyof typeof paymentMethodLabel
+                    ]
+                  }
+                  side="top"
+                >
+                  <PayIcon
+                    className={cn(
+                      'h-5 w-5 shrink-0',
+                      isExpense && 'text-red-600 dark:text-red-400',
+                      isIncome && 'text-emerald-600 dark:text-emerald-400',
+                      isBetweenAccounts && 'text-blue-600 dark:text-blue-400',
+                      (transaction.cardBilling ||
+                        (transaction.totalInstallments ?? 0) > 0) &&
+                        !hideWarnings &&
+                        'text-muted-foreground dark:text-muted-foreground',
+                    )}
+                  />
+                </SimpleTooltip>
+              ) : null;
+            })()}
+
+          <div
+            className={cn(
+              'text-right text-base font-semibold',
+              isIncome && 'text-emerald-600 dark:text-emerald-400',
+              isExpense && 'text-red-600 dark:text-red-400',
+              isBetweenAccounts && 'text-blue-600 dark:text-blue-400',
+              (transaction.cardBilling ||
+                (transaction.totalInstallments ?? 0) > 0) &&
+                !hideWarnings &&
+                'text-muted-foreground dark:text-muted-foreground',
+            )}
+          >
+            {isExpense && '-'}
+            {formatCurrency(Number(transaction.amount))}
+          </div>
+
+          {/* Status */}
+          <TransactionStatusBadge status={transaction.status} />
+
+          {/* Ações inline */}
+          <div className="flex items-center gap-1">
+            {isBillingPayment && (
+              <SimpleTooltip label="Ver fatura" side="top">
+                <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                  <Link
+                    href={`/cards/${cardId}?billingId=${transaction.billingPayment?.id}`}
+                  >
+                    <Eye className="h-4 w-4" />
+                    <span className="sr-only">Ver fatura</span>
+                  </Link>
+                </Button>
+              </SimpleTooltip>
+            )}
+
+            {!hideActions.includes('edit') && (
+              <SimpleTooltip label="Editar" side="top">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={handleEdit}
+                >
+                  <Pencil className="h-4 w-4" />
+                  <span className="sr-only">Editar</span>
+                </Button>
+              </SimpleTooltip>
+            )}
+
+            {!isBillingPayment &&
+              canEditFully &&
+              !hideActions.includes('cancel') && (
+                <SimpleTooltip
+                  label={
+                    transaction.canCancel
+                      ? 'Cancelar'
+                      : (transaction.cancelReason ?? 'Não pode ser cancelada')
+                  }
+                  side="top"
+                >
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={cn(
+                      'h-8 w-8',
+                      transaction.canCancel
+                        ? 'text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300'
+                        : 'cursor-not-allowed opacity-40',
+                    )}
+                    onClick={() => {
+                      if (!transaction.canCancel) return;
+                      setCancelDialogOpen(true);
+                    }}
+                    disabled={!transaction.canCancel}
+                  >
+                    <X className="h-4 w-4" />
+                    <span className="sr-only">Cancelar</span>
+                  </Button>
+                </SimpleTooltip>
+              )}
+          </div>
+        </div>
+      </div>
 
       {/* Modais de edição */}
       {renderEditForm()}

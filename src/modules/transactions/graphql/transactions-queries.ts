@@ -53,6 +53,7 @@ export const TransactionsFragment = graphql(`
       limit
       card {
         id
+        name
         lastFourDigits
         institutionLink {
           id
@@ -72,6 +73,7 @@ export const TransactionsFragment = graphql(`
       id
       status
       periodEnd
+      paymentDate
       paymentTransaction {
         description
         sourceAccount {

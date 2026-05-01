@@ -10,8 +10,20 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { TransactionStatus, TransactionType } from '@/graphql/graphql';
-import { CalendarIcon, Filter, X } from 'lucide-react';
-import { format } from 'date-fns';
+import {
+  CalendarIcon,
+  Filter,
+  X,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
+import {
+  format,
+  addMonths,
+  subMonths,
+  startOfMonth,
+  endOfMonth,
+} from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import {
@@ -78,11 +90,11 @@ export function TransactionsFilters({
             variant="outline"
             size="sm"
             className={cn(
-              'justify-start text-left font-normal',
+              'h-8 justify-start text-left font-normal',
               (filters.startDate || filters.endDate) && 'border-primary',
             )}
           >
-            <CalendarIcon />
+            <CalendarIcon className="mr-2 h-4 w-4" />
             {filters.startDate && filters.endDate ? (
               <>
                 {format(filters.startDate, 'dd/MM/yy', { locale: ptBR })} -{' '}

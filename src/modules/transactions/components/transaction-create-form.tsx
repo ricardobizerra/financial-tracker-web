@@ -82,6 +82,7 @@ import {
   transactionStatusLabel,
   transactionTypeLabels,
   transactionCategoryLabels,
+  paymentMethodIcons,
 } from '../transactions-constants';
 import { transactionCategoryIcons } from './transaction-category-badge';
 import { useForm, useWatch } from 'react-hook-form';
@@ -119,6 +120,8 @@ interface TransactionCreateFormProps {
     paymentMethod?: string;
     category?: string;
   }) => Promise<boolean>;
+  /** Variáveis para refetch da query de transações */
+  refetchVariables?: any;
 }
 
 const categoryOptions = Object.values(TransactionCategory).map((c) => ({
@@ -286,15 +289,16 @@ function isToday(date: Date): boolean {
   checkDate.setHours(0, 0, 0, 0);
   return checkDate.getTime() === today.getTime();
 }
-export function IncomeTransactionCreateForm({
-  triggerClassName,
-  accountId,
-  triggerSize,
-  editTransaction,
-  open: externalOpen,
-  onOpenChange: externalOnOpenChange,
-  onBeforeSubmit,
-}: TransactionCreateFormProps) {
+export function IncomeTransactionCreateForm(props: TransactionCreateFormProps) {
+  const {
+    triggerClassName,
+    accountId,
+    triggerSize,
+    editTransaction,
+    open: externalOpen,
+    onOpenChange: externalOnOpenChange,
+    onBeforeSubmit,
+  } = props;
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen ?? internalOpen;
   const setOpen = externalOnOpenChange ?? setInternalOpen;
@@ -453,6 +457,7 @@ export function IncomeTransactionCreateForm({
             onBeforeSubmit={onBeforeSubmit}
             onClose={() => handleOpenChange(false)}
             onBack={!isEditMode ? prevStep : undefined}
+            refetchVariables={props.refetchVariables}
           />
         )}
 
@@ -472,12 +477,14 @@ function IncomeTransactionFormDetails({
   onBeforeSubmit,
   onClose,
   onBack,
+  refetchVariables,
 }: {
   destinyAccountId: string;
   editTransaction?: TransactionFragmentFragment;
   onBeforeSubmit?: TransactionCreateFormProps['onBeforeSubmit'];
   onClose: () => void;
   onBack?: () => void;
+  refetchVariables?: any;
 }) {
   const isEditMode = !!editTransaction;
 
@@ -543,15 +550,6 @@ function IncomeTransactionFormDetails({
       label: paymentMethodLabel[method],
     }));
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const paymentMethodIcon: Record<PaymentMethod, any> = {
-    CASH: Banknote,
-    CREDIT_CARD: CreditCard,
-    DEBIT_CARD: CreditCard,
-    PIX: PixIcon,
-    BOLETO: Receipt,
-  };
-
   return (
     <TsForm
       form={form}
@@ -564,7 +562,7 @@ function IncomeTransactionFormDetails({
         paymentMethod: {
           options: paymentMethodOptions,
           renderLabel: (option) => {
-            const Icon = paymentMethodIcon[option.value as PaymentMethod];
+            const Icon = paymentMethodIcons[option.value as PaymentMethod];
             return (
               <div className="flex items-center gap-2">
                 <Icon className="h-5 w-5" />
@@ -601,7 +599,9 @@ function IncomeTransactionFormDetails({
               },
             },
             refetchQueries: [
-              TransactionsQuery,
+              refetchVariables
+                ? { query: TransactionsQuery, variables: refetchVariables }
+                : TransactionsQuery,
               TransactionsGroupedByPeriodQuery,
               TransactionsSummaryQuery,
               BalanceForecastQuery,
@@ -666,7 +666,9 @@ function IncomeTransactionFormDetails({
                 },
               },
               refetchQueries: [
-                TransactionsQuery,
+                refetchVariables
+                  ? { query: TransactionsQuery, variables: refetchVariables }
+                  : TransactionsQuery,
                 TransactionsGroupedByPeriodQuery,
                 TransactionsSummaryQuery,
                 BalanceForecastQuery,
@@ -708,7 +710,9 @@ function IncomeTransactionFormDetails({
                 },
               },
               refetchQueries: [
-                TransactionsQuery,
+                refetchVariables
+                  ? { query: TransactionsQuery, variables: refetchVariables }
+                  : TransactionsQuery,
                 TransactionsGroupedByPeriodQuery,
                 TransactionsSummaryQuery,
                 BalanceForecastQuery,
@@ -1072,6 +1076,7 @@ export function ExpenseTransactionCreateForm({
   open: externalOpen,
   onOpenChange: externalOnOpenChange,
   onBeforeSubmit,
+  refetchVariables,
 }: TransactionCreateFormProps & {
   hiddenFields?: Array<keyof typeof expenseSchema.shape>;
   minDate?: Date;
@@ -1084,15 +1089,21 @@ export function ExpenseTransactionCreateForm({
   const setOpen = externalOnOpenChange ?? setInternalOpen;
   const isEditMode = !!editTransaction;
 
-  // Form stepper state - skip to step 3 if accountId or cardId provided or in edit mode
-  const hasPreselectedAccount = !!accountId || isEditMode;
-  const hasPreselectedCard = !!cardId || isEditMode;
+  // Form stepper state - skip to step 3 if accountId or cardId provided or in edit mode with a source already selected
+  const hasPreselectedAccount = !!accountId || !!editTransaction?.sourceAccount;
+  const hasPreselectedCard = !!cardId || !!editTransaction?.sourceCard;
   const hasPreselected = hasPreselectedAccount || hasPreselectedCard;
 
-  const [currentStep, setCurrentStep] = useState(hasPreselected ? 3 : 1);
+  const [currentStep, setCurrentStep] = useState(
+    hasPreselected ? 3 : editTransaction?.billingPayment ? 2 : 1,
+  );
 
   const [selectedCardOrAccountStepType, setSelectedCardOrAccountStepType] =
-    useState<TransactionCardOrAccountStepType | undefined>();
+    useState<TransactionCardOrAccountStepType | undefined>(
+      editTransaction?.billingPayment
+        ? TransactionCardOrAccountStepType.Account
+        : undefined,
+    );
 
   const [selectedAccount, setSelectedAccount] = useState<AccountData | null>(
     editTransaction?.sourceAccount
@@ -1325,14 +1336,14 @@ export function ExpenseTransactionCreateForm({
 
         {renderStepIndicator()}
 
-        {currentStep === 1 && !isEditMode && !hasPreselected && (
+        {currentStep === 1 && !hasPreselected && (
           <TransactionCardOrAccountStep
             selectedType={selectedCardOrAccountStepType}
             onSelect={handleCardOrAccountStepSelect}
           />
         )}
 
-        {currentStep === 2 && !isEditMode && !hasPreselected && (
+        {currentStep === 2 && !hasPreselected && (
           <>
             {selectedCardOrAccountStepType ===
               TransactionCardOrAccountStepType.Account && (
@@ -1368,6 +1379,7 @@ export function ExpenseTransactionCreateForm({
               onBeforeSubmit={onBeforeSubmit}
               onClose={() => handleOpenChange(false)}
               onBack={!isEditMode && !hasPreselected ? prevStep : undefined}
+              refetchVariables={refetchVariables}
             />
           )}
       </DialogContent>
@@ -1389,6 +1401,7 @@ function ExpenseTransactionFormDetails({
   onBeforeSubmit,
   onClose,
   onBack,
+  refetchVariables,
 }: {
   sourceAccountId?: string;
   sourceCardId?: string;
@@ -1402,6 +1415,7 @@ function ExpenseTransactionFormDetails({
   onBeforeSubmit?: TransactionCreateFormProps['onBeforeSubmit'];
   onClose: () => void;
   onBack?: () => void;
+  refetchVariables?: any;
 }) {
   const isEditMode = !!editTransaction;
 
@@ -1519,15 +1533,6 @@ function ExpenseTransactionFormDetails({
       label: paymentMethodLabel[method],
     }));
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const paymentMethodIcon: Record<PaymentMethod, any> = {
-    CASH: Banknote,
-    CREDIT_CARD: CreditCard,
-    DEBIT_CARD: CreditCard,
-    PIX: PixIcon,
-    BOLETO: Receipt,
-  };
-
   return (
     <TsForm
       form={form}
@@ -1545,7 +1550,7 @@ function ExpenseTransactionFormDetails({
         paymentMethod: {
           options: paymentMethodOptions,
           renderLabel: (option) => {
-            const Icon = paymentMethodIcon[option.value as PaymentMethod];
+            const Icon = paymentMethodIcons[option.value as PaymentMethod];
             return (
               <div className="flex items-center gap-2">
                 <Icon className="h-5 w-5" />
@@ -1584,7 +1589,9 @@ function ExpenseTransactionFormDetails({
               },
             },
             refetchQueries: [
-              TransactionsQuery,
+              refetchVariables
+                ? { query: TransactionsQuery, variables: refetchVariables }
+                : TransactionsQuery,
               TransactionsGroupedByPeriodQuery,
               TransactionsSummaryQuery,
               BalanceForecastQuery,
@@ -1622,7 +1629,9 @@ function ExpenseTransactionFormDetails({
                 },
               },
               refetchQueries: [
-                TransactionsQuery,
+                refetchVariables
+                  ? { query: TransactionsQuery, variables: refetchVariables }
+                  : TransactionsQuery,
                 TransactionsGroupedByPeriodQuery,
                 TransactionsSummaryQuery,
                 BalanceForecastQuery,
@@ -1680,7 +1689,9 @@ function ExpenseTransactionFormDetails({
                 },
               },
               refetchQueries: [
-                TransactionsQuery,
+                refetchVariables
+                  ? { query: TransactionsQuery, variables: refetchVariables }
+                  : TransactionsQuery,
                 TransactionsGroupedByPeriodQuery,
                 TransactionsSummaryQuery,
                 BalanceForecastQuery,
@@ -1721,7 +1732,9 @@ function ExpenseTransactionFormDetails({
                 },
               },
               refetchQueries: [
-                TransactionsQuery,
+                refetchVariables
+                  ? { query: TransactionsQuery, variables: refetchVariables }
+                  : TransactionsQuery,
                 TransactionsGroupedByPeriodQuery,
                 TransactionsSummaryQuery,
                 BalanceForecastQuery,
@@ -2185,6 +2198,7 @@ export function BetweenAccountsTransactionCreateForm({
   open: externalOpen,
   onOpenChange: externalOnOpenChange,
   onBeforeSubmit,
+  refetchVariables,
 }: TransactionCreateFormProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen ?? internalOpen;
@@ -2393,6 +2407,7 @@ export function BetweenAccountsTransactionCreateForm({
               onBeforeSubmit={onBeforeSubmit}
               onClose={() => handleOpenChange(false)}
               onBack={!isEditMode ? prevStep : undefined}
+              refetchVariables={refetchVariables}
             />
           )}
 
@@ -2428,6 +2443,7 @@ function BetweenAccountsTransactionFormDetails({
   onBeforeSubmit,
   onClose,
   onBack,
+  refetchVariables,
 }: {
   sourceAccountId: string;
   destinyAccountId: string;
@@ -2435,6 +2451,7 @@ function BetweenAccountsTransactionFormDetails({
   onBeforeSubmit?: TransactionCreateFormProps['onBeforeSubmit'];
   onClose: () => void;
   onBack?: () => void;
+  refetchVariables?: any;
 }) {
   const isEditMode = !!editTransaction;
 
@@ -2488,15 +2505,6 @@ function BetweenAccountsTransactionFormDetails({
       label: paymentMethodLabel[method],
     }));
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const paymentMethodIcon: Record<PaymentMethod, any> = {
-    CASH: Banknote,
-    CREDIT_CARD: CreditCard,
-    DEBIT_CARD: CreditCard,
-    PIX: PixIcon,
-    BOLETO: Receipt,
-  };
-
   return (
     <TsForm
       form={form}
@@ -2510,7 +2518,7 @@ function BetweenAccountsTransactionFormDetails({
         paymentMethod: {
           options: paymentMethodOptions,
           renderLabel: (option) => {
-            const Icon = paymentMethodIcon[option.value as PaymentMethod];
+            const Icon = paymentMethodIcons[option.value as PaymentMethod];
             return (
               <div className="flex items-center gap-2">
                 <Icon className="h-5 w-5" />
@@ -2549,7 +2557,9 @@ function BetweenAccountsTransactionFormDetails({
               },
             },
             refetchQueries: [
-              TransactionsQuery,
+              refetchVariables
+                ? { query: TransactionsQuery, variables: refetchVariables }
+                : TransactionsQuery,
               TransactionsGroupedByPeriodQuery,
               TransactionsSummaryQuery,
               BalanceForecastQuery,
@@ -2587,7 +2597,9 @@ function BetweenAccountsTransactionFormDetails({
               },
             },
             refetchQueries: [
-              TransactionsQuery,
+              refetchVariables
+                ? { query: TransactionsQuery, variables: refetchVariables }
+                : TransactionsQuery,
               TransactionsGroupedByPeriodQuery,
               TransactionsSummaryQuery,
               BalanceForecastQuery,
@@ -3456,15 +3468,6 @@ function IncomeTransactionFormContent({
       label: paymentMethodLabel[method],
     }));
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const paymentMethodIcon: Record<PaymentMethod, any> = {
-    CASH: Banknote,
-    CREDIT_CARD: CreditCard,
-    DEBIT_CARD: CreditCard,
-    PIX: PixIcon,
-    BOLETO: Receipt,
-  };
-
   return (
     <TsForm
       form={form}
@@ -3478,7 +3481,7 @@ function IncomeTransactionFormContent({
         paymentMethod: {
           options: paymentMethodOptions,
           renderLabel: (option) => {
-            const Icon = paymentMethodIcon[option.value as PaymentMethod];
+            const Icon = paymentMethodIcons[option.value as PaymentMethod];
             return (
               <div className="flex items-center gap-2">
                 <Icon className="h-5 w-5" />
@@ -3610,15 +3613,6 @@ function ExpenseTransactionFormContent({
       label: paymentMethodLabel[method],
     }));
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const paymentMethodIcon: Record<PaymentMethod, any> = {
-    CASH: Banknote,
-    CREDIT_CARD: CreditCard,
-    DEBIT_CARD: CreditCard,
-    PIX: PixIcon,
-    BOLETO: Receipt,
-  };
-
   return (
     <TsForm
       form={form}
@@ -3632,7 +3626,7 @@ function ExpenseTransactionFormContent({
         paymentMethod: {
           options: paymentMethodOptions,
           renderLabel: (option) => {
-            const Icon = paymentMethodIcon[option.value as PaymentMethod];
+            const Icon = paymentMethodIcons[option.value as PaymentMethod];
             return (
               <div className="flex items-center gap-2">
                 <Icon className="h-5 w-5" />
@@ -3798,15 +3792,6 @@ function BetweenAccountsTransactionFormContent({
       label: paymentMethodLabel[method],
     }));
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const paymentMethodIcon: Record<PaymentMethod, any> = {
-    CASH: Banknote,
-    CREDIT_CARD: CreditCard,
-    DEBIT_CARD: CreditCard,
-    PIX: PixIcon,
-    BOLETO: Receipt,
-  };
-
   return (
     <TsForm
       form={form}
@@ -3820,7 +3805,7 @@ function BetweenAccountsTransactionFormContent({
         paymentMethod: {
           options: paymentMethodOptions,
           renderLabel: (option) => {
-            const Icon = paymentMethodIcon[option.value as PaymentMethod];
+            const Icon = paymentMethodIcons[option.value as PaymentMethod];
             return (
               <div className="flex items-center gap-2">
                 <Icon className="h-5 w-5" />
