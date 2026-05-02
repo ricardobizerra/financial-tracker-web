@@ -52,10 +52,6 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import {
-  paymentMethodIcons,
-  paymentMethodLabel,
-} from '../transactions-constants';
 import { TransactionCategoryBadge } from './transaction-category-badge';
 import { TransactionStatusBadge } from './transaction-status-badge';
 import { useTransactionMutations } from '../hooks/use-transaction-mutations';
@@ -66,6 +62,7 @@ import {
 import { TransactionTypeIcon } from './transaction-type-icon';
 import { TransactionAccountDisplay } from './transaction-account-display';
 import { TransactionAmountDisplay } from './transaction-amount-display';
+import { TransactionPaymentMethod } from './transaction-payment-method';
 
 interface TransactionListItemProps {
   transaction: TransactionFragmentFragment;
@@ -331,35 +328,13 @@ export function TransactionListItem({
 
         {/* Valor & Ações */}
         <div className="flex shrink-0 items-center gap-4">
-          {/* Método de pagamento */}
-          {transaction.paymentMethod &&
-            (() => {
-              const PayIcon =
-                paymentMethodIcons[
-                  transaction.paymentMethod as keyof typeof paymentMethodIcons
-                ];
-              return PayIcon ? (
-                <SimpleTooltip
-                  label={
-                    paymentMethodLabel[
-                      transaction.paymentMethod as keyof typeof paymentMethodLabel
-                    ]
-                  }
-                  side="top"
-                >
-                  <PayIcon
-                    className={cn(
-                      'h-5 w-5 shrink-0',
-                      isExpense && 'text-red-600 dark:text-red-400',
-                      isIncome && 'text-emerald-600 dark:text-emerald-400',
-                      isBetweenAccounts && 'text-blue-600 dark:text-blue-400',
-                      isExpenseForBilling &&
-                        'text-muted-foreground dark:text-muted-foreground',
-                    )}
-                  />
-                </SimpleTooltip>
-              ) : null;
-            })()}
+          {transaction.paymentMethod && (
+            <TransactionPaymentMethod
+              paymentMethod={transaction.paymentMethod}
+              type={transaction.type}
+              isExpenseForBilling={isExpenseForBilling}
+            />
+          )}
 
           <TransactionAmountDisplay
             amount={transaction.amount}
