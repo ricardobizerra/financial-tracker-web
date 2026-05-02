@@ -3,14 +3,16 @@
 import { TransactionFragmentFragment } from '@/graphql/graphql';
 import { TransactionListItem } from './transaction-list-item';
 import {
+  useTimelineGrouping,
+  TimelineGroup,
+} from '../hooks/use-timeline-grouping';
+import {
   format,
   isToday,
   isYesterday,
   isTomorrow,
-  eachDayOfInterval,
-  parseISO,
-  subDays,
   addDays,
+  subDays,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Calendar } from 'lucide-react';
@@ -24,7 +26,7 @@ interface TransactionsTimelineListProps {
   compact?: boolean;
   showType?: boolean;
   hideWarnings?: boolean;
-  todayRef?: React.RefObject<HTMLDivElement | null>;
+  todayRef?: React.RefObject<HTMLDivElement>;
   onLoadMorePast?: () => void;
   onLoadMoreFuture?: () => void;
   hasMorePast?: boolean;
@@ -35,27 +37,6 @@ interface TransactionsTimelineListProps {
   windowEnd: Date;
   refetchVariables: any;
 }
-
-type TimelineGroup =
-  | {
-      type: 'day';
-      dateStr: string;
-      fullDate: string;
-      relativeLabel: string;
-      isToday: boolean;
-      transactions: TransactionFragmentFragment[];
-    }
-  | {
-      type: 'empty-range';
-      startDate: Date;
-      endDate: Date;
-      startDateStr: string;
-      endDateStr: string;
-      count: number;
-      isToday?: boolean;
-      startRelativeLabel?: string;
-      endRelativeLabel?: string;
-    };
 
 export function TransactionsTimelineList({
   transactions,
@@ -75,98 +56,7 @@ export function TransactionsTimelineList({
   windowEnd,
   refetchVariables,
 }: TransactionsTimelineListProps) {
-  const groupTransactionsByDate = (
-    txs: TransactionFragmentFragment[],
-  ): TimelineGroup[] => {
-    if (txs.length === 0) return [];
-
-    const groups: Record<string, TransactionFragmentFragment[]> = {};
-
-    txs.forEach((tx) => {
-      const dateStr = tx.date.split('T')[0];
-      if (!groups[dateStr]) {
-        groups[dateStr] = [];
-      }
-      groups[dateStr].push(tx);
-    });
-
-    // Encontrar o intervalo de datas carregado
-    const dates = txs.map((tx) => parseISO(tx.date.split('T')[0]));
-    const maxDate = new Date(Math.max(...dates.map((d) => d.getTime())));
-    const minDate = new Date(Math.min(...dates.map((d) => d.getTime())));
-
-    // Gerar todos os dias no intervalo (ordenado do mais recente para o mais antigo)
-    const allDays = eachDayOfInterval({
-      start: minDate,
-      end: maxDate,
-    }).reverse();
-
-    const result: TimelineGroup[] = [];
-    let currentEmptyRange: Extract<
-      TimelineGroup,
-      { type: 'empty-range' }
-    > | null = null;
-
-    allDays.forEach((dateObj) => {
-      const dateStr = format(dateObj, 'yyyy-MM-dd');
-      const dayTransactions = groups[dateStr] || [];
-      const isDayToday = isToday(dateObj);
-      const getRelativeLabel = (d: Date) => {
-        if (isToday(d)) return 'Hoje';
-        if (isYesterday(d)) return 'Ontem';
-        if (isTomorrow(d)) return 'Amanhã';
-        return '';
-      };
-
-      const relativeLabel = getRelativeLabel(dateObj);
-
-      if (dayTransactions.length > 0) {
-        // Se há transações, sempre criamos um grupo de dia
-        if (currentEmptyRange) {
-          result.push(currentEmptyRange);
-          currentEmptyRange = null;
-        }
-
-        result.push({
-          type: 'day',
-          dateStr,
-          fullDate: format(dateObj, "dd 'de' MMMM", { locale: ptBR }),
-          relativeLabel,
-          isToday: isDayToday,
-          transactions: dayTransactions,
-        });
-      } else {
-        // Dia vazio (pode ser especial ou não)
-        if (!currentEmptyRange) {
-          currentEmptyRange = {
-            type: 'empty-range',
-            endDate: dateObj,
-            startDate: dateObj,
-            endDateStr: dateStr,
-            startDateStr: dateStr,
-            count: 1,
-            isToday: isDayToday,
-            endRelativeLabel: relativeLabel,
-          };
-        } else {
-          currentEmptyRange.startDate = dateObj;
-          currentEmptyRange.startDateStr = dateStr;
-          currentEmptyRange.count++;
-          if (isDayToday) currentEmptyRange.isToday = true;
-          if (relativeLabel)
-            currentEmptyRange.startRelativeLabel = relativeLabel;
-        }
-      }
-    });
-
-    if (currentEmptyRange) {
-      result.push(currentEmptyRange);
-    }
-
-    return result;
-  };
-
-  const groupedTransactions = groupTransactionsByDate(transactions);
+  const groupedTransactions = useTimelineGrouping(transactions);
 
   return (
     <div className="flex flex-col gap-8 pb-8">
@@ -207,7 +97,7 @@ export function TransactionsTimelineList({
           return (
             <div
               key={`${group.startDateStr}-${group.endDateStr}`}
-              ref={group.isToday ? (todayRef as any) : undefined}
+              ref={group.isToday ? todayRef : undefined}
               className="flex items-center gap-4 py-1"
             >
               <div className="flex items-center gap-2 rounded-full border border-dashed bg-muted/5 px-3 py-1 text-xs font-medium text-muted-foreground">

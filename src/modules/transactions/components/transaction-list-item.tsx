@@ -1,23 +1,18 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useMutation } from '@apollo/client';
 import {
   TransactionFragmentFragment,
   TransactionType,
   TransactionStatus,
   UpdateRecurringScope,
   PaymentMethod,
-  CardBillingStatus,
 } from '@/graphql/graphql';
 
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/lib/formatters/currency';
 import { cn } from '@/lib/utils';
 import {
-  ArrowUp,
-  ArrowDown,
-  ArrowLeftRight,
   ArrowRight,
   Pencil,
   X,
@@ -38,20 +33,11 @@ import {
   BetweenAccountsTransactionCreateForm,
 } from './transaction-create-form';
 import {
-  UpdateRecurringTransactionsMutation,
-  CancelTransactionMutation,
-} from '../graphql/transactions-mutations';
-import {
   TransactionsQuery,
   TransactionsSummaryQuery,
   TransactionsGroupedByPeriodQuery,
 } from '../graphql/transactions-queries';
-import { toast } from 'sonner';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { SimpleTooltip } from '@/components/simple-tooltip';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -64,17 +50,22 @@ import {
 } from '@/components/ui/alert-dialog';
 
 import { Separator } from '@/components/ui/separator';
-import { BillingQuery } from '@/modules/accounts/graphql/accounts-queries';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { SimpleTooltip } from '@/components/simple-tooltip';
 import {
   paymentMethodIcons,
   paymentMethodLabel,
-  transactionStatusLabel,
 } from '../transactions-constants';
 import { TransactionCategoryBadge } from './transaction-category-badge';
 import { TransactionStatusBadge } from './transaction-status-badge';
+import { useTransactionMutations } from '../hooks/use-transaction-mutations';
+import {
+  normalizeTransactionForEdit,
+  formatDateExtended,
+} from '../lib/transaction-utils';
+import { TransactionTypeIcon } from './transaction-type-icon';
+import { TransactionAccountDisplay } from './transaction-account-display';
+import { TransactionAmountDisplay } from './transaction-amount-display';
 
 interface TransactionListItemProps {
   transaction: TransactionFragmentFragment;
@@ -85,125 +76,6 @@ interface TransactionListItemProps {
   showType?: boolean;
   refetchVariables?: any;
 }
-
-function normalizeTransactionForEdit(
-  transaction: TransactionFragmentFragment,
-): TransactionFragmentFragment {
-  const totalInstallments = transaction.totalInstallments ?? 0;
-  const installmentNumber = transaction.installmentNumber ?? 0;
-
-  if (totalInstallments <= 0 || installmentNumber <= 0) {
-    return transaction;
-  }
-
-  const currentInstallment =
-    transaction.installments?.find((i) =>
-      transaction.installmentId
-        ? i.id === transaction.installmentId
-        : i.installmentNumber === installmentNumber,
-    ) ?? null;
-
-  if (!currentInstallment) {
-    return transaction;
-  }
-
-  const currentAmount = Number(transaction.amount);
-  const installmentAmount = Number(currentInstallment.amount);
-
-  // Billing queries override transaction.amount with installment amount.
-  // For edit mutation we must send the full transaction amount.
-  if (Math.abs(currentAmount - installmentAmount) < 0.000001) {
-    return {
-      ...transaction,
-      amount: installmentAmount * totalInstallments,
-    };
-  }
-
-  return transaction;
-}
-
-// Formatar data com mês por extenso e ano só se não for o ano atual
-// ou se for diferente do ano de referência (para parcelas)
-function formatDateExtended(
-  dateStr: string,
-  referenceDateStr?: string | null,
-): string {
-  const date = new Date(dateStr);
-  const day = date.getDate();
-  const month = date.toLocaleDateString('pt-BR', { month: 'long' });
-  const year = date.getFullYear();
-
-  // Se tiver data de referência, comparar com ela
-  if (referenceDateStr) {
-    const referenceDate = new Date(referenceDateStr);
-    const referenceYear = referenceDate.getFullYear();
-
-    if (year !== referenceYear) {
-      return `${day} de ${month} de ${year}`;
-    }
-    return `${day} de ${month}`;
-  }
-
-  // Caso padrão: comparar com o ano atual
-  const currentYear = new Date().getFullYear();
-  if (year === currentYear) {
-    return `${day} de ${month}`;
-  } else {
-    return `${day} de ${month} de ${year}`;
-  }
-}
-
-// Formatar período da fatura (mês/ano)
-function formatBillingPeriod(periodStartStr: string): string {
-  const date = new Date(periodStartStr);
-  const month = date
-    .toLocaleDateString('pt-BR', { month: 'short' })
-    .replace('.', '');
-  const year = date.getFullYear();
-  return `${month}/${year}`;
-}
-
-// Traduzir status da fatura
-function getBillingStatusInfo(status: CardBillingStatus): {
-  label: string;
-  className: string;
-} {
-  switch (status) {
-    case CardBillingStatus.Pending:
-      return {
-        label: 'Aberta',
-        className:
-          'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-      };
-    case CardBillingStatus.Closed:
-      return {
-        label: 'Fechada',
-        className:
-          'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-      };
-    case CardBillingStatus.Overdue:
-      return {
-        label: 'Vencida',
-        className:
-          'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-      };
-    case CardBillingStatus.Paid:
-      return {
-        label: 'Paga',
-        className:
-          'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-      };
-    case CardBillingStatus.Completed:
-      return {
-        label: 'Concluída',
-        className:
-          'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400',
-      };
-    default:
-      return { label: status, className: 'bg-gray-100 text-gray-700' };
-  }
-}
-
 export function TransactionListItem({
   transaction,
   hideAccount = false,
@@ -215,69 +87,29 @@ export function TransactionListItem({
 }: TransactionListItemProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [descriptionEditOpen, setDescriptionEditOpen] = useState(false);
-  const [scopeDialogOpen, setScopeDialogOpen] = useState(false);
 
-  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
-
-  const scopeResolverRef = React.useRef<
-    ((shouldContinue: boolean) => void) | null
-  >(null);
-
-  const [pendingData, setPendingData] = useState<{
-    description: string;
-    amount: number;
-    paymentMethod?: string;
-  } | null>(null);
-
-  const [updateRecurringTransactions] = useMutation(
-    UpdateRecurringTransactionsMutation,
-    {
-      refetchQueries: [
-        refetchVariables
-          ? { query: TransactionsQuery, variables: refetchVariables }
-          : TransactionsQuery,
-        TransactionsSummaryQuery,
-        TransactionsGroupedByPeriodQuery,
-      ],
-      onCompleted: () => {
-        toast.success('Transações atualizadas!');
-        setEditOpen(false);
-      },
-      onError: (error) => {
-        toast.error(error.message);
-      },
-    },
-  );
-
-  const [cancelTransaction, { loading: cancelLoading }] = useMutation(
-    CancelTransactionMutation,
-    {
-      refetchQueries: [
-        TransactionsQuery,
-        TransactionsGroupedByPeriodQuery,
-        TransactionsSummaryQuery,
-        BillingQuery,
-      ],
-      onCompleted: () => {
-        toast.success('Transação cancelada!');
-        setCancelDialogOpen(false);
-      },
-      onError: (error) => {
-        toast.error(error.message);
-      },
-    },
-  );
+  const {
+    cancelLoading,
+    cancelDialogOpen,
+    setCancelDialogOpen,
+    scopeDialogOpen,
+    handleScopeDialogClose,
+    handleScopeSelected,
+    handleBeforeSubmit,
+    handleCancel,
+  } = useTransactionMutations({
+    transaction,
+    refetchVariables,
+  });
 
   const isIncome = transaction.type === TransactionType.Income;
   const isExpense = transaction.type === TransactionType.Expense;
   const isBetweenAccounts =
     transaction.type === TransactionType.BetweenAccounts;
   const isOverdue = transaction.status === TransactionStatus.Overdue;
-  const isCompleted = transaction.status === TransactionStatus.Completed;
   const isCanceled = transaction.status === TransactionStatus.Canceled;
-  const isImmutable = isCompleted || isCanceled;
-  const isRecurring = !!transaction.recurringTransactionId;
   const isBillingPayment = !!transaction.billingPayment;
+  const cardId = transaction.billingPayment?.card?.id;
 
   // Transação pertence a uma fatura de cartão (não é a transação de pagamento)
   const isPartOfBilling = !!transaction.cardBilling;
@@ -286,23 +118,8 @@ export function TransactionListItem({
     isExpense &&
     (isPartOfBilling || (transaction.totalInstallments ?? 0) > 0) &&
     !hideWarnings;
-  const cardBillingStatus = transaction.cardBilling?.status;
-  const isCardBillingOpen = cardBillingStatus === CardBillingStatus.Pending;
-  const isCardBillingClosed =
-    cardBillingStatus === CardBillingStatus.Closed ||
-    cardBillingStatus === CardBillingStatus.Overdue ||
-    cardBillingStatus === CardBillingStatus.Paid;
-
-  // Fatura está fechada (pode ser paga) se status for CLOSED ou OVERDUE (para billingPayment)
-  const billingStatus = transaction.billingPayment?.status;
-  const isBillingClosed =
-    billingStatus === CardBillingStatus.Closed ||
-    billingStatus === CardBillingStatus.Overdue;
-  const isBillingOpen = billingStatus === CardBillingStatus.Pending;
-  const cardId = transaction.billingPayment?.card?.id;
 
   // Transação é editável: tudo exceto CANCELED
-  // Backend faz as validações de fatura e recalculações necessárias
   const canEditFully = !isCanceled;
 
   const handleEdit = () => {
@@ -314,66 +131,9 @@ export function TransactionListItem({
     }
   };
 
-  const handleConfirmCancel = () => {
-    cancelTransaction({ variables: { id: transaction.id } });
-  };
-
-  const handleBeforeSubmit = async (data: {
-    description: string;
-    amount: number;
-    paymentMethod?: string;
-  }): Promise<boolean> => {
-    if (!isRecurring) {
-      return true;
-    }
-
-    setPendingData(data);
-    setScopeDialogOpen(true);
-
-    return new Promise((resolve) => {
-      scopeResolverRef.current = resolve;
-    });
-  };
-
-  const handleScopeSelected = async (scope: UpdateRecurringScope) => {
-    setScopeDialogOpen(false);
-
-    if (scope === UpdateRecurringScope.ThisOnly) {
-      scopeResolverRef.current?.(true);
-    } else {
-      scopeResolverRef.current?.(false);
-
-      if (pendingData) {
-        await updateRecurringTransactions({
-          variables: {
-            data: {
-              transactionId: transaction.id,
-              scope,
-              description: pendingData.description,
-              amount: pendingData.amount,
-              paymentMethod: pendingData.paymentMethod as PaymentMethod,
-            },
-          },
-        });
-      }
-    }
-
-    scopeResolverRef.current = null;
-    setPendingData(null);
-  };
-
-  const handleScopeDialogClose = (open: boolean) => {
-    if (!open && scopeResolverRef.current) {
-      scopeResolverRef.current(false);
-      scopeResolverRef.current = null;
-      setPendingData(null);
-    }
-    setScopeDialogOpen(open);
-  };
-
   const renderEditForm = () => {
     const normalizedTransaction = normalizeTransactionForEdit(transaction);
-    const onBeforeSubmit = isRecurring ? handleBeforeSubmit : undefined;
+    const onBeforeSubmit = handleBeforeSubmit;
 
     switch (transaction.type) {
       case TransactionType.Income:
@@ -411,161 +171,6 @@ export function TransactionListItem({
     }
   };
 
-  const getAccountDisplay = () => {
-    if (isBillingPayment) {
-      const card = transaction.billingPayment?.card;
-      const cardInstitution = card?.institutionLink?.institution;
-      const account = transaction.sourceAccount;
-      const accountInstitution = account?.institutionLink?.institution;
-      if (!card) return null;
-      return (
-        <>
-          <div className="flex items-center gap-1.5">
-            {cardInstitution && (
-              <InstitutionLogo
-                logoUrl={cardInstitution.logoUrl}
-                name={cardInstitution.name}
-                size="sm"
-              />
-            )}
-            <p className="text-sm font-medium">
-              <span className="text-muted-foreground">Cartão</span>{' '}
-              <span>{card.name}</span>
-            </p>
-          </div>
-          {account ? (
-            <div className="flex items-center gap-1.5">
-              <p className="text-sm font-medium text-muted-foreground">
-                {transaction.status === TransactionStatus.Completed
-                  ? 'Paga'
-                  : 'A pagar'}{' '}
-                via
-              </p>
-              {accountInstitution && (
-                <InstitutionLogo
-                  logoUrl={accountInstitution.logoUrl}
-                  name={accountInstitution.name}
-                  size="sm"
-                />
-              )}
-              <p className="text-sm font-medium">
-                <span className="text-muted-foreground">Conta</span>{' '}
-                <span>{account.name}</span>
-              </p>
-            </div>
-          ) : (
-            <p className="text-sm font-medium text-muted-foreground">
-              Conta de pagamento não definida
-            </p>
-          )}
-        </>
-      );
-    }
-
-    if (isBetweenAccounts) {
-      const sourceInst =
-        transaction.sourceAccount?.institutionLink?.institution;
-      const destInst = transaction.destinyAccount?.institutionLink?.institution;
-      return (
-        <div className="flex items-center gap-1.5">
-          {sourceInst && (
-            <>
-              <InstitutionLogo
-                logoUrl={sourceInst.logoUrl}
-                name={sourceInst.name}
-                size="sm"
-              />
-              <p className="text-sm font-medium">
-                <span className="text-muted-foreground">Conta</span>{' '}
-                <span>{transaction.sourceAccount?.name}</span>
-              </p>
-              <ArrowRight className="h-3 w-3" />
-            </>
-          )}
-          {destInst && (
-            <InstitutionLogo
-              logoUrl={destInst.logoUrl}
-              name={destInst.name}
-              size="sm"
-            />
-          )}
-          <p className="text-sm font-medium">
-            <span className="text-muted-foreground">Conta</span>{' '}
-            <span>{transaction.destinyAccount?.name}</span>
-          </p>
-        </div>
-      );
-    }
-
-    const account = isIncome
-      ? transaction.destinyAccount
-      : (transaction.sourceAccount ??
-        (transaction.sourceCard as typeof transaction.sourceAccount | null) ??
-        transaction.cardBilling?.paymentTransaction?.sourceAccount);
-
-    if (!account) return null;
-
-    const institution = account.institutionLink?.institution;
-
-    return (
-      <div className="flex items-center gap-1.5">
-        {institution && (
-          <InstitutionLogo
-            logoUrl={institution.logoUrl}
-            name={institution.name}
-            size="sm"
-          />
-        )}
-        <div className="flex flex-col">
-          <p className="text-sm font-medium">
-            <span className="text-muted-foreground">
-              {transaction.sourceCard ? 'Cartão' : 'Conta'}
-            </span>{' '}
-            <span>{account.name}</span>
-          </p>
-          {isExpenseForBilling && !hideWarnings && transaction.cardBilling && (
-            <span className="text-xs font-normal">
-              {(transaction.installments?.length ?? 0) > 0 ? (
-                <>
-                  Parcelado em{' '}
-                  <span className="font-semibold">
-                    {transaction.installments?.length}x
-                  </span>{' '}
-                  a partir da fatura de{' '}
-                  {format(transaction.cardBilling.periodEnd, "MMMM 'de' yyyy", {
-                    locale: ptBR,
-                  })}
-                </>
-              ) : (
-                <>
-                  Fatura de{' '}
-                  {format(transaction.cardBilling.periodEnd, "MMMM 'de' yyyy", {
-                    locale: ptBR,
-                  })}
-                  {transaction.cardBilling.paymentDate && (
-                    <>
-                      {' '}
-                      ·{' '}
-                      <span className="font-semibold">
-                        A ser paga até{' '}
-                        {format(
-                          transaction.cardBilling.paymentDate,
-                          "dd 'de' MMMM 'de' yyyy",
-                          { locale: ptBR },
-                        )}
-                      </span>
-                    </>
-                  )}
-                </>
-              )}
-            </span>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  // Renderiza informações da conta para os dialogs (formato mais detalhado)
   const renderAccountInfoForDialog = () => {
     if (isBetweenAccounts) {
       return (
@@ -659,31 +264,6 @@ export function TransactionListItem({
     return null;
   };
 
-  const TypeIcon = () => {
-    if (isIncome) {
-      return (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
-          <ArrowUp className="h-5 w-5" />
-        </div>
-      );
-    }
-    if (isExpense) {
-      return (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
-          <ArrowDown className="h-5 w-5" />
-        </div>
-      );
-    }
-    if (isBetweenAccounts) {
-      return (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
-          <ArrowLeftRight className="h-5 w-5" />
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <>
       <div
@@ -698,7 +278,7 @@ export function TransactionListItem({
       >
         <div className="flex flex-1 items-center gap-4 overflow-hidden">
           {/* Ícone do tipo */}
-          {showType && <TypeIcon />}
+          {showType && <TransactionTypeIcon type={transaction.type} />}
 
           {/* Descrição e Conta */}
           <div className="flex min-w-0 flex-1 flex-col">
@@ -740,7 +320,12 @@ export function TransactionListItem({
                   />
                 )}
             </div>
-            {(!hideAccount || isBillingPayment) && getAccountDisplay()}
+            {(!hideAccount || isBillingPayment) && (
+              <TransactionAccountDisplay
+                transaction={transaction}
+                hideWarnings={hideWarnings}
+              />
+            )}
           </div>
         </div>
 
@@ -769,9 +354,7 @@ export function TransactionListItem({
                       isExpense && 'text-red-600 dark:text-red-400',
                       isIncome && 'text-emerald-600 dark:text-emerald-400',
                       isBetweenAccounts && 'text-blue-600 dark:text-blue-400',
-                      (transaction.cardBilling ||
-                        (transaction.totalInstallments ?? 0) > 0) &&
-                        !hideWarnings &&
+                      isExpenseForBilling &&
                         'text-muted-foreground dark:text-muted-foreground',
                     )}
                   />
@@ -779,21 +362,11 @@ export function TransactionListItem({
               ) : null;
             })()}
 
-          <div
-            className={cn(
-              'text-right text-base font-semibold',
-              isIncome && 'text-emerald-600 dark:text-emerald-400',
-              isExpense && 'text-red-600 dark:text-red-400',
-              isBetweenAccounts && 'text-blue-600 dark:text-blue-400',
-              (transaction.cardBilling ||
-                (transaction.totalInstallments ?? 0) > 0) &&
-                !hideWarnings &&
-                'text-muted-foreground dark:text-muted-foreground',
-            )}
-          >
-            {isExpense && '-'}
-            {formatCurrency(Number(transaction.amount))}
-          </div>
+          <TransactionAmountDisplay
+            amount={transaction.amount}
+            type={transaction.type}
+            isExpenseForBilling={isExpenseForBilling}
+          />
 
           {/* Status */}
           <TransactionStatusBadge status={transaction.status} />
@@ -921,7 +494,7 @@ export function TransactionListItem({
           <AlertDialogFooter>
             <AlertDialogCancel>Voltar</AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleConfirmCancel}
+              onClick={handleCancel}
               disabled={cancelLoading}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
