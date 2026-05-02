@@ -333,7 +333,6 @@ export function TransactionListItem({
         <div className="flex shrink-0 items-center gap-4">
           {/* Método de pagamento */}
           {transaction.paymentMethod &&
-            !isBillingPayment &&
             (() => {
               const PayIcon =
                 paymentMethodIcons[
