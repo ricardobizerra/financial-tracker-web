@@ -38,6 +38,36 @@ export const RecurringTransactionFragment = graphql(`
     }
     createdAt
     updatedAt
+    transactions {
+      id
+      description
+      amount
+      date
+      status
+      type
+      paymentMethod
+      category
+      sourceAccount {
+        id
+        name
+        institutionLink {
+          institution {
+            name
+            logoUrl
+          }
+        }
+      }
+      destinyAccount {
+        id
+        name
+        institutionLink {
+          institution {
+            name
+            logoUrl
+          }
+        }
+      }
+    }
   }
 `);
 

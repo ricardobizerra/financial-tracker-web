@@ -317,6 +317,15 @@ export function TransactionListItem({
           {/* Ícone do tipo */}
           {showType && <TransactionTypeIcon type={transaction.type} />}
 
+          {/* Data (somente em modo compacto) */}
+          {compact && (
+            <span className="whitespace-nowrap rounded bg-muted/50 px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
+              {format(new Date(transaction.date), "d 'de' MMMM", {
+                locale: ptBR,
+              })}
+            </span>
+          )}
+
           {/* Descrição e Conta */}
           <div className="flex min-w-0 flex-1 flex-col">
             <div className="flex flex-wrap items-center gap-2">
