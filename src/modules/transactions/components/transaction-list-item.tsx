@@ -16,12 +16,21 @@ import {
   ArrowRight,
   Pencil,
   X,
+  Check,
   Eye,
   Clock,
   CheckCircle2,
   Ban,
   AlertTriangle,
+  Calendar as CalendarIcon,
 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 import Link from 'next/link';
 import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
 import { TransactionEditDescriptionDialog } from './transaction-edit-description-dialog';
@@ -87,6 +96,7 @@ export function TransactionListItem({
 
   const {
     cancelLoading,
+    updateLoading,
     cancelDialogOpen,
     setCancelDialogOpen,
     scopeDialogOpen,
@@ -94,10 +104,39 @@ export function TransactionListItem({
     handleScopeSelected,
     handleBeforeSubmit,
     handleCancel,
+    handleFastUpdate,
   } = useTransactionMutations({
     transaction,
     refetchVariables,
   });
+
+  const [isDescriptionEditing, setIsDescriptionEditing] = useState(false);
+  const [descriptionValue, setDescriptionValue] = useState(
+    transaction.description || '',
+  );
+  const descriptionInputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    if (isDescriptionEditing) {
+      descriptionInputRef.current?.focus();
+      descriptionInputRef.current?.select();
+    }
+  }, [isDescriptionEditing]);
+
+  const handleDescriptionSave = () => {
+    if (descriptionValue !== transaction.description) {
+      handleFastUpdate({ description: descriptionValue });
+    }
+    setIsDescriptionEditing(false);
+  };
+
+  const handleDescriptionKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleDescriptionSave();
+    if (e.key === 'Escape') {
+      setDescriptionValue(transaction.description || '');
+      setIsDescriptionEditing(false);
+    }
+  };
 
   const isIncome = transaction.type === TransactionType.Income;
   const isExpense = transaction.type === TransactionType.Expense;
@@ -280,7 +319,7 @@ export function TransactionListItem({
           {/* Descrição e Conta */}
           <div className="flex min-w-0 flex-1 flex-col">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="truncate text-base font-semibold">
+              <span className="flex items-center gap-1.5 truncate text-base font-semibold">
                 {isBillingPayment ? (
                   <>
                     <span className="text-muted-foreground">Fatura </span>
@@ -297,9 +336,95 @@ export function TransactionListItem({
                       )}
                     </span>
                   </>
+                ) : isDescriptionEditing ? (
+                  <Input
+                    ref={descriptionInputRef}
+                    value={descriptionValue}
+                    onChange={(e) => setDescriptionValue(e.target.value)}
+                    onKeyDown={handleDescriptionKeyDown}
+                    rightSlot={
+                      <div className="flex items-center gap-0.5 pr-1">
+                        <SimpleTooltip label="Salvar" side="top">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className={cn(
+                              'h-6 w-6 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-950/30',
+                              descriptionValue === transaction.description &&
+                                'cursor-not-allowed opacity-30 grayscale',
+                            )}
+                            onClick={handleDescriptionSave}
+                            disabled={
+                              descriptionValue === transaction.description
+                            }
+                          >
+                            <Check className="h-3.5 w-3.5" />
+                            <span className="sr-only">Salvar</span>
+                          </Button>
+                        </SimpleTooltip>
+                        <SimpleTooltip label="Cancelar" side="top">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/30"
+                            onClick={() => {
+                              setDescriptionValue(
+                                transaction.description || '',
+                              );
+                              setIsDescriptionEditing(false);
+                            }}
+                          >
+                            <X className="h-3.5 w-3.5" />
+                            <span className="sr-only">Cancelar</span>
+                          </Button>
+                        </SimpleTooltip>
+                      </div>
+                    }
+                    className="h-8 min-w-[250px] py-1 text-sm font-semibold"
+                  />
                 ) : (
-                  transaction.description || 'Sem descrição'
+                  <span
+                    className={cn(
+                      'cursor-pointer decoration-muted-foreground/30 underline-offset-4 hover:underline',
+                      !transaction.description &&
+                        'italic text-muted-foreground',
+                    )}
+                    onClick={() =>
+                      !isBillingPayment &&
+                      !isCanceled &&
+                      setIsDescriptionEditing(true)
+                    }
+                  >
+                    {transaction.description || 'Sem descrição'}
+                  </span>
                 )}
+
+                {/* Calendar Popover for Rescheduling */}
+                {!isBillingPayment &&
+                  !isCanceled &&
+                  transaction.status === TransactionStatus.Planned && (
+                    <Popover>
+                      <SimpleTooltip label="Reagendar" side="top">
+                        <PopoverTrigger asChild>
+                          <button className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:scale-95">
+                            <CalendarIcon className="h-3 w-3" />
+                          </button>
+                        </PopoverTrigger>
+                      </SimpleTooltip>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={new Date(transaction.date)}
+                          onSelect={(date) => {
+                            if (date) {
+                              handleFastUpdate({ date });
+                            }
+                          }}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  )}
               </span>
               {(transaction.totalInstallments ?? 0) > 0 &&
                 (transaction.installmentNumber ?? 0) > 0 && (
@@ -308,14 +433,14 @@ export function TransactionListItem({
                     {transaction.totalInstallments}
                   </span>
                 )}
-              {transaction.category &&
-                !isBillingPayment &&
-                !isBetweenAccounts && (
-                  <TransactionCategoryBadge
-                    category={transaction.category}
-                    className="ml-1"
-                  />
-                )}
+              {!isBillingPayment && !isBetweenAccounts && (
+                <TransactionCategoryBadge
+                  category={transaction.category}
+                  className="ml-1"
+                  onSelect={(category) => handleFastUpdate({ category })}
+                  disabled={isCanceled}
+                />
+              )}
             </div>
             {(!hideAccount || isBillingPayment) && (
               <TransactionAccountDisplay
@@ -328,11 +453,13 @@ export function TransactionListItem({
 
         {/* Valor & Ações */}
         <div className="flex shrink-0 items-center gap-4">
-          {transaction.paymentMethod && (
+          {!isBetweenAccounts && (
             <TransactionPaymentMethod
               paymentMethod={transaction.paymentMethod}
               type={transaction.type}
               isExpenseForBilling={isExpenseForBilling}
+              onSelect={(method) => handleFastUpdate({ paymentMethod: method })}
+              disabled={isCanceled}
             />
           )}
 
@@ -340,10 +467,16 @@ export function TransactionListItem({
             amount={transaction.amount}
             type={transaction.type}
             isExpenseForBilling={isExpenseForBilling}
+            onUpdate={(amount) => handleFastUpdate({ amount })}
+            disabled={isCanceled}
           />
 
           {/* Status */}
-          <TransactionStatusBadge status={transaction.status} />
+          <TransactionStatusBadge
+            status={transaction.status}
+            onSelect={(status) => handleFastUpdate({ status })}
+            disabled={isCanceled}
+          />
 
           {/* Ações inline */}
           <div className="flex items-center gap-1">
