@@ -18,6 +18,8 @@ interface TransactionPaymentMethodProps {
   paymentMethod?: string | null;
   type: TransactionType;
   isExpenseForBilling?: boolean;
+  isCardAccount?: boolean;
+  isDebitCard?: boolean;
   onSelect?: (method: PaymentMethod) => void;
   disabled?: boolean;
 }
@@ -26,6 +28,8 @@ export function TransactionPaymentMethod({
   paymentMethod,
   type,
   isExpenseForBilling = false,
+  isCardAccount = false,
+  isDebitCard = false,
   onSelect,
   disabled = false,
 }: TransactionPaymentMethodProps) {
@@ -96,31 +100,41 @@ export function TransactionPaymentMethod({
       </SimpleTooltip>
 
       <DropdownMenuContent align="end" className="w-52 space-y-1 p-2">
-        {Object.entries(paymentMethodIcons).map(([methodKey, MethodIcon]) => {
-          const isSelected = paymentMethod === methodKey;
-          const methodTyped = methodKey as PaymentMethod;
-          const methodLabel =
-            paymentMethodLabel[methodKey as keyof typeof paymentMethodLabel];
+        {Object.entries(paymentMethodIcons)
+          .filter(([methodKey]) => {
+            if (isCardAccount) {
+              return isDebitCard
+                ? methodKey === PaymentMethod.DebitCard
+                : methodKey === PaymentMethod.CreditCard;
+            }
+            // For accounts, filter out card-specific methods
+            return !['CREDIT_CARD', 'DEBIT_CARD'].includes(methodKey);
+          })
+          .map(([methodKey, MethodIcon]) => {
+            const isSelected = paymentMethod === methodKey;
+            const methodTyped = methodKey as PaymentMethod;
+            const methodLabel =
+              paymentMethodLabel[methodKey as keyof typeof paymentMethodLabel];
 
-          return (
-            <DropdownMenuItem
-              key={methodKey}
-              className={cn(
-                'flex cursor-pointer items-center justify-between gap-3 rounded-md px-2 py-1.5 transition-colors focus:bg-muted',
-                isSelected && 'bg-muted/50 font-medium',
-              )}
-              onClick={() => onSelect(methodTyped)}
-            >
-              <div className="flex items-center gap-2.5">
-                <MethodIcon className="h-4 w-4 shrink-0" />
-                <span className="text-sm">{methodLabel}</span>
-              </div>
-              {isSelected && (
-                <Check className="h-4 w-4 shrink-0 text-muted-foreground opacity-60" />
-              )}
-            </DropdownMenuItem>
-          );
-        })}
+            return (
+              <DropdownMenuItem
+                key={methodKey}
+                className={cn(
+                  'flex cursor-pointer items-center justify-between gap-3 rounded-md px-2 py-1.5 transition-colors focus:bg-muted',
+                  isSelected && 'bg-muted/50 font-medium',
+                )}
+                onClick={() => onSelect(methodTyped)}
+              >
+                <div className="flex items-center gap-2.5">
+                  <MethodIcon className="h-4 w-4 shrink-0" />
+                  <span className="text-sm">{methodLabel}</span>
+                </div>
+                {isSelected && (
+                  <Check className="h-4 w-4 shrink-0 text-muted-foreground opacity-60" />
+                )}
+              </DropdownMenuItem>
+            );
+          })}
       </DropdownMenuContent>
     </DropdownMenu>
   );

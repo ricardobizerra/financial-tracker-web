@@ -7,6 +7,7 @@ import {
   TransactionStatus,
   UpdateRecurringScope,
   PaymentMethod,
+  CardType,
 } from '@/graphql/graphql';
 
 import { Button } from '@/components/ui/button';
@@ -455,6 +456,8 @@ export function TransactionListItem({
             paymentMethod={transaction.paymentMethod}
             type={transaction.type}
             isExpenseForBilling={isExpenseForBilling}
+            isCardAccount={!!transaction.sourceCard}
+            isDebitCard={transaction.sourceCard?.type === CardType.Debit}
             onSelect={(method) => handleFastUpdate({ paymentMethod: method })}
             disabled={isCanceled}
           />
