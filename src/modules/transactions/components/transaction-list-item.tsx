@@ -445,6 +445,14 @@ export function TransactionListItem({
               <TransactionAccountDisplay
                 transaction={transaction}
                 hideWarnings={hideWarnings}
+                onUpdateAccount={(accountId, type) =>
+                  handleFastUpdate({
+                    [type === 'source'
+                      ? 'sourceAccountId'
+                      : 'destinyAccountId']: accountId,
+                  })
+                }
+                disabled={isCanceled}
               />
             )}
           </div>

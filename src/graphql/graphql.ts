@@ -4630,10 +4630,12 @@ export type UpdateTransactionInput = {
   category?: InputMaybe<TransactionCategory>;
   date?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  destinyAccountId?: InputMaybe<Scalars['ID']['input']>;
   id: Scalars['ID']['input'];
   /** Se true e a data for hoje, marca como COMPLETED. Se false ou não informado, usa PLANNED para hoje. */
   isCompleted?: InputMaybe<Scalars['Boolean']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
+  sourceAccountId?: InputMaybe<Scalars['ID']['input']>;
   status?: InputMaybe<TransactionStatus>;
 };
 

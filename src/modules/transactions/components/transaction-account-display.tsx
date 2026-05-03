@@ -7,15 +7,20 @@ import { InstitutionLogo } from '@/modules/accounts/components/institution-logo'
 import { ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { TransactionAccountSelector } from './transaction-account-selector';
 
 interface TransactionAccountDisplayProps {
   transaction: TransactionFragmentFragment;
   hideWarnings?: boolean;
+  onUpdateAccount?: (accountId: string, type: 'source' | 'destiny') => void;
+  disabled?: boolean;
 }
 
 export function TransactionAccountDisplay({
   transaction,
   hideWarnings = false,
+  onUpdateAccount,
+  disabled = false,
 }: TransactionAccountDisplayProps) {
   const isIncome = transaction.type === TransactionType.Income;
   const isExpense = transaction.type === TransactionType.Expense;
@@ -31,9 +36,8 @@ export function TransactionAccountDisplay({
   if (isBillingPayment) {
     const card = transaction.billingPayment?.card;
     const cardInstitution = card?.institutionLink?.institution;
-    const account = transaction.sourceAccount;
-    const accountInstitution = account?.institutionLink?.institution;
     if (!card) return null;
+
     return (
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-1.5">
@@ -41,73 +45,48 @@ export function TransactionAccountDisplay({
             <InstitutionLogo
               logoUrl={cardInstitution.logoUrl}
               name={cardInstitution.name}
-              size="sm"
+              size="xs"
             />
           )}
-          <p className="text-sm font-medium">
-            <span className="text-muted-foreground">Cartão</span>{' '}
-            <span>{card.name}</span>
+          <p className="text-sm">
+            <span className="font-normal text-muted-foreground">Cartão</span>{' '}
+            <span className="font-medium">{card.name}</span>
           </p>
         </div>
-        {account ? (
-          <div className="flex items-center gap-1.5">
-            <p className="text-sm font-medium text-muted-foreground">
-              {transaction.status === TransactionStatus.Completed
-                ? 'Paga'
-                : 'A pagar'}{' '}
-              via
-            </p>
-            {accountInstitution && (
-              <InstitutionLogo
-                logoUrl={accountInstitution.logoUrl}
-                name={accountInstitution.name}
-                size="sm"
-              />
-            )}
-            <p className="text-sm font-medium">
-              <span className="text-muted-foreground">Conta</span>{' '}
-              <span>{account.name}</span>
-            </p>
-          </div>
-        ) : (
-          <p className="text-xs font-medium text-muted-foreground">
-            Conta de pagamento não definida
+        <div className="flex items-center gap-1.5">
+          <p className="text-sm font-normal text-muted-foreground">
+            {transaction.status === TransactionStatus.Completed
+              ? 'Paga'
+              : 'A pagar'}{' '}
+            via
           </p>
-        )}
+          <TransactionAccountSelector
+            currentAccountId={transaction.sourceAccount?.id}
+            onSelect={(id) => onUpdateAccount?.(id, 'source')}
+            disabled={disabled || !onUpdateAccount}
+            placeholder="Adicionar conta"
+          />
+        </div>
       </div>
     );
   }
 
   if (isBetweenAccounts) {
-    const sourceInst = transaction.sourceAccount?.institutionLink?.institution;
-    const destInst = transaction.destinyAccount?.institutionLink?.institution;
     return (
       <div className="flex items-center gap-1.5">
-        {sourceInst && (
-          <>
-            <InstitutionLogo
-              logoUrl={sourceInst.logoUrl}
-              name={sourceInst.name}
-              size="sm"
-            />
-            <p className="text-sm font-medium">
-              <span className="text-muted-foreground">Conta</span>{' '}
-              <span>{transaction.sourceAccount?.name}</span>
-            </p>
-            <ArrowRight className="h-3 w-3" />
-          </>
-        )}
-        {destInst && (
-          <InstitutionLogo
-            logoUrl={destInst.logoUrl}
-            name={destInst.name}
-            size="sm"
-          />
-        )}
-        <p className="text-sm font-medium">
-          <span className="text-muted-foreground">Conta</span>{' '}
-          <span>{transaction.destinyAccount?.name}</span>
-        </p>
+        <TransactionAccountSelector
+          currentAccountId={transaction.sourceAccount?.id}
+          onSelect={(id) => onUpdateAccount?.(id, 'source')}
+          disabled={disabled || !onUpdateAccount}
+          placeholder="Origem"
+        />
+        <ArrowRight className="h-3 w-3 text-muted-foreground" />
+        <TransactionAccountSelector
+          currentAccountId={transaction.destinyAccount?.id}
+          onSelect={(id) => onUpdateAccount?.(id, 'destiny')}
+          disabled={disabled || !onUpdateAccount}
+          placeholder="Destino"
+        />
       </div>
     );
   }
@@ -118,33 +97,31 @@ export function TransactionAccountDisplay({
       (transaction.sourceCard as typeof transaction.sourceAccount | null) ??
       transaction.cardBilling?.paymentTransaction?.sourceAccount);
 
-  if (!account) return null;
-
-  const institution = account.institutionLink?.institution;
-
-  return (
-    <div className="flex items-center gap-1.5">
-      {institution && (
-        <InstitutionLogo
-          logoUrl={institution.logoUrl}
-          name={institution.name}
-          size="sm"
-        />
-      )}
+  // Se for cartão mas não tiver conta (ex: despesa de fatura), mostramos o cartão de forma estática por enquanto
+  if (transaction.sourceCard && !isIncome) {
+    const institution = transaction.sourceCard.institutionLink?.institution;
+    return (
       <div className="flex flex-col">
-        <p className="text-sm font-medium">
-          <span className="text-muted-foreground">
-            {transaction.sourceCard ? 'Cartão' : 'Conta'}
-          </span>{' '}
-          <span>{account.name}</span>
-        </p>
+        <div className="flex items-center gap-1.5">
+          {institution && (
+            <InstitutionLogo
+              logoUrl={institution.logoUrl}
+              name={institution.name}
+              size="xs"
+            />
+          )}
+          <p className="text-sm">
+            <span className="font-normal text-muted-foreground">Cartão</span>{' '}
+            <span className="font-medium">{transaction.sourceCard.name}</span>
+          </p>
+        </div>
         {isExpenseForBilling && !hideWarnings && transaction.cardBilling && (
-          <span className="text-xs font-normal">
-            {(transaction.installments?.length ?? 0) > 0 ? (
+          <span className="text-xs font-normal text-muted-foreground">
+            {(transaction.totalInstallments ?? 0) > 0 ? (
               <>
                 Parcelado em{' '}
                 <span className="font-semibold">
-                  {transaction.installments?.length}x
+                  {transaction.totalInstallments}x
                 </span>{' '}
                 a partir da fatura de{' '}
                 {format(transaction.cardBilling.periodEnd, "MMMM 'de' yyyy", {
@@ -157,24 +134,25 @@ export function TransactionAccountDisplay({
                 {format(transaction.cardBilling.periodEnd, "MMMM 'de' yyyy", {
                   locale: ptBR,
                 })}
-                {transaction.cardBilling.paymentDate && (
-                  <>
-                    {' '}
-                    ·{' '}
-                    <span className="font-semibold">
-                      A ser paga até{' '}
-                      {format(
-                        transaction.cardBilling.paymentDate,
-                        "dd 'de' MMMM 'de' yyyy",
-                        { locale: ptBR },
-                      )}
-                    </span>
-                  </>
-                )}
               </>
             )}
           </span>
         )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col">
+      <div className="flex items-center gap-1.5">
+        <TransactionAccountSelector
+          currentAccountId={account?.id}
+          onSelect={(id) =>
+            onUpdateAccount?.(id, isIncome ? 'destiny' : 'source')
+          }
+          disabled={disabled || !onUpdateAccount}
+          placeholder="Adicionar conta"
+        />
       </div>
     </div>
   );
