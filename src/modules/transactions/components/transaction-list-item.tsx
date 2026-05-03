@@ -433,14 +433,12 @@ export function TransactionListItem({
                     {transaction.totalInstallments}
                   </span>
                 )}
-              {!isBillingPayment && !isBetweenAccounts && (
-                <TransactionCategoryBadge
-                  category={transaction.category}
-                  className="ml-1"
-                  onSelect={(category) => handleFastUpdate({ category })}
-                  disabled={isCanceled}
-                />
-              )}
+              <TransactionCategoryBadge
+                category={transaction.category}
+                className="ml-1"
+                onSelect={(category) => handleFastUpdate({ category })}
+                disabled={isCanceled}
+              />
             </div>
             {(!hideAccount || isBillingPayment) && (
               <TransactionAccountDisplay
@@ -453,15 +451,13 @@ export function TransactionListItem({
 
         {/* Valor & Ações */}
         <div className="flex shrink-0 items-center gap-4">
-          {!isBetweenAccounts && (
-            <TransactionPaymentMethod
-              paymentMethod={transaction.paymentMethod}
-              type={transaction.type}
-              isExpenseForBilling={isExpenseForBilling}
-              onSelect={(method) => handleFastUpdate({ paymentMethod: method })}
-              disabled={isCanceled}
-            />
-          )}
+          <TransactionPaymentMethod
+            paymentMethod={transaction.paymentMethod}
+            type={transaction.type}
+            isExpenseForBilling={isExpenseForBilling}
+            onSelect={(method) => handleFastUpdate({ paymentMethod: method })}
+            disabled={isCanceled}
+          />
 
           <TransactionAmountDisplay
             amount={transaction.amount}
