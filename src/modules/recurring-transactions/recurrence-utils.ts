@@ -1,6 +1,30 @@
-import { RecurrenceFrequency, DayMode } from '@/graphql/graphql';
-import { format } from 'date-fns';
+import {
+  addWeeks,
+  addMonths,
+  addYears,
+  lastDayOfMonth,
+  isWeekend,
+  subDays,
+  addDays,
+  startOfMonth,
+  getDay,
+  isBefore,
+  isSameDay,
+  setDay,
+  format,
+} from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { RecurrenceFrequency, DayMode } from '@/graphql/graphql';
+
+export interface RecurrenceData {
+  frequency: RecurrenceFrequency;
+  dayMode: DayMode;
+  dayOfWeek: number;
+  weekOfMonth: number;
+  stopCondition: 'INFINITE' | 'UNTIL_DATE' | 'REPEATS';
+  endDate?: Date;
+  repeatCount?: number;
+}
 
 // Helper function to get day of week name in Portuguese
 export const getDayOfWeekName = (dayOfWeek: number): string => {
@@ -14,6 +38,99 @@ export const getDayOfWeekName = (dayOfWeek: number): string => {
     'sábado',
   ];
   return days[dayOfWeek] || '';
+};
+
+// ... (rest of previous helpers)
+
+export const generatePreviewDates = (
+  startDate: Date,
+  data: RecurrenceData,
+  maxPreview: number = 12,
+): Date[] => {
+  const occurrences: Date[] = [];
+  const currentBaseDate = new Date(startDate);
+
+  const limit =
+    data.stopCondition === 'REPEATS'
+      ? Math.min(data.repeatCount || 0, 24)
+      : maxPreview;
+
+  const endDateLimit =
+    data.stopCondition === 'UNTIL_DATE' ? data.endDate : null;
+
+  for (let i = 0; i < limit; i++) {
+    let nextDate: Date | null = null;
+
+    if (data.frequency === RecurrenceFrequency.Weekly) {
+      nextDate = addWeeks(currentBaseDate, i);
+      nextDate = setDay(nextDate, data.dayOfWeek);
+    } else if (data.frequency === RecurrenceFrequency.BiWeekly) {
+      nextDate = addWeeks(currentBaseDate, i * 2);
+      nextDate = setDay(nextDate, data.dayOfWeek);
+    } else {
+      // Monthly or Yearly
+      const monthsToAdd =
+        data.frequency === RecurrenceFrequency.Monthly ? i : i * 12;
+      const baseMonth = addMonths(currentBaseDate, monthsToAdd);
+
+      switch (data.dayMode) {
+        case DayMode.SpecificDay:
+          nextDate = baseMonth; // Uses the same day as start date
+          break;
+        case DayMode.LastDay:
+          nextDate = lastDayOfMonth(baseMonth);
+          break;
+        case DayMode.LastBusinessDay: {
+          let date = lastDayOfMonth(baseMonth);
+          while (isWeekend(date)) {
+            date = subDays(date, 1);
+          }
+          nextDate = date;
+          break;
+        }
+        case DayMode.FirstBusinessDay: {
+          let date = startOfMonth(baseMonth);
+          while (isWeekend(date)) {
+            date = addDays(date, 1);
+          }
+          nextDate = date;
+          break;
+        }
+        case DayMode.NthWeekday: {
+          const first = startOfMonth(baseMonth);
+          let date = first;
+          const count = 0;
+          // Find first instance of the weekday
+          while (getDay(date) !== data.dayOfWeek) {
+            date = addDays(date, 1);
+          }
+          // Add weeks
+          date = addWeeks(date, data.weekOfMonth - 1);
+          // Ensure still in same month
+          if (date.getMonth() === baseMonth.getMonth()) {
+            nextDate = date;
+          } else {
+            // Fallback to last occurrence if 5th week doesn't exist
+            nextDate = subDays(date, 7);
+          }
+          break;
+        }
+      }
+    }
+
+    if (nextDate) {
+      // Don't include dates before start date if they were calculated by shifting
+      if (isBefore(nextDate, startDate) && !isSameDay(nextDate, startDate)) {
+        continue;
+      }
+      if (endDateLimit && isBefore(endDateLimit, nextDate)) {
+        break;
+      }
+      occurrences.push(nextDate);
+    }
+  }
+
+  return occurrences;
 };
 
 // Helper function to get week ordinal in Portuguese

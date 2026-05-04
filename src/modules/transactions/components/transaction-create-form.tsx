@@ -86,6 +86,10 @@ import {
 } from '../transactions-constants';
 import { transactionCategoryIcons } from './transaction-category-badge';
 import { useForm, useWatch } from 'react-hook-form';
+import {
+  RecurrenceFormSection,
+  RecurrenceData,
+} from '@/modules/recurring-transactions/components/shared/recurrence-form-section';
 import { zodResolver } from '@hookform/resolvers/zod';
 import PixIcon from '@/static/pix-icon.svg';
 import {
@@ -502,11 +506,13 @@ function IncomeTransactionFormDetails({
 
   // Internal step state for recurrence configuration
   const [showRecurrenceStep, setShowRecurrenceStep] = useState(false);
-  const [recurrenceFrequency, setRecurrenceFrequency] =
-    useState<RecurrenceFrequency>(RecurrenceFrequency.Monthly);
-  const [dayMode, setDayMode] = useState<DayMode>(DayMode.SpecificDay);
-  const [dayOfWeek, setDayOfWeek] = useState<number>(1); // 0-6, default Monday
-  const [weekOfMonth, setWeekOfMonth] = useState<number>(1); // 1-5, default 1st
+  const [recurrenceData, setRecurrenceData] = useState<RecurrenceData>({
+    frequency: RecurrenceFrequency.Monthly,
+    dayMode: DayMode.SpecificDay,
+    dayOfWeek: 1,
+    weekOfMonth: 1,
+    stopCondition: 'INFINITE',
+  });
 
   const form = useForm<z.infer<typeof formStepperIncomeSchema>>({
     resolver: zodResolver(formStepperIncomeSchema),
@@ -636,33 +642,43 @@ function IncomeTransactionFormDetails({
                   category: data.category?.value as
                     | TransactionCategory
                     | undefined,
-                  frequency: recurrenceFrequency,
+                  frequency: recurrenceData.frequency,
                   dayMode:
-                    recurrenceFrequency === RecurrenceFrequency.Weekly ||
-                    recurrenceFrequency === RecurrenceFrequency.BiWeekly
+                    recurrenceData.frequency === RecurrenceFrequency.Weekly ||
+                    recurrenceData.frequency === RecurrenceFrequency.BiWeekly
                       ? DayMode.SpecificDay
-                      : dayMode,
+                      : recurrenceData.dayMode,
                   dayOfMonth:
-                    dayMode === DayMode.SpecificDay &&
+                    recurrenceData.dayMode === DayMode.SpecificDay &&
                     !(
-                      recurrenceFrequency === RecurrenceFrequency.Weekly ||
-                      recurrenceFrequency === RecurrenceFrequency.BiWeekly
+                      recurrenceData.frequency === RecurrenceFrequency.Weekly ||
+                      recurrenceData.frequency === RecurrenceFrequency.BiWeekly
                     )
                       ? (data.date?.getDate() ?? new Date().getDate())
                       : undefined,
                   dayOfWeek:
-                    recurrenceFrequency === RecurrenceFrequency.Weekly ||
-                    recurrenceFrequency === RecurrenceFrequency.BiWeekly ||
-                    dayMode === DayMode.NthWeekday
-                      ? dayOfWeek
+                    recurrenceData.frequency === RecurrenceFrequency.Weekly ||
+                    recurrenceData.frequency === RecurrenceFrequency.BiWeekly ||
+                    recurrenceData.dayMode === DayMode.NthWeekday
+                      ? recurrenceData.dayOfWeek
                       : undefined,
                   weekOfMonth:
-                    dayMode === DayMode.NthWeekday ? weekOfMonth : undefined,
+                    recurrenceData.dayMode === DayMode.NthWeekday
+                      ? recurrenceData.weekOfMonth
+                      : undefined,
                   monthOfYear:
-                    recurrenceFrequency === RecurrenceFrequency.Yearly
+                    recurrenceData.frequency === RecurrenceFrequency.Yearly
                       ? (data.date?.getMonth() ?? 0) + 1
                       : undefined,
                   startDate: data.date ?? new Date(),
+                  endDate:
+                    recurrenceData.stopCondition === 'UNTIL_DATE'
+                      ? recurrenceData.endDate
+                      : undefined,
+                  repeatCount:
+                    recurrenceData.stopCondition === 'REPEATS'
+                      ? recurrenceData.repeatCount
+                      : undefined,
                 },
               },
               refetchQueries: [
@@ -678,10 +694,10 @@ function IncomeTransactionFormDetails({
               onCompleted: () => {
                 toast.success('Entrada recorrente criada!', {
                   description: getRecurrenceDescription(
-                    recurrenceFrequency,
-                    dayMode,
-                    dayOfWeek,
-                    weekOfMonth,
+                    recurrenceData.frequency,
+                    recurrenceData.dayMode,
+                    recurrenceData.dayOfWeek,
+                    recurrenceData.weekOfMonth,
                   ),
                 });
                 onClose();
@@ -821,239 +837,13 @@ function IncomeTransactionFormDetails({
                 </p>
               </div>
 
-              {/* Frequency selection */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Frequência</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setRecurrenceFrequency(RecurrenceFrequency.Weekly)
-                    }
-                    className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                      recurrenceFrequency === RecurrenceFrequency.Weekly
-                        ? 'border-primary bg-primary/5 text-primary'
-                        : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                    }`}
-                  >
-                    Semanal
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setRecurrenceFrequency(RecurrenceFrequency.BiWeekly)
-                    }
-                    className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                      recurrenceFrequency === RecurrenceFrequency.BiWeekly
-                        ? 'border-primary bg-primary/5 text-primary'
-                        : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                    }`}
-                  >
-                    Quinzenal
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setRecurrenceFrequency(RecurrenceFrequency.Monthly)
-                    }
-                    className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                      recurrenceFrequency === RecurrenceFrequency.Monthly
-                        ? 'border-primary bg-primary/5 text-primary'
-                        : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                    }`}
-                  >
-                    Mensal
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setRecurrenceFrequency(RecurrenceFrequency.Yearly)
-                    }
-                    className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                      recurrenceFrequency === RecurrenceFrequency.Yearly
-                        ? 'border-primary bg-primary/5 text-primary'
-                        : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                    }`}
-                  >
-                    Anual
-                  </button>
-                </div>
-              </div>
-
-              {/* Day of week selection for weekly/bi-weekly */}
-              {(recurrenceFrequency === RecurrenceFrequency.Weekly ||
-                recurrenceFrequency === RecurrenceFrequency.BiWeekly) && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Dia da semana</label>
-                  <div className="flex flex-wrap gap-1">
-                    {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(
-                      (day, index) => (
-                        <button
-                          key={day}
-                          type="button"
-                          onClick={() => setDayOfWeek(index)}
-                          className={`min-w-[40px] flex-1 rounded-lg border-2 px-2 py-2 text-xs font-medium transition-all ${
-                            dayOfWeek === index
-                              ? 'border-primary bg-primary/5 text-primary'
-                              : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                          }`}
-                        >
-                          {day}
-                        </button>
-                      ),
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Day mode selection for monthly/yearly */}
-              {(recurrenceFrequency === RecurrenceFrequency.Monthly ||
-                recurrenceFrequency === RecurrenceFrequency.Yearly) && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    Dia do{' '}
-                    {recurrenceFrequency === RecurrenceFrequency.Monthly
-                      ? 'mês'
-                      : 'ano'}
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setDayMode(DayMode.SpecificDay)}
-                      className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                        dayMode === DayMode.SpecificDay
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      Dia específico
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDayMode(DayMode.LastDay)}
-                      className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                        dayMode === DayMode.LastDay
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      Último dia
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDayMode(DayMode.LastBusinessDay)}
-                      className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                        dayMode === DayMode.LastBusinessDay
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      Último dia útil
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDayMode(DayMode.FirstBusinessDay)}
-                      className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                        dayMode === DayMode.FirstBusinessDay
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      Primeiro dia útil
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDayMode(DayMode.NthWeekday)}
-                      className={`col-span-2 rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                        dayMode === DayMode.NthWeekday
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      Dia da semana específico
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Nth weekday selection */}
-              {dayMode === DayMode.NthWeekday &&
-                (recurrenceFrequency === RecurrenceFrequency.Monthly ||
-                  recurrenceFrequency === RecurrenceFrequency.Yearly) && (
-                  <>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">
-                        Qual semana?
-                      </label>
-                      <div className="flex gap-2">
-                        {['1ª', '2ª', '3ª', '4ª', '5ª'].map((week, index) => (
-                          <button
-                            key={week}
-                            type="button"
-                            onClick={() => setWeekOfMonth(index + 1)}
-                            className={`flex-1 rounded-lg border-2 px-2 py-2 text-sm font-medium transition-all ${
-                              weekOfMonth === index + 1
-                                ? 'border-primary bg-primary/5 text-primary'
-                                : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                            }`}
-                          >
-                            {week}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">
-                        Dia da semana
-                      </label>
-                      <div className="flex flex-wrap gap-1">
-                        {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(
-                          (day, index) => (
-                            <button
-                              key={day}
-                              type="button"
-                              onClick={() => setDayOfWeek(index)}
-                              className={`min-w-[40px] flex-1 rounded-lg border-2 px-2 py-2 text-xs font-medium transition-all ${
-                                dayOfWeek === index
-                                  ? 'border-primary bg-primary/5 text-primary'
-                                  : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                              }`}
-                            >
-                              {day}
-                            </button>
-                          ),
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
-
-              {/* Summary */}
-              <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-                <p className="text-sm text-muted-foreground">Resumo</p>
-                <p className="text-sm font-medium text-primary">
-                  {getRecurrenceSummary(
-                    recurrenceFrequency,
-                    dayMode,
-                    dayOfWeek,
-                    weekOfMonth,
-                    form.getValues('date'),
-                  )}
-                </p>
-              </div>
-
-              {/* Warning for days >= 29 */}
-              {dayMode === DayMode.SpecificDay &&
-                (recurrenceFrequency === RecurrenceFrequency.Monthly ||
-                  recurrenceFrequency === RecurrenceFrequency.Yearly) &&
-                selectedDate &&
-                selectedDate.getDate() >= 29 && (
-                  <p className="text-xs text-amber-600 dark:text-amber-400">
-                    <AlertTriangleIcon className="inline h-4 w-4" /> Nos meses
-                    com menos de {selectedDate.getDate()} dias, a transação será
-                    criada no último dia do mês.
-                  </p>
-                )}
+              <RecurrenceFormSection
+                data={recurrenceData}
+                onChange={(newData) =>
+                  setRecurrenceData((prev) => ({ ...prev, ...newData }))
+                }
+                startDate={selectedDate}
+              />
             </div>
           )}
         </>
@@ -1437,11 +1227,13 @@ function ExpenseTransactionFormDetails({
   const [showInstallmentStep, setShowInstallmentStep] = useState(false);
   // Internal step state for recurrence configuration
   const [showRecurrenceStep, setShowRecurrenceStep] = useState(false);
-  const [recurrenceFrequency, setRecurrenceFrequency] =
-    useState<RecurrenceFrequency>(RecurrenceFrequency.Monthly);
-  const [dayMode, setDayMode] = useState<DayMode>(DayMode.SpecificDay);
-  const [dayOfWeek, setDayOfWeek] = useState<number>(1); // 0-6, default Monday
-  const [weekOfMonth, setWeekOfMonth] = useState<number>(1); // 1-5, default 1st
+  const [recurrenceData, setRecurrenceData] = useState<RecurrenceData>({
+    frequency: RecurrenceFrequency.Monthly,
+    dayMode: DayMode.SpecificDay,
+    dayOfWeek: 1,
+    weekOfMonth: 1,
+    stopCondition: 'INFINITE',
+  });
 
   const form = useForm<z.infer<typeof formStepperExpenseSchema>>({
     resolver: zodResolver(formStepperExpenseSchema),
@@ -1658,27 +1450,44 @@ function ExpenseTransactionFormDetails({
             // If in recurrence step, create recurring transaction
             // Build data object based on frequency and dayMode
             const isWeeklyOrBiWeekly =
-              recurrenceFrequency === RecurrenceFrequency.Weekly ||
-              recurrenceFrequency === RecurrenceFrequency.BiWeekly;
-            const isYearly = recurrenceFrequency === RecurrenceFrequency.Yearly;
+              recurrenceData.frequency === RecurrenceFrequency.Weekly ||
+              recurrenceData.frequency === RecurrenceFrequency.BiWeekly;
+            const isYearly =
+              recurrenceData.frequency === RecurrenceFrequency.Yearly;
             const needsDayOfWeek =
-              isWeeklyOrBiWeekly || dayMode === DayMode.NthWeekday;
+              isWeeklyOrBiWeekly ||
+              recurrenceData.dayMode === DayMode.NthWeekday;
             const needsDayOfMonth =
-              dayMode === DayMode.SpecificDay && !isWeeklyOrBiWeekly;
+              recurrenceData.dayMode === DayMode.SpecificDay &&
+              !isWeeklyOrBiWeekly;
 
             await createRecurringTransaction({
               variables: {
                 data: {
                   description: data.description,
                   estimatedAmount: data.amount,
-                  frequency: recurrenceFrequency,
+                  frequency: recurrenceData.frequency,
                   startDate: data.date,
-                  dayMode: isWeeklyOrBiWeekly ? DayMode.SpecificDay : dayMode,
+                  dayMode: isWeeklyOrBiWeekly
+                    ? DayMode.SpecificDay
+                    : recurrenceData.dayMode,
                   dayOfMonth: needsDayOfMonth ? data.date.getDate() : undefined,
-                  dayOfWeek: needsDayOfWeek ? dayOfWeek : undefined,
+                  dayOfWeek: needsDayOfWeek
+                    ? recurrenceData.dayOfWeek
+                    : undefined,
                   weekOfMonth:
-                    dayMode === DayMode.NthWeekday ? weekOfMonth : undefined,
+                    recurrenceData.dayMode === DayMode.NthWeekday
+                      ? recurrenceData.weekOfMonth
+                      : undefined,
                   monthOfYear: isYearly ? data.date.getMonth() + 1 : undefined,
+                  endDate:
+                    recurrenceData.stopCondition === 'UNTIL_DATE'
+                      ? recurrenceData.endDate
+                      : undefined,
+                  repeatCount:
+                    recurrenceData.stopCondition === 'REPEATS'
+                      ? recurrenceData.repeatCount
+                      : undefined,
                   sourceAccountId: sourceAccountId,
                   type: TransactionType.Expense,
                   paymentMethod: data.paymentMethod?.value as PaymentMethod,
@@ -1701,10 +1510,10 @@ function ExpenseTransactionFormDetails({
               onCompleted: () => {
                 toast.success('Despesa recorrente criada!', {
                   description: getRecurrenceDescription(
-                    recurrenceFrequency,
-                    dayMode,
-                    dayOfWeek,
-                    weekOfMonth,
+                    recurrenceData.frequency,
+                    recurrenceData.dayMode,
+                    recurrenceData.dayOfWeek,
+                    recurrenceData.weekOfMonth,
                   ),
                 });
                 onClose();
@@ -1924,245 +1733,13 @@ function ExpenseTransactionFormDetails({
                   </p>
                 </div>
 
-                {/* Frequency selection */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Frequência</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setRecurrenceFrequency(RecurrenceFrequency.Weekly)
-                      }
-                      className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                        recurrenceFrequency === RecurrenceFrequency.Weekly
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      Semanal
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setRecurrenceFrequency(RecurrenceFrequency.BiWeekly)
-                      }
-                      className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                        recurrenceFrequency === RecurrenceFrequency.BiWeekly
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      Quinzenal
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setRecurrenceFrequency(RecurrenceFrequency.Monthly)
-                      }
-                      className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                        recurrenceFrequency === RecurrenceFrequency.Monthly
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      Mensal
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setRecurrenceFrequency(RecurrenceFrequency.Yearly)
-                      }
-                      className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                        recurrenceFrequency === RecurrenceFrequency.Yearly
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      Anual
-                    </button>
-                  </div>
-                </div>
-
-                {/* Day of week selection for weekly/bi-weekly */}
-                {(recurrenceFrequency === RecurrenceFrequency.Weekly ||
-                  recurrenceFrequency === RecurrenceFrequency.BiWeekly) && (
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Dia da semana</label>
-                    <div className="flex flex-wrap gap-1">
-                      {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(
-                        (day, index) => (
-                          <button
-                            key={day}
-                            type="button"
-                            onClick={() => setDayOfWeek(index)}
-                            className={`min-w-[40px] flex-1 rounded-lg border-2 px-2 py-2 text-xs font-medium transition-all ${
-                              dayOfWeek === index
-                                ? 'border-primary bg-primary/5 text-primary'
-                                : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                            }`}
-                          >
-                            {day}
-                          </button>
-                        ),
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Day mode selection for monthly/yearly */}
-                {(recurrenceFrequency === RecurrenceFrequency.Monthly ||
-                  recurrenceFrequency === RecurrenceFrequency.Yearly) && (
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">
-                      Dia do{' '}
-                      {recurrenceFrequency === RecurrenceFrequency.Monthly
-                        ? 'mês'
-                        : 'ano'}
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setDayMode(DayMode.SpecificDay)}
-                        className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                          dayMode === DayMode.SpecificDay
-                            ? 'border-primary bg-primary/5 text-primary'
-                            : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                        }`}
-                      >
-                        Dia específico
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setDayMode(DayMode.LastDay)}
-                        className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                          dayMode === DayMode.LastDay
-                            ? 'border-primary bg-primary/5 text-primary'
-                            : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                        }`}
-                      >
-                        Último dia
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setDayMode(DayMode.LastBusinessDay)}
-                        className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                          dayMode === DayMode.LastBusinessDay
-                            ? 'border-primary bg-primary/5 text-primary'
-                            : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                        }`}
-                      >
-                        Último dia útil
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setDayMode(DayMode.FirstBusinessDay)}
-                        className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                          dayMode === DayMode.FirstBusinessDay
-                            ? 'border-primary bg-primary/5 text-primary'
-                            : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                        }`}
-                      >
-                        Primeiro dia útil
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setDayMode(DayMode.NthWeekday)}
-                        className={`col-span-2 rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                          dayMode === DayMode.NthWeekday
-                            ? 'border-primary bg-primary/5 text-primary'
-                            : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                        }`}
-                      >
-                        Dia da semana específico
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Nth weekday selection */}
-                {dayMode === DayMode.NthWeekday &&
-                  (recurrenceFrequency === RecurrenceFrequency.Monthly ||
-                    recurrenceFrequency === RecurrenceFrequency.Yearly) && (
-                    <>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Qual semana?
-                        </label>
-                        <div className="flex gap-2">
-                          {['1ª', '2ª', '3ª', '4ª', '5ª'].map((week, index) => (
-                            <button
-                              key={week}
-                              type="button"
-                              onClick={() => setWeekOfMonth(index + 1)}
-                              className={`flex-1 rounded-lg border-2 px-2 py-2 text-sm font-medium transition-all ${
-                                weekOfMonth === index + 1
-                                  ? 'border-primary bg-primary/5 text-primary'
-                                  : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                              }`}
-                            >
-                              {week}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Dia da semana
-                        </label>
-                        <div className="flex flex-wrap gap-1">
-                          {[
-                            'Dom',
-                            'Seg',
-                            'Ter',
-                            'Qua',
-                            'Qui',
-                            'Sex',
-                            'Sáb',
-                          ].map((day, index) => (
-                            <button
-                              key={day}
-                              type="button"
-                              onClick={() => setDayOfWeek(index)}
-                              className={`min-w-[40px] flex-1 rounded-lg border-2 px-2 py-2 text-xs font-medium transition-all ${
-                                dayOfWeek === index
-                                  ? 'border-primary bg-primary/5 text-primary'
-                                  : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                              }`}
-                            >
-                              {day}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                {/* Summary */}
-                <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-                  <p className="text-sm text-muted-foreground">Resumo</p>
-                  <p className="text-sm font-medium text-primary">
-                    {getRecurrenceSummary(
-                      recurrenceFrequency,
-                      dayMode,
-                      dayOfWeek,
-                      weekOfMonth,
-                      selectedDate,
-                    )}
-                  </p>
-                </div>
-
-                {/* Warning for days >= 29 */}
-                {dayMode === DayMode.SpecificDay &&
-                  (recurrenceFrequency === RecurrenceFrequency.Monthly ||
-                    recurrenceFrequency === RecurrenceFrequency.Yearly) &&
-                  selectedDate &&
-                  selectedDate.getDate() >= 29 && (
-                    <p className="text-xs text-amber-600 dark:text-amber-400">
-                      <AlertTriangleIcon className="inline h-4 w-4" /> Nos meses
-                      com menos de {selectedDate.getDate()} dias, a transação
-                      será criada no último dia do mês.
-                    </p>
-                  )}
+                <RecurrenceFormSection
+                  data={recurrenceData}
+                  onChange={(newData) =>
+                    setRecurrenceData((prev) => ({ ...prev, ...newData }))
+                  }
+                  startDate={selectedDate}
+                />
               </div>
             </>
           )}

@@ -44,10 +44,13 @@ export function useRecurringTransactionMutations() {
     }
   };
 
-  const deleteRecurringTransaction = async (id: string) => {
+  const deleteRecurringTransaction = async (
+    id: string,
+    deleteAllTransactions = false,
+  ) => {
     try {
       await deleteMutation({
-        variables: { id },
+        variables: { id, deleteAllTransactions },
       });
       toast.success('Recorrência removida com sucesso');
     } catch (error) {

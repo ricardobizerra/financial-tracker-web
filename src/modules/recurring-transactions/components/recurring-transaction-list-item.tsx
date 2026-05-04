@@ -31,6 +31,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { TransactionAccountDisplay } from '@/modules/transactions/components/transaction-account-display';
 import { TransactionAmountDisplay } from '@/modules/transactions/components/transaction-amount-display';
 import { TransactionTypeIcon } from '@/modules/transactions/components/transaction-type-icon';
@@ -56,6 +58,10 @@ export function RecurringTransactionListItem({
     deleteRecurringTransaction,
     updateLoading,
   } = useRecurringTransactionMutations();
+
+  const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
+  const [secondConfirmOpen, setSecondConfirmOpen] = useState(false);
+  const [deleteAllTransactions, setDeleteAllTransactions] = useState(false);
 
   const transactions = recurring.transactions || [];
 
@@ -164,7 +170,10 @@ export function RecurringTransactionListItem({
             />
 
             <div className="flex items-center gap-2">
-              <AlertDialog>
+              <AlertDialog
+                open={deleteAlertOpen}
+                onOpenChange={setDeleteAlertOpen}
+              >
                 <SimpleTooltip label="Remover recorrência" side="top">
                   <AlertDialogTrigger asChild>
                     <Button
@@ -179,19 +188,74 @@ export function RecurringTransactionListItem({
                 </SimpleTooltip>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Remover recorrência?</AlertDialogTitle>
+                    <AlertDialogTitle>
+                      Remover recorrência{' '}
+                      <span className="font-bold">{recurring.description}</span>
+                      ?
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
                       Esta ação irá interromper a geração de futuras transações.
-                      As transações já geradas serão mantidas em seu histórico.
+                      As transações já geradas serão mantidas em seu histórico
+                      por padrão.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
+                  <div className="flex items-center space-x-2 pt-2">
+                    <Switch
+                      id="delete-all"
+                      checked={deleteAllTransactions}
+                      onCheckedChange={setDeleteAllTransactions}
+                    />
+                    <Label htmlFor="delete-all" className="text-sm font-normal">
+                      Excluir também todas as transações já geradas
+                    </Label>
+                  </div>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
                     <AlertDialogAction
-                      onClick={() => deleteRecurringTransaction(recurring.id)}
+                      onClick={(e) => {
+                        if (deleteAllTransactions) {
+                          e.preventDefault();
+                          setDeleteAlertOpen(false);
+                          setTimeout(() => setSecondConfirmOpen(true), 100);
+                        } else {
+                          deleteRecurringTransaction(recurring.id, false);
+                        }
+                      }}
                       className="bg-red-600 hover:bg-red-700"
                     >
                       Remover
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+
+              {/* Second Confirmation Dialog */}
+              <AlertDialog
+                open={secondConfirmOpen}
+                onOpenChange={setSecondConfirmOpen}
+              >
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-red-400">
+                      Confirmar exclusão total
+                    </AlertDialogTitle>
+                    <AlertDialogDescription className="text-base">
+                      Você tem certeza que deseja excluir esta recorrência{' '}
+                      <span className="font-bold">
+                        e TODAS as transações que já foram geradas
+                      </span>{' '}
+                      por ela? Esta ação não pode ser desfeita.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Voltar</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() =>
+                        deleteRecurringTransaction(recurring.id, true)
+                      }
+                      className="bg-red-700 hover:bg-red-800"
+                    >
+                      Sim, excluir tudo
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -201,7 +265,7 @@ export function RecurringTransactionListItem({
         </div>
 
         {/* Card Content (Sub-list) */}
-        <CollapsibleContent className="data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-hidden">
+        <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
           <div className="border-t bg-zinc-50/50 p-4 pt-3 dark:bg-zinc-950/20">
             <div className="mb-3 flex items-center gap-2 px-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
               <History className="h-3 w-3" />
