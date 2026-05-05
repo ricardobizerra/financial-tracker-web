@@ -712,10 +712,10 @@ function IncomeTransactionFormDetails({
                 recurrenceData.frequency === RecurrenceFrequency.Yearly
                   ? (data.date?.getMonth() ?? 0) + 1
                   : undefined,
-              startDate: data.date ?? new Date(),
+              startDate: (data.date ?? new Date()).toISOString(),
               endDate:
                 recurrenceData.stopCondition === 'UNTIL_DATE'
-                  ? recurrenceData.endDate
+                  ? recurrenceData.endDate?.toISOString()
                   : undefined,
               repeatCount:
                 recurrenceData.stopCondition === 'REPEATS'
@@ -1606,7 +1606,7 @@ function ExpenseTransactionFormDetails({
               description: data.description,
               totalAmount: data.amount,
               totalInstallments: data.installmentCount,
-              startDate: data.date,
+              startDate: data.date.toISOString(),
               sourceCardId: sourceCardId!,
             },
           },
@@ -1652,7 +1652,7 @@ function ExpenseTransactionFormDetails({
               description: data.description,
               estimatedAmount: data.amount,
               frequency: recurrenceData.frequency,
-              startDate: data.date,
+              startDate: data.date.toISOString(),
               dayMode: isWeeklyOrBiWeekly
                 ? DayMode.SpecificDay
                 : recurrenceData.dayMode,
@@ -1665,7 +1665,7 @@ function ExpenseTransactionFormDetails({
               monthOfYear: isYearly ? data.date.getMonth() + 1 : undefined,
               endDate:
                 recurrenceData.stopCondition === 'UNTIL_DATE'
-                  ? recurrenceData.endDate
+                  ? recurrenceData.endDate?.toISOString()
                   : undefined,
               repeatCount:
                 recurrenceData.stopCondition === 'REPEATS'
@@ -2498,7 +2498,7 @@ function BetweenAccountsTransactionFormDetails({
                   description: data.description,
                   estimatedAmount: data.amount,
                   frequency: recurrenceData.frequency,
-                  startDate: data.date,
+                  startDate: data.date.toISOString(),
                   dayMode:
                     recurrenceData.frequency === RecurrenceFrequency.Weekly ||
                     recurrenceData.frequency === RecurrenceFrequency.BiWeekly
@@ -2528,7 +2528,7 @@ function BetweenAccountsTransactionFormDetails({
                       : undefined,
                   endDate:
                     recurrenceData.stopCondition === 'UNTIL_DATE'
-                      ? recurrenceData.endDate
+                      ? recurrenceData.endDate?.toISOString()
                       : undefined,
                   repeatCount:
                     recurrenceData.stopCondition === 'REPEATS'
