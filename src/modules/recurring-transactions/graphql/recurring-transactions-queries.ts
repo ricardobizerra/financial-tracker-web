@@ -114,3 +114,27 @@ export const RecurringTransactionQuery = graphql(`
     }
   }
 `);
+
+export const PossibleRecurringTransactionsQuery = graphql(`
+  query PossibleRecurringTransactions {
+    possibleRecurringTransactions {
+      description
+      averageAmount
+      frequency
+      suggestedDay
+      sourceAccountId
+      destinyAccountId
+      transactionIds
+      occurrenceCount
+      transactions {
+        id
+        description
+        amount
+        date
+        status
+        type
+        category
+      }
+    }
+  }
+`);

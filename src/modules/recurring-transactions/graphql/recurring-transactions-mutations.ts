@@ -65,3 +65,9 @@ export const DeleteRecurringTransactionMutation = graphql(`
     }
   }
 `);
+
+export const IgnorePossibleRecurrenceMutation = graphql(`
+  mutation IgnorePossibleRecurrence($description: String!) {
+    ignorePossibleRecurrence(description: $description)
+  }
+`);

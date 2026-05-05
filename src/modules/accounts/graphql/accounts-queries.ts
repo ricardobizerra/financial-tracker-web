@@ -18,6 +18,7 @@ export const AccountFragment = graphql(`
         name
         logoUrl
         color
+        types
         createdAt
         updatedAt
       }
@@ -90,6 +91,7 @@ export const CardFragment = graphql(`
         name
         logoUrl
         color
+        types
         createdAt
         updatedAt
       }
@@ -148,6 +150,7 @@ export const InstitutionFragment = graphql(`
     name
     logoUrl
     color
+    types
     createdAt
     updatedAt
   }

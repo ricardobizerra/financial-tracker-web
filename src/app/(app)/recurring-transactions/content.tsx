@@ -2,9 +2,13 @@
 
 import {
   RecurringTransactionsList,
-  IncomeRecurringTransactionCreateForm,
-  ExpenseRecurringTransactionCreateForm,
+  RecurringTransactionSuggestionsList,
+  SuggestionData,
 } from '@/modules/recurring-transactions';
+import {
+  IncomeTransactionCreateForm,
+  ExpenseTransactionCreateForm,
+} from '@/modules/transactions/components/transaction-create-form';
 import {
   Card,
   CardContent,
@@ -13,8 +17,46 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { CalendarClock } from 'lucide-react';
+import { useState } from 'react';
+import { RecurrenceFrequency } from '@/graphql/graphql';
 
 export function RecurringTransactionsContent() {
+  const [suggestionToActivate, setSuggestionToActivate] =
+    useState<SuggestionData | null>(null);
+  const [isIncomeFormOpen, setIsIncomeFormOpen] = useState(false);
+  const [isExpenseFormOpen, setIsExpenseFormOpen] = useState(false);
+
+  const handleActivate = (suggestion: SuggestionData) => {
+    setSuggestionToActivate(suggestion);
+    if (suggestion.destinyAccountId && !suggestion.sourceAccountId) {
+      setIsIncomeFormOpen(true);
+    } else {
+      setIsExpenseFormOpen(true);
+    }
+  };
+
+  const handleIncomeOpenChange = (open: boolean) => {
+    setIsIncomeFormOpen(open);
+    if (!open) setSuggestionToActivate(null);
+  };
+
+  const handleExpenseOpenChange = (open: boolean) => {
+    setIsExpenseFormOpen(open);
+    if (!open) setSuggestionToActivate(null);
+  };
+
+  const prefilledData = suggestionToActivate
+    ? {
+        description: suggestionToActivate.description,
+        amount: suggestionToActivate.averageAmount,
+        destinyAccountId: suggestionToActivate.destinyAccountId,
+        sourceAccountId: suggestionToActivate.sourceAccountId,
+        frequency: suggestionToActivate.frequency,
+        transactionIdsToLink: suggestionToActivate.transactionIds,
+        transactionsToLink: suggestionToActivate.transactions,
+      }
+    : undefined;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -25,10 +67,20 @@ export function RecurringTransactionsContent() {
           </p>
         </div>
         <div className="flex gap-2">
-          <IncomeRecurringTransactionCreateForm />
-          <ExpenseRecurringTransactionCreateForm />
+          <IncomeTransactionCreateForm
+            open={isIncomeFormOpen}
+            onOpenChange={handleIncomeOpenChange}
+            prefilledData={prefilledData}
+          />
+          <ExpenseTransactionCreateForm
+            open={isExpenseFormOpen}
+            onOpenChange={handleExpenseOpenChange}
+            prefilledData={prefilledData}
+          />
         </div>
       </div>
+
+      <RecurringTransactionSuggestionsList onActivate={handleActivate} />
 
       <Card>
         <CardHeader>

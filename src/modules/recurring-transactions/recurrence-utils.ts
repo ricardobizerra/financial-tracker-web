@@ -140,21 +140,36 @@ export const getWeekOrdinal = (week: number): string => {
 };
 
 // Helper function to generate recurrence summary
+// Helper function to generate recurrence summary
 export const getRecurrenceSummary = (
   frequency: RecurrenceFrequency,
   dayMode: DayMode,
   dayOfWeek: number,
   weekOfMonth: number,
   selectedDate?: Date | null,
+  stopCondition?: 'INFINITE' | 'UNTIL_DATE' | 'REPEATS',
+  repeatCount?: number,
+  endDate?: Date | null,
 ): string => {
   const dayName = getDayOfWeekName(dayOfWeek);
   const weekOrdinal = getWeekOrdinal(weekOfMonth);
 
+  let prefix = 'Essa transação será repetida';
+
+  if (stopCondition === 'REPEATS' && repeatCount) {
+    prefix = `Essa transação será repetida ${repeatCount} vezes`;
+  } else if (stopCondition === 'UNTIL_DATE' && endDate) {
+    prefix = `Essa transação será repetida até ${format(endDate, "d 'de' MMMM 'de' yyyy", { locale: ptBR })}`;
+  }
+
+  let recurrenceText = '';
   switch (frequency) {
     case RecurrenceFrequency.Weekly:
-      return `Toda semana às ${dayName}s`;
+      recurrenceText = `toda semana às ${dayName}s`;
+      break;
     case RecurrenceFrequency.BiWeekly:
-      return `A cada duas semanas às ${dayName}s`;
+      recurrenceText = `a cada duas semanas às ${dayName}s`;
+      break;
     case RecurrenceFrequency.Monthly:
     case RecurrenceFrequency.Yearly: {
       const periodText =
@@ -164,24 +179,33 @@ export const getRecurrenceSummary = (
           if (selectedDate) {
             const dayFormat =
               frequency === RecurrenceFrequency.Monthly ? 'dd' : "dd 'de' MMMM";
-            return `Esta transação será repetida ${periodText} no dia ${format(selectedDate, dayFormat, { locale: ptBR })}`;
+            recurrenceText = `${periodText}, no dia ${format(selectedDate, dayFormat, { locale: ptBR })}`;
+          } else {
+            recurrenceText = periodText;
           }
-          return `Esta transação será repetida ${periodText}`;
+          break;
         case DayMode.LastDay:
-          return `Esta transação será repetida no último dia de cada ${frequency === RecurrenceFrequency.Monthly ? 'mês' : 'ano'}`;
+          recurrenceText = `no último dia de cada ${frequency === RecurrenceFrequency.Monthly ? 'mês' : 'ano'}`;
+          break;
         case DayMode.LastBusinessDay:
-          return `Esta transação será repetida no último dia útil de cada ${frequency === RecurrenceFrequency.Monthly ? 'mês' : 'ano'}`;
+          recurrenceText = `no último dia útil de cada ${frequency === RecurrenceFrequency.Monthly ? 'mês' : 'ano'}`;
+          break;
         case DayMode.FirstBusinessDay:
-          return `Esta transação será repetida no primeiro dia útil de cada ${frequency === RecurrenceFrequency.Monthly ? 'mês' : 'ano'}`;
+          recurrenceText = `no primeiro dia útil de cada ${frequency === RecurrenceFrequency.Monthly ? 'mês' : 'ano'}`;
+          break;
         case DayMode.NthWeekday:
-          return `Esta transação será repetida na ${weekOrdinal} ${dayName} de cada ${frequency === RecurrenceFrequency.Monthly ? 'mês' : 'ano'}`;
+          recurrenceText = `na ${weekOrdinal} ${dayName} de cada ${frequency === RecurrenceFrequency.Monthly ? 'mês' : 'ano'}`;
+          break;
         default:
-          return `Esta transação será repetida ${periodText}`;
+          recurrenceText = periodText;
       }
+      break;
     }
     default:
-      return 'Esta transação será repetida';
+      recurrenceText = 'conforme configurado';
   }
+
+  return `${prefix}, ${recurrenceText}`;
 };
 
 // Helper function for toast description
