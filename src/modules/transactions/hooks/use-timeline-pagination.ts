@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@apollo/client';
-import { subDays, addDays } from 'date-fns';
+import { subDays, addDays, startOfDay, endOfDay } from 'date-fns';
 import { TransactionsQuery } from '../graphql/transactions-queries';
 import {
   OrdenationTransactionModel,
@@ -46,10 +46,14 @@ export function useTimelinePagination({
       orderBy: OrdenationTransactionModel.Date,
       orderDirection: OrderDirection.Desc,
       startDate: hasActiveFilters
-        ? filters.startDate?.toISOString()
+        ? filters.startDate
+          ? startOfDay(filters.startDate).toISOString()
+          : undefined
         : windowStart.toISOString(),
       endDate: hasActiveFilters
-        ? filters.endDate?.toISOString()
+        ? filters.endDate
+          ? endOfDay(filters.endDate).toISOString()
+          : undefined
         : windowEnd.toISOString(),
       types: filters.types,
       statuses: filters.statuses,

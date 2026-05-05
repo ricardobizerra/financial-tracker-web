@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { TransactionStatus } from '@/graphql/graphql';
 import { cn } from '@/lib/utils';
 import { transactionStatusLabel } from '../transactions-constants';
-import { AlertTriangle, Check } from 'lucide-react';
+import { AlertTriangle, Check, X } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,10 +13,12 @@ import {
 export function TransactionStatusBadge({
   status,
   onSelect,
+  onClear,
   disabled = false,
 }: {
   status: TransactionStatus;
   onSelect?: (status: TransactionStatus) => void;
+  onClear?: () => void;
   disabled?: boolean;
 }) {
   const accountStatusColors: Record<
@@ -73,6 +75,27 @@ export function TransactionStatusBadge({
           />
         )}
         <span className="font-semibold">{label}</span>
+        {onClear && (
+          <span
+            role="button"
+            tabIndex={0}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onClear();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                onClear();
+              }
+            }}
+            className="ml-1 inline-flex cursor-pointer rounded-full p-0.5 transition-colors hover:bg-black/10 dark:hover:bg-white/20"
+          >
+            <X className="h-3 w-3" />
+          </span>
+        )}
       </Badge>
     );
   };
