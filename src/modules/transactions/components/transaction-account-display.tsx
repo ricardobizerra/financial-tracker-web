@@ -4,10 +4,15 @@ import {
   TransactionStatus,
 } from '@/graphql/graphql';
 import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { TransactionAccountSelector } from './transaction-account-selector';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 
 interface TransactionAccountDisplayProps {
   transaction: TransactionFragmentFragment;
@@ -115,21 +120,61 @@ export function TransactionAccountDisplay({
             <span className="font-medium">{transaction.sourceCard.name}</span>
           </p>
         </div>
-        {isExpenseForBilling && !hideWarnings && transaction.cardBilling && (
-          <span className="text-xs font-normal text-muted-foreground">
-            {(transaction.totalInstallments ?? 0) > 0 ? (
-              <>
-                Parcelado em{' '}
-                <span className="font-semibold">
-                  {transaction.totalInstallments}x
-                </span>{' '}
-                a partir da fatura de{' '}
-                {format(transaction.cardBilling.periodEnd, "MMMM 'de' yyyy", {
-                  locale: ptBR,
-                })}
-              </>
-            ) : (
-              <>
+        {isExpenseForBilling && !hideWarnings && (
+          <div className="flex flex-col">
+            {transaction.totalInstallments &&
+            transaction.totalInstallments > 0 &&
+            transaction.installments ? (
+              <Collapsible>
+                <CollapsibleTrigger asChild>
+                  <div className="group flex cursor-pointer items-center text-muted-foreground hover:underline">
+                    <ChevronDown className="-ml-1 h-4 w-4 transition-transform duration-200 group-data-[state=closed]:-rotate-90" />
+                    <p className="text-xs font-semibold">
+                      Parcelado em {transaction.totalInstallments} vezes
+                    </p>
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-1 flex flex-col gap-1 border-l-2 border-muted pl-2 transition-all">
+                  {transaction.installments.map((installment) => (
+                    <div
+                      key={installment.id}
+                      className="text-xs leading-tight text-muted-foreground"
+                    >
+                      {installment.cardBilling ? (
+                        <>
+                          <span className="font-semibold">
+                            Fatura de{' '}
+                            {format(
+                              installment.cardBilling.periodEnd,
+                              "MMMM 'de' yyyy",
+                              {
+                                locale: ptBR,
+                              },
+                            )}
+                            {' • '}
+                          </span>
+                          {installment.cardBilling.paymentDate && (
+                            <span>
+                              Vencimento em{' '}
+                              {format(
+                                new Date(installment.cardBilling.paymentDate),
+                                "dd 'de' MMMM",
+                                {
+                                  locale: ptBR,
+                                },
+                              )}
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <span className="italic">Fatura não gerada</span>
+                      )}
+                    </div>
+                  ))}
+                </CollapsibleContent>
+              </Collapsible>
+            ) : transaction.cardBilling ? (
+              <span className="text-xs font-normal text-muted-foreground">
                 <span className="font-semibold">
                   Fatura de{' '}
                   {format(transaction.cardBilling.periodEnd, "MMMM 'de' yyyy", {
@@ -149,9 +194,9 @@ export function TransactionAccountDisplay({
                     )}
                   </span>
                 )}
-              </>
-            )}
-          </span>
+              </span>
+            ) : null}
+          </div>
         )}
       </div>
     );

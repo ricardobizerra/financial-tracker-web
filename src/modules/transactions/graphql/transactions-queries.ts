@@ -96,6 +96,11 @@ export const TransactionsFragment = graphql(`
       id
       installmentNumber
       amount
+      cardBilling {
+        id
+        periodEnd
+        paymentDate
+      }
     }
     canCancel
     cancelReason
