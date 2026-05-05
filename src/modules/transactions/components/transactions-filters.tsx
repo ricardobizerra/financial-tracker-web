@@ -63,15 +63,20 @@ export function TransactionsFilters({
     searchValueRef.current = searchValue;
   }, [searchValue]);
 
+  const filtersRef = useRef(filters);
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
+
   useEffect(() => {
     const normalizedSearch = debouncedSearch || undefined;
-    if (filters.search !== normalizedSearch) {
+    if (filtersRef.current.search !== normalizedSearch) {
       onFiltersChange({
-        ...filters,
+        ...filtersRef.current,
         search: normalizedSearch,
       });
     }
-  }, [debouncedSearch, filters, onFiltersChange]);
+  }, [debouncedSearch, onFiltersChange]);
 
   // Sincronizar se os filtros forem alterados externamente (ex: botão limpar)
   useEffect(() => {
@@ -119,7 +124,7 @@ export function TransactionsFilters({
       {/* Search Input */}
       <div className="relative w-full sm:w-64">
         <Input
-          type="search"
+          type="text"
           placeholder="Buscar descrição..."
           className="h-8"
           leftSlot={<Search className="h-4 w-4 text-muted-foreground" />}

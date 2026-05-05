@@ -98,7 +98,7 @@ export function useTimelinePagination({
   const pageInfo = currentData?.transactions?.pageInfo;
 
   const isInitialLoading =
-    loading && !loadingDirection && (!data || hasActiveFilters);
+    loading && !loadingDirection && (!currentData || hasActiveFilters);
 
   const hasMorePast =
     !hasActiveFilters &&
