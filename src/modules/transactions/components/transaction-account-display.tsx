@@ -13,11 +13,13 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import { TransactionCardSelector } from './transaction-card-selector';
 
 interface TransactionAccountDisplayProps {
   transaction: TransactionFragmentFragment;
   hideWarnings?: boolean;
   onUpdateAccount?: (accountId: string, type: 'source' | 'destiny') => void;
+  onUpdateCard?: (cardId: string) => void;
   disabled?: boolean;
 }
 
@@ -25,6 +27,7 @@ export function TransactionAccountDisplay({
   transaction,
   hideWarnings = false,
   onUpdateAccount,
+  onUpdateCard,
   disabled = false,
 }: TransactionAccountDisplayProps) {
   const isIncome = transaction.type === TransactionType.Income;
@@ -104,22 +107,13 @@ export function TransactionAccountDisplay({
 
   // Se for cartão mas não tiver conta (ex: despesa de fatura), mostramos o cartão de forma estática por enquanto
   if (transaction.sourceCard && !isIncome) {
-    const institution = transaction.sourceCard.institutionLink?.institution;
     return (
       <div className="flex flex-col">
-        <div className="flex items-center gap-1.5">
-          {institution && (
-            <InstitutionLogo
-              logoUrl={institution.logoUrl}
-              name={institution.name}
-              size="xs"
-            />
-          )}
-          <p className="text-sm">
-            <span className="font-normal text-muted-foreground">Cartão</span>{' '}
-            <span className="font-medium">{transaction.sourceCard.name}</span>
-          </p>
-        </div>
+        <TransactionCardSelector
+          currentCardId={transaction.sourceCard.id}
+          onSelect={(id) => onUpdateCard?.(id)}
+          disabled={disabled || !onUpdateCard}
+        />
         {isExpenseForBilling && !hideWarnings && (
           <div className="flex flex-col">
             {transaction.totalInstallments &&

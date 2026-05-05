@@ -461,6 +461,11 @@ export function TransactionListItem({
                       : 'destinyAccountId']: accountId,
                   })
                 }
+                onUpdateCard={(cardId) =>
+                  handleFastUpdate({
+                    sourceCardId: cardId,
+                  })
+                }
                 disabled={isCanceled}
               />
             )}

@@ -99,6 +99,12 @@ export function RecurringTransactionListItem({
     });
   };
 
+  const handleUpdateCard = (cardId: string) => {
+    updateRecurringTransaction(recurring.id, {
+      sourceCardId: cardId,
+    });
+  };
+
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
       <div
@@ -145,6 +151,7 @@ export function RecurringTransactionListItem({
               <TransactionAccountDisplay
                 transaction={recurring as any}
                 onUpdateAccount={handleUpdateAccount}
+                onUpdateCard={handleUpdateCard}
               />
             </div>
           </div>

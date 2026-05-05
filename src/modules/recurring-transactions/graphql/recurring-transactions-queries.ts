@@ -36,6 +36,18 @@ export const RecurringTransactionFragment = graphql(`
         }
       }
     }
+    sourceCard {
+      id
+      name
+      type
+      institutionLink {
+        institution {
+          id
+          name
+          logoUrl
+        }
+      }
+    }
     createdAt
     updatedAt
     transactions {
