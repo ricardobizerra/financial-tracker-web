@@ -213,8 +213,8 @@ export const TransactionsGroupedByPeriodQuery = graphql(`
 `);
 
 export const BillingTransactionsQuery = graphql(`
-  query BillingTransactions($billingId: ID!) {
-    billingTransactions(billingId: $billingId) {
+  query BillingTransactions($billingId: ID!, $search: String) {
+    billingTransactions(billingId: $billingId, search: $search) {
       ...TransactionFragment
     }
   }

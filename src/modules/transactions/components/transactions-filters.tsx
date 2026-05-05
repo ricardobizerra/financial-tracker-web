@@ -16,7 +16,11 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  Search,
 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { useEffect, useState, useRef } from 'react';
+import { useDebounce } from '@/hooks/use-debounce';
 import {
   format,
   addMonths,
@@ -38,6 +42,7 @@ export interface TransactionFilters {
   endDate?: Date;
   types?: TransactionType[];
   statuses?: TransactionStatus[];
+  search?: string;
 }
 
 interface TransactionsFiltersProps {
@@ -49,11 +54,38 @@ export function TransactionsFilters({
   filters,
   onFiltersChange,
 }: TransactionsFiltersProps) {
+  const [searchValue, setSearchValue] = useState(filters.search || '');
+  const debouncedSearch = useDebounce(searchValue, 500);
+
+  // Manter referência do valor atual para sincronização sem triggers extras
+  const searchValueRef = useRef(searchValue);
+  useEffect(() => {
+    searchValueRef.current = searchValue;
+  }, [searchValue]);
+
+  useEffect(() => {
+    const normalizedSearch = debouncedSearch || undefined;
+    if (filters.search !== normalizedSearch) {
+      onFiltersChange({
+        ...filters,
+        search: normalizedSearch,
+      });
+    }
+  }, [debouncedSearch, filters, onFiltersChange]);
+
+  // Sincronizar se os filtros forem alterados externamente (ex: botão limpar)
+  useEffect(() => {
+    if (filters.search !== searchValueRef.current) {
+      setSearchValue(filters.search || '');
+    }
+  }, [filters.search]);
+
   const hasActiveFilters =
     filters.startDate ||
     filters.endDate ||
     (filters.types && filters.types.length > 0) ||
-    (filters.statuses && filters.statuses.length > 0);
+    (filters.statuses && filters.statuses.length > 0) ||
+    filters.search;
 
   const handleTypeChange = (type: TransactionType, checked: boolean) => {
     const currentTypes = filters.types || [];
@@ -78,11 +110,24 @@ export function TransactionsFilters({
   };
 
   const clearFilters = () => {
+    setSearchValue('');
     onFiltersChange({});
   };
 
   return (
     <div className="flex flex-wrap items-center gap-2">
+      {/* Search Input */}
+      <div className="relative w-full sm:w-64">
+        <Input
+          type="search"
+          placeholder="Buscar descrição..."
+          className="h-8"
+          leftSlot={<Search className="h-4 w-4 text-muted-foreground" />}
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+        />
+      </div>
+
       {/* Date Range Picker */}
       <Popover>
         <PopoverTrigger asChild>

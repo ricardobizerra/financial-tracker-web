@@ -33,9 +33,9 @@ interface TransactionsTimelineListProps {
   hasMoreFuture?: boolean;
   isLoadingPast?: boolean;
   isLoadingFuture?: boolean;
-  windowStart: Date;
-  windowEnd: Date;
-  refetchVariables: any;
+  windowStart?: Date;
+  windowEnd?: Date;
+  refetchVariables?: any;
 }
 
 export function TransactionsTimelineList({
@@ -61,13 +61,15 @@ export function TransactionsTimelineList({
   return (
     <div className="flex flex-col gap-8 pb-8">
       {/* Botão de Carregar Futuro (Manual) */}
-      <TimelinePaginationButton
-        direction="future"
-        hasMore={hasMoreFuture}
-        isLoading={isLoadingFuture}
-        onClick={onLoadMoreFuture}
-        targetDate={addDays(windowEnd, 30)}
-      />
+      {windowEnd && (
+        <TimelinePaginationButton
+          direction="future"
+          hasMore={hasMoreFuture}
+          isLoading={isLoadingFuture}
+          onClick={onLoadMoreFuture}
+          targetDate={addDays(windowEnd, 30)}
+        />
+      )}
 
       {groupedTransactions.map((group) => {
         if (group.type === 'empty-range') {
@@ -202,13 +204,15 @@ export function TransactionsTimelineList({
       })}
 
       {/* Botão de Carregar Passado (Manual) */}
-      <TimelinePaginationButton
-        direction="past"
-        hasMore={hasMorePast}
-        isLoading={isLoadingPast}
-        onClick={onLoadMorePast}
-        targetDate={subDays(windowStart, 30)}
-      />
+      {windowStart && (
+        <TimelinePaginationButton
+          direction="past"
+          hasMore={hasMorePast}
+          isLoading={isLoadingPast}
+          onClick={onLoadMorePast}
+          targetDate={subDays(windowStart, 30)}
+        />
+      )}
     </div>
   );
 }

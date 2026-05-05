@@ -95,36 +95,43 @@ export function TransactionsTimelineView({
       />
 
       <div className="flex-1">
-        {transactions.length === 0 && !isInitialLoading && (
-          <Card>
-            <CardContent className="p-8 text-center">
-              <p className="text-muted-foreground">
-                Nenhuma transação encontrada.
-              </p>
-            </CardContent>
-          </Card>
+        {isInitialLoading ? (
+          <TimelineSkeleton />
+        ) : (
+          <>
+            {transactions.length === 0 && (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <p className="text-muted-foreground">
+                    Nenhuma transação encontrada.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            <TransactionsTimelineList
+              transactions={transactions}
+              hideAccount={hideAccount}
+              hideActions={hideActions}
+              compact={compact}
+              todayRef={todayRef}
+              hasMorePast={hasMorePast}
+              hasMoreFuture={hasMoreFuture}
+              onLoadMorePast={loadMorePast}
+              onLoadMoreFuture={() =>
+                loadMoreFuture(
+                  prepareForFutureLoad,
+                  applyFutureScrollAdjustment,
+                )
+              }
+              isLoadingPast={loadingDirection === 'past'}
+              isLoadingFuture={loadingDirection === 'future'}
+              windowStart={windowStart}
+              windowEnd={windowEnd}
+              refetchVariables={queryVariables}
+            />
+          </>
         )}
-
-        <TransactionsTimelineList
-          transactions={transactions}
-          hideAccount={hideAccount}
-          hideActions={hideActions}
-          compact={compact}
-          todayRef={todayRef}
-          hasMorePast={hasMorePast}
-          hasMoreFuture={hasMoreFuture}
-          onLoadMorePast={loadMorePast}
-          onLoadMoreFuture={() =>
-            loadMoreFuture(prepareForFutureLoad, applyFutureScrollAdjustment)
-          }
-          isLoadingPast={loadingDirection === 'past'}
-          isLoadingFuture={loadingDirection === 'future'}
-          windowStart={windowStart}
-          windowEnd={windowEnd}
-          refetchVariables={queryVariables}
-        />
-
-        {isInitialLoading && <TimelineSkeleton />}
       </div>
     </div>
   );

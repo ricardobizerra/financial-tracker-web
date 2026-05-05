@@ -28,19 +28,46 @@ export function useTimelinePagination({
     'past' | 'future' | null
   >(null);
 
+  const hasActiveFilters = useMemo(
+    () =>
+      !!(
+        filters.startDate ||
+        filters.endDate ||
+        (filters.types && filters.types.length > 0) ||
+        (filters.statuses && filters.statuses.length > 0) ||
+        filters.search
+      ),
+    [filters],
+  );
+
   const queryVariables = useMemo(
     () => ({
       accountId,
       orderBy: OrdenationTransactionModel.Date,
       orderDirection: OrderDirection.Desc,
-      startDate: windowStart.toISOString(),
-      endDate: windowEnd.toISOString(),
+      startDate: hasActiveFilters
+        ? filters.startDate?.toISOString()
+        : windowStart.toISOString(),
+      endDate: hasActiveFilters
+        ? filters.endDate?.toISOString()
+        : windowEnd.toISOString(),
       types: filters.types,
       statuses: filters.statuses,
+      search: filters.search,
       first: undefined,
       last: undefined,
     }),
-    [accountId, windowStart, windowEnd, filters.types, filters.statuses],
+    [
+      accountId,
+      windowStart,
+      windowEnd,
+      filters.types,
+      filters.statuses,
+      filters.search,
+      filters.startDate,
+      filters.endDate,
+      hasActiveFilters,
+    ],
   );
 
   const { data, loading, error, fetchMore, previousData } = useQuery(
@@ -71,13 +98,15 @@ export function useTimelinePagination({
   const pageInfo = currentData?.transactions?.pageInfo;
 
   const isInitialLoading =
-    loading && !data && !previousData && !loadingDirection;
+    loading && !loadingDirection && (!data || hasActiveFilters);
 
   const hasMorePast =
-    pageInfo?.hasNextPage || (transactions.length === 0 && !isInitialLoading);
+    !hasActiveFilters &&
+    (pageInfo?.hasNextPage || (transactions.length === 0 && !isInitialLoading));
   const hasMoreFuture =
-    pageInfo?.hasPreviousPage ||
-    (transactions.length === 0 && !isInitialLoading);
+    !hasActiveFilters &&
+    (pageInfo?.hasPreviousPage ||
+      (transactions.length === 0 && !isInitialLoading));
 
   const loadMorePast = () => {
     if (loading) return;
