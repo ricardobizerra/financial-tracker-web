@@ -130,10 +130,25 @@ export function TransactionAccountDisplay({
               </>
             ) : (
               <>
-                Fatura de{' '}
-                {format(transaction.cardBilling.periodEnd, "MMMM 'de' yyyy", {
-                  locale: ptBR,
-                })}
+                <span className="font-semibold">
+                  Fatura de{' '}
+                  {format(transaction.cardBilling.periodEnd, "MMMM 'de' yyyy", {
+                    locale: ptBR,
+                  })}
+                  {' • '}
+                </span>
+                {transaction.cardBilling.paymentDate && (
+                  <span>
+                    Vencimento em{' '}
+                    {format(
+                      new Date(transaction.cardBilling.paymentDate),
+                      "dd 'de' MMMM",
+                      {
+                        locale: ptBR,
+                      },
+                    )}
+                  </span>
+                )}
               </>
             )}
           </span>
