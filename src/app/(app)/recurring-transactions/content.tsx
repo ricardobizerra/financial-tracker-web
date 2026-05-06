@@ -80,8 +80,6 @@ export function RecurringTransactionsContent() {
         </div>
       </div>
 
-      <RecurringTransactionSuggestionsList onActivate={handleActivate} />
-
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -96,6 +94,8 @@ export function RecurringTransactionsContent() {
           <RecurringTransactionsList />
         </CardContent>
       </Card>
+
+      <RecurringTransactionSuggestionsList onActivate={handleActivate} />
     </div>
   );
 }

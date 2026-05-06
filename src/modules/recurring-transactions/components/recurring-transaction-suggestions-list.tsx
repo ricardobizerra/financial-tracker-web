@@ -23,6 +23,14 @@ interface RecurringTransactionSuggestionsListProps {
   onActivate: (suggestion: SuggestionData) => void;
 }
 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+
 export function RecurringTransactionSuggestionsList({
   onActivate,
 }: RecurringTransactionSuggestionsListProps) {
@@ -43,12 +51,17 @@ export function RecurringTransactionSuggestionsList({
   }
 
   return (
-    <div className="mb-8 flex flex-col gap-4">
-      <div className="flex items-center gap-2 px-1 text-xs font-bold uppercase tracking-widest text-primary/60">
-        <Sparkles className="h-3 w-3" />
-        Sugestões de Recorrência
-      </div>
-      <div className="flex flex-col gap-3">
+    <Card className="border-primary/20 bg-primary/5">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-primary">
+          <Sparkles className="h-5 w-5" />
+          Sugestões de Recorrência
+        </CardTitle>
+        <CardDescription>
+          Identificamos padrões nas suas transações que podem ser automatizados.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
         {suggestions.map((suggestion: any) => (
           <RecurringTransactionSuggestionItem
             key={suggestion.description}
@@ -56,7 +69,7 @@ export function RecurringTransactionSuggestionsList({
             onActivate={onActivate}
           />
         ))}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

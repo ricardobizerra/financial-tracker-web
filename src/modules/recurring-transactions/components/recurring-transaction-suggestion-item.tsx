@@ -103,7 +103,16 @@ export function RecurringTransactionSuggestionItem({
                 </span>
               </div>
               <div className="text-xs text-muted-foreground">
-                Detectamos um padrão nas suas transações recentes.
+                Encontramos {suggestion.occurrenceCount} transações{' '}
+                {
+                  {
+                    [RecurrenceFrequency.Monthly]: 'mensais',
+                    [RecurrenceFrequency.Weekly]: 'semanais',
+                    [RecurrenceFrequency.BiWeekly]: 'quinzenais',
+                    [RecurrenceFrequency.Yearly]: 'anuais',
+                  }[suggestion.frequency]
+                }{' '}
+                com a descrição &quot;{suggestion.description}&quot;.
               </div>
             </div>
           </div>
