@@ -3,7 +3,6 @@
 import {
   RecurringTransactionsList,
   RecurringTransactionSuggestionsList,
-  SuggestionData,
 } from '@/modules/recurring-transactions';
 import {
   IncomeTransactionCreateForm,
@@ -18,15 +17,20 @@ import {
 } from '@/components/ui/card';
 import { CalendarClock } from 'lucide-react';
 import { useState } from 'react';
-import { RecurrenceFrequency } from '@/graphql/graphql';
+import {
+  RecurrenceFrequency,
+  RecurringTransactionSuggestionFragmentFragment,
+} from '@/graphql/graphql';
 
 export function RecurringTransactionsContent() {
   const [suggestionToActivate, setSuggestionToActivate] =
-    useState<SuggestionData | null>(null);
+    useState<RecurringTransactionSuggestionFragmentFragment | null>(null);
   const [isIncomeFormOpen, setIsIncomeFormOpen] = useState(false);
   const [isExpenseFormOpen, setIsExpenseFormOpen] = useState(false);
 
-  const handleActivate = (suggestion: SuggestionData) => {
+  const handleActivate = (
+    suggestion: RecurringTransactionSuggestionFragmentFragment,
+  ) => {
     setSuggestionToActivate(suggestion);
     if (suggestion.destinyAccountId && !suggestion.sourceAccountId) {
       setIsIncomeFormOpen(true);
@@ -48,9 +52,11 @@ export function RecurringTransactionsContent() {
   const prefilledData = suggestionToActivate
     ? {
         description: suggestionToActivate.description,
-        amount: suggestionToActivate.averageAmount,
-        destinyAccountId: suggestionToActivate.destinyAccountId,
-        sourceAccountId: suggestionToActivate.sourceAccountId,
+        amount: Math.round(suggestionToActivate.averageAmount),
+        destinyAccountId: suggestionToActivate.destinyAccountId ?? undefined,
+        sourceAccountId: suggestionToActivate.sourceAccountId ?? undefined,
+        category: suggestionToActivate.transactions.find((t) => !!t.category)
+          ?.category,
         frequency: suggestionToActivate.frequency,
         transactionIdsToLink: suggestionToActivate.transactionIds,
         transactionsToLink: suggestionToActivate.transactions,

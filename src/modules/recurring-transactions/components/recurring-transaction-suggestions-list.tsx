@@ -5,22 +5,16 @@ import { PossibleRecurringTransactionsQuery } from '../graphql/recurring-transac
 import { Sparkles } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { RecurringTransactionSuggestionItem } from './recurring-transaction-suggestion-item';
-import { RecurrenceFrequency, TransactionType } from '@/graphql/graphql';
-
-export interface SuggestionData {
-  description: string;
-  averageAmount: number;
-  frequency: RecurrenceFrequency;
-  suggestedDay: number;
-  sourceAccountId?: string;
-  destinyAccountId?: string;
-  transactionIds: string[];
-  occurrenceCount: number;
-  transactions: any[];
-}
+import {
+  RecurrenceFrequency,
+  RecurringTransactionSuggestionFragmentFragment,
+  TransactionType,
+} from '@/graphql/graphql';
 
 interface RecurringTransactionSuggestionsListProps {
-  onActivate: (suggestion: SuggestionData) => void;
+  onActivate: (
+    suggestion: RecurringTransactionSuggestionFragmentFragment,
+  ) => void;
 }
 
 import {
@@ -62,7 +56,7 @@ export function RecurringTransactionSuggestionsList({
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        {suggestions.map((suggestion: any) => (
+        {suggestions.map((suggestion) => (
           <RecurringTransactionSuggestionItem
             key={suggestion.description}
             suggestion={suggestion}

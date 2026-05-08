@@ -21,6 +21,8 @@ interface TransactionAccountDisplayProps {
   onUpdateAccount?: (accountId: string, type: 'source' | 'destiny') => void;
   onUpdateCard?: (cardId: string) => void;
   disabled?: boolean;
+  sourceAccountIdFallback?: string;
+  destinyAccountIdFallback?: string;
 }
 
 export function TransactionAccountDisplay({
@@ -29,6 +31,8 @@ export function TransactionAccountDisplay({
   onUpdateAccount,
   onUpdateCard,
   disabled = false,
+  sourceAccountIdFallback,
+  destinyAccountIdFallback,
 }: TransactionAccountDisplayProps) {
   const isIncome = transaction.type === TransactionType.Income;
   const isExpense = transaction.type === TransactionType.Expense;
@@ -69,7 +73,7 @@ export function TransactionAccountDisplay({
             via
           </p>
           <TransactionAccountSelector
-            currentAccountId={transaction.sourceAccount?.id}
+            currentAccountId={transaction.sourceAccount?.id || sourceAccountIdFallback}
             onSelect={(id) => onUpdateAccount?.(id, 'source')}
             disabled={disabled || !onUpdateAccount}
             placeholder="Adicionar conta"
@@ -83,14 +87,14 @@ export function TransactionAccountDisplay({
     return (
       <div className="flex items-center gap-1.5">
         <TransactionAccountSelector
-          currentAccountId={transaction.sourceAccount?.id}
+          currentAccountId={transaction.sourceAccount?.id || sourceAccountIdFallback}
           onSelect={(id) => onUpdateAccount?.(id, 'source')}
           disabled={disabled || !onUpdateAccount}
           placeholder="Origem"
         />
         <ArrowRight className="h-3 w-3 text-muted-foreground" />
         <TransactionAccountSelector
-          currentAccountId={transaction.destinyAccount?.id}
+          currentAccountId={transaction.destinyAccount?.id || destinyAccountIdFallback}
           onSelect={(id) => onUpdateAccount?.(id, 'destiny')}
           disabled={disabled || !onUpdateAccount}
           placeholder="Destino"
@@ -200,7 +204,7 @@ export function TransactionAccountDisplay({
     <div className="flex flex-col">
       <div className="flex items-center gap-1.5">
         <TransactionAccountSelector
-          currentAccountId={account?.id}
+          currentAccountId={account?.id || (isIncome ? destinyAccountIdFallback : sourceAccountIdFallback)}
           onSelect={(id) =>
             onUpdateAccount?.(id, isIncome ? 'destiny' : 'source')
           }

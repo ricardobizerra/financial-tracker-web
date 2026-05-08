@@ -82,6 +82,8 @@ interface TransactionListItemProps {
   hideWarnings?: boolean;
   showType?: boolean;
   refetchVariables?: any;
+  sourceAccountIdFallback?: string;
+  destinyAccountIdFallback?: string;
 }
 export function TransactionListItem({
   transaction,
@@ -91,6 +93,8 @@ export function TransactionListItem({
   hideWarnings = false,
   showType = true,
   refetchVariables,
+  sourceAccountIdFallback,
+  destinyAccountIdFallback,
 }: TransactionListItemProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [descriptionEditOpen, setDescriptionEditOpen] = useState(false);
@@ -467,6 +471,8 @@ export function TransactionListItem({
                   })
                 }
                 disabled={isCanceled}
+                sourceAccountIdFallback={sourceAccountIdFallback}
+                destinyAccountIdFallback={destinyAccountIdFallback}
               />
             )}
           </div>

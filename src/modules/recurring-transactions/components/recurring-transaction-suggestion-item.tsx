@@ -6,6 +6,7 @@ import {
   TransactionType,
   DayMode,
   TransactionStatus,
+  RecurringTransactionSuggestionFragmentFragment,
 } from '@/graphql/graphql';
 import { cn } from '@/lib/utils';
 import { Sparkles, X, Plus, ChevronDown, History } from 'lucide-react';
@@ -22,30 +23,11 @@ import {
 } from '@/components/ui/collapsible';
 import { TransactionListItem } from '@/modules/transactions/components/transaction-list-item';
 
-interface SuggestionData {
-  description: string;
-  averageAmount: number;
-  frequency: RecurrenceFrequency;
-  suggestedDay: number;
-  sourceAccountId?: string;
-  destinyAccountId?: string;
-  transactionIds: string[];
-  occurrenceCount: number;
-  transactions: Array<{
-    id: string;
-    description: string;
-    amount: any;
-    date: any;
-    status: TransactionStatus;
-    type: TransactionType;
-    category?: any;
-    paymentMethod?: any;
-  }>;
-}
-
 interface RecurringTransactionSuggestionItemProps {
-  suggestion: SuggestionData;
-  onActivate: (suggestion: SuggestionData) => void;
+  suggestion: RecurringTransactionSuggestionFragmentFragment;
+  onActivate: (
+    suggestion: RecurringTransactionSuggestionFragmentFragment,
+  ) => void;
 }
 
 export function RecurringTransactionSuggestionItem({
@@ -169,9 +151,8 @@ export function RecurringTransactionSuggestionItem({
               {suggestion.transactions.map((transaction) => (
                 <TransactionListItem
                   key={transaction.id}
-                  transaction={transaction as any}
+                  transaction={transaction}
                   compact
-                  hideAccount={true}
                   hideActions={['confirm', 'edit', 'cancel']}
                 />
               ))}

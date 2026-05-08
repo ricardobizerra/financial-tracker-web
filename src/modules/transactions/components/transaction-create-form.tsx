@@ -69,6 +69,10 @@ import {
   TransactionsCalendarQuery,
   FinancialAgendaQuery,
 } from '../graphql/calendar-agenda-queries';
+import {
+  RecurringTransactionsQuery,
+  PossibleRecurringTransactionsQuery,
+} from '@/modules/recurring-transactions/graphql/recurring-transactions-queries';
 import { TransactionTypeBadge } from './transaction-type-badge';
 import { Badge } from '@/components/ui/badge';
 import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
@@ -326,14 +330,6 @@ export function IncomeTransactionCreateForm(props: TransactionCreateFormProps) {
   const setOpen = externalOnOpenChange ?? setInternalOpen;
   const isEditMode = !!editTransaction;
 
-  // Form stepper state
-  const [currentStep, setCurrentStep] = useState(
-    isEditMode || !!props.prefilledData ? 2 : 1,
-  );
-  const [isRecurrence, setIsRecurrence] = useState(false);
-  const [recurrenceStep, setRecurrenceStep] = useState<'CONFIG' | 'PREVIEW'>(
-    'CONFIG',
-  );
   const [selectedAccount, setSelectedAccount] = useState<AccountData | null>(
     editTransaction?.destinyAccount
       ? {
@@ -343,6 +339,14 @@ export function IncomeTransactionCreateForm(props: TransactionCreateFormProps) {
             editTransaction.destinyAccount.institutionLink.institution,
         }
       : null,
+  );
+
+  const [currentStep, setCurrentStep] = useState(
+    isEditMode || !!selectedAccount ? 2 : 1,
+  );
+  const [isRecurrence, setIsRecurrence] = useState(false);
+  const [recurrenceStep, setRecurrenceStep] = useState<'CONFIG' | 'PREVIEW'>(
+    'CONFIG',
   );
 
   const accountQuery = useQuery(AccountQuery, {
@@ -358,8 +362,12 @@ export function IncomeTransactionCreateForm(props: TransactionCreateFormProps) {
         name: acc.name,
         institution: acc.institutionLink.institution,
       });
+      // Auto-advance if we have prefilled data
+      if (props.prefilledData) {
+        setCurrentStep(2);
+      }
     }
-  }, [accountQuery.data, selectedAccount]);
+  }, [accountQuery.data, selectedAccount, props.prefilledData]);
 
   const handleOpenChange = useCallback(
     (isOpen: boolean) => {
@@ -396,8 +404,14 @@ export function IncomeTransactionCreateForm(props: TransactionCreateFormProps) {
     ];
 
     if (isRecurrence) {
-      steps.push({ number: 3, label: 'Configurar' });
-      steps.push({ number: 4, label: 'Visualizar' });
+      if (props.prefilledData?.transactionsToLink?.length) {
+        steps.push({ number: 3, label: 'Histórico' });
+        steps.push({ number: 4, label: 'Configurar' });
+        steps.push({ number: 5, label: 'Visualizar' });
+      } else {
+        steps.push({ number: 3, label: 'Configurar' });
+        steps.push({ number: 4, label: 'Visualizar' });
+      }
     }
 
     const step1Completed = currentStep > 1 && selectedAccount;
@@ -500,7 +514,7 @@ export function IncomeTransactionCreateForm(props: TransactionCreateFormProps) {
           />
         )}
 
-        {(currentStep >= 2 || isEditMode) && selectedAccount && (
+        {(currentStep >= 2 || isEditMode) && selectedAccount ? (
           <IncomeTransactionFormDetails
             destinyAccountId={selectedAccount.id}
             editTransaction={editTransaction}
@@ -514,7 +528,7 @@ export function IncomeTransactionCreateForm(props: TransactionCreateFormProps) {
             isRecurrence={isRecurrence}
             setIsRecurrence={setIsRecurrence}
           />
-        )}
+        ) : null}
 
         {currentStep === 1 && !isEditMode && (
           <DialogFooter className="flex-row justify-between gap-2 sm:justify-between">
@@ -607,6 +621,15 @@ function IncomeTransactionFormDetails({
           description: prefilledData?.description || '',
           amount: prefilledData?.amount || 0,
           date: new Date(),
+          category: prefilledData?.category
+            ? {
+                value: prefilledData.category,
+                label:
+                  transactionCategoryLabels[
+                    prefilledData.category as TransactionCategory
+                  ],
+              }
+            : undefined,
         },
   });
 
@@ -735,6 +758,8 @@ function IncomeTransactionFormDetails({
             TransactionsCalendarQuery,
             FinancialAgendaQuery,
             BillingQuery,
+            RecurringTransactionsQuery,
+            PossibleRecurringTransactionsQuery,
           ],
           onCompleted: () => {
             toast.success('Entrada recorrente criada!', {
@@ -860,7 +885,12 @@ function IncomeTransactionFormDetails({
                   if (isValid) {
                     if (isActive) {
                       setIsRecurrence(true);
-                      setCurrentStep(3);
+                      // If we have transactions to link, go to linking step
+                      if (prefilledData.transactionsToLink?.length) {
+                        setCurrentStep(3);
+                      } else {
+                        setCurrentStep(4);
+                      }
                     } else {
                       // Submit immediately if not extending to future
                       form.handleSubmit(onSubmit)();
@@ -899,13 +929,34 @@ function IncomeTransactionFormDetails({
             {currentStep === 3 && (
               <Button
                 type="button"
-                onClick={() => setCurrentStep(4)}
+                onClick={() => {
+                  // If we are in the linking step of a suggestion, next is config (step 4)
+                  // If we are in the config step of a manual entry, next is preview (step 4)
+                  setCurrentStep(4);
+                }}
                 disabled={loading}
               >
                 Próximo
               </Button>
             )}
             {currentStep === 4 && (
+              <Button
+                type="button"
+                onClick={() => {
+                  // If we are in the config step of a suggestion, next is preview (step 5)
+                  // If we are in the preview step of a manual entry, next is FINISH
+                  if (prefilledData?.transactionsToLink?.length) {
+                    setCurrentStep(5);
+                  } else {
+                    form.handleSubmit(onSubmit)();
+                  }
+                }}
+                disabled={loading}
+              >
+                Próximo
+              </Button>
+            )}
+            {currentStep === 5 && (
               <Button type="submit" disabled={loading} loading={loading}>
                 Finalizar
               </Button>
@@ -932,14 +983,6 @@ function IncomeTransactionFormDetails({
             <>
               {prefilledData && (
                 <div className="space-y-4 pb-4 duration-500 animate-in fade-in slide-in-from-top-2">
-                  <SuggestionLinkingSection
-                    prefilledTransactions={
-                      prefilledData.transactionsToLink || []
-                    }
-                    selectedTransactionIds={selectedTransactionIds}
-                    onSelectedTransactionIdsChange={setSelectedTransactionIds}
-                  />
-
                   <div className="flex items-center justify-between rounded-xl border border-dashed border-primary/20 bg-primary/5 p-4">
                     <div className="space-y-0.5">
                       <Label className="text-sm font-medium">
@@ -968,7 +1011,19 @@ function IncomeTransactionFormDetails({
             </>
           )}
 
-          {currentStep === 3 && (
+          {/* Step 3: Linking history (only for suggestions) */}
+          {currentStep === 3 && prefilledData?.transactionsToLink?.length ? (
+            <SuggestionLinkingSection
+              prefilledTransactions={prefilledData.transactionsToLink || []}
+              selectedTransactionIds={selectedTransactionIds || []}
+              onSelectedTransactionIdsChange={setSelectedTransactionIds}
+            />
+          ) : null}
+
+          {/* Step 3 (Manual) or Step 4 (Suggestion): Recurrence configuration */}
+          {((currentStep === 3 && !prefilledData?.transactionsToLink?.length) ||
+            (currentStep === 4 &&
+              prefilledData?.transactionsToLink?.length)) && (
             <div className="space-y-4">
               <div className="rounded-lg border border-muted bg-muted/30 p-4">
                 <div className="flex items-center gap-2">{amount}</div>
@@ -985,7 +1040,10 @@ function IncomeTransactionFormDetails({
             </div>
           )}
 
-          {currentStep === 4 && (
+          {/* Step 4 (Manual) or Step 5 (Suggestion): Recurrence preview */}
+          {((currentStep === 4 && !prefilledData?.transactionsToLink?.length) ||
+            (currentStep === 5 &&
+              prefilledData?.transactionsToLink?.length)) && (
             <RecurrenceTimelinePreview
               startDate={form.getValues('date') || new Date()}
               data={recurrenceData}
@@ -1033,25 +1091,6 @@ export function ExpenseTransactionCreateForm({
   const hasPreselectedCard = !!cardId || !!editTransaction?.sourceCard;
   const hasPreselected = hasPreselectedAccount || hasPreselectedCard;
 
-  const [currentStep, setCurrentStep] = useState(
-    hasPreselected || !!prefilledData
-      ? 3
-      : editTransaction?.billingPayment
-        ? 2
-        : 1,
-  );
-  const [isRecurrence, setIsRecurrence] = useState(false);
-  const [recurrenceStep, setRecurrenceStep] = useState<'CONFIG' | 'PREVIEW'>(
-    'CONFIG',
-  );
-
-  const [selectedCardOrAccountStepType, setSelectedCardOrAccountStepType] =
-    useState<TransactionCardOrAccountStepType | undefined>(
-      editTransaction?.billingPayment
-        ? TransactionCardOrAccountStepType.Account
-        : undefined,
-    );
-
   const [selectedAccount, setSelectedAccount] = useState<AccountData | null>(
     editTransaction?.sourceAccount
       ? {
@@ -1073,6 +1112,21 @@ export function ExpenseTransactionCreateForm({
         }
       : null,
   );
+
+  const [currentStep, setCurrentStep] = useState(
+    hasPreselected ? 3 : editTransaction?.billingPayment ? 2 : 1,
+  );
+  const [isRecurrence, setIsRecurrence] = useState(false);
+  const [recurrenceStep, setRecurrenceStep] = useState<'CONFIG' | 'PREVIEW'>(
+    'CONFIG',
+  );
+
+  const [selectedCardOrAccountStepType, setSelectedCardOrAccountStepType] =
+    useState<TransactionCardOrAccountStepType | undefined>(
+      editTransaction?.billingPayment
+        ? TransactionCardOrAccountStepType.Account
+        : undefined,
+    );
 
   // If accountId provided, fetch its data
   const { data: preselectedAccountData } = useQuery(AccountQuery, {
@@ -1103,8 +1157,12 @@ export function ExpenseTransactionCreateForm({
         name: account.name,
         institution: account.institutionLink.institution,
       });
+      // Auto-advance if we have prefilled data
+      if (prefilledData) {
+        setCurrentStep(3);
+      }
     }
-  }, [prefilledData?.sourceAccountId, suggestionAccountData, selectedAccount]);
+  }, [prefilledData, suggestionAccountData, selectedAccount]);
   const { data: preselectedCardData } = useQuery(CardQuery, {
     variables: {
       id: cardId!,
@@ -1201,8 +1259,14 @@ export function ExpenseTransactionCreateForm({
     ];
 
     if (isRecurrence) {
-      steps.push({ number: 4, label: 'Configurar' });
-      steps.push({ number: 5, label: 'Visualizar' });
+      if (prefilledData?.transactionsToLink?.length) {
+        steps.push({ number: 4, label: 'Histórico' });
+        steps.push({ number: 5, label: 'Configurar' });
+        steps.push({ number: 6, label: 'Visualizar' });
+      } else {
+        steps.push({ number: 4, label: 'Configurar' });
+        steps.push({ number: 5, label: 'Visualizar' });
+      }
     }
 
     const step2Completed = currentStep > 2 && (selectedAccount || selectedCard);
@@ -1352,28 +1416,28 @@ export function ExpenseTransactionCreateForm({
         )}
 
         {(currentStep >= 3 || isEditMode || hasPreselected) &&
-          (selectedAccount || selectedCard) && (
-            <ExpenseTransactionFormDetails
-              sourceAccountId={selectedAccount?.id}
-              sourceCardId={selectedCard?.id}
-              isCardAccount={isCardAccount}
-              isDebitCard={isDebitCard}
-              editTransaction={editTransaction}
-              hiddenFields={hiddenFields}
-              minDate={minDate}
-              maxDate={maxDate}
-              presetPaymentMethod={paymentMethod}
-              onBeforeSubmit={onBeforeSubmit}
-              onClose={() => handleOpenChange(false)}
-              onBack={!isEditMode && !hasPreselected ? prevStep : undefined}
-              refetchVariables={refetchVariables}
-              prefilledData={prefilledData}
-              currentStep={currentStep}
-              setCurrentStep={setCurrentStep}
-              isRecurrence={isRecurrence}
-              setIsRecurrence={setIsRecurrence}
-            />
-          )}
+        (selectedAccount || selectedCard) ? (
+          <ExpenseTransactionFormDetails
+            sourceAccountId={selectedAccount?.id}
+            sourceCardId={selectedCard?.id}
+            isCardAccount={isCardAccount}
+            isDebitCard={isDebitCard}
+            editTransaction={editTransaction}
+            hiddenFields={hiddenFields}
+            minDate={minDate}
+            maxDate={maxDate}
+            presetPaymentMethod={paymentMethod}
+            onBeforeSubmit={onBeforeSubmit}
+            onClose={() => handleOpenChange(false)}
+            onBack={!isEditMode && !hasPreselected ? prevStep : undefined}
+            refetchVariables={refetchVariables}
+            prefilledData={prefilledData}
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
+            isRecurrence={isRecurrence}
+            setIsRecurrence={setIsRecurrence}
+          />
+        ) : null}
       </DialogContent>
     </Dialog>
   );
@@ -1482,6 +1546,15 @@ function ExpenseTransactionFormDetails({
           description: prefilledData?.description || '',
           amount: prefilledData?.amount || 0,
           date: new Date(),
+          category: prefilledData?.category
+            ? {
+                value: prefilledData.category,
+                label:
+                  transactionCategoryLabels[
+                    prefilledData.category as TransactionCategory
+                  ],
+              }
+            : undefined,
           // For credit/debit card accounts, auto-set payment method based on card type
           paymentMethod: isCardAccount
             ? isDebitCard
@@ -1691,6 +1764,8 @@ function ExpenseTransactionFormDetails({
             TransactionsCalendarQuery,
             FinancialAgendaQuery,
             BillingQuery,
+            RecurringTransactionsQuery,
+            PossibleRecurringTransactionsQuery,
           ],
           onCompleted: () => {
             toast.success('Despesa recorrente criada!', {
@@ -1863,7 +1938,13 @@ function ExpenseTransactionFormDetails({
                   if (isValid) {
                     if (isActive) {
                       setIsRecurrence(true);
-                      setCurrentStep(4);
+                      // If we have transactions to link, go to linking step (step 4)
+                      if (prefilledData.transactionsToLink?.length) {
+                        setCurrentStep(4);
+                      } else {
+                        // Otherwise go to config (step 5)
+                        setCurrentStep(5);
+                      }
                     } else {
                       // Submit immediately if not extending to future
                       form.handleSubmit(onSubmit)();
@@ -1909,13 +1990,34 @@ function ExpenseTransactionFormDetails({
             {currentStep === 4 && (
               <Button
                 type="button"
-                onClick={() => setCurrentStep(5)}
+                onClick={() => {
+                  // If we are in the linking step of a suggestion, next is config (step 5)
+                  // If we are in the config step of a manual entry, next is preview (step 5)
+                  setCurrentStep(5);
+                }}
                 disabled={loading}
               >
                 Próximo
               </Button>
             )}
-            {(showInstallmentStep || currentStep === 5) && (
+            {currentStep === 5 && (
+              <Button
+                type="button"
+                onClick={() => {
+                  // If we are in the config step of a suggestion, next is preview (step 6)
+                  // If we are in the preview step of a manual entry, next is FINISH
+                  if (prefilledData?.transactionsToLink?.length) {
+                    setCurrentStep(6);
+                  } else {
+                    form.handleSubmit(onSubmit)();
+                  }
+                }}
+                disabled={loading}
+              >
+                Próximo
+              </Button>
+            )}
+            {(showInstallmentStep || currentStep === 6) && (
               <Button type="submit" disabled={loading} loading={loading}>
                 Finalizar
               </Button>
@@ -1944,14 +2046,6 @@ function ExpenseTransactionFormDetails({
             <>
               {prefilledData && (
                 <div className="space-y-4 pb-4 duration-500 animate-in fade-in slide-in-from-top-2">
-                  <SuggestionLinkingSection
-                    prefilledTransactions={
-                      prefilledData.transactionsToLink || []
-                    }
-                    selectedTransactionIds={selectedTransactionIds || []}
-                    onSelectedTransactionIdsChange={setSelectedTransactionIds}
-                  />
-
                   <div className="flex items-center justify-between rounded-xl border border-dashed border-primary/20 bg-primary/5 p-4">
                     <div className="space-y-0.5">
                       <Label className="text-sm font-medium">
@@ -2015,29 +2109,39 @@ function ExpenseTransactionFormDetails({
             </>
           )}
 
-          {/* Step 4: Recurrence configuration */}
-          {currentStep === 4 && (
-            <>
-              <div className="space-y-4">
-                {/* Summary of previous step data */}
-                <div className="rounded-lg border border-muted bg-muted/30 p-4">
-                  <div className="flex items-center gap-2">{amount}</div>
-                </div>
+          {/* Step 4: Linking history (only for suggestions) */}
+          {currentStep === 4 && prefilledData?.transactionsToLink?.length ? (
+            <SuggestionLinkingSection
+              prefilledTransactions={prefilledData.transactionsToLink || []}
+              selectedTransactionIds={selectedTransactionIds || []}
+              onSelectedTransactionIdsChange={setSelectedTransactionIds}
+            />
+          ) : null}
 
-                <RecurrenceFormSection
-                  data={recurrenceData}
-                  onChange={(newData) =>
-                    setRecurrenceData((prev) => ({ ...prev, ...newData }))
-                  }
-                  startDate={form.getValues('date')}
-                  className="mt-2"
-                />
+          {/* Step 4 (Manual) or Step 5 (Suggestion): Recurrence configuration */}
+          {((currentStep === 4 && !prefilledData?.transactionsToLink?.length) ||
+            (currentStep === 5 &&
+              prefilledData?.transactionsToLink?.length)) && (
+            <div className="space-y-4">
+              <div className="rounded-lg border border-muted bg-muted/30 p-4">
+                <div className="flex items-center gap-2">{amount}</div>
               </div>
-            </>
+
+              <RecurrenceFormSection
+                data={recurrenceData}
+                onChange={(newData) =>
+                  setRecurrenceData((prev) => ({ ...prev, ...newData }))
+                }
+                startDate={form.getValues('date')}
+                className="mt-2"
+              />
+            </div>
           )}
 
-          {/* Step 5: Recurrence preview */}
-          {currentStep === 5 && (
+          {/* Step 5 (Manual) or Step 6 (Suggestion): Recurrence preview */}
+          {((currentStep === 5 && !prefilledData?.transactionsToLink?.length) ||
+            (currentStep === 6 &&
+              prefilledData?.transactionsToLink?.length)) && (
             <RecurrenceTimelinePreview
               startDate={form.getValues('date') || new Date()}
               data={recurrenceData}

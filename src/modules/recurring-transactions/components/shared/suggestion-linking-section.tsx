@@ -29,80 +29,95 @@ export function SuggestionLinkingSection({
   const isAllSelected = selectedTransactionIds.length === allIds.length;
 
   return (
-    <div className={cn('space-y-3', className)}>
+    <div className={cn('space-y-4', className)}>
       <div className="flex items-center justify-between">
-        <Label className="flex items-center gap-2 text-sm font-medium">
-          <History className="h-4 w-4 text-primary" />
-          Vincular histórico detectado
-        </Label>
+        <div className="space-y-1">
+          <Label className="flex items-center gap-2 text-base font-semibold text-primary">
+            <History className="h-5 w-5" />
+            Vincular histórico detectado
+          </Label>
+          <p className="text-xs text-muted-foreground">
+            Selecione quais transações passadas pertencem a este padrão.
+          </p>
+        </div>
         <Button
           type="button"
-          variant="ghost"
+          variant="outline"
           size="sm"
-          className="h-7 px-2 text-[10px] uppercase tracking-wider"
+          className="h-8 rounded-full text-[10px] uppercase tracking-wider"
           onClick={() => {
             onSelectedTransactionIdsChange(isAllSelected ? [] : allIds);
           }}
         >
-          <CheckSquare className="mr-1 h-3 w-3" />
-          {isAllSelected ? 'Desmarcar todos' : 'Marcar todos'}
+          <CheckSquare className="mr-1.5 h-3.5 w-3.5" />
+          {isAllSelected ? 'Limpar seleção' : 'Selecionar tudo'}
         </Button>
       </div>
 
-      <div className="rounded-xl border border-dashed border-primary/20 bg-primary/5 p-1 transition-all">
-        <div className="max-h-[200px] overflow-y-auto pr-1">
-          {prefilledTransactions.map((transaction) => {
-            const isSelected = selectedTransactionIds.includes(transaction.id);
-            return (
-              <div
-                key={transaction.id}
-                className={cn(
-                  'flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-primary/5',
-                  isSelected ? 'bg-primary/5' : 'opacity-40',
-                )}
-              >
-                <Checkbox
-                  id={`link-tx-${transaction.id}`}
-                  checked={isSelected}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      onSelectedTransactionIdsChange([
-                        ...selectedTransactionIds,
-                        transaction.id,
-                      ]);
-                    } else {
-                      onSelectedTransactionIdsChange(
-                        selectedTransactionIds.filter(
-                          (id) => id !== transaction.id,
-                        ),
-                      );
-                    }
-                  }}
-                  className="h-4 w-4"
-                />
-                <div className="flex flex-1 items-center justify-between gap-2 overflow-hidden text-left text-xs">
-                  <div className="flex items-center gap-2 overflow-hidden">
-                    <span className="shrink-0 font-medium text-muted-foreground/70">
-                      {format(new Date(transaction.date), 'dd/MM', {
-                        locale: ptBR,
-                      })}
-                    </span>
-                    <span className="truncate text-left font-semibold text-primary/80">
-                      {transaction.description}
-                    </span>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {prefilledTransactions.map((transaction) => {
+          const isSelected = selectedTransactionIds.includes(transaction.id);
+          return (
+            <button
+              key={transaction.id}
+              type="button"
+              onClick={() => {
+                if (isSelected) {
+                  onSelectedTransactionIdsChange(
+                    selectedTransactionIds.filter(
+                      (id) => id !== transaction.id,
+                    ),
+                  );
+                } else {
+                  onSelectedTransactionIdsChange([
+                    ...selectedTransactionIds,
+                    transaction.id,
+                  ]);
+                }
+              }}
+              className={cn(
+                'group relative flex flex-col items-start gap-2 rounded-xl border p-3 text-left transition-all duration-300',
+                isSelected
+                  ? 'border-primary/40 bg-primary/5 shadow-sm ring-1 ring-primary/20'
+                  : 'border-muted bg-background/50 opacity-50 grayscale hover:opacity-100 hover:grayscale-0',
+              )}
+            >
+              <div className="flex w-full items-center justify-between gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
+                  {format(new Date(transaction.date), 'dd MMMM yyyy', {
+                    locale: ptBR,
+                  })}
+                </span>
+                {isSelected && (
+                  <div className="rounded-full bg-primary p-0.5 text-primary-foreground">
+                    <CheckSquare className="h-3 w-3" />
                   </div>
-                  <span className="shrink-0 font-mono font-medium">
-                    {formatCurrency(Number(transaction.amount))}
-                  </span>
-                </div>
+                )}
               </div>
-            );
-          })}
-        </div>
-        <div className="px-3 py-2 text-[10px] text-muted-foreground/80">
+
+              <div className="flex w-full items-end justify-between gap-2">
+                <span className="truncate text-sm font-semibold text-primary/90">
+                  {transaction.description}
+                </span>
+                <span className="shrink-0 text-sm font-bold text-foreground">
+                  {formatCurrency(Number(transaction.amount))}
+                </span>
+              </div>
+
+              {isSelected && (
+                <div className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-primary" />
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="flex items-center gap-2 rounded-lg bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+        <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
+        <span>
           {selectedTransactionIds.length} de {prefilledTransactions.length}{' '}
-          transações selecionadas para vínculo.
-        </div>
+          transações serão vinculadas ao histórico desta recorrência.
+        </span>
       </div>
     </div>
   );
