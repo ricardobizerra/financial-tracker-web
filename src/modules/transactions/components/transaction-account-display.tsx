@@ -73,7 +73,9 @@ export function TransactionAccountDisplay({
             via
           </p>
           <TransactionAccountSelector
-            currentAccountId={transaction.sourceAccount?.id || sourceAccountIdFallback}
+            currentAccountId={
+              transaction.sourceAccount?.id || sourceAccountIdFallback
+            }
             onSelect={(id) => onUpdateAccount?.(id, 'source')}
             disabled={disabled || !onUpdateAccount}
             placeholder="Adicionar conta"
@@ -87,14 +89,18 @@ export function TransactionAccountDisplay({
     return (
       <div className="flex items-center gap-1.5">
         <TransactionAccountSelector
-          currentAccountId={transaction.sourceAccount?.id || sourceAccountIdFallback}
+          currentAccountId={
+            transaction.sourceAccount?.id || sourceAccountIdFallback
+          }
           onSelect={(id) => onUpdateAccount?.(id, 'source')}
           disabled={disabled || !onUpdateAccount}
           placeholder="Origem"
         />
         <ArrowRight className="h-3 w-3 text-muted-foreground" />
         <TransactionAccountSelector
-          currentAccountId={transaction.destinyAccount?.id || destinyAccountIdFallback}
+          currentAccountId={
+            transaction.destinyAccount?.id || destinyAccountIdFallback
+          }
           onSelect={(id) => onUpdateAccount?.(id, 'destiny')}
           disabled={disabled || !onUpdateAccount}
           placeholder="Destino"
@@ -204,7 +210,10 @@ export function TransactionAccountDisplay({
     <div className="flex flex-col">
       <div className="flex items-center gap-1.5">
         <TransactionAccountSelector
-          currentAccountId={account?.id || (isIncome ? destinyAccountIdFallback : sourceAccountIdFallback)}
+          currentAccountId={
+            account?.id ||
+            (isIncome ? destinyAccountIdFallback : sourceAccountIdFallback)
+          }
           onSelect={(id) =>
             onUpdateAccount?.(id, isIncome ? 'destiny' : 'source')
           }
