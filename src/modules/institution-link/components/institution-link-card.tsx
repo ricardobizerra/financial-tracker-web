@@ -3,47 +3,95 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
 import { formatCurrency } from '@/lib/formatters/currency';
+import { formatDate } from '@/lib/formatters/date';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { CreditCard, TrendingUp, Wallet } from 'lucide-react';
-import { InstitutionLinkFragmentFragment, CardType } from '@/graphql/graphql';
+import {
+  InstitutionLinkFragmentFragment,
+  CardType,
+  CardBillingStatus,
+} from '@/graphql/graphql';
 import { getTextColorForBackground } from '@/lib/color';
 import { AccountCreateForm } from '@/modules/accounts/components/account-create-form';
 import { CardCreateForm } from '@/modules/accounts/components/card-create-form';
+import { differenceInCalendarDays } from 'date-fns';
 
-function calculateCardBillingTotal(
-  billings:
-    | NonNullable<InstitutionLinkFragmentFragment['cards']>[number]['billings']
-    | undefined
-    | null,
-) {
-  if (!billings || billings.length === 0) return 0;
-  // Get the most relevant billing - normally PENDING
-  const activeBilling =
-    billings.find((b) => b.status === 'PENDING') || billings[0];
+function getCardStatusUi(status: CardBillingStatus) {
+  const statusConfig: Record<
+    CardBillingStatus,
+    { label: string; className: string }
+  > = {
+    [CardBillingStatus.Pending]: {
+      label: 'Pendente',
+      className: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+    },
+    [CardBillingStatus.Paid]: {
+      label: 'Pago',
+      className: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    },
+    [CardBillingStatus.Overdue]: {
+      label: 'Atrasado',
+      className: 'bg-red-500/10 text-red-600 dark:text-red-400',
+    },
+    [CardBillingStatus.Closed]: {
+      label: 'Fechado',
+      className: 'bg-slate-500/10 text-slate-600 dark:text-slate-400',
+    },
+    [CardBillingStatus.Completed]: {
+      label: 'Concluída',
+      className: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
+    },
+  };
 
-  if (!activeBilling.transactions || activeBilling.transactions.length === 0) {
-    return 0; // Backend totalAmount is missing, fallback to transaction sum if available
-  }
-
-  return activeBilling.transactions.reduce((acc, t) => {
-    return acc + Number(t.amount || 0);
-  }, 0);
+  return (
+    statusConfig[status] || {
+      label: status,
+      className: 'bg-gray-500/10 text-gray-600 dark:text-gray-400',
+    }
+  );
 }
 
-function getCardStatusColor(status: string) {
-  switch (status) {
-    case 'OVERDUE':
-      return 'bg-red-500/10 text-red-600 dark:text-red-400';
-    case 'PENDING':
-      return 'bg-amber-500/10 text-amber-600 dark:text-amber-400';
-    case 'COMPLETED':
-    case 'CLOSED':
-    case 'PAID':
-      return 'bg-green-500/10 text-green-600 dark:text-green-400';
-    default:
-      return 'bg-gray-500/10 text-gray-600 dark:text-gray-400';
+function formatRelativeDateLine(
+  date: Date | string,
+  type: 'closing' | 'due',
+): { prefix: string; date: string } {
+  const targetDate = new Date(date);
+  const now = new Date();
+  const dayDiff = differenceInCalendarDays(targetDate, now);
+  const absoluteDate = formatDate(targetDate);
+
+  const isPast = dayDiff < 0;
+  const verb =
+    type === 'closing'
+      ? isPast
+        ? 'Fechada'
+        : 'Fecha'
+      : isPast
+        ? 'Vencida'
+        : 'Vence';
+
+  let relativeLabel = '';
+  if (dayDiff === 0) {
+    relativeLabel = 'hoje';
+  } else if (dayDiff === 1) {
+    relativeLabel = 'amanhã';
+  } else {
+    const absDiff = Math.abs(dayDiff);
+    if (absDiff >= 7) {
+      const weeks = Math.round(absDiff / 7);
+      const weeksLabel = `${weeks} semana${weeks > 1 ? 's' : ''}`;
+      relativeLabel = isPast ? `há ${weeksLabel}` : `em ${weeksLabel}`;
+    } else {
+      const daysLabel = `${absDiff} dia${absDiff > 1 ? 's' : ''}`;
+      relativeLabel = isPast ? `há ${daysLabel}` : `em ${daysLabel}`;
+    }
   }
+
+  return {
+    prefix: `${verb} ${relativeLabel}`,
+    date: absoluteDate,
+  };
 }
 
 export function InstitutionLinkCard({
@@ -167,11 +215,31 @@ export function InstitutionLinkCard({
 
             <div className="flex flex-col gap-1 px-1 pb-1">
               {creditCards.map((card) => {
-                const activeBilling =
-                  card.billings?.find((b) => b.status === 'PENDING') ||
-                  card.billings?.[0];
-                const totalAmount = calculateCardBillingTotal(card.billings);
-                const statusLabel = activeBilling?.status || 'UNKNOWN';
+                const currentBilling = card.currentBilling;
+                const payableBillings = card.payableBillings ?? [];
+                const totalAmount = Number(currentBilling?.totalAmount ?? 0);
+                const statusUi = getCardStatusUi(
+                  currentBilling?.status ?? CardBillingStatus.Pending,
+                );
+                const payableTotal = payableBillings.reduce(
+                  (acc: number, billing) =>
+                    acc + Number(billing.totalAmount ?? 0),
+                  0,
+                );
+                const hasOverduePayable = payableBillings.some(
+                  (billing) => billing.status === CardBillingStatus.Overdue,
+                );
+                const payableStatusUi = getCardStatusUi(
+                  hasOverduePayable
+                    ? CardBillingStatus.Overdue
+                    : CardBillingStatus.Closed,
+                );
+                const closingLine = currentBilling?.periodEnd
+                  ? formatRelativeDateLine(currentBilling.periodEnd, 'closing')
+                  : null;
+                const dueLine = currentBilling?.paymentDate
+                  ? formatRelativeDateLine(currentBilling.paymentDate, 'due')
+                  : null;
 
                 return (
                   <div
@@ -180,27 +248,69 @@ export function InstitutionLinkCard({
                   >
                     <div className="flex items-center justify-between p-3">
                       <div className="flex flex-col">
-                        <span className="text-sm font-medium leading-none">
-                          Final {card.lastFourDigits || '****'}
+                        <span className="font-medium leading-none">
+                          {card.name}
                         </span>
                         <span className="mt-1 text-xs text-muted-foreground">
                           Crédito
                         </span>
                       </div>
                       <div className="flex flex-col items-end gap-1">
-                        <span className="text-sm font-bold">
+                        <span className="font-bold">
                           {formatCurrency(totalAmount)}
                         </span>
                         <div
                           className={cn(
-                            'flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-bold',
-                            getCardStatusColor(statusLabel),
+                            'flex items-center gap-1 rounded-full px-1.5 py-0.5 text-sm font-bold',
+                            statusUi.className,
                           )}
                         >
-                          {statusLabel}
+                          {statusUi.label}
                         </div>
                       </div>
                     </div>
+                    {(closingLine || dueLine) && (
+                      <div className="flex flex-col gap-1 px-3 pb-3">
+                        {closingLine && (
+                          <div className="text-sm font-semibold text-foreground">
+                            {closingLine.prefix}{' '}
+                            <span className="font-normal text-muted-foreground">
+                              ({closingLine.date})
+                            </span>
+                          </div>
+                        )}
+                        {dueLine && (
+                          <div className="text-sm font-semibold text-foreground">
+                            {dueLine.prefix}{' '}
+                            <span className="font-normal text-muted-foreground">
+                              ({dueLine.date})
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {payableBillings.length > 0 && (
+                      <div className="border-t bg-muted/20 px-3 py-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-medium text-muted-foreground">
+                            Em aberto para pagamento ({payableBillings.length})
+                          </span>
+                          <span className="text-xs font-semibold">
+                            {formatCurrency(payableTotal)}
+                          </span>
+                        </div>
+                        <div className="mt-1 flex justify-end">
+                          <div
+                            className={cn(
+                              'rounded-full px-1.5 py-0.5 text-sm font-bold',
+                              payableStatusUi.className,
+                            )}
+                          >
+                            {payableStatusUi.label}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     <div className="flex justify-end border-t bg-muted/30 px-3 py-2">
                       <Button variant="secondary" size="sm" asChild>
                         <Link href={`/cards/${card.id}`}>Ver cartão</Link>
@@ -217,8 +327,8 @@ export function InstitutionLinkCard({
                 >
                   <div className="flex items-center justify-between p-3">
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium leading-none">
-                        Final {card.lastFourDigits || '****'}
+                      <span className="font-medium leading-none">
+                        {card.name}
                       </span>
                       <span className="mt-1 text-xs text-muted-foreground">
                         Débito

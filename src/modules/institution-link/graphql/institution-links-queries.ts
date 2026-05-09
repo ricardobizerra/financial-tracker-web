@@ -29,17 +29,21 @@ export const InstitutionLinkFragment = graphql(`
       billingPaymentDay
       type
       defaultLimit
-      billings {
+      currentBilling {
         id
         status
-        limit
+        totalAmount
         periodStart
         periodEnd
         paymentDate
-        transactions {
-          amount
-          type
-        }
+      }
+      payableBillings {
+        id
+        status
+        totalAmount
+        periodStart
+        periodEnd
+        paymentDate
       }
     }
     investments {
