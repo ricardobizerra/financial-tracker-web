@@ -27,7 +27,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
 import { formatDate } from '@/lib/formatters/date';
@@ -41,19 +41,16 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { formFields, TsForm } from '@/components/ts-form';
-import { z } from 'zod';
-import { formatPercentage } from '@/lib/formatters/percentage';
 import { ExpenseTransactionCreateForm } from '@/modules/transactions/components/transaction-create-form';
+import { formatPercentage } from '@/lib/formatters/percentage';
 import { TransactionStatusBadge } from '@/modules/transactions/components/transaction-status-badge';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { CardSettingsEditDialog } from '../card-settings-edit-dialog';
 import { getTextColorForBackground } from '@/lib/color';
-
-const closeBillingSchema = z.object({
-  closingDate: formFields.date.describe('Data de fechamento'),
-});
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
 
 export function AccountCreditCardTracking({
   card,
@@ -103,6 +100,12 @@ export function AccountCreditCardTracking({
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
+  const closeBillingForm = useForm<z.infer<typeof closeBillingSchema>>({
+    defaultValues: {
+      closeOnPredictedDate: true,
+    },
+  });
+
   const handleCloseBilling = async (
     data: z.infer<typeof closeBillingSchema>,
   ) => {
@@ -110,11 +113,16 @@ export function AccountCreditCardTracking({
 
     try {
       setIsProcessing(true);
+      const mutationVariables = data.closeOnPredictedDate
+        ? {
+            billingId: billing.id,
+          }
+        : {
+            billingId: billing.id,
+            closingDate: data.closingDate,
+          };
       await closeBillingMutation({
-        variables: {
-          billingId: billing.id,
-          closingDate: data.closingDate,
-        },
+        variables: mutationVariables,
       });
       await refetch();
       toast.success('Sucesso', {
@@ -134,6 +142,41 @@ export function AccountCreditCardTracking({
   };
 
   const isMobile = useIsMobile();
+  const predictedClosingDate = useMemo(() => {
+    return billing?.periodEnd ? new Date(billing.periodEnd) : new Date();
+  }, [billing?.periodEnd]);
+  const predictedClosingLabel = useMemo(() => {
+    const periodEnd = predictedClosingDate;
+    const today = new Date();
+    const isCurrentYear = periodEnd.getFullYear() === today.getFullYear();
+    const month = periodEnd.toLocaleDateString('pt-BR', { month: 'long' });
+    const day = periodEnd.getDate();
+    return isCurrentYear
+      ? `${day} de ${month}`
+      : `${day} de ${month} de ${periodEnd.getFullYear()}`;
+  }, [predictedClosingDate]);
+  const closeBillingSchema = useMemo(
+    () =>
+      z
+        .object({
+          closeOnPredictedDate: formFields.switch.describe(
+            `Fechamento ocorrido na data prevista: ${predictedClosingLabel}? // Em caso de mudança, desmarque para inserir a nova data`,
+          ),
+          closingDate: formFields.date
+            .optional()
+            .describe('Data de fechamento'),
+        })
+        .superRefine((data, ctx) => {
+          if (!data.closeOnPredictedDate && !data.closingDate) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'Data de fechamento é obrigatória',
+              path: ['closingDate'],
+            });
+          }
+        }),
+    [predictedClosingLabel],
+  );
 
   if (loading && !billing) {
     return (
@@ -152,7 +195,6 @@ export function AccountCreditCardTracking({
   const isClosed = billing.status === CardBillingStatus.Closed;
   const isOverdue = billing.status === CardBillingStatus.Overdue;
   const isPaid = billing.status === CardBillingStatus.Paid;
-
   return (
     <div className="space-y-4 md:space-y-6">
       {/* Header Card */}
@@ -533,28 +575,38 @@ export function AccountCreditCardTracking({
                     <DialogHeader>
                       <DialogTitle>Fechamento da Fatura</DialogTitle>
                     </DialogHeader>
-                    <div className="py-4">
-                      <TsForm
-                        schema={closeBillingSchema}
-                        onSubmit={handleCloseBilling}
-                        defaultValues={{ closingDate: new Date() }}
-                        props={{
-                          closingDate: {
-                            minDate: billing.periodStart,
-                          },
-                        }}
-                        renderAfter={() => (
-                          <Button
-                            type="submit"
-                            className="mt-4 w-full"
-                            disabled={isProcessing}
-                            loading={isProcessing}
-                          >
-                            Fechar Fatura
-                          </Button>
-                        )}
-                      />
-                    </div>
+                    <TsForm
+                      form={closeBillingForm}
+                      schema={closeBillingSchema}
+                      onSubmit={handleCloseBilling}
+                      defaultValues={{
+                        closeOnPredictedDate: true,
+                        closingDate: predictedClosingDate,
+                      }}
+                      props={{
+                        closingDate: {
+                          minDate: billing.periodStart,
+                        },
+                      }}
+                      renderAfter={() => (
+                        <Button
+                          type="submit"
+                          className="w-full"
+                          disabled={isProcessing}
+                          loading={isProcessing}
+                        >
+                          Fechar Fatura
+                        </Button>
+                      )}
+                    >
+                      {(fields) => (
+                        <>
+                          {fields.closeOnPredictedDate}
+                          {!closeBillingForm.watch('closeOnPredictedDate') &&
+                            fields.closingDate}
+                        </>
+                      )}
+                    </TsForm>
                   </DialogContent>
                 </Dialog>
               </>
