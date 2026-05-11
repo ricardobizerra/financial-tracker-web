@@ -27,15 +27,24 @@ export function normalizeTransactionForEdit(
     return transaction;
   }
 
+  const totalInstallmentAmount = (transaction.installments || []).reduce(
+    (acc, installment) => acc + Number(installment.amount || 0),
+    0,
+  );
   const currentAmount = Number(transaction.amount);
   const installmentAmount = Number(currentInstallment.amount);
 
-  // Billing queries override transaction.amount with installment amount.
-  // For edit mutation we must send the full transaction amount.
-  if (Math.abs(currentAmount - installmentAmount) < 0.000001) {
+  if (
+    Math.abs(currentAmount - installmentAmount) < 0.000001 &&
+    totalInstallmentAmount > 0
+  ) {
     return {
       ...transaction,
-      amount: installmentAmount * totalInstallments,
+      amount: totalInstallmentAmount,
+      installmentNumber: 1,
+      installmentId:
+        transaction.installments?.find((i) => i.installmentNumber === 1)?.id ??
+        null,
     };
   }
 

@@ -140,6 +140,7 @@ interface TransactionCreateFormProps {
   prefilledData?: {
     description?: string;
     amount?: number;
+    category?: TransactionCategory | null;
     type?: TransactionType;
     sourceAccountId?: string;
     destinyAccountId?: string;
@@ -1590,17 +1591,26 @@ function ExpenseTransactionFormDetails({
     name: 'installmentCount',
   });
 
-  const installmentValue = useMemo(() => {
+  const installmentDistribution = useMemo(() => {
     if (
-      isInstallment &&
-      watchedAmount &&
-      watchedInstallmentCount &&
-      watchedInstallmentCount > 1
+      !watchedAmount ||
+      !watchedInstallmentCount ||
+      watchedInstallmentCount <= 1
     ) {
-      return (watchedAmount / watchedInstallmentCount).toFixed(2);
+      return null;
     }
-    return null;
-  }, [isInstallment, watchedAmount, watchedInstallmentCount]);
+
+    const totalCents = Math.round(watchedAmount);
+    const baseCents = Math.floor(totalCents / watchedInstallmentCount);
+    const remainder = totalCents % watchedInstallmentCount;
+
+    return {
+      firstCount: remainder,
+      firstAmount: baseCents + 1,
+      remainingCount: watchedInstallmentCount - remainder,
+      remainingAmount: baseCents,
+    };
+  }, [watchedAmount, watchedInstallmentCount]);
 
   const selectedDate = useWatch({
     control: form.control,
@@ -2090,21 +2100,47 @@ function ExpenseTransactionFormDetails({
 
                 {installmentCount}
 
-                {/* Installment value calculation */}
-                {watchedInstallmentCount &&
-                  watchedInstallmentCount > 1 &&
-                  watchedAmount && (
-                    <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-                      <p className="text-sm text-muted-foreground">
-                        Valor de cada parcela
-                      </p>
-                      <p className="text-lg font-semibold text-primary">
-                        {formatCurrency(
-                          watchedAmount / watchedInstallmentCount,
-                        )}
-                      </p>
-                    </div>
-                  )}
+                {installmentDistribution && (
+                  <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+                    <p className="text-sm text-muted-foreground">
+                      Distribuição das parcelas
+                    </p>
+                    <p className="text-sm font-medium text-primary">
+                      {installmentDistribution.firstCount === 0 ? (
+                        <>
+                          Todas as {installmentDistribution.remainingCount}{' '}
+                          parcelas com valor{' '}
+                          {formatCurrency(
+                            installmentDistribution.remainingAmount,
+                          )}
+                          .
+                        </>
+                      ) : (
+                        <>
+                          {installmentDistribution.firstCount === 1
+                            ? 'Primeira parcela'
+                            : `${installmentDistribution.firstCount} primeiras parcelas`}{' '}
+                          com valor{' '}
+                          {formatCurrency(installmentDistribution.firstAmount)}
+                          {installmentDistribution.remainingCount > 0 && (
+                            <>
+                              {' '}
+                              e as demais{' '}
+                              {installmentDistribution.remainingCount === 1
+                                ? 'parcela'
+                                : `${installmentDistribution.remainingCount} parcelas`}{' '}
+                              com valor{' '}
+                              {formatCurrency(
+                                installmentDistribution.remainingAmount,
+                              )}
+                            </>
+                          )}
+                          .
+                        </>
+                      )}
+                    </p>
+                  </div>
+                )}
               </div>
             </>
           )}
@@ -2153,10 +2189,46 @@ function ExpenseTransactionFormDetails({
             <>
               <Separator />
               {installmentCount}
-              {installmentValue && (
+              {installmentDistribution && (
                 <p className="text-sm text-muted-foreground">
-                  Valor de cada parcela:{' '}
-                  <strong>{formatCurrency(Number(installmentValue))}</strong>
+                  {installmentDistribution.firstCount === 0 ? (
+                    <>
+                      Todas as {installmentDistribution.remainingCount} parcelas
+                      com valor{' '}
+                      <strong>
+                        {formatCurrency(
+                          installmentDistribution.remainingAmount,
+                        )}
+                      </strong>
+                      .
+                    </>
+                  ) : (
+                    <>
+                      {installmentDistribution.firstCount === 1
+                        ? 'Primeira parcela'
+                        : `${installmentDistribution.firstCount} primeiras parcelas`}{' '}
+                      com valor{' '}
+                      <strong>
+                        {formatCurrency(installmentDistribution.firstAmount)}
+                      </strong>
+                      {installmentDistribution.remainingCount > 0 && (
+                        <>
+                          {' '}
+                          e as demais{' '}
+                          {installmentDistribution.remainingCount === 1
+                            ? 'parcela'
+                            : `${installmentDistribution.remainingCount} parcelas`}{' '}
+                          com valor{' '}
+                          <strong>
+                            {formatCurrency(
+                              installmentDistribution.remainingAmount,
+                            )}
+                          </strong>
+                        </>
+                      )}
+                      .
+                    </>
+                  )}
                 </p>
               )}
               <p className="text-xs text-muted-foreground">
