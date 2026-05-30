@@ -1,7 +1,4 @@
-import {
-  TransactionFragmentFragment,
-  CardBillingStatus,
-} from '@/graphql/graphql';
+import { TransactionFragmentFragment } from '@/graphql/graphql';
 
 /**
  * Normaliza uma transação para edição, ajustando o valor para o total caso seja uma parcela.
@@ -94,47 +91,4 @@ export function formatBillingPeriod(periodStartStr: string): string {
     .replace('.', '');
   const year = date.getFullYear();
   return `${month}/${year}`;
-}
-
-/**
- * Retorna informações formatadas sobre o status da fatura
- */
-export function getBillingStatusInfo(status: CardBillingStatus): {
-  label: string;
-  className: string;
-} {
-  switch (status) {
-    case CardBillingStatus.Pending:
-      return {
-        label: 'Aberta',
-        className:
-          'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-      };
-    case CardBillingStatus.Closed:
-      return {
-        label: 'Fechada',
-        className:
-          'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-      };
-    case CardBillingStatus.Overdue:
-      return {
-        label: 'Vencida',
-        className:
-          'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-      };
-    case CardBillingStatus.Paid:
-      return {
-        label: 'Paga',
-        className:
-          'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-      };
-    case CardBillingStatus.Completed:
-      return {
-        label: 'Concluída',
-        className:
-          'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400',
-      };
-    default:
-      return { label: status, className: 'bg-gray-100 text-gray-700' };
-  }
 }

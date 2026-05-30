@@ -6,7 +6,8 @@ import { formatCurrency } from '@/lib/formatters/currency';
 import { formatDate } from '@/lib/formatters/date';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { CreditCard, TrendingUp, Wallet } from 'lucide-react';
+import { CreditCard, TrendingUp, Wallet, Eye, Check } from 'lucide-react';
+import { SimpleTooltip } from '@/components/simple-tooltip';
 import {
   InstitutionLinkFragmentFragment,
   CardType,
@@ -15,42 +16,9 @@ import {
 import { getTextColorForBackground } from '@/lib/color';
 import { AccountCreateForm } from '@/modules/accounts/components/account-create-form';
 import { CardCreateForm } from '@/modules/accounts/components/card-create-form';
-import { differenceInCalendarDays } from 'date-fns';
-
-function getCardStatusUi(status: CardBillingStatus) {
-  const statusConfig: Record<
-    CardBillingStatus,
-    { label: string; className: string }
-  > = {
-    [CardBillingStatus.Pending]: {
-      label: 'Pendente',
-      className: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
-    },
-    [CardBillingStatus.Paid]: {
-      label: 'Pago',
-      className: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
-    },
-    [CardBillingStatus.Overdue]: {
-      label: 'Atrasado',
-      className: 'bg-red-500/10 text-red-600 dark:text-red-400',
-    },
-    [CardBillingStatus.Closed]: {
-      label: 'Fechado',
-      className: 'bg-slate-500/10 text-slate-600 dark:text-slate-400',
-    },
-    [CardBillingStatus.Completed]: {
-      label: 'Concluída',
-      className: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
-    },
-  };
-
-  return (
-    statusConfig[status] || {
-      label: status,
-      className: 'bg-gray-500/10 text-gray-600 dark:text-gray-400',
-    }
-  );
-}
+import { differenceInCalendarDays, format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { CardBillingStatusBadge } from '@/modules/cards/components/card-billing-status-badge';
 
 function formatRelativeDateLine(
   date: Date | string,
@@ -217,100 +185,194 @@ export function InstitutionLinkCard({
               {creditCards.map((card) => {
                 const currentBilling = card.currentBilling;
                 const payableBillings = card.payableBillings ?? [];
-                const totalAmount = Number(currentBilling?.totalAmount ?? 0);
-                const statusUi = getCardStatusUi(
-                  currentBilling?.status ?? CardBillingStatus.Pending,
+
+                const pendingBillings = currentBilling ? [currentBilling] : [];
+                const closedBillings = payableBillings.filter(
+                  (b) => b.status === CardBillingStatus.Closed,
                 );
-                const payableTotal = payableBillings.reduce(
-                  (acc: number, billing) =>
-                    acc + Number(billing.totalAmount ?? 0),
-                  0,
+                const overdueBillings = payableBillings.filter(
+                  (b) => b.status === CardBillingStatus.Overdue,
                 );
-                const hasOverduePayable = payableBillings.some(
-                  (billing) => billing.status === CardBillingStatus.Overdue,
-                );
-                const payableStatusUi = getCardStatusUi(
-                  hasOverduePayable
-                    ? CardBillingStatus.Overdue
-                    : CardBillingStatus.Closed,
-                );
-                const closingLine = currentBilling?.periodEnd
-                  ? formatRelativeDateLine(currentBilling.periodEnd, 'closing')
-                  : null;
-                const dueLine = currentBilling?.paymentDate
-                  ? formatRelativeDateLine(currentBilling.paymentDate, 'due')
-                  : null;
+
+                const renderBillingLabel = (billing: {
+                  id: string;
+                  status: CardBillingStatus;
+                  periodEnd?: string | null;
+                  periodStart: string;
+                  paymentDate?: string | null;
+                }) => {
+                  const date = new Date(
+                    billing.periodEnd ?? billing.periodStart,
+                  );
+                  const isPending =
+                    billing.status === CardBillingStatus.Pending;
+                  const isPayable =
+                    billing.status === CardBillingStatus.Closed ||
+                    billing.status === CardBillingStatus.Overdue;
+
+                  const relativeDate = isPending
+                    ? billing.periodEnd
+                      ? formatRelativeDateLine(billing.periodEnd, 'closing')
+                      : null
+                    : isPayable && billing.paymentDate
+                      ? formatRelativeDateLine(billing.paymentDate, 'due')
+                      : null;
+
+                  return (
+                    <div className="flex flex-col">
+                      <div className="text-sm font-medium text-foreground">
+                        <span className="capitalize">
+                          {format(date, 'MMMM', { locale: ptBR })}
+                        </span>
+                        <span>
+                          {format(date, " 'de' yyyy", { locale: ptBR })}
+                        </span>
+                      </div>
+                      {relativeDate && (
+                        <div className="text-xs leading-tight text-muted-foreground/80">
+                          <span className="font-medium text-foreground/70">
+                            {relativeDate.prefix}
+                          </span>{' '}
+                          <span>({relativeDate.date})</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                };
+
+                type BillingGroup = {
+                  status: CardBillingStatus;
+                  billings: typeof pendingBillings;
+                  borderClass: string;
+                  bgClass: string;
+                  amountClass: string;
+                  actionIcon: React.ReactNode;
+                  actionTooltip: string;
+                };
+
+                const groups: BillingGroup[] = [
+                  {
+                    status: CardBillingStatus.Overdue,
+                    billings: overdueBillings,
+                    borderClass: 'border-red-700 dark:border-red-400',
+                    bgClass: 'bg-red-50/50 dark:bg-red-900/15',
+                    amountClass: 'text-red-700 dark:text-red-400',
+                    actionIcon: <Check className="h-4 w-4" />,
+                    actionTooltip: 'Confirmar pagamento',
+                  },
+                  {
+                    status: CardBillingStatus.Closed,
+                    billings: closedBillings,
+                    borderClass: 'border-amber-500/50 dark:border-amber-400/50',
+                    bgClass: 'bg-amber-50/40 dark:bg-amber-900/10',
+                    amountClass: 'text-amber-700 dark:text-amber-400',
+                    actionIcon: <Check className="h-4 w-4" />,
+                    actionTooltip: 'Confirmar pagamento',
+                  },
+                  {
+                    status: CardBillingStatus.Pending,
+                    billings: pendingBillings,
+                    borderClass: 'border-green-500/50 dark:border-green-400/50',
+                    bgClass: 'bg-green-50/40 dark:bg-green-900/10',
+                    amountClass: 'text-green-700 dark:text-green-400',
+                    actionIcon: <Eye className="h-4 w-4" />,
+                    actionTooltip: 'Ver detalhes da fatura',
+                  },
+                ].filter((g) => g.billings.length > 0);
 
                 return (
                   <div
                     key={card.id}
                     className="flex flex-col overflow-hidden rounded-lg border bg-background"
                   >
-                    <div className="flex items-center justify-between p-3">
-                      <div className="flex flex-col">
-                        <span className="font-medium leading-none">
-                          {card.name}
-                        </span>
-                        <span className="mt-1 text-xs text-muted-foreground">
-                          Crédito
-                        </span>
-                      </div>
-                      <div className="flex flex-col items-end gap-1">
-                        <span className="font-bold">
-                          {formatCurrency(totalAmount)}
-                        </span>
-                        <div
-                          className={cn(
-                            'flex items-center gap-1 rounded-full px-1.5 py-0.5 text-sm font-bold',
-                            statusUi.className,
-                          )}
-                        >
-                          {statusUi.label}
-                        </div>
-                      </div>
+                    {/* Card header: type · name */}
+                    <div className="flex items-baseline gap-1.5 px-3 pb-2 pt-3">
+                      <span className="text-sm font-medium text-muted-foreground">
+                        Crédito
+                      </span>
+                      <span className="text-sm font-semibold text-foreground">
+                        {card.name}
+                      </span>
                     </div>
-                    {(closingLine || dueLine) && (
-                      <div className="flex flex-col gap-1 px-3 pb-3">
-                        {closingLine && (
-                          <div className="text-sm font-semibold text-foreground">
-                            {closingLine.prefix}{' '}
-                            <span className="font-normal text-muted-foreground">
-                              ({closingLine.date})
-                            </span>
-                          </div>
-                        )}
-                        {dueLine && (
-                          <div className="text-sm font-semibold text-foreground">
-                            {dueLine.prefix}{' '}
-                            <span className="font-normal text-muted-foreground">
-                              ({dueLine.date})
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    {payableBillings.length > 0 && (
-                      <div className="border-t bg-muted/20 px-3 py-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-medium text-muted-foreground">
-                            Em aberto para pagamento ({payableBillings.length})
-                          </span>
-                          <span className="text-xs font-semibold">
-                            {formatCurrency(payableTotal)}
-                          </span>
-                        </div>
-                        <div className="mt-1 flex justify-end">
+
+                    {/* Status subcards */}
+                    {groups.length > 0 ? (
+                      <div className="flex flex-col gap-2 px-3 pb-3">
+                        {groups.map((group) => (
                           <div
+                            key={group.status}
                             className={cn(
-                              'rounded-full px-1.5 py-0.5 text-sm font-bold',
-                              payableStatusUi.className,
+                              'overflow-hidden rounded-md border',
+                              group.bgClass,
+                              group.borderClass,
                             )}
                           >
-                            {payableStatusUi.label}
+                            {/* Subcard header */}
+                            <div className="flex items-center px-3 pb-1 pt-2">
+                              <CardBillingStatusBadge
+                                status={group.status}
+                                className={cn(
+                                  'border-0 bg-transparent p-0 dark:bg-transparent',
+                                  group.amountClass,
+                                )}
+                                label={(label) =>
+                                  `Fatura ${label.toLowerCase()}`
+                                }
+                              />
+                            </div>
+                            {/* Billing rows */}
+                            <div className="flex flex-col divide-y divide-border/30">
+                              {group.billings.map((billing) => (
+                                <div
+                                  key={billing.id}
+                                  className="flex items-center justify-between px-3 pb-2 pt-1"
+                                >
+                                  {renderBillingLabel(billing)}
+                                  <div className="flex items-center gap-2">
+                                    <span
+                                      className={cn(
+                                        'text-sm font-semibold',
+                                        group.amountClass,
+                                      )}
+                                    >
+                                      {formatCurrency(
+                                        Number(billing.totalAmount ?? 0),
+                                      )}
+                                    </span>
+                                    <SimpleTooltip
+                                      label={group.actionTooltip}
+                                      side="top"
+                                    >
+                                      <Button
+                                        variant="secondary"
+                                        size="icon"
+                                        className="h-7 w-7"
+                                        asChild
+                                      >
+                                        <Link
+                                          href={`/cards/${card.id}?billingId=${billing.id}`}
+                                        >
+                                          {group.actionIcon}
+                                          <span className="sr-only">
+                                            {group.actionTooltip}
+                                          </span>
+                                        </Link>
+                                      </Button>
+                                    </SimpleTooltip>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="px-3 pb-3 text-xs text-muted-foreground">
+                        Nenhuma fatura encontrada.
                       </div>
                     )}
+
+                    {/* Footer */}
                     <div className="flex justify-end border-t bg-muted/30 px-3 py-2">
                       <Button variant="secondary" size="sm" asChild>
                         <Link href={`/cards/${card.id}`}>Ver cartão</Link>
@@ -325,15 +387,13 @@ export function InstitutionLinkCard({
                   key={card.id}
                   className="flex flex-col overflow-hidden rounded-lg border bg-background"
                 >
-                  <div className="flex items-center justify-between p-3">
-                    <div className="flex flex-col">
-                      <span className="font-medium leading-none">
-                        {card.name}
-                      </span>
-                      <span className="mt-1 text-xs text-muted-foreground">
-                        Débito
-                      </span>
-                    </div>
+                  <div className="flex items-baseline gap-1.5 px-3 pb-2 pt-3">
+                    <span className="text-sm font-medium text-muted-foreground">
+                      Débito
+                    </span>
+                    <span className="text-sm font-semibold text-foreground">
+                      {card.name}
+                    </span>
                   </div>
                   <div className="flex justify-end border-t bg-muted/30 px-3 py-2">
                     <Button variant="secondary" size="sm" asChild>

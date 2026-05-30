@@ -18,7 +18,6 @@ import { AccountsQuery, BillingQuery } from '../../graphql/accounts-queries';
 import { CloseBillingMutation } from '../../graphql/accounts-mutations';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import {
   ArrowLeft,
   ArrowRight,
@@ -49,6 +48,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useCallback } from 'react';
 import { CardSettingsEditDialog } from '../card-settings-edit-dialog';
 import { getTextColorForBackground } from '@/lib/color';
+import { CardBillingStatusBadge } from '@/modules/cards/components/card-billing-status-badge';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 
@@ -78,27 +78,6 @@ export function AccountCreditCardTracking({
   const billing = data?.billing?.billing;
   const nextBillingId = data?.billing?.nextBillingId;
   const previousBillingId = data?.billing?.previousBillingId;
-
-  const getStatusBadge = (status: string) => {
-    const statusConfig: Record<
-      string,
-      {
-        label: string;
-        variant: 'default' | 'secondary' | 'destructive' | 'outline';
-      }
-    > = {
-      PENDING: { label: 'Pendente', variant: 'secondary' },
-      PAID: { label: 'Pago', variant: 'default' },
-      OVERDUE: { label: 'Atrasado', variant: 'destructive' },
-      CLOSED: { label: 'Fechado', variant: 'outline' },
-    };
-
-    const config = statusConfig[status] || {
-      label: status,
-      variant: 'outline' as const,
-    };
-    return <Badge variant={config.variant}>{config.label}</Badge>;
-  };
 
   const closeBillingForm = useForm<z.infer<typeof closeBillingSchema>>({
     defaultValues: {
@@ -379,7 +358,7 @@ export function AccountCreditCardTracking({
                   {formatDate(billing.periodEnd)}
                 </span>
               </div>
-              {getStatusBadge(billing.status)}
+              <CardBillingStatusBadge status={billing.status} />
             </div>
 
             <Button
