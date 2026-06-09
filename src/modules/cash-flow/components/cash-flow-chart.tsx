@@ -311,6 +311,39 @@ export function CashFlowChart({
                                       {formatCurrency(val)}
                                     </span>
                                   </div>
+                                  {point.transactions &&
+                                    point.transactions.filter(
+                                      (tx: any) =>
+                                        tx.accountName === account.name,
+                                    ).length > 0 && (
+                                      <div className="ml-[5px] mt-1 border-l-2 border-muted pl-4">
+                                        {point.transactions
+                                          .filter(
+                                            (tx: any) =>
+                                              tx.accountName === account.name,
+                                          )
+                                          .map((tx: any, i: number) => (
+                                            <div
+                                              key={`${tx.id}-${i}`}
+                                              className="flex items-center justify-between gap-3 text-xs"
+                                            >
+                                              <span className="flex-1 truncate text-muted-foreground">
+                                                {tx.description}
+                                              </span>
+                                              <span
+                                                className={`shrink-0 font-medium ${
+                                                  tx.isIncome
+                                                    ? 'text-emerald-500'
+                                                    : 'text-red-500'
+                                                }`}
+                                              >
+                                                {tx.isIncome ? '+' : '-'}
+                                                {formatCurrency(tx.amount)}
+                                              </span>
+                                            </div>
+                                          ))}
+                                      </div>
+                                    )}
                                 </div>
                               );
                             })}
@@ -433,6 +466,36 @@ export function CashFlowChart({
                               </span>
                             </div>
                           </div>
+                          {point.transactions &&
+                            point.transactions.length > 0 && (
+                              <div className="mt-3 border-t pt-2">
+                                {point.transactions.map(
+                                  (tx: any, i: number) => (
+                                    <div
+                                      key={`${tx.id}-${i}`}
+                                      className="flex items-center justify-between gap-3 text-xs"
+                                    >
+                                      <span className="flex-1 truncate text-muted-foreground">
+                                        {tx.description}
+                                        <span className="ml-1 opacity-60">
+                                          ({tx.accountName})
+                                        </span>
+                                      </span>
+                                      <span
+                                        className={`shrink-0 font-medium ${
+                                          tx.isIncome
+                                            ? 'text-emerald-500'
+                                            : 'text-red-500'
+                                        }`}
+                                      >
+                                        {tx.isIncome ? '+' : '-'}
+                                        {formatCurrency(tx.amount)}
+                                      </span>
+                                    </div>
+                                  ),
+                                )}
+                              </div>
+                            )}
                         </div>
                       );
                     }}
