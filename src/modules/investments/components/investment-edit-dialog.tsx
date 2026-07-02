@@ -1,6 +1,5 @@
 'use client';
 
-import { formFields, TsForm } from '@/components/ts-form';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -9,67 +8,72 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
-import { PlusIcon } from 'lucide-react';
-import { z } from 'zod';
-import { CreateInvestmentMutation } from '../graphql/investments-mutations';
-import { useMutation, useQuery } from '@apollo/client';
-import {
-  InstitutionType,
-  OrdenationAccountModel,
-  OrdenationInstitutionLinkModel,
-  OrderDirection,
-  Regime,
-  InvestmentType,
-} from '@/graphql/graphql';
+import { UpdateInvestmentMutation } from '../graphql/investments-mutations';
+import { useMutation } from '@apollo/client';
+import { Regime, InvestmentType } from '@/graphql/graphql';
 import {
   InvestmentRegimesQuery,
   InvestmentsQuery,
 } from '../graphql/investments-queries';
-import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
-import { investmentRegimeLabel } from '../investment-regime-label';
-import { AccountsQuery } from '@/modules/accounts/graphql/accounts-queries';
-import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
 import { InvestmentForm, InvestmentFormData } from './investment-form';
+import { investmentRegimeLabel } from '../investment-regime-label';
 
-export function InvestmentCreateForm({
-  defaultRegime,
-  triggerClassName,
+export function InvestmentEditDialog({
+  investment,
+  open,
+  onOpenChange,
 }: {
-  defaultRegime?: Regime;
-  triggerClassName?: string;
+  investment: any;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const [createInvestment, { loading }] = useMutation(CreateInvestmentMutation);
+  const [updateInvestment, { loading }] = useMutation(UpdateInvestmentMutation);
+
+  const defaultValues: Partial<InvestmentFormData> = {
+    amount: investment.amount,
+    duration: investment.duration ?? undefined,
+    regimeName: investment.regimeName
+      ? ({
+          value: investment.regimeName,
+          label: investmentRegimeLabel[investment.regimeName as Regime],
+        } as any)
+      : undefined,
+    regimePercentage: investment.regimePercentage ?? undefined,
+    startDate: new Date(investment.startDate),
+    institutionLink: investment.institutionLinkId
+      ? ({
+          value: investment.institutionLinkId,
+          label: 'Carregando...',
+        } as any)
+      : undefined,
+    fixedRate: investment.fixedRate ?? undefined,
+    maturityDate: investment.maturityDate
+      ? new Date(investment.maturityDate)
+      : undefined,
+    hasBrokerageFee: !!investment.brokerageFee,
+    brokerageFee: investment.brokerageFee ?? undefined,
+  };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          size="sm"
-          className={cn('flex items-center gap-1', triggerClassName)}
-        >
-          <PlusIcon />
-          Novo investimento
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Novo investimento</DialogTitle>
+          <DialogTitle>Editar investimento</DialogTitle>
           <DialogDescription>
-            Preencha os campos abaixo para registrar um novo investimento.
+            Modifique os campos abaixo para atualizar o investimento.
           </DialogDescription>
         </DialogHeader>
 
         <InvestmentForm
-          defaultRegime={defaultRegime}
+          isEdit={true}
+          defaultValues={defaultValues}
           onSubmit={async (data: InvestmentFormData) => {
-            await createInvestment({
+            await updateInvestment({
               variables: {
                 data: {
+                  id: investment.id,
                   amount: data.amount,
                   duration: data.duration,
                   regimeName: data.regimeName?.value as Regime,
@@ -88,13 +92,13 @@ export function InvestmentCreateForm({
               },
               refetchQueries: [InvestmentsQuery, InvestmentRegimesQuery],
               onCompleted: () => {
-                toast.success('Investimento criado!', {
-                  description: 'As informações foram salvas com sucesso.',
+                toast.success('Investimento atualizado!', {
+                  description: 'As informações foram atualizadas com sucesso.',
                 });
-                setOpen(false);
+                onOpenChange(false);
               },
               onError: (error) => {
-                toast.error('Erro ao criar investimento!', {
+                toast.error('Erro ao atualizar investimento!', {
                   description: error.message,
                 });
               },
@@ -103,7 +107,7 @@ export function InvestmentCreateForm({
           renderAfter={() => (
             <DialogFooter>
               <Button type="submit" disabled={loading} loading={loading}>
-                Salvar
+                Atualizar
               </Button>
             </DialogFooter>
           )}

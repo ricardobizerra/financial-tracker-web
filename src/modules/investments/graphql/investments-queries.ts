@@ -15,6 +15,10 @@ export const InvestmentFragment = graphql(`
     type
     fixedRate
     maturityDate
+    regimeName
+    regimePercentage
+    brokerageFee
+    institutionLinkId
     taxesAndFees {
       irpfAmount
       iofAmount
