@@ -1250,18 +1250,22 @@ export type CreateInstitutionLinkInput = {
 
 export type CreateInvestmentInput = {
   amount: Scalars['Float']['input'];
+  brokerageFee?: InputMaybe<Scalars['Float']['input']>;
   correctedAmount?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
   finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  fixedRate?: InputMaybe<Scalars['Float']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   institutionLinkId: Scalars['ID']['input'];
   lastCorrectedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  maturityDate?: InputMaybe<Scalars['DateTime']['input']>;
   regimeName: Regime;
   regimePercentage?: InputMaybe<Scalars['Float']['input']>;
   startDate: Scalars['DateTime']['input'];
   status?: InputMaybe<InvestmentStatus>;
   taxedAmount?: InputMaybe<Scalars['Float']['input']>;
+  type?: InputMaybe<InvestmentType>;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
@@ -1399,6 +1403,13 @@ export type EnumInvestmentTransactionRoleFilter = {
   in?: InputMaybe<Array<InvestmentTransactionRole>>;
   not?: InputMaybe<NestedEnumInvestmentTransactionRoleFilter>;
   notIn?: InputMaybe<Array<InvestmentTransactionRole>>;
+};
+
+export type EnumInvestmentTypeFilter = {
+  equals?: InputMaybe<InvestmentType>;
+  in?: InputMaybe<Array<InvestmentType>>;
+  not?: InputMaybe<NestedEnumInvestmentTypeFilter>;
+  notIn?: InputMaybe<Array<InvestmentType>>;
 };
 
 export type EnumPaymentMethodNullableFilter = {
@@ -1864,30 +1875,43 @@ export type Investment = {
   __typename?: 'Investment';
   _count: InvestmentCount;
   amount: Scalars['Float']['output'];
+  brokerageFee: Maybe<Scalars['Float']['output']>;
   correctedAmount: Maybe<Scalars['Float']['output']>;
   createdAt: Scalars['DateTime']['output'];
   duration: Maybe<Scalars['Int']['output']>;
   finishedAt: Maybe<Scalars['DateTime']['output']>;
+  fixedRate: Maybe<Scalars['Float']['output']>;
   id: Scalars['ID']['output'];
   institutionLink: Maybe<InstitutionLink>;
   institutionLinkId: Scalars['String']['output'];
   lastCorrectedAt: Maybe<Scalars['DateTime']['output']>;
+  maturityDate: Maybe<Scalars['DateTime']['output']>;
   regimeName: Regime;
   regimePercentage: Maybe<Scalars['Float']['output']>;
   startDate: Scalars['DateTime']['output'];
   status: InvestmentStatus;
   taxedAmount: Maybe<Scalars['Float']['output']>;
   transactions: Maybe<Array<InvestmentTransaction>>;
+  type: InvestmentType;
   updatedAt: Scalars['DateTime']['output'];
 };
 
 export type InvestmentAvgAggregate = {
   __typename?: 'InvestmentAvgAggregate';
   amount: Maybe<Scalars['Float']['output']>;
+  brokerageFee: Maybe<Scalars['Float']['output']>;
   correctedAmount: Maybe<Scalars['Float']['output']>;
   duration: Maybe<Scalars['Float']['output']>;
+  fixedRate: Maybe<Scalars['Float']['output']>;
   regimePercentage: Maybe<Scalars['Float']['output']>;
   taxedAmount: Maybe<Scalars['Float']['output']>;
+};
+
+export type InvestmentChartDataPoint = {
+  __typename?: 'InvestmentChartDataPoint';
+  date: Scalars['String']['output'];
+  marketValue: Scalars['Float']['output'];
+  theoreticalValue: Scalars['Float']['output'];
 };
 
 export type InvestmentConnection = {
@@ -1905,34 +1929,42 @@ export type InvestmentCountAggregate = {
   __typename?: 'InvestmentCountAggregate';
   _all: Scalars['Int']['output'];
   amount: Scalars['Int']['output'];
+  brokerageFee: Scalars['Int']['output'];
   correctedAmount: Scalars['Int']['output'];
   createdAt: Scalars['Int']['output'];
   duration: Scalars['Int']['output'];
   finishedAt: Scalars['Int']['output'];
+  fixedRate: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
   institutionLinkId: Scalars['Int']['output'];
   lastCorrectedAt: Scalars['Int']['output'];
+  maturityDate: Scalars['Int']['output'];
   regimeName: Scalars['Int']['output'];
   regimePercentage: Scalars['Int']['output'];
   startDate: Scalars['Int']['output'];
   status: Scalars['Int']['output'];
   taxedAmount: Scalars['Int']['output'];
+  type: Scalars['Int']['output'];
   updatedAt: Scalars['Int']['output'];
 };
 
 export type InvestmentCreateManyInstitutionLinkInput = {
   amount: Scalars['Float']['input'];
+  brokerageFee?: InputMaybe<Scalars['Float']['input']>;
   correctedAmount?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
   finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  fixedRate?: InputMaybe<Scalars['Float']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   lastCorrectedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  maturityDate?: InputMaybe<Scalars['DateTime']['input']>;
   regimeName: Regime;
   regimePercentage?: InputMaybe<Scalars['Float']['input']>;
   startDate: Scalars['DateTime']['input'];
   status?: InputMaybe<InvestmentStatus>;
   taxedAmount?: InputMaybe<Scalars['Float']['input']>;
+  type?: InputMaybe<InvestmentType>;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
@@ -1955,18 +1987,22 @@ export type InvestmentCreateOrConnectWithoutInstitutionLinkInput = {
 
 export type InvestmentCreateWithoutInstitutionLinkInput = {
   amount: Scalars['Float']['input'];
+  brokerageFee?: InputMaybe<Scalars['Float']['input']>;
   correctedAmount?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
   finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  fixedRate?: InputMaybe<Scalars['Float']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   lastCorrectedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  maturityDate?: InputMaybe<Scalars['DateTime']['input']>;
   regimeName: Regime;
   regimePercentage?: InputMaybe<Scalars['Float']['input']>;
   startDate: Scalars['DateTime']['input'];
   status?: InputMaybe<InvestmentStatus>;
   taxedAmount?: InputMaybe<Scalars['Float']['input']>;
   transactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutInvestmentInput>;
+  type?: InputMaybe<InvestmentType>;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
@@ -2006,51 +2042,62 @@ export type InvestmentListRelationFilter = {
 export type InvestmentMaxAggregate = {
   __typename?: 'InvestmentMaxAggregate';
   amount: Maybe<Scalars['Float']['output']>;
+  brokerageFee: Maybe<Scalars['Float']['output']>;
   correctedAmount: Maybe<Scalars['Float']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   duration: Maybe<Scalars['Int']['output']>;
   finishedAt: Maybe<Scalars['DateTime']['output']>;
+  fixedRate: Maybe<Scalars['Float']['output']>;
   id: Maybe<Scalars['String']['output']>;
   institutionLinkId: Maybe<Scalars['String']['output']>;
   lastCorrectedAt: Maybe<Scalars['DateTime']['output']>;
+  maturityDate: Maybe<Scalars['DateTime']['output']>;
   regimeName: Maybe<Regime>;
   regimePercentage: Maybe<Scalars['Float']['output']>;
   startDate: Maybe<Scalars['DateTime']['output']>;
   status: Maybe<InvestmentStatus>;
   taxedAmount: Maybe<Scalars['Float']['output']>;
+  type: Maybe<InvestmentType>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type InvestmentMinAggregate = {
   __typename?: 'InvestmentMinAggregate';
   amount: Maybe<Scalars['Float']['output']>;
+  brokerageFee: Maybe<Scalars['Float']['output']>;
   correctedAmount: Maybe<Scalars['Float']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   duration: Maybe<Scalars['Int']['output']>;
   finishedAt: Maybe<Scalars['DateTime']['output']>;
+  fixedRate: Maybe<Scalars['Float']['output']>;
   id: Maybe<Scalars['String']['output']>;
   institutionLinkId: Maybe<Scalars['String']['output']>;
   lastCorrectedAt: Maybe<Scalars['DateTime']['output']>;
+  maturityDate: Maybe<Scalars['DateTime']['output']>;
   regimeName: Maybe<Regime>;
   regimePercentage: Maybe<Scalars['Float']['output']>;
   startDate: Maybe<Scalars['DateTime']['output']>;
   status: Maybe<InvestmentStatus>;
   taxedAmount: Maybe<Scalars['Float']['output']>;
+  type: Maybe<InvestmentType>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type InvestmentModel = {
   __typename?: 'InvestmentModel';
   amount: Scalars['Float']['output'];
+  brokerageFee: Maybe<Scalars['Float']['output']>;
   correctedAmount: Maybe<Scalars['Float']['output']>;
   createdAt: Scalars['DateTime']['output'];
   currentVariation: Scalars['String']['output'];
   duration: Maybe<Scalars['Int']['output']>;
   finishedAt: Maybe<Scalars['DateTime']['output']>;
+  fixedRate: Maybe<Scalars['Float']['output']>;
   id: Scalars['ID']['output'];
   institutionLink: Maybe<InstitutionLink>;
   institutionLinkId: Scalars['String']['output'];
   lastCorrectedAt: Maybe<Scalars['DateTime']['output']>;
+  maturityDate: Maybe<Scalars['DateTime']['output']>;
   regimeName: Regime;
   regimePercentage: Maybe<Scalars['Float']['output']>;
   startDate: Scalars['DateTime']['output'];
@@ -2058,7 +2105,9 @@ export type InvestmentModel = {
   taxPercentage: Scalars['String']['output'];
   taxedAmount: Maybe<Scalars['Float']['output']>;
   taxedVariation: Scalars['String']['output'];
+  taxesAndFees: InvestmentTaxesAndFees;
   transactions: Maybe<Array<InvestmentTransaction>>;
+  type: InvestmentType;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -2104,10 +2153,21 @@ export enum InvestmentStatus {
 export type InvestmentSumAggregate = {
   __typename?: 'InvestmentSumAggregate';
   amount: Maybe<Scalars['Float']['output']>;
+  brokerageFee: Maybe<Scalars['Float']['output']>;
   correctedAmount: Maybe<Scalars['Float']['output']>;
   duration: Maybe<Scalars['Int']['output']>;
+  fixedRate: Maybe<Scalars['Float']['output']>;
   regimePercentage: Maybe<Scalars['Float']['output']>;
   taxedAmount: Maybe<Scalars['Float']['output']>;
+};
+
+export type InvestmentTaxesAndFees = {
+  __typename?: 'InvestmentTaxesAndFees';
+  b3CustodyFeeAmount: Scalars['Float']['output'];
+  brokerageFeeAmount: Scalars['Float']['output'];
+  iofAmount: Scalars['Float']['output'];
+  irpfAmount: Scalars['Float']['output'];
+  totalTaxesAndFees: Scalars['Float']['output'];
 };
 
 export type InvestmentTransaction = {
@@ -2234,25 +2294,36 @@ export type InvestmentTransactionWhereUniqueInput = {
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
+export enum InvestmentType {
+  FixedIncome = 'FIXED_INCOME',
+  Savings = 'SAVINGS',
+  Treasury = 'TREASURY',
+  VariableIncome = 'VARIABLE_INCOME'
+}
+
 export type InvestmentWhereInput = {
   AND?: InputMaybe<Array<InvestmentWhereInput>>;
   NOT?: InputMaybe<Array<InvestmentWhereInput>>;
   OR?: InputMaybe<Array<InvestmentWhereInput>>;
   amount?: InputMaybe<FloatFilter>;
+  brokerageFee?: InputMaybe<FloatNullableFilter>;
   correctedAmount?: InputMaybe<FloatNullableFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   duration?: InputMaybe<IntNullableFilter>;
   finishedAt?: InputMaybe<DateTimeNullableFilter>;
+  fixedRate?: InputMaybe<FloatNullableFilter>;
   id?: InputMaybe<StringFilter>;
   institutionLink?: InputMaybe<InstitutionLinkNullableRelationFilter>;
   institutionLinkId?: InputMaybe<StringFilter>;
   lastCorrectedAt?: InputMaybe<DateTimeNullableFilter>;
+  maturityDate?: InputMaybe<DateTimeNullableFilter>;
   regimeName?: InputMaybe<EnumRegimeFilter>;
   regimePercentage?: InputMaybe<FloatNullableFilter>;
   startDate?: InputMaybe<DateTimeFilter>;
   status?: InputMaybe<EnumInvestmentStatusFilter>;
   taxedAmount?: InputMaybe<FloatNullableFilter>;
   transactions?: InputMaybe<InvestmentTransactionListRelationFilter>;
+  type?: InputMaybe<EnumInvestmentTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -2261,20 +2332,24 @@ export type InvestmentWhereUniqueInput = {
   NOT?: InputMaybe<Array<InvestmentWhereInput>>;
   OR?: InputMaybe<Array<InvestmentWhereInput>>;
   amount?: InputMaybe<FloatFilter>;
+  brokerageFee?: InputMaybe<FloatNullableFilter>;
   correctedAmount?: InputMaybe<FloatNullableFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   duration?: InputMaybe<IntNullableFilter>;
   finishedAt?: InputMaybe<DateTimeNullableFilter>;
+  fixedRate?: InputMaybe<FloatNullableFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   institutionLink?: InputMaybe<InstitutionLinkNullableRelationFilter>;
   institutionLinkId?: InputMaybe<StringFilter>;
   lastCorrectedAt?: InputMaybe<DateTimeNullableFilter>;
+  maturityDate?: InputMaybe<DateTimeNullableFilter>;
   regimeName?: InputMaybe<EnumRegimeFilter>;
   regimePercentage?: InputMaybe<FloatNullableFilter>;
   startDate?: InputMaybe<DateTimeFilter>;
   status?: InputMaybe<EnumInvestmentStatusFilter>;
   taxedAmount?: InputMaybe<FloatNullableFilter>;
   transactions?: InputMaybe<InvestmentTransactionListRelationFilter>;
+  type?: InputMaybe<EnumInvestmentTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -2528,6 +2603,13 @@ export type NestedEnumInvestmentTransactionRoleFilter = {
   notIn?: InputMaybe<Array<InvestmentTransactionRole>>;
 };
 
+export type NestedEnumInvestmentTypeFilter = {
+  equals?: InputMaybe<InvestmentType>;
+  in?: InputMaybe<Array<InvestmentType>>;
+  not?: InputMaybe<NestedEnumInvestmentTypeFilter>;
+  notIn?: InputMaybe<Array<InvestmentType>>;
+};
+
 export type NestedEnumPaymentMethodNullableFilter = {
   equals?: InputMaybe<PaymentMethod>;
   in?: InputMaybe<Array<PaymentMethod>>;
@@ -2710,20 +2792,25 @@ export enum OrdenationInstitutionModel {
 
 export enum OrdenationInvestmentModel {
   Amount = 'amount',
+  BrokerageFee = 'brokerageFee',
   CorrectedAmount = 'correctedAmount',
   CreatedAt = 'createdAt',
   Duration = 'duration',
   FinishedAt = 'finishedAt',
+  FixedRate = 'fixedRate',
   Id = 'id',
   InstitutionLink = 'institutionLink',
   InstitutionLinkId = 'institutionLinkId',
   LastCorrectedAt = 'lastCorrectedAt',
+  MaturityDate = 'maturityDate',
   RegimeName = 'regimeName',
   RegimePercentage = 'regimePercentage',
   StartDate = 'startDate',
   Status = 'status',
   TaxedAmount = 'taxedAmount',
+  TaxesAndFees = 'taxesAndFees',
   Transactions = 'transactions',
+  Type = 'type',
   UpdatedAt = 'updatedAt'
 }
 
@@ -2834,6 +2921,7 @@ export type Query = {
   institutionLinks: InstitutionLinkConnection;
   institutions: InstitutionConnection;
   investmentAccounts: Array<AccountWithInvestmentCount>;
+  investmentChartData: Array<InvestmentChartDataPoint>;
   investmentEvolution: InvestmentEvolutionModel;
   investmentRegimes: InvestmentRegimeSummaryConnection;
   investments: InvestmentConnection;
@@ -2943,6 +3031,11 @@ export type QueryInstitutionsArgs = {
 
 export type QueryInvestmentAccountsArgs = {
   regime: Regime;
+};
+
+
+export type QueryInvestmentChartDataArgs = {
+  investmentId: Scalars['String']['input'];
 };
 
 
@@ -3667,7 +3760,10 @@ export type RedeemInvestmentInput = {
 
 export enum Regime {
   Cdi = 'CDI',
-  Poupanca = 'POUPANCA'
+  Ipca = 'IPCA',
+  Poupanca = 'POUPANCA',
+  Prefixed = 'PREFIXED',
+  Selic = 'SELIC'
 }
 
 export type RescheduleTransactionInput = {
@@ -5123,7 +5219,7 @@ export type CreateInvestmentMutationVariables = Exact<{
 }>;
 
 
-export type CreateInvestmentMutation = { __typename?: 'Mutation', createInvestment: { __typename?: 'Investment', id: string, amount: number, startDate: any, duration: number | null, regimeName: Regime, regimePercentage: number | null, institutionLinkId: string, createdAt: any, updatedAt: any } };
+export type CreateInvestmentMutation = { __typename?: 'Mutation', createInvestment: { __typename?: 'Investment', id: string, amount: number, startDate: any, duration: number | null, regimeName: Regime, regimePercentage: number | null, institutionLinkId: string, type: InvestmentType, fixedRate: number | null, brokerageFee: number | null, maturityDate: any | null, createdAt: any, updatedAt: any } };
 
 export type DeleteInvestmentMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -5132,7 +5228,7 @@ export type DeleteInvestmentMutationVariables = Exact<{
 
 export type DeleteInvestmentMutation = { __typename?: 'Mutation', deleteInvestment: string };
 
-export type InvestmentFragmentFragment = { __typename?: 'InvestmentModel', id: string, amount: number, correctedAmount: number | null, currentVariation: string, taxPercentage: string, taxedAmount: number | null, taxedVariation: string, startDate: any, duration: number | null, status: InvestmentStatus };
+export type InvestmentFragmentFragment = { __typename?: 'InvestmentModel', id: string, amount: number, correctedAmount: number | null, currentVariation: string, taxPercentage: string, taxedAmount: number | null, taxedVariation: string, startDate: any, duration: number | null, status: InvestmentStatus, type: InvestmentType, fixedRate: number | null, maturityDate: any | null, taxesAndFees: { __typename?: 'InvestmentTaxesAndFees', irpfAmount: number, iofAmount: number, b3CustodyFeeAmount: number, brokerageFeeAmount: number, totalTaxesAndFees: number } };
 
 export type InvestmentsQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -5146,7 +5242,7 @@ export type InvestmentsQueryVariables = Exact<{
 }>;
 
 
-export type InvestmentsQuery = { __typename?: 'Query', investments: { __typename?: 'InvestmentConnection', edges: Array<{ __typename?: 'InvestmentModelEdge', cursor: string, node: { __typename?: 'InvestmentModel', id: string, amount: number, correctedAmount: number | null, currentVariation: string, taxPercentage: string, taxedAmount: number | null, taxedVariation: string, startDate: any, duration: number | null, status: InvestmentStatus } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasPreviousPage: boolean, hasNextPage: boolean } | null } };
+export type InvestmentsQuery = { __typename?: 'Query', investments: { __typename?: 'InvestmentConnection', edges: Array<{ __typename?: 'InvestmentModelEdge', cursor: string, node: { __typename?: 'InvestmentModel', id: string, amount: number, correctedAmount: number | null, currentVariation: string, taxPercentage: string, taxedAmount: number | null, taxedVariation: string, startDate: any, duration: number | null, status: InvestmentStatus, type: InvestmentType, fixedRate: number | null, maturityDate: any | null, taxesAndFees: { __typename?: 'InvestmentTaxesAndFees', irpfAmount: number, iofAmount: number, b3CustodyFeeAmount: number, brokerageFeeAmount: number, totalTaxesAndFees: number } } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasPreviousPage: boolean, hasNextPage: boolean } | null } };
 
 export type TotalInvestmentsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -5176,6 +5272,13 @@ export type InvestmentAccountsQueryVariables = Exact<{
 
 
 export type InvestmentAccountsQuery = { __typename?: 'Query', investmentAccounts: Array<{ __typename?: 'AccountWithInvestmentCount', id: string, name: string, institutionLogoUrl: string | null, investmentCount: number }> };
+
+export type InvestmentChartDataQueryVariables = Exact<{
+  investmentId: Scalars['String']['input'];
+}>;
+
+
+export type InvestmentChartDataQuery = { __typename?: 'Query', investmentChartData: Array<{ __typename?: 'InvestmentChartDataPoint', date: string, theoreticalValue: number, marketValue: number }> };
 
 export type CreateRecurringTransactionMutationVariables = Exact<{
   data: CreateRecurringTransactionInput;
@@ -5418,7 +5521,7 @@ export const CardFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind"
 export const InstitutionFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"InstitutionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"InstitutionModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"types"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<InstitutionFragmentFragment, unknown>;
 export const PageInfoFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PageInfoFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PageInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}}]} as unknown as DocumentNode<PageInfoFragmentFragment, unknown>;
 export const InstitutionLinkFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"InstitutionLinkFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"InstitutionLinkModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"institutionId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"initialBalance"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"cards"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"lastFourDigits"}},{"kind":"Field","name":{"kind":"Name","value":"billingCycleDay"}},{"kind":"Field","name":{"kind":"Name","value":"billingPaymentDay"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"defaultLimit"}},{"kind":"Field","name":{"kind":"Name","value":"currentBilling"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payableBillings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"investments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"regimeName"}},{"kind":"Field","name":{"kind":"Name","value":"regimePercentage"}}]}}]}}]} as unknown as DocumentNode<InstitutionLinkFragmentFragment, unknown>;
-export const InvestmentFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"InvestmentFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"InvestmentModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"correctedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"currentVariation"}},{"kind":"Field","name":{"kind":"Name","value":"taxPercentage"}},{"kind":"Field","name":{"kind":"Name","value":"taxedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"taxedVariation"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]} as unknown as DocumentNode<InvestmentFragmentFragment, unknown>;
+export const InvestmentFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"InvestmentFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"InvestmentModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"correctedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"currentVariation"}},{"kind":"Field","name":{"kind":"Name","value":"taxPercentage"}},{"kind":"Field","name":{"kind":"Name","value":"taxedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"taxedVariation"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"fixedRate"}},{"kind":"Field","name":{"kind":"Name","value":"maturityDate"}},{"kind":"Field","name":{"kind":"Name","value":"taxesAndFees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"irpfAmount"}},{"kind":"Field","name":{"kind":"Name","value":"iofAmount"}},{"kind":"Field","name":{"kind":"Name","value":"b3CustodyFeeAmount"}},{"kind":"Field","name":{"kind":"Name","value":"brokerageFeeAmount"}},{"kind":"Field","name":{"kind":"Name","value":"totalTaxesAndFees"}}]}}]}}]} as unknown as DocumentNode<InvestmentFragmentFragment, unknown>;
 export const InvestmentRegimeSummaryFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"InvestmentRegimeSummaryFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"InvestmentRegimeSummary"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"totalInvested"}},{"kind":"Field","name":{"kind":"Name","value":"currentInvested"}},{"kind":"Field","name":{"kind":"Name","value":"currentInvestedPercentage"}},{"kind":"Field","name":{"kind":"Name","value":"taxedInvested"}},{"kind":"Field","name":{"kind":"Name","value":"taxedInvestedPercentage"}}]}}]} as unknown as DocumentNode<InvestmentRegimeSummaryFragmentFragment, unknown>;
 export const RecurringTransactionFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RecurringTransactionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RecurringTransactionModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"estimatedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"frequency"}},{"kind":"Field","name":{"kind":"Name","value":"dayMode"}},{"kind":"Field","name":{"kind":"Name","value":"dayOfMonth"}},{"kind":"Field","name":{"kind":"Name","value":"dayOfWeek"}},{"kind":"Field","name":{"kind":"Name","value":"weekOfMonth"}},{"kind":"Field","name":{"kind":"Name","value":"monthOfYear"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"destinyAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"sourceCard"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"transactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"destinyAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<RecurringTransactionFragmentFragment, unknown>;
 export const TransactionFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"sourceCard"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"destinyAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"billingPayment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}},{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"card"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"lastFourDigits"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"cardBilling"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}},{"kind":"Field","name":{"kind":"Name","value":"paymentTransaction"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"recurringTransactionId"}},{"kind":"Field","name":{"kind":"Name","value":"installments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"installmentNumber"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"cardBilling"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"canCancel"}},{"kind":"Field","name":{"kind":"Name","value":"cancelReason"}},{"kind":"Field","name":{"kind":"Name","value":"cancelWarningMessage"}},{"kind":"Field","name":{"kind":"Name","value":"installmentStartDate"}},{"kind":"Field","name":{"kind":"Name","value":"installmentNumber"}},{"kind":"Field","name":{"kind":"Name","value":"totalInstallments"}},{"kind":"Field","name":{"kind":"Name","value":"installmentId"}}]}}]} as unknown as DocumentNode<TransactionFragmentFragment, unknown>;
@@ -5445,13 +5548,14 @@ export const CashFlowBalanceForecastDocument = {"kind":"Document","definitions":
 export const TransactionsSummaryForCashFlowDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TransactionsSummaryForCashFlow"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"types"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionType"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"statuses"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionStatus"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"transactionsSummary"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"accountId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}}},{"kind":"Argument","name":{"kind":"Name","value":"startDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"endDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"types"},"value":{"kind":"Variable","name":{"kind":"Name","value":"types"}}},{"kind":"Argument","name":{"kind":"Name","value":"statuses"},"value":{"kind":"Variable","name":{"kind":"Name","value":"statuses"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalIncome"}},{"kind":"Field","name":{"kind":"Name","value":"totalExpense"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"transactionCount"}},{"kind":"Field","name":{"kind":"Name","value":"realizedIncome"}},{"kind":"Field","name":{"kind":"Name","value":"realizedExpense"}},{"kind":"Field","name":{"kind":"Name","value":"realizedBalance"}},{"kind":"Field","name":{"kind":"Name","value":"forecastIncome"}},{"kind":"Field","name":{"kind":"Name","value":"forecastExpense"}},{"kind":"Field","name":{"kind":"Name","value":"forecastBalance"}}]}}]}}]} as unknown as DocumentNode<TransactionsSummaryForCashFlowQuery, TransactionsSummaryForCashFlowQueryVariables>;
 export const CreateInstitutionLinkDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateInstitutionLink"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateInstitutionLinkInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createInstitutionLink"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateInstitutionLinkMutation, CreateInstitutionLinkMutationVariables>;
 export const InstitutionLinksDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InstitutionLinks"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"first"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"search"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrdenationInstitutionLinkModel"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrderDirection"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"institutionTypes"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"InstitutionType"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institutionLinks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"first"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"search"},"value":{"kind":"Variable","name":{"kind":"Name","value":"search"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"institutionTypes"},"value":{"kind":"Variable","name":{"kind":"Name","value":"institutionTypes"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cursor"}},{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"InstitutionLinkFragment"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PageInfoFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"InstitutionLinkFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"InstitutionLinkModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"institutionId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"initialBalance"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"cards"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"lastFourDigits"}},{"kind":"Field","name":{"kind":"Name","value":"billingCycleDay"}},{"kind":"Field","name":{"kind":"Name","value":"billingPaymentDay"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"defaultLimit"}},{"kind":"Field","name":{"kind":"Name","value":"currentBilling"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payableBillings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"investments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"regimeName"}},{"kind":"Field","name":{"kind":"Name","value":"regimePercentage"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PageInfoFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PageInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}}]} as unknown as DocumentNode<InstitutionLinksQuery, InstitutionLinksQueryVariables>;
-export const CreateInvestmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateInvestment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateInvestmentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createInvestment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"regimeName"}},{"kind":"Field","name":{"kind":"Name","value":"regimePercentage"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLinkId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateInvestmentMutation, CreateInvestmentMutationVariables>;
+export const CreateInvestmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateInvestment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateInvestmentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createInvestment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"regimeName"}},{"kind":"Field","name":{"kind":"Name","value":"regimePercentage"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLinkId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"fixedRate"}},{"kind":"Field","name":{"kind":"Name","value":"brokerageFee"}},{"kind":"Field","name":{"kind":"Name","value":"maturityDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateInvestmentMutation, CreateInvestmentMutationVariables>;
 export const DeleteInvestmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteInvestment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteInvestment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode<DeleteInvestmentMutation, DeleteInvestmentMutationVariables>;
-export const InvestmentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Investments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"first"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrderDirection"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrdenationInvestmentModel"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"last"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"before"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"regime"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Regime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"institutionLinkIds"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"investments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"first"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"last"},"value":{"kind":"Variable","name":{"kind":"Name","value":"last"}}},{"kind":"Argument","name":{"kind":"Name","value":"before"},"value":{"kind":"Variable","name":{"kind":"Name","value":"before"}}},{"kind":"Argument","name":{"kind":"Name","value":"regime"},"value":{"kind":"Variable","name":{"kind":"Name","value":"regime"}}},{"kind":"Argument","name":{"kind":"Name","value":"institutionLinkIds"},"value":{"kind":"Variable","name":{"kind":"Name","value":"institutionLinkIds"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cursor"}},{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"InvestmentFragment"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PageInfoFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"InvestmentFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"InvestmentModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"correctedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"currentVariation"}},{"kind":"Field","name":{"kind":"Name","value":"taxPercentage"}},{"kind":"Field","name":{"kind":"Name","value":"taxedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"taxedVariation"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PageInfoFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PageInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}}]} as unknown as DocumentNode<InvestmentsQuery, InvestmentsQueryVariables>;
+export const InvestmentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Investments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"first"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrderDirection"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrdenationInvestmentModel"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"last"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"before"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"regime"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Regime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"institutionLinkIds"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"investments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"first"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"last"},"value":{"kind":"Variable","name":{"kind":"Name","value":"last"}}},{"kind":"Argument","name":{"kind":"Name","value":"before"},"value":{"kind":"Variable","name":{"kind":"Name","value":"before"}}},{"kind":"Argument","name":{"kind":"Name","value":"regime"},"value":{"kind":"Variable","name":{"kind":"Name","value":"regime"}}},{"kind":"Argument","name":{"kind":"Name","value":"institutionLinkIds"},"value":{"kind":"Variable","name":{"kind":"Name","value":"institutionLinkIds"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cursor"}},{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"InvestmentFragment"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PageInfoFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"InvestmentFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"InvestmentModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"correctedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"currentVariation"}},{"kind":"Field","name":{"kind":"Name","value":"taxPercentage"}},{"kind":"Field","name":{"kind":"Name","value":"taxedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"taxedVariation"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"fixedRate"}},{"kind":"Field","name":{"kind":"Name","value":"maturityDate"}},{"kind":"Field","name":{"kind":"Name","value":"taxesAndFees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"irpfAmount"}},{"kind":"Field","name":{"kind":"Name","value":"iofAmount"}},{"kind":"Field","name":{"kind":"Name","value":"b3CustodyFeeAmount"}},{"kind":"Field","name":{"kind":"Name","value":"brokerageFeeAmount"}},{"kind":"Field","name":{"kind":"Name","value":"totalTaxesAndFees"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PageInfoFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PageInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}}]} as unknown as DocumentNode<InvestmentsQuery, InvestmentsQueryVariables>;
 export const TotalInvestmentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TotalInvestments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalInvestments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"initialAmount"}},{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"currentVariation"}},{"kind":"Field","name":{"kind":"Name","value":"taxedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"taxedVariation"}}]}}]}}]} as unknown as DocumentNode<TotalInvestmentsQuery, TotalInvestmentsQueryVariables>;
 export const InvestmentRegimesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InvestmentRegimes"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"institutionLinkId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"investmentRegimes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"institutionLinkId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"institutionLinkId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cursor"}},{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"InvestmentRegimeSummaryFragment"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"InvestmentRegimeSummaryFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"InvestmentRegimeSummary"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"totalInvested"}},{"kind":"Field","name":{"kind":"Name","value":"currentInvested"}},{"kind":"Field","name":{"kind":"Name","value":"currentInvestedPercentage"}},{"kind":"Field","name":{"kind":"Name","value":"taxedInvested"}},{"kind":"Field","name":{"kind":"Name","value":"taxedInvestedPercentage"}}]}}]} as unknown as DocumentNode<InvestmentRegimesQuery, InvestmentRegimesQueryVariables>;
 export const InvestmentEvolutionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InvestmentEvolution"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"period"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"InvestmentEvolutionPeriod"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"investmentEvolution"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"period"},"value":{"kind":"Variable","name":{"kind":"Name","value":"period"}}},{"kind":"Argument","name":{"kind":"Name","value":"accountId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dataPoints"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"invested"}},{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"taxedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"profit"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalInvested"}},{"kind":"Field","name":{"kind":"Name","value":"totalCurrentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"totalTaxedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"totalProfit"}},{"kind":"Field","name":{"kind":"Name","value":"totalProfitPercentage"}}]}}]}}]} as unknown as DocumentNode<InvestmentEvolutionQuery, InvestmentEvolutionQueryVariables>;
 export const InvestmentAccountsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InvestmentAccounts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"regime"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Regime"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"investmentAccounts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"regime"},"value":{"kind":"Variable","name":{"kind":"Name","value":"regime"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLogoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"investmentCount"}}]}}]}}]} as unknown as DocumentNode<InvestmentAccountsQuery, InvestmentAccountsQueryVariables>;
+export const InvestmentChartDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InvestmentChartData"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"investmentId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"investmentChartData"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"investmentId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"investmentId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"theoreticalValue"}},{"kind":"Field","name":{"kind":"Name","value":"marketValue"}}]}}]}}]} as unknown as DocumentNode<InvestmentChartDataQuery, InvestmentChartDataQueryVariables>;
 export const CreateRecurringTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateRecurringTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateRecurringTransactionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createRecurringTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateRecurringTransactionMutation, CreateRecurringTransactionMutationVariables>;
 export const UpdateRecurringTransactionFromDateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateRecurringTransactionFromDate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"fromDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateRecurringTransactionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateRecurringTransactionFromDate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"fromDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"fromDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<UpdateRecurringTransactionFromDateMutation, UpdateRecurringTransactionFromDateMutationVariables>;
 export const PauseRecurringTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PauseRecurringTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pauseRecurringTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]}}]} as unknown as DocumentNode<PauseRecurringTransactionMutation, PauseRecurringTransactionMutationVariables>;

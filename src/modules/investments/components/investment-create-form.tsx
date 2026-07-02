@@ -1,3 +1,5 @@
+'use client';
+
 import { formFields, TsForm } from '@/components/ts-form';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,6 +21,7 @@ import {
   OrdenationInstitutionLinkModel,
   OrderDirection,
   Regime,
+  InvestmentType,
 } from '@/graphql/graphql';
 import {
   InvestmentRegimesQuery,
@@ -38,14 +41,20 @@ const schema = z.object({
   amount: formFields.currency.describe('Valor // '),
   duration: formFields.number.describe(
     'Duração em dias // Insira aqui a duração em dias',
-  ),
+  ).optional(),
   regimeName: formFields.select.describe('Regime // '),
   regimePercentage: formFields.number
     .describe('Percentual do regime // ')
     .min(0, 'Percentual deve ser entre 0 e 100')
-    .max(100, 'Percentual deve ser entre 0 e 100'),
+    .max(100, 'Percentual deve ser entre 0 e 100')
+    .optional(),
   startDate: formFields.date.describe('Data de início // '),
   institutionLink: formFields.select.describe('Conexão * // Insira a conexão'),
+  
+  fixedRate: formFields.number.describe('Taxa Fixa Anual (%) // ').optional(),
+  maturityDate: formFields.date.describe('Data de Vencimento // ').optional(),
+  hasBrokerageFee: z.boolean().default(false).describe('Cobrança de Taxa da Corretora? // '),
+  brokerageFee: formFields.number.describe('Taxa da Corretora ao Ano (%) // ').optional(),
 });
 
 export function InvestmentCreateForm({
@@ -74,6 +83,13 @@ export function InvestmentCreateForm({
     control: form.control,
     name: 'regimeName',
   });
+
+  const hasBrokerageFee = useWatch({
+    control: form.control,
+    name: 'hasBrokerageFee',
+  });
+
+  const isTreasury = selectedRegime?.value === Regime.Selic || selectedRegime?.value === Regime.Ipca || selectedRegime?.value === Regime.Prefixed;
 
   const investmentRegimeOptions = Object.values(Regime).map((regime) => ({
     value: regime,
@@ -204,6 +220,12 @@ export function InvestmentCreateForm({
                   regimePercentage: data.regimePercentage,
                   startDate: data.startDate,
                   institutionLinkId: data.institutionLink.value,
+                  fixedRate: data.fixedRate,
+                  brokerageFee: data.hasBrokerageFee ? data.brokerageFee : 0,
+                  maturityDate: data.maturityDate,
+                  type: [Regime.Ipca, Regime.Prefixed, Regime.Selic].includes(data.regimeName?.value as Regime) 
+                    ? InvestmentType.Treasury 
+                    : InvestmentType.FixedIncome
                 },
               },
               refetchQueries: [InvestmentsQuery, InvestmentRegimesQuery],
@@ -235,14 +257,22 @@ export function InvestmentCreateForm({
             regimePercentage,
             startDate,
             institutionLink,
+            fixedRate,
+            maturityDate,
+            hasBrokerageFee,
+            brokerageFee,
           }) => (
             <>
               {regimeName}
               {institutionLink}
               {amount}
-              {selectedRegime?.value !== Regime.Poupanca && duration}
-              {selectedRegime?.value !== Regime.Poupanca && regimePercentage}
               {startDate}
+              {!isTreasury && selectedRegime?.value !== Regime.Poupanca && duration}
+              {!isTreasury && selectedRegime?.value !== Regime.Poupanca && regimePercentage}
+              {isTreasury && maturityDate}
+              {isTreasury && selectedRegime?.value !== Regime.Selic && fixedRate}
+              {isTreasury && hasBrokerageFee}
+              {isTreasury && hasBrokerageFee && brokerageFee}
             </>
           )}
         </TsForm>

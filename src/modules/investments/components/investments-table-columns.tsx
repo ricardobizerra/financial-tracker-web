@@ -33,13 +33,14 @@ export const investmentsTableColumns: ({
     ? []
     : ([
         {
-          accessorKey: 'taxPercentage',
-          title: 'Dedução IRPF',
+          id: 'taxes',
+          title: 'Impostos e Taxas',
           enableSorting: false,
+          cell: ({ row }) => formatCurrency(row.original.taxesAndFees?.totalTaxesAndFees || 0),
         },
         {
           accessorKey: 'taxedAmount',
-          title: 'Quantia c/ dedução IRPF',
+          title: 'Quantia Líquida',
           cell: ({ row }) => (
             <div className="flex items-center gap-2">
               {formatCurrency(row.getValue('taxedAmount'))}
@@ -82,7 +83,7 @@ export const investmentsTableColumns: ({
     id: 'actions',
     enableSorting: false,
     cell: ({ row }) => {
-      return <InvestmentActions id={row.original.id} />;
+      return <InvestmentActions investment={row.original} />;
     },
   },
 ];

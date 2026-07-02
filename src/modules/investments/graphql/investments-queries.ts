@@ -12,6 +12,16 @@ export const InvestmentFragment = graphql(`
     startDate
     duration
     status
+    type
+    fixedRate
+    maturityDate
+    taxesAndFees {
+      irpfAmount
+      iofAmount
+      b3CustodyFeeAmount
+      brokerageFeeAmount
+      totalTaxesAndFees
+    }
   }
 `);
 
@@ -115,6 +125,16 @@ export const InvestmentAccountsQuery = graphql(`
       name
       institutionLogoUrl
       investmentCount
+    }
+  }
+`);
+
+export const InvestmentChartDataQuery = graphql(`
+  query InvestmentChartData($investmentId: String!) {
+    investmentChartData(investmentId: $investmentId) {
+      date
+      theoreticalValue
+      marketValue
     }
   }
 `);

@@ -29,15 +29,24 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useState } from 'react';
 import { Slot } from '@radix-ui/react-slot';
+import { InvestmentDetailsDialog } from './investment-details-dialog';
+import { InvestmentFragmentFragment } from '@/graphql/graphql';
 
-export function InvestmentActions({ id }: { id: string }) {
+export function InvestmentActions({ investment }: { investment: InvestmentFragmentFragment }) {
   const [deleteInvestment, { loading }] = useMutation(DeleteInvestmentMutation);
 
   const [openAlertDialog, setOpenAlertDialog] = useState(false);
+  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
 
   return (
-    <AlertDialog open={openAlertDialog} onOpenChange={setOpenAlertDialog}>
-      <DropdownMenu>
+    <>
+      <InvestmentDetailsDialog
+        investment={investment}
+        open={openDetailsDialog}
+        onOpenChange={setOpenDetailsDialog}
+      />
+      <AlertDialog open={openAlertDialog} onOpenChange={setOpenAlertDialog}>
+        <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
             <span className="sr-only">Open menu</span>
@@ -46,10 +55,14 @@ export function InvestmentActions({ id }: { id: string }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Ações</DropdownMenuLabel>
+          <DropdownMenuItem onClick={() => setOpenDetailsDialog(true)}>
+            <MoreHorizontal className="mr-2 h-4 w-4" />
+            Detalhes / Marcação
+          </DropdownMenuItem>
           <AlertDialogTrigger asChild>
             <Slot onSelect={(e) => e.preventDefault()}>
               <DropdownMenuItem className="bg-destructive text-destructive-foreground focus:bg-destructive/90 focus:text-destructive-foreground">
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="mr-2 h-4 w-4" />
                 Excluir
               </DropdownMenuItem>
             </Slot>
@@ -73,7 +86,7 @@ export function InvestmentActions({ id }: { id: string }) {
                 onClick={() => {
                   deleteInvestment({
                     variables: {
-                      id,
+                      id: investment.id,
                     },
                     refetchQueries: [InvestmentsQuery, TotalInvestmentsQuery],
                     onCompleted: () => {
@@ -97,5 +110,6 @@ export function InvestmentActions({ id }: { id: string }) {
         </DropdownMenuContent>
       </DropdownMenu>
     </AlertDialog>
+    </>
   );
 }

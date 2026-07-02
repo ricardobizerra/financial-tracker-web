@@ -10,6 +10,10 @@ export const CreateInvestmentMutation = graphql(`
       regimeName
       regimePercentage
       institutionLinkId
+      type
+      fixedRate
+      brokerageFee
+      maturityDate
       createdAt
       updatedAt
     }
