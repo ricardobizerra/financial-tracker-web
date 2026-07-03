@@ -7,6 +7,8 @@ import { formatDate } from '@/lib/formatters/date';
 import { InvestmentActions } from './investment-actions';
 import { InvestmentStatusBadge } from './investment-status-badge';
 
+import { InvestmentTaxesDetail } from './investment-taxes-detail';
+
 export const investmentsTableColumns: ({
   isPoupanca,
 }: {
@@ -36,7 +38,11 @@ export const investmentsTableColumns: ({
           id: 'taxes',
           title: 'Impostos e Taxas',
           enableSorting: false,
-          cell: ({ row }) => formatCurrency(row.original.taxesAndFees?.totalTaxesAndFees || 0),
+          cell: ({ row }) => {
+            const investment = row.original;
+            if (!investment.taxesAndFees) return formatCurrency(0);
+            return <InvestmentTaxesDetail investment={investment} />;
+          },
         },
         {
           accessorKey: 'taxedAmount',

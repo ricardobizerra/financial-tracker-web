@@ -124,36 +124,16 @@ export function InvestmentDetailsDialog({
           </div>
 
           <div className="grid grid-cols-2 gap-4 rounded-lg border p-4 sm:grid-cols-4">
-            <div className="flex flex-col gap-1">
-              <span className="text-xs text-muted-foreground">IOF</span>
-              <span className="text-sm font-medium text-destructive">
-                -{formatCurrency(investment.taxesAndFees?.iofAmount || 0)}
-              </span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-xs text-muted-foreground">IRPF</span>
-              <span className="text-sm font-medium text-destructive">
-                -{formatCurrency(investment.taxesAndFees?.irpfAmount || 0)}
-              </span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-xs text-muted-foreground">Taxa B3</span>
-              <span className="text-sm font-medium text-destructive">
-                -
-                {formatCurrency(
-                  investment.taxesAndFees?.b3CustodyFeeAmount || 0,
-                )}
-              </span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-xs text-muted-foreground">Corretagem</span>
-              <span className="text-sm font-medium text-destructive">
-                -
-                {formatCurrency(
-                  investment.taxesAndFees?.brokerageFeeAmount || 0,
-                )}
-              </span>
-            </div>
+            {investment.taxesAndFees?.details.map((tax, index) => (
+              <div key={index} className="flex flex-col gap-1">
+                <span className="text-xs text-muted-foreground">
+                  {tax.label}
+                </span>
+                <span className="text-sm font-medium text-destructive">
+                  -{formatCurrency(tax.amount)}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </DialogContent>

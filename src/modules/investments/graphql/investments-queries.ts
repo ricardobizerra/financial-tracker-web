@@ -20,10 +20,11 @@ export const InvestmentFragment = graphql(`
     brokerageFee
     institutionLinkId
     taxesAndFees {
-      irpfAmount
-      iofAmount
-      b3CustodyFeeAmount
-      brokerageFeeAmount
+      details {
+        label
+        amount
+        reason
+      }
       totalTaxesAndFees
     }
   }
