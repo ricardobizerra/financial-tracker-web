@@ -15,6 +15,7 @@ import { InstitutionLogo } from '@/modules/accounts/components/institution-logo'
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { InstitutionLinksQuery } from '@/modules/institution-link/graphql/institution-links-queries';
+import { AvailableTreasuryBondsQuery } from '../graphql/investments-queries';
 
 export const InvestmentFormSchema = z.object({
   amount: formFields.currency.describe('Valor // '),
@@ -31,7 +32,9 @@ export const InvestmentFormSchema = z.object({
   institutionLink: formFields.select.describe('Conexão * // Insira a conexão'),
 
   fixedRate: formFields.number.describe('Taxa Fixa Anual (%) // ').optional(),
-  maturityDate: formFields.date.describe('Data de Vencimento // ').optional(),
+  maturityDate: formFields.select
+    .describe('Data de Vencimento // Selecione o vencimento')
+    .optional(),
   hasBrokerageFee: z
     .boolean()
     .default(false)
@@ -113,6 +116,24 @@ export function InvestmentForm({
   const institutionLinksPageInfo =
     institutionLinksQueryOptions.data?.institutionLinks.pageInfo;
 
+  const { data: treasuryBondsData } = useQuery(AvailableTreasuryBondsQuery, {
+    variables: {
+      regime: selectedRegime?.value as Regime,
+    },
+    skip: !isTreasury || !selectedRegime,
+  });
+
+  const treasuryBondsOptions =
+    treasuryBondsData?.availableTreasuryBonds.map((dateStr) => {
+      const year = dateStr.split('/')[2];
+      const prefix = selectedRegime?.label || 'Tesouro';
+      return {
+        value: dateStr,
+        label: `${prefix} ${year} (${dateStr})`,
+        dateStr,
+      };
+    }) || [];
+
   const paginate = useCallback(() => {
     institutionLinksQueryOptions.fetchMore({
       variables: {
@@ -176,6 +197,20 @@ export function InvestmentForm({
           description: !selectedRegime?.value
             ? 'Selecione o regime de investimento para visualizar as contas disponíveis'
             : undefined,
+        },
+        maturityDate: {
+          options: treasuryBondsOptions,
+          renderLabel: (option) => {
+            const labelMain = option.label.split(' (')[0];
+            return (
+              <span className="px-2 py-1.5">
+                {labelMain}{' '}
+                <span className="text-muted-foreground">
+                  ({option.dateStr})
+                </span>
+              </span>
+            );
+          },
         },
       }}
     >

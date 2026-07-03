@@ -137,7 +137,7 @@ export function InvestmentDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl border-muted/50 bg-background/95 backdrop-blur-xl">
+      <DialogContent className="max-w-5xl border-muted/50 bg-background/95 backdrop-blur-xl">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold tracking-tight">
             Detalhes do Investimento
@@ -148,19 +148,188 @@ export function InvestmentDetailsDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-6 py-4">
-          <div className="h-72 w-full rounded-xl border border-muted/40 bg-gradient-to-b from-muted/10 to-transparent p-4">
+        <div className="grid grid-cols-1 gap-6 py-4 lg:grid-cols-[1fr_1.5fr]">
+          <div className="flex flex-col gap-6">
+            {/* Top Row: Financials */}
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">
+                Resumo Financeiro
+              </span>
+              <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-muted/50 bg-muted/50">
+                <div className="flex flex-col gap-1 bg-background/50 p-3">
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    Valor Investido
+                  </span>
+                  <span className="text-sm font-semibold">
+                    {formatCurrency(investment.amount)}
+                  </span>
+                </div>
+                <div className="flex flex-col items-start gap-1 bg-background/50 p-3">
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    Valor Bruto
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold">
+                      {formatCurrency(investment.correctedAmount)}
+                    </span>
+                    <VariationBadge
+                      variation={investment.currentVariation}
+                      size="xs"
+                    />
+                  </div>
+                </div>
+                <div className="col-span-2 flex flex-col items-start gap-1 bg-background/50 p-3">
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    Valor Líquido
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold">
+                      {formatCurrency(investment.taxedAmount)}
+                    </span>
+                    <VariationBadge
+                      variation={investment.taxedVariation}
+                      size="xs"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Middle Row: Characteristics */}
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">
+                Características
+              </span>
+              <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-muted/50 bg-muted/50">
+                <div className="col-span-2 flex flex-col justify-start gap-2 bg-background/50 p-3">
+                  <div>
+                    <span className="mb-1 block text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                      Regime
+                    </span>
+                    <span className="text-sm font-medium">
+                      {investment.regimePercentage &&
+                      investment.regimeName === 'CDI'
+                        ? `${investment.regimePercentage}% do `
+                        : ''}
+                      {investment.regimeName}
+                      {investment.fixedRate && investment.type !== 'TREASURY'
+                        ? ` + ${formatPercentage(investment.fixedRate)}`
+                        : ''}
+                    </span>
+                  </div>
+                  {investment.type === 'TREASURY' && (
+                    <div className="mt-1 flex flex-col gap-1 rounded bg-background/50 p-2 text-xs">
+                      <div className="flex justify-between gap-4">
+                        <span className="text-muted-foreground">Sua Taxa:</span>
+                        <span className="text-right font-medium">
+                          {investment.regimeName === 'PREFIXED'
+                            ? investment.fixedRate
+                              ? formatPercentage(investment.fixedRate)
+                              : ''
+                            : `${investment.regimeName}${
+                                investment.fixedRate
+                                  ? ` + ${formatPercentage(
+                                      investment.fixedRate,
+                                    )}`
+                                  : ''
+                              }`}
+                        </span>
+                      </div>
+                      {investment.currentMarketRate !== null &&
+                        investment.currentMarketRate !== undefined && (
+                          <div className="flex justify-between gap-4">
+                            <span className="text-muted-foreground">
+                              Mercado:
+                            </span>
+                            <span className="text-right font-medium">
+                              {investment.regimeName === 'PREFIXED'
+                                ? formatPercentage(investment.currentMarketRate)
+                                : `${
+                                    investment.regimeName
+                                  } + ${formatPercentage(
+                                    investment.currentMarketRate,
+                                  )}`}
+                            </span>
+                          </div>
+                        )}
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col justify-start gap-1 bg-background/50 p-3">
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    Início
+                  </span>
+                  <span className="text-sm font-medium">
+                    {formatDate(new Date(investment.startDate))}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1 bg-background/50 p-3">
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    Vencimento
+                  </span>
+                  <span className="text-sm font-medium">
+                    {investment.maturityDate
+                      ? formatDate(new Date(investment.maturityDate))
+                      : 'Não possui'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Row: Taxes & Fees */}
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">
+                Taxas e Impostos
+              </span>
+              <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-muted/50 bg-muted/50">
+                {investment.taxesAndFees?.details.map((tax, index) => (
+                  <div
+                    key={index}
+                    className={`flex flex-col gap-1 bg-background/50 p-3`}
+                  >
+                    <div className="flex items-center gap-1">
+                      <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                        {tax.label}
+                      </span>
+                      {tax.reason && (
+                        <HoverCard>
+                          <HoverCardTrigger>
+                            <HelpCircle className="h-3.5 w-3.5 cursor-pointer text-muted-foreground transition-colors hover:text-foreground" />
+                          </HoverCardTrigger>
+                          <HoverCardContent
+                            className="w-64 bg-background/95 text-sm backdrop-blur-sm"
+                            side="top"
+                          >
+                            {tax.reason}
+                          </HoverCardContent>
+                        </HoverCard>
+                      )}
+                    </div>
+                    <span className="text-sm font-medium text-rose-500/90">
+                      -{formatCurrency(tax.amount)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex min-h-[350px] w-full flex-col rounded-xl border border-muted/40 bg-gradient-to-b from-muted/10 to-transparent p-4">
             {loading ? (
-              <div className="flex h-full items-center justify-center">
+              <div className="flex h-full flex-1 items-center justify-center">
                 <span className="animate-pulse text-sm text-muted-foreground">
                   Carregando gráfico...
                 </span>
               </div>
             ) : chartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer
+                width="100%"
+                height="100%"
+                className="flex-1"
+              >
                 <AreaChart
                   data={chartData}
-                  margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
+                  margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                 >
                   <defs>
                     <linearGradient
@@ -198,7 +367,7 @@ export function InvestmentDetailsDialog({
                     tick={{ fontSize: 11, fill: 'currentColor' }}
                     axisLine={false}
                     tickLine={false}
-                    width={90}
+                    width={100}
                     className="text-muted-foreground"
                   />
                   <Tooltip content={<CustomTooltip />} />
@@ -229,138 +398,12 @@ export function InvestmentDetailsDialog({
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex h-full items-center justify-center">
+              <div className="flex h-full flex-1 items-center justify-center">
                 <span className="text-sm text-muted-foreground">
                   Nenhum dado disponível.
                 </span>
               </div>
             )}
-          </div>
-
-          <div className="flex flex-col gap-6">
-            {/* Top Row: Financials */}
-            <div className="flex flex-col gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">
-                Resumo Financeiro
-              </span>
-              <div className="grid grid-cols-3 rounded-lg border border-muted/50 bg-muted/20">
-                <div className="flex flex-col gap-1 p-4">
-                  <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                    Valor Investido
-                  </span>
-                  <span className="text-sm font-semibold">
-                    {formatCurrency(investment.amount)}
-                  </span>
-                </div>
-                <div className="flex flex-col items-start gap-1 border-l border-muted/50 p-4">
-                  <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                    Valor Bruto
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold">
-                      {formatCurrency(investment.correctedAmount)}
-                    </span>
-                    <VariationBadge
-                      variation={investment.currentVariation}
-                      size="xs"
-                    />
-                  </div>
-                </div>
-                <div className="flex flex-col items-start gap-1 border-l border-muted/50 p-4">
-                  <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                    Valor Líquido
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold">
-                      {formatCurrency(investment.taxedAmount)}
-                    </span>
-                    <VariationBadge
-                      variation={investment.taxedVariation}
-                      size="xs"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Middle Row: Characteristics */}
-            <div className="flex flex-col gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">
-                Características
-              </span>
-              <div className="grid grid-cols-3 rounded-lg border border-muted/50 bg-muted/20">
-                <div className="flex flex-col gap-1 p-4">
-                  <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                    Regime
-                  </span>
-                  <span className="text-sm font-medium">
-                    {investment.regimePercentage &&
-                    investment.regimeName === 'CDI'
-                      ? `${investment.regimePercentage}% do `
-                      : ''}
-                    {investment.regimeName}
-                    {investment.fixedRate
-                      ? ` + ${formatPercentage(investment.fixedRate)}`
-                      : ''}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-1 border-l border-muted/50 p-4">
-                  <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                    Início
-                  </span>
-                  <span className="text-sm font-medium">
-                    {formatDate(new Date(investment.startDate))}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-1 border-l border-muted/50 p-4">
-                  <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                    Vencimento
-                  </span>
-                  <span className="text-sm font-medium">
-                    {investment.maturityDate
-                      ? formatDate(new Date(investment.maturityDate))
-                      : 'Não possui'}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom Row: Taxes & Fees */}
-            <div className="flex flex-col gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">
-                Taxas e Impostos
-              </span>
-              <div className="grid grid-cols-3 rounded-lg border border-muted/50 bg-muted/20">
-                {investment.taxesAndFees?.details.map((tax, index) => (
-                  <div
-                    key={index}
-                    className={`flex flex-col gap-1 p-4 ${index % 3 !== 0 ? 'border-l border-muted/50' : ''} ${index > 2 ? 'border-t border-muted/50' : ''}`}
-                  >
-                    <div className="flex items-center gap-1">
-                      <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                        {tax.label}
-                      </span>
-                      {tax.reason && (
-                        <HoverCard>
-                          <HoverCardTrigger>
-                            <HelpCircle className="h-3.5 w-3.5 cursor-pointer text-muted-foreground transition-colors hover:text-foreground" />
-                          </HoverCardTrigger>
-                          <HoverCardContent
-                            className="w-64 bg-background/95 text-sm backdrop-blur-sm"
-                            side="top"
-                          >
-                            {tax.reason}
-                          </HoverCardContent>
-                        </HoverCard>
-                      )}
-                    </div>
-                    <span className="text-sm font-medium text-rose-500/90">
-                      -{formatCurrency(tax.amount)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </DialogContent>

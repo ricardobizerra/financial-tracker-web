@@ -14,6 +14,7 @@ export const InvestmentFragment = graphql(`
     status
     type
     fixedRate
+    currentMarketRate
     maturityDate
     regimeName
     regimePercentage
@@ -65,6 +66,12 @@ export const InvestmentsQuery = graphql(`
         ...PageInfoFragment
       }
     }
+  }
+`);
+
+export const AvailableTreasuryBondsQuery = graphql(`
+  query AvailableTreasuryBonds($regime: Regime!) {
+    availableTreasuryBonds(regime: $regime)
   }
 `);
 
