@@ -9,7 +9,10 @@ import {
 } from '@/components/ui/dialog';
 import { useQuery } from '@apollo/client';
 import { InvestmentChartDataQuery } from '../graphql/investments-queries';
-import { InvestmentFragmentFragment } from '@/graphql/graphql';
+import {
+  InvestmentFragmentFragment,
+  SellFeasibilityStatus,
+} from '@/graphql/graphql';
 import {
   Area,
   AreaChart,
@@ -17,9 +20,18 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  Legend,
 } from 'recharts';
 import { formatCurrency } from '@/lib/formatters/currency';
 import { formatDate } from '@/lib/formatters/date';
+import { formatPercentage } from '@/lib/formatters/percentage';
+import { HelpCircle } from 'lucide-react';
+import { VariationBadge } from '@/components/variation-badge';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@/components/ui/hover-card';
 
 export function InvestmentDetailsDialog({
   investment,
@@ -42,21 +54,105 @@ export function InvestmentDetailsDialog({
       formattedDate: formatDate(new Date(d.date)),
     })) || [];
 
+  const hasMarketValue = chartData.some(
+    (d) => d.marketValue !== null && d.marketValue !== undefined,
+  );
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const theoreticalVal = payload.find(
+        (p: any) => p.dataKey === 'theoreticalValue',
+      )?.value;
+      const marketVal = payload.find(
+        (p: any) => p.dataKey === 'marketValue',
+      )?.value;
+
+      return (
+        <div className="w-[260px] rounded-lg border bg-background/80 p-3 shadow-lg backdrop-blur-md">
+          <div className="mb-2 border-b pb-2 text-sm font-medium text-foreground">
+            {label}
+          </div>
+          <div className="flex flex-col gap-2">
+            {theoreticalVal !== undefined && (
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-emerald-500" />
+                  <span className="text-xs text-muted-foreground">Curva:</span>
+                </div>
+                <span className="text-sm font-semibold">
+                  {formatCurrency(theoreticalVal)}
+                </span>
+              </div>
+            )}
+            {hasMarketValue &&
+              marketVal !== undefined &&
+              marketVal !== null && (
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full bg-blue-500" />
+                    <span className="text-xs text-muted-foreground">
+                      Mercado:
+                    </span>
+                  </div>
+                  <span className="text-sm font-semibold">
+                    {formatCurrency(marketVal)}
+                  </span>
+                </div>
+              )}
+            {investment.sellFeasibility?.status &&
+              investment.sellFeasibility?.status !==
+                SellFeasibilityStatus.NotApplicable && (
+                <div className="mt-1 flex flex-col gap-1 rounded bg-muted/50 p-2">
+                  <span
+                    className={`text-xs font-medium ${
+                      investment.sellFeasibility?.status ===
+                      SellFeasibilityStatus.Favorable
+                        ? 'text-emerald-500'
+                        : investment.sellFeasibility?.status ===
+                            SellFeasibilityStatus.Unfavorable
+                          ? 'text-rose-500'
+                          : 'text-muted-foreground'
+                    }`}
+                  >
+                    Status:{' '}
+                    {investment.sellFeasibility?.status ===
+                    SellFeasibilityStatus.Favorable
+                      ? 'Favorável'
+                      : investment.sellFeasibility?.status ===
+                          SellFeasibilityStatus.Unfavorable
+                        ? 'Desfavorável'
+                        : 'Neutro'}
+                  </span>
+                  <span className="text-wrap break-words text-[10px] leading-tight text-muted-foreground">
+                    {investment.sellFeasibility?.message}
+                  </span>
+                </div>
+              )}
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-3xl border-muted/50 bg-background/95 backdrop-blur-xl">
         <DialogHeader>
-          <DialogTitle>Detalhes do Investimento</DialogTitle>
-          <DialogDescription>
-            Acompanhe a curva teórica do seu investimento (Marcação a Curva).
+          <DialogTitle className="text-2xl font-semibold tracking-tight">
+            Detalhes do Investimento
+          </DialogTitle>
+          <DialogDescription className="text-muted-foreground">
+            Acompanhe o desempenho, taxas e as principais características da
+            aplicação.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
-          <div className="h-64 w-full">
+        <div className="grid gap-6 py-4">
+          <div className="h-72 w-full rounded-xl border border-muted/40 bg-gradient-to-b from-muted/10 to-transparent p-4">
             {loading ? (
               <div className="flex h-full items-center justify-center">
-                <span className="text-sm text-muted-foreground">
+                <span className="animate-pulse text-sm text-muted-foreground">
                   Carregando gráfico...
                 </span>
               </div>
@@ -64,54 +160,72 @@ export function InvestmentDetailsDialog({
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                   data={chartData}
-                  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                  margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
                 >
                   <defs>
                     <linearGradient
-                      id="colorAmount"
+                      id="colorTheoretical"
                       x1="0"
                       y1="0"
                       x2="0"
                       y2="1"
                     >
-                      <stop offset="5%" stopColor="#22c55e" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient
+                      id="colorMarket"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis
                     dataKey="formattedDate"
-                    tick={{ fontSize: 12 }}
+                    tick={{ fontSize: 11, fill: 'currentColor' }}
                     tickFormatter={(value) => value.substring(0, 5)}
                     minTickGap={30}
+                    axisLine={false}
+                    tickLine={false}
+                    className="text-muted-foreground"
                   />
                   <YAxis
                     tickFormatter={(value) => formatCurrency(value)}
-                    tick={{ fontSize: 12 }}
-                    width={80}
+                    tick={{ fontSize: 11, fill: 'currentColor' }}
+                    axisLine={false}
+                    tickLine={false}
+                    width={90}
+                    className="text-muted-foreground"
                   />
-                  <Tooltip
-                    formatter={(value: number) => [
-                      formatCurrency(value),
-                      'Valor',
-                    ]}
-                    labelFormatter={(label) => `Data: ${label}`}
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend
+                    iconType="circle"
+                    wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
                   />
                   <Area
                     type="monotone"
                     dataKey="theoreticalValue"
                     name="Valor na Curva"
-                    stroke="#22c55e"
+                    stroke="#10b981"
+                    strokeWidth={2}
                     fillOpacity={1}
-                    fill="url(#colorAmount)"
+                    fill="url(#colorTheoretical)"
                   />
-                  <Area
-                    type="monotone"
-                    dataKey="marketValue"
-                    name="Valor de Mercado"
-                    stroke="#3b82f6"
-                    fillOpacity={0.5}
-                    fill="none"
-                  />
+                  {hasMarketValue && (
+                    <Area
+                      type="monotone"
+                      dataKey="marketValue"
+                      name="Valor de Mercado"
+                      stroke="#3b82f6"
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#colorMarket)"
+                    />
+                  )}
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
@@ -123,17 +237,130 @@ export function InvestmentDetailsDialog({
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4 rounded-lg border p-4 sm:grid-cols-4">
-            {investment.taxesAndFees?.details.map((tax, index) => (
-              <div key={index} className="flex flex-col gap-1">
-                <span className="text-xs text-muted-foreground">
-                  {tax.label}
-                </span>
-                <span className="text-sm font-medium text-destructive">
-                  -{formatCurrency(tax.amount)}
-                </span>
+          <div className="flex flex-col gap-6">
+            {/* Top Row: Financials */}
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">
+                Resumo Financeiro
+              </span>
+              <div className="grid grid-cols-3 rounded-lg border border-muted/50 bg-muted/20">
+                <div className="flex flex-col gap-1 p-4">
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    Valor Investido
+                  </span>
+                  <span className="text-sm font-semibold">
+                    {formatCurrency(investment.amount)}
+                  </span>
+                </div>
+                <div className="flex flex-col items-start gap-1 border-l border-muted/50 p-4">
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    Valor Bruto
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold">
+                      {formatCurrency(investment.correctedAmount)}
+                    </span>
+                    <VariationBadge
+                      variation={investment.currentVariation}
+                      size="xs"
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col items-start gap-1 border-l border-muted/50 p-4">
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    Valor Líquido
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold">
+                      {formatCurrency(investment.taxedAmount)}
+                    </span>
+                    <VariationBadge
+                      variation={investment.taxedVariation}
+                      size="xs"
+                    />
+                  </div>
+                </div>
               </div>
-            ))}
+            </div>
+
+            {/* Middle Row: Characteristics */}
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">
+                Características
+              </span>
+              <div className="grid grid-cols-3 rounded-lg border border-muted/50 bg-muted/20">
+                <div className="flex flex-col gap-1 p-4">
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    Regime
+                  </span>
+                  <span className="text-sm font-medium">
+                    {investment.regimePercentage &&
+                    investment.regimeName === 'CDI'
+                      ? `${investment.regimePercentage}% do `
+                      : ''}
+                    {investment.regimeName}
+                    {investment.fixedRate
+                      ? ` + ${formatPercentage(investment.fixedRate)}`
+                      : ''}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1 border-l border-muted/50 p-4">
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    Início
+                  </span>
+                  <span className="text-sm font-medium">
+                    {formatDate(new Date(investment.startDate))}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1 border-l border-muted/50 p-4">
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    Vencimento
+                  </span>
+                  <span className="text-sm font-medium">
+                    {investment.maturityDate
+                      ? formatDate(new Date(investment.maturityDate))
+                      : 'Não possui'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Row: Taxes & Fees */}
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">
+                Taxas e Impostos
+              </span>
+              <div className="grid grid-cols-3 rounded-lg border border-muted/50 bg-muted/20">
+                {investment.taxesAndFees?.details.map((tax, index) => (
+                  <div
+                    key={index}
+                    className={`flex flex-col gap-1 p-4 ${index % 3 !== 0 ? 'border-l border-muted/50' : ''} ${index > 2 ? 'border-t border-muted/50' : ''}`}
+                  >
+                    <div className="flex items-center gap-1">
+                      <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                        {tax.label}
+                      </span>
+                      {tax.reason && (
+                        <HoverCard>
+                          <HoverCardTrigger>
+                            <HelpCircle className="h-3.5 w-3.5 cursor-pointer text-muted-foreground transition-colors hover:text-foreground" />
+                          </HoverCardTrigger>
+                          <HoverCardContent
+                            className="w-64 bg-background/95 text-sm backdrop-blur-sm"
+                            side="top"
+                          >
+                            {tax.reason}
+                          </HoverCardContent>
+                        </HoverCard>
+                      )}
+                    </div>
+                    <span className="text-sm font-medium text-rose-500/90">
+                      -{formatCurrency(tax.amount)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </DialogContent>

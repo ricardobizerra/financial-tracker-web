@@ -8,12 +8,14 @@ interface VariationBadgeProps {
   variation: string;
   size?: BadgeProps['size'];
   showSign?: boolean;
+  className?: string;
 }
 
 export function VariationBadge({
   variation,
   size,
   showSign = false,
+  className,
 }: VariationBadgeProps) {
   const value = extractPercentage(variation);
 
@@ -23,7 +25,7 @@ export function VariationBadge({
   return (
     <Badge
       variant={isNegative ? 'destructive' : isZero ? 'outline' : 'success'}
-      className="font-medium"
+      className={`font-medium ${className || ''}`}
       size={size}
     >
       {isNegative ? (

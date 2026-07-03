@@ -27,6 +27,10 @@ export const InvestmentFragment = graphql(`
       }
       totalTaxesAndFees
     }
+    sellFeasibility {
+      status
+      message
+    }
   }
 `);
 
