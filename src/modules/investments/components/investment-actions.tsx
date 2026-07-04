@@ -29,10 +29,10 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useState } from 'react';
 import { Slot } from '@radix-ui/react-slot';
-import { InvestmentDetailsDialog } from './investment-details-dialog';
 import { InvestmentEditDialog } from './investment-edit-dialog';
 import { InvestmentFragmentFragment } from '@/graphql/graphql';
 import { Pencil } from 'lucide-react';
+import Link from 'next/link';
 
 export function InvestmentActions({
   investment,
@@ -42,16 +42,10 @@ export function InvestmentActions({
   const [deleteInvestment, { loading }] = useMutation(DeleteInvestmentMutation);
 
   const [openAlertDialog, setOpenAlertDialog] = useState(false);
-  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
 
   return (
     <>
-      <InvestmentDetailsDialog
-        investment={investment}
-        open={openDetailsDialog}
-        onOpenChange={setOpenDetailsDialog}
-      />
       <InvestmentEditDialog
         investment={investment}
         open={openEditDialog}
@@ -67,10 +61,12 @@ export function InvestmentActions({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => setOpenDetailsDialog(true)}>
-              <MoreHorizontal className="mr-2 h-4 w-4" />
-              Detalhes / Marcação
-            </DropdownMenuItem>
+            <Link href={`/investments/details/${investment.id}`}>
+              <DropdownMenuItem>
+                <MoreHorizontal className="mr-2 h-4 w-4" />
+                Detalhes / Marcação
+              </DropdownMenuItem>
+            </Link>
             <DropdownMenuItem onClick={() => setOpenEditDialog(true)}>
               <Pencil className="mr-2 h-4 w-4" />
               Editar

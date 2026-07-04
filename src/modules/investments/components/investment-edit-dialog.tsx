@@ -50,7 +50,10 @@ export function InvestmentEditDialog({
       : undefined,
     fixedRate: investment.fixedRate ?? undefined,
     maturityDate: investment.maturityDate
-      ? new Date(investment.maturityDate)
+      ? ({
+          value: new Date(investment.maturityDate).toLocaleDateString('pt-BR'),
+          label: new Date(investment.maturityDate).toLocaleDateString('pt-BR'),
+        } as any)
       : undefined,
     hasBrokerageFee: !!investment.brokerageFee,
     brokerageFee: investment.brokerageFee ?? undefined,
@@ -82,7 +85,15 @@ export function InvestmentEditDialog({
                   institutionLinkId: data.institutionLink.value,
                   fixedRate: data.fixedRate,
                   brokerageFee: data.hasBrokerageFee ? data.brokerageFee : 0,
-                  maturityDate: data.maturityDate,
+                  maturityDate:
+                    data.maturityDate && typeof data.maturityDate === 'object'
+                      ? new Date(
+                          (data.maturityDate as any).value
+                            .split('/')
+                            .reverse()
+                            .join('-') + 'T12:00:00Z',
+                        )
+                      : data.maturityDate,
                   type: [Regime.Ipca, Regime.Prefixed, Regime.Selic].includes(
                     data.regimeName?.value as Regime,
                   )

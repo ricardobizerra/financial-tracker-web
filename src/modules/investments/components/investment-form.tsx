@@ -200,7 +200,7 @@ export function InvestmentForm({
         },
         maturityDate: {
           options: treasuryBondsOptions,
-          renderLabel: (option) => {
+          renderLabel: (option: any) => {
             const labelMain = option.label.split(' (')[0];
             return (
               <span className="px-2 py-1.5">
@@ -211,7 +211,7 @@ export function InvestmentForm({
               </span>
             );
           },
-        },
+        } as any,
       }}
     >
       {({

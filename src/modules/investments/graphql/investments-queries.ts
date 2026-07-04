@@ -75,6 +75,14 @@ export const AvailableTreasuryBondsQuery = graphql(`
   }
 `);
 
+export const GetInvestmentQuery = graphql(`
+  query GetInvestment($id: String!) {
+    investment(id: $id) {
+      ...InvestmentFragment
+    }
+  }
+`);
+
 export const TotalInvestmentsQuery = graphql(`
   query TotalInvestments {
     totalInvestments {
