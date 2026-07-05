@@ -21,12 +21,7 @@ export function InvestmentsCards() {
       value: formatCurrency(data?.totalInvestments.initialAmount || 0),
     },
     {
-      title: 'Total atual',
-      value: formatCurrency(data?.totalInvestments.currentAmount || 0),
-      variation: data?.totalInvestments.currentVariation,
-    },
-    {
-      title: 'Total c/ dedução IRPF',
+      title: 'Saldo Líquido (c/ IRPF)',
       value: formatCurrency(data?.totalInvestments.taxedAmount || 0),
       variation: data?.totalInvestments.taxedVariation,
     },
@@ -38,28 +33,41 @@ export function InvestmentsCards() {
   ];
 
   return (
-    <div className="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-3">
       {loading ? (
         <>
-          <Skeleton className="h-32" />
           <Skeleton className="h-32" />
           <Skeleton className="h-32" />
           <Skeleton className="h-32" />
         </>
       ) : (
         cards.map((card) => {
-          const isNegative = card.isRealYield && (card.value as string)?.startsWith('-');
+          const isNegative =
+            card.isRealYield && (card.value as string)?.startsWith('-');
+          const isPositive =
+            card.isRealYield && (card.value as string)?.startsWith('+');
+
+          let cardClasses = '';
+          let textClasses = '';
+
+          if (isNegative) {
+            cardClasses = 'border-destructive/50 bg-destructive/5';
+            textClasses = 'text-destructive';
+          } else if (isPositive) {
+            cardClasses = 'border-emerald-500/30 bg-emerald-500/5';
+            textClasses = 'text-emerald-500';
+          }
+
           return (
-            <Card 
-              key={card.title} 
-              className={isNegative ? 'border-destructive/50 bg-destructive/5' : ''}
-            >
-              <CardHeader className="relative">
-                <CardDescription className={isNegative ? 'text-destructive' : ''}>
+            <Card key={card.title} className={cardClasses}>
+              <CardHeader className="relative h-full justify-center">
+                <CardDescription className={textClasses}>
                   {card.title}
                 </CardDescription>
 
-                <CardTitle className={`text-2xl font-semibold min-[250px]:text-3xl ${isNegative ? 'text-destructive' : ''}`}>
+                <CardTitle
+                  className={`text-2xl font-semibold min-[250px]:text-3xl ${textClasses}`}
+                >
                   {card.value}
                 </CardTitle>
 
