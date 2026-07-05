@@ -91,6 +91,7 @@ export const TotalInvestmentsQuery = graphql(`
       currentVariation
       taxedAmount
       taxedVariation
+      realVariation
     }
   }
 `);

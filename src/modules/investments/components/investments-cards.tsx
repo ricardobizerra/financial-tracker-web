@@ -18,46 +18,60 @@ export function InvestmentsCards() {
   const cards = [
     {
       title: 'Total investido',
-      value: data?.totalInvestments.initialAmount,
+      value: formatCurrency(data?.totalInvestments.initialAmount || 0),
     },
     {
       title: 'Total atual',
-      value: data?.totalInvestments.currentAmount,
+      value: formatCurrency(data?.totalInvestments.currentAmount || 0),
       variation: data?.totalInvestments.currentVariation,
     },
     {
       title: 'Total c/ dedução IRPF',
-      value: data?.totalInvestments.taxedAmount,
+      value: formatCurrency(data?.totalInvestments.taxedAmount || 0),
       variation: data?.totalInvestments.taxedVariation,
+    },
+    {
+      title: 'Rentabilidade Real (vs IPCA)',
+      value: data?.totalInvestments.realVariation || '0,00%',
+      isRealYield: true,
     },
   ];
 
   return (
-    <div className="grid w-full grid-cols-3 gap-4">
+    <div className="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {loading ? (
         <>
           <Skeleton className="h-32" />
           <Skeleton className="h-32" />
           <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
         </>
       ) : (
-        cards.map((card) => (
-          <Card key={card.title}>
-            <CardHeader className="relative">
-              <CardDescription>{card.title}</CardDescription>
+        cards.map((card) => {
+          const isNegative = card.isRealYield && (card.value as string)?.startsWith('-');
+          return (
+            <Card 
+              key={card.title} 
+              className={isNegative ? 'border-destructive/50 bg-destructive/5' : ''}
+            >
+              <CardHeader className="relative">
+                <CardDescription className={isNegative ? 'text-destructive' : ''}>
+                  {card.title}
+                </CardDescription>
 
-              <CardTitle className="text-2xl font-semibold min-[250px]:text-3xl">
-                {formatCurrency(card.value!)}
-              </CardTitle>
+                <CardTitle className={`text-2xl font-semibold min-[250px]:text-3xl ${isNegative ? 'text-destructive' : ''}`}>
+                  {card.value}
+                </CardTitle>
 
-              {card.variation && (
-                <div className="absolute right-4 top-4">
-                  <VariationBadge variation={card.variation} size="lg" />
-                </div>
-              )}
-            </CardHeader>
-          </Card>
-        ))
+                {card.variation && (
+                  <div className="absolute right-4 top-4">
+                    <VariationBadge variation={card.variation} size="lg" />
+                  </div>
+                )}
+              </CardHeader>
+            </Card>
+          );
+        })
       )}
     </div>
   );
