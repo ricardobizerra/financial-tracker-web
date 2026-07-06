@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { DataTable } from '@/components/data-table';
 import {
   OrdenationInvestmentModel,
@@ -8,51 +7,44 @@ import {
   Regime,
 } from '@/graphql/graphql';
 import { InvestmentsQuery } from '../graphql/investments-queries';
-import { InvestmentCreateForm } from './investment-create-form';
 import { investmentsTableColumns } from './investments-table-columns';
-import { InvestmentsFilters, InvestmentFilters } from './investments-filters';
+
+import { Row } from '@tanstack/react-table';
+import { InvestmentFragmentFragment } from '@/graphql/graphql';
 
 interface InvestmentsTableProps {
   regime: Regime;
   institutionLinkIds?: string[];
   showFilters?: boolean;
+  onRowClick?: (row: Row<InvestmentFragmentFragment>) => void;
+  renderSubComponent?: (props: { row: Row<InvestmentFragmentFragment> }) => React.ReactNode;
 }
 
 export function InvestmentsTable({
   regime,
-  institutionLinkIds: initialInstitutionLinkIds,
-  showFilters = true,
+  institutionLinkIds,
+  onRowClick,
+  renderSubComponent,
 }: InvestmentsTableProps) {
-  const [filters, setFilters] = useState<InvestmentFilters>({
-    institutionLinkIds: initialInstitutionLinkIds,
-  });
-
   return (
     <div className="space-y-4">
-      {showFilters && (
-        <InvestmentsFilters
-          filters={filters}
-          onFiltersChange={setFilters}
-          regime={regime}
-        />
-      )}
-
       <DataTable
         mode="query"
         query={InvestmentsQuery}
         variables={{
           regime: regime,
-          institutionLinkIds: filters.institutionLinkIds,
+          institutionLinkIds: institutionLinkIds,
         }}
         initialSorting={{
-          key: OrdenationInvestmentModel.CorrectedAmount,
+          key: OrdenationInvestmentModel.StartDate,
           direction: OrderDirection.Desc,
         }}
         columns={investmentsTableColumns({
           isPoupanca: regime === Regime.Poupanca,
         })}
         initialPageSize={50}
-        actionButtons={<InvestmentCreateForm defaultRegime={regime} />}
+        onRowClick={onRowClick}
+        renderSubComponent={renderSubComponent}
       />
     </div>
   );

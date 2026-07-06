@@ -17,17 +17,18 @@ export const investmentsTableColumns: ({
   isPoupanca = false,
 }) => [
   {
-    accessorKey: 'amount',
-    title: 'Quantia inicial',
-    cell: ({ row }) => formatCurrency(row.getValue('amount')),
-  },
-  {
-    accessorKey: 'correctedAmount',
-    title: 'Quantia atual',
+    id: 'patrimonio',
+    title: 'Patrimônio',
+    enableSorting: false, // Could map to correctedAmount if we had a generic way
     cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        {formatCurrency(row.getValue('correctedAmount'))}
-        <VariationBadge variation={row.original.currentVariation} size="sm" />
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2 font-medium">
+          {formatCurrency(row.original.correctedAmount || 0)}
+          <VariationBadge variation={row.original.currentVariation || '0'} size="sm" />
+        </div>
+        <div className="text-xs text-muted-foreground">
+          Investido: {formatCurrency(row.original.amount || 0)}
+        </div>
       </div>
     ),
   },
@@ -35,50 +36,39 @@ export const investmentsTableColumns: ({
     ? []
     : ([
         {
-          id: 'taxes',
-          title: 'Impostos e Taxas',
+          id: 'liquido',
+          title: 'Líquido',
           enableSorting: false,
-          cell: ({ row }) => {
-            const investment = row.original;
-            if (!investment.taxesAndFees) return formatCurrency(0);
-            return <InvestmentTaxesDetail investment={investment} />;
-          },
-        },
-        {
-          accessorKey: 'taxedAmount',
-          title: 'Quantia Líquida',
           cell: ({ row }) => (
-            <div className="flex items-center gap-2">
-              {formatCurrency(row.getValue('taxedAmount'))}
-              <VariationBadge
-                variation={row.original.taxedVariation}
-                size="sm"
-              />
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2 font-medium">
+                {formatCurrency(row.original.taxedAmount || 0)}
+                <VariationBadge
+                  variation={row.original.taxedVariation || '0'}
+                  size="sm"
+                />
+              </div>
+              <div className="text-xs text-muted-foreground flex items-center">
+                Descontos: <InvestmentTaxesDetail investment={row.original} />
+              </div>
             </div>
           ),
         },
       ] as InitialColumnDef<InvestmentFragmentFragment>[])),
   {
     accessorKey: 'startDate',
-    title: isPoupanca ? 'Data de abertura' : 'Período',
-    cell: ({ row }) =>
-      isPoupanca
-        ? formatDate(row.original.startDate)
-        : formatDate(row.original.startDate) +
-          ' - ' +
-          formatDate(
-            add(row.original.startDate, { days: row.original.duration || 0 }),
-          ),
+    title: isPoupanca ? 'Data de abertura' : 'Datas',
+    cell: ({ row }) => (
+      <div className="flex flex-col gap-1">
+        <div className="font-medium">{formatDate(row.original.startDate)}</div>
+        {!isPoupanca && (
+          <div className="text-xs text-muted-foreground">
+            {row.original.duration ? `+ ${row.original.duration} dias` : '-'}
+          </div>
+        )}
+      </div>
+    ),
   },
-  ...(isPoupanca
-    ? []
-    : ([
-        {
-          accessorKey: 'duration',
-          title: 'Duração',
-          subtitle: 'em dias',
-        },
-      ] as InitialColumnDef<InvestmentFragmentFragment>[])),
   {
     accessorKey: 'status',
     title: 'Status',

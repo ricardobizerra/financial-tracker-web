@@ -36,13 +36,69 @@ import Link from 'next/link';
 
 export function InvestmentActions({
   investment,
+  mode = 'dropdown',
 }: {
   investment: InvestmentFragmentFragment;
+  mode?: 'dropdown' | 'inline';
 }) {
   const [deleteInvestment, { loading }] = useMutation(DeleteInvestmentMutation);
 
   const [openAlertDialog, setOpenAlertDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
+
+  const renderContent = () => {
+    if (mode === 'inline') {
+      return (
+        <div className="flex items-center gap-1">
+          <Link href={`/investments/details/${investment.id}`}>
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" title="Detalhes / Marcação">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </Link>
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" title="Editar" onClick={() => setOpenEditDialog(true)}>
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <AlertDialogTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive" title="Excluir">
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </AlertDialogTrigger>
+        </div>
+      );
+    }
+
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Ações</DropdownMenuLabel>
+          <Link href={`/investments/details/${investment.id}`}>
+            <DropdownMenuItem>
+              <MoreHorizontal className="mr-2 h-4 w-4" />
+              Detalhes / Marcação
+            </DropdownMenuItem>
+          </Link>
+          <DropdownMenuItem onClick={() => setOpenEditDialog(true)}>
+            <Pencil className="mr-2 h-4 w-4" />
+            Editar
+          </DropdownMenuItem>
+          <AlertDialogTrigger asChild>
+            <Slot onSelect={(e) => e.preventDefault()}>
+              <DropdownMenuItem className="bg-destructive text-destructive-foreground focus:bg-destructive/90 focus:text-destructive-foreground">
+                <Trash2 className="mr-2 h-4 w-4" />
+                Excluir
+              </DropdownMenuItem>
+            </Slot>
+          </AlertDialogTrigger>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  };
 
   return (
     <>
@@ -52,44 +108,18 @@ export function InvestmentActions({
         onOpenChange={setOpenEditDialog}
       />
       <AlertDialog open={openAlertDialog} onOpenChange={setOpenAlertDialog}>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Ações</DropdownMenuLabel>
-            <Link href={`/investments/details/${investment.id}`}>
-              <DropdownMenuItem>
-                <MoreHorizontal className="mr-2 h-4 w-4" />
-                Detalhes / Marcação
-              </DropdownMenuItem>
-            </Link>
-            <DropdownMenuItem onClick={() => setOpenEditDialog(true)}>
-              <Pencil className="mr-2 h-4 w-4" />
-              Editar
-            </DropdownMenuItem>
-            <AlertDialogTrigger asChild>
-              <Slot onSelect={(e) => e.preventDefault()}>
-                <DropdownMenuItem className="bg-destructive text-destructive-foreground focus:bg-destructive/90 focus:text-destructive-foreground">
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Excluir
-                </DropdownMenuItem>
-              </Slot>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Excluir investimento?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  <span className="font-medium">
-                    Esta ação não pode ser desfeita.
-                  </span>{' '}
-                  Esta ação irá remover permanentemente as informações do
-                  investimento.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
+        {renderContent()}
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir investimento?</AlertDialogTitle>
+            <AlertDialogDescription>
+              <span className="font-medium">
+                Esta ação não pode ser desfeita.
+              </span>{' '}
+              Esta ação irá remover permanentemente as informações do
+              investimento.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel disabled={loading}>
                   Cancelar
@@ -121,8 +151,6 @@ export function InvestmentActions({
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </AlertDialog>
     </>
   );

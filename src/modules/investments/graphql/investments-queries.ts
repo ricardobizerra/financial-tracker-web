@@ -44,6 +44,7 @@ export const InvestmentsQuery = graphql(`
     $last: Int
     $before: String
     $regime: Regime
+    $status: InvestmentStatus
     $institutionLinkIds: [ID!]
   ) {
     investments(
@@ -54,6 +55,7 @@ export const InvestmentsQuery = graphql(`
       last: $last
       before: $before
       regime: $regime
+      status: $status
       institutionLinkIds: $institutionLinkIds
     ) {
       edges {
@@ -125,8 +127,9 @@ export const InvestmentEvolutionQuery = graphql(`
   query InvestmentEvolution(
     $period: InvestmentEvolutionPeriod
     $accountId: String
+    $regime: Regime
   ) {
-    investmentEvolution(period: $period, accountId: $accountId) {
+    investmentEvolution(period: $period, accountId: $accountId, regime: $regime) {
       dataPoints {
         date
         invested

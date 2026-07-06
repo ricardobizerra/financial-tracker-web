@@ -25,6 +25,8 @@ type DataTableBaseProps<TData> = {
   searchPlaceholder?: string;
   actionButtons?: React.ReactNode;
   CustomBody?: React.ReactNode;
+  onRowClick?: (row: Row<TData>) => void;
+  renderSubComponent?: (props: { row: Row<TData> }) => React.ReactNode;
 };
 
 type DataTableSortingState<TData> = Array<{
