@@ -2176,6 +2176,11 @@ export type InvestmentTaxesAndFees = {
   totalTaxesAndFees: Scalars['Float']['output'];
 };
 
+export type InvestmentTaxesHistoryModel = {
+  __typename?: 'InvestmentTaxesHistoryModel';
+  dataPoints: Array<TaxHistoryPointModel>;
+};
+
 export type InvestmentTransaction = {
   __typename?: 'InvestmentTransaction';
   amount: Scalars['Decimal']['output'];
@@ -2940,10 +2945,12 @@ export type Query = {
   investmentChartData: Array<InvestmentChartDataPoint>;
   investmentEvolution: InvestmentEvolutionModel;
   investmentRegimes: InvestmentRegimeSummaryConnection;
+  investmentTaxesHistory: InvestmentTaxesHistoryModel;
   investments: InvestmentConnection;
   possibleRecurringTransactions: Array<RecurringTransactionSuggestion>;
   recurringTransaction: Maybe<RecurringTransactionModel>;
   recurringTransactions: RecurringTransactionConnection;
+  regimeTaxesHistory: RegimeTaxesHistoryModel;
   simulateBalanceForecast: BalanceForecastModel;
   suggestCategory: CategorySuggestion;
   totalInvestments: TotalInvestmentsModel;
@@ -3077,6 +3084,11 @@ export type QueryInvestmentRegimesArgs = {
 };
 
 
+export type QueryInvestmentTaxesHistoryArgs = {
+  investmentId: Scalars['String']['input'];
+};
+
+
 export type QueryInvestmentsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -3106,6 +3118,11 @@ export type QueryRecurringTransactionsArgs = {
   orderBy?: InputMaybe<OrdenationRecurringTransactionModel>;
   orderDirection?: InputMaybe<OrderDirection>;
   search?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryRegimeTaxesHistoryArgs = {
+  regime: Regime;
 };
 
 
@@ -3794,6 +3811,11 @@ export enum Regime {
   Selic = 'SELIC'
 }
 
+export type RegimeTaxesHistoryModel = {
+  __typename?: 'RegimeTaxesHistoryModel';
+  dataPoints: Array<TaxHistoryPointModel>;
+};
+
 export type RescheduleTransactionInput = {
   id: Scalars['ID']['input'];
   newDate: Scalars['DateTime']['input'];
@@ -3884,6 +3906,15 @@ export type StringNullableFilter = {
 export type Subscription = {
   __typename?: 'Subscription';
   userAdded: UserModel;
+};
+
+export type TaxHistoryPointModel = {
+  __typename?: 'TaxHistoryPointModel';
+  component1: Maybe<Scalars['Float']['output']>;
+  component2: Maybe<Scalars['Float']['output']>;
+  date: Scalars['String']['output'];
+  total: Maybe<Scalars['Float']['output']>;
+  value: Maybe<Scalars['Float']['output']>;
 };
 
 export type TotalInvestmentsModel = {
@@ -5366,6 +5397,20 @@ export type InvestmentChartDataQueryVariables = Exact<{
 
 export type InvestmentChartDataQuery = { __typename?: 'Query', investmentChartData: Array<{ __typename?: 'InvestmentChartDataPoint', date: string, theoreticalValue: number, marketValue: number | null }> };
 
+export type RegimeTaxesHistoryQueryVariables = Exact<{
+  regime: Regime;
+}>;
+
+
+export type RegimeTaxesHistoryQuery = { __typename?: 'Query', regimeTaxesHistory: { __typename?: 'RegimeTaxesHistoryModel', dataPoints: Array<{ __typename?: 'TaxHistoryPointModel', date: string, value: number | null, component1: number | null, component2: number | null, total: number | null }> } };
+
+export type InvestmentTaxesHistoryQueryVariables = Exact<{
+  investmentId: Scalars['String']['input'];
+}>;
+
+
+export type InvestmentTaxesHistoryQuery = { __typename?: 'Query', investmentTaxesHistory: { __typename?: 'InvestmentTaxesHistoryModel', dataPoints: Array<{ __typename?: 'TaxHistoryPointModel', date: string, value: number | null, component1: number | null, component2: number | null, total: number | null }> } };
+
 export type CreateRecurringTransactionMutationVariables = Exact<{
   data: CreateRecurringTransactionInput;
 }>;
@@ -5645,6 +5690,8 @@ export const InvestmentRegimesDocument = {"kind":"Document","definitions":[{"kin
 export const InvestmentEvolutionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InvestmentEvolution"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"period"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"InvestmentEvolutionPeriod"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"regime"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Regime"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"investmentEvolution"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"period"},"value":{"kind":"Variable","name":{"kind":"Name","value":"period"}}},{"kind":"Argument","name":{"kind":"Name","value":"accountId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}}},{"kind":"Argument","name":{"kind":"Name","value":"regime"},"value":{"kind":"Variable","name":{"kind":"Name","value":"regime"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dataPoints"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"invested"}},{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"taxedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"profit"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalInvested"}},{"kind":"Field","name":{"kind":"Name","value":"totalCurrentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"totalTaxedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"totalProfit"}},{"kind":"Field","name":{"kind":"Name","value":"totalProfitPercentage"}}]}}]}}]} as unknown as DocumentNode<InvestmentEvolutionQuery, InvestmentEvolutionQueryVariables>;
 export const InvestmentAccountsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InvestmentAccounts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"regime"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Regime"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"investmentAccounts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"regime"},"value":{"kind":"Variable","name":{"kind":"Name","value":"regime"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLogoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"investmentCount"}}]}}]}}]} as unknown as DocumentNode<InvestmentAccountsQuery, InvestmentAccountsQueryVariables>;
 export const InvestmentChartDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InvestmentChartData"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"investmentId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"investmentChartData"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"investmentId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"investmentId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"theoreticalValue"}},{"kind":"Field","name":{"kind":"Name","value":"marketValue"}}]}}]}}]} as unknown as DocumentNode<InvestmentChartDataQuery, InvestmentChartDataQueryVariables>;
+export const RegimeTaxesHistoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RegimeTaxesHistory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"regime"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Regime"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"regimeTaxesHistory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"regime"},"value":{"kind":"Variable","name":{"kind":"Name","value":"regime"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dataPoints"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"component1"}},{"kind":"Field","name":{"kind":"Name","value":"component2"}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]}}]} as unknown as DocumentNode<RegimeTaxesHistoryQuery, RegimeTaxesHistoryQueryVariables>;
+export const InvestmentTaxesHistoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InvestmentTaxesHistory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"investmentId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"investmentTaxesHistory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"investmentId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"investmentId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dataPoints"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"component1"}},{"kind":"Field","name":{"kind":"Name","value":"component2"}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]}}]} as unknown as DocumentNode<InvestmentTaxesHistoryQuery, InvestmentTaxesHistoryQueryVariables>;
 export const CreateRecurringTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateRecurringTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateRecurringTransactionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createRecurringTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateRecurringTransactionMutation, CreateRecurringTransactionMutationVariables>;
 export const UpdateRecurringTransactionFromDateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateRecurringTransactionFromDate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"fromDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateRecurringTransactionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateRecurringTransactionFromDate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"fromDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"fromDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<UpdateRecurringTransactionFromDateMutation, UpdateRecurringTransactionFromDateMutationVariables>;
 export const PauseRecurringTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PauseRecurringTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pauseRecurringTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]}}]} as unknown as DocumentNode<PauseRecurringTransactionMutation, PauseRecurringTransactionMutationVariables>;

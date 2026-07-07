@@ -166,3 +166,31 @@ export const InvestmentChartDataQuery = graphql(`
     }
   }
 `);
+
+export const RegimeTaxesHistoryQuery = graphql(`
+  query RegimeTaxesHistory($regime: Regime!) {
+    regimeTaxesHistory(regime: $regime) {
+      dataPoints {
+        date
+        value
+        component1
+        component2
+        total
+      }
+    }
+  }
+`);
+
+export const InvestmentTaxesHistoryQuery = graphql(`
+  query InvestmentTaxesHistory($investmentId: String!) {
+    investmentTaxesHistory(investmentId: $investmentId) {
+      dataPoints {
+        date
+        value
+        component1
+        component2
+        total
+      }
+    }
+  }
+`);

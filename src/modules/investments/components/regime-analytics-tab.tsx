@@ -4,7 +4,8 @@ import { useQuery } from '@apollo/client';
 import { InvestmentEvolutionQuery } from '../graphql/investments-queries';
 import { InvestmentEvolutionPeriod, Regime } from '@/graphql/graphql';
 import { EvolutionAreaChart } from './charts/evolution-area-chart';
-import { YieldBarChart } from './charts/yield-bar-chart';
+import { RegimeTaxesChart } from './charts/regime-taxes-chart';
+import { InvestmentTaxesChart } from './charts/investment-taxes-chart';
 import { useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -23,6 +24,8 @@ export function RegimeAnalyticsTab({ regime, institutionLinkIds }: RegimeAnalyti
       ...(institutionLinkIds?.length === 1 ? { accountId: institutionLinkIds[0] } : {}),
     },
   });
+
+  const isTreasury = [Regime.Ipca, Regime.Selic, Regime.Prefixed].includes(regime);
 
   return (
     <div className="space-y-4 pt-4">
@@ -44,11 +47,23 @@ export function RegimeAnalyticsTab({ regime, institutionLinkIds }: RegimeAnalyti
         </Select>
       </div>
       
-      <div className="w-full">
-        <EvolutionAreaChart 
-          dataPoints={evolutionData?.investmentEvolution.dataPoints} 
-          loading={evolutionLoading} 
-        />
+      <div className={`grid grid-cols-1 gap-6 ${isTreasury ? 'xl:grid-cols-3' : 'xl:grid-cols-2'}`}>
+        <div className="w-full xl:col-span-1">
+          <EvolutionAreaChart 
+            dataPoints={evolutionData?.investmentEvolution.dataPoints} 
+            loading={evolutionLoading} 
+          />
+        </div>
+        
+        <div className="w-full xl:col-span-1">
+          <RegimeTaxesChart regime={regime} />
+        </div>
+
+        {isTreasury && (
+          <div className="w-full xl:col-span-1">
+            <InvestmentTaxesChart regime={regime} />
+          </div>
+        )}
       </div>
     </div>
   );
