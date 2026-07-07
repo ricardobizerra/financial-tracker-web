@@ -284,7 +284,7 @@ function InvestmentDetailsContent({ id }: { id: string }) {
             value="history"
             className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-primary data-[state=active]:bg-transparent"
           >
-            Histórico & Timeline
+            Detalhes & Histórico
           </TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="mt-6 flex flex-col gap-6">
@@ -348,102 +348,6 @@ function InvestmentDetailsContent({ id }: { id: string }) {
                         : 'N/A'}
                   </span>
                 </div>
-              </div>
-            </div>
-
-            {/* Card 3: Prazos e Liquidez */}
-            <div className="flex flex-col gap-4 rounded-xl border border-muted/40 bg-background p-4 shadow-sm">
-              <div className="flex flex-col gap-1">
-                <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Vencimento
-                </span>
-                <span className="text-lg font-medium tracking-tight text-foreground">
-                  {investment?.maturityDate
-                    ? formatDate(new Date(investment.maturityDate))
-                    : 'Não aplicável'}
-                </span>
-              </div>
-              <div className="flex flex-col gap-1.5 border-t border-muted/30 pt-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Data Inicial</span>
-                  <span className="font-medium">
-                    {investment?.startDate
-                      ? formatDate(new Date(investment.startDate))
-                      : ''}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Duração</span>
-                  <span className="font-medium">
-                    {investment?.duration
-                      ? `${investment.duration} dias`
-                      : 'Indefinido'}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 4: Tributação */}
-            <div className="flex flex-col gap-4 rounded-xl border border-muted/40 bg-background p-4 shadow-sm">
-              <div className="flex flex-col gap-1">
-                <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Impostos Retidos
-                </span>
-                <span className="text-lg font-medium tracking-tight text-rose-500/90">
-                  -
-                  {formatCurrency(
-                    investment?.taxesAndFees?.details?.reduce(
-                      (acc: number, tax: any) => acc + tax.amount,
-                      0,
-                    ) || 0,
-                  )}
-                </span>
-              </div>
-              <div className="flex flex-col gap-1.5 border-t border-muted/30 pt-3">
-                {investment?.taxesAndFees?.details?.length ? (
-                  investment.taxesAndFees.details.map(
-                    (tax: any, idx: number) => (
-                      <div
-                        key={idx}
-                        className="flex items-center justify-between text-sm"
-                      >
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-muted-foreground">
-                            {tax.label}
-                          </span>
-                          {tax.reason && (
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <button
-                                  type="button"
-                                  className="inline-flex items-center justify-center rounded-full p-0.5 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                >
-                                  <HelpCircle className="h-3.5 w-3.5 cursor-pointer text-muted-foreground/70 transition-colors hover:text-foreground" />
-                                  <span className="sr-only">
-                                    Explicação sobre o imposto
-                                  </span>
-                                </button>
-                              </PopoverTrigger>
-                              <PopoverContent
-                                className="w-64 bg-background/95 p-3 text-sm backdrop-blur-sm"
-                                side="top"
-                              >
-                                {tax.reason}
-                              </PopoverContent>
-                            </Popover>
-                          )}
-                        </div>
-                        <span className="font-medium text-rose-500/90">
-                          -{formatCurrency(tax.amount)}
-                        </span>
-                      </div>
-                    ),
-                  )
-                ) : (
-                  <span className="text-sm text-muted-foreground">
-                    Nenhum imposto a deduzir.
-                  </span>
-                )}
               </div>
             </div>
           </div>
@@ -541,7 +445,104 @@ function InvestmentDetailsContent({ id }: { id: string }) {
             )}
           </div>
         </TabsContent>
-        <TabsContent value="history" className="mt-6">
+        <TabsContent value="history" className="mt-6 flex flex-col gap-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {/* Card 3: Prazos e Liquidez */}
+            <div className="flex flex-col gap-4 rounded-xl border border-muted/40 bg-background p-4 shadow-sm">
+              <div className="flex flex-col gap-1">
+                <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Vencimento
+                </span>
+                <span className="text-lg font-medium tracking-tight text-foreground">
+                  {investment?.maturityDate
+                    ? formatDate(new Date(investment.maturityDate))
+                    : 'Não aplicável'}
+                </span>
+              </div>
+              <div className="flex flex-col gap-1.5 border-t border-muted/30 pt-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Data Inicial</span>
+                  <span className="font-medium">
+                    {investment?.startDate
+                      ? formatDate(new Date(investment.startDate))
+                      : ''}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Duração</span>
+                  <span className="font-medium">
+                    {investment?.duration
+                      ? `${investment.duration} dias`
+                      : 'Indefinido'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 4: Tributação */}
+            <div className="flex flex-col gap-4 rounded-xl border border-muted/40 bg-background p-4 shadow-sm">
+              <div className="flex flex-col gap-1">
+                <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Impostos Retidos
+                </span>
+                <span className="text-lg font-medium tracking-tight text-rose-500/90">
+                  -
+                  {formatCurrency(
+                    investment?.taxesAndFees?.details?.reduce(
+                      (acc: number, tax: any) => acc + tax.amount,
+                      0,
+                    ) || 0,
+                  )}
+                </span>
+              </div>
+              <div className="flex flex-col gap-1.5 border-t border-muted/30 pt-3">
+                {investment?.taxesAndFees?.details?.length ? (
+                  investment.taxesAndFees.details.map(
+                    (tax: any, idx: number) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between text-sm"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-muted-foreground">
+                            {tax.label}
+                          </span>
+                          {tax.reason && (
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <button
+                                  type="button"
+                                  className="inline-flex items-center justify-center rounded-full p-0.5 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                >
+                                  <HelpCircle className="h-3.5 w-3.5 cursor-pointer text-muted-foreground/70 transition-colors hover:text-foreground" />
+                                  <span className="sr-only">
+                                    Explicação sobre o imposto
+                                  </span>
+                                </button>
+                              </PopoverTrigger>
+                              <PopoverContent
+                                className="w-64 bg-background/95 p-3 text-sm backdrop-blur-sm"
+                                side="top"
+                              >
+                                {tax.reason}
+                              </PopoverContent>
+                            </Popover>
+                          )}
+                        </div>
+                        <span className="font-medium text-rose-500/90">
+                          -{formatCurrency(tax.amount)}
+                        </span>
+                      </div>
+                    ),
+                  )
+                ) : (
+                  <span className="text-sm text-muted-foreground">
+                    Nenhum imposto a deduzir.
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
           <InvestmentTimeline investment={investment} />
         </TabsContent>
       </Tabs>
