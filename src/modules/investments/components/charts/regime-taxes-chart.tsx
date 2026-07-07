@@ -3,7 +3,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Regime } from '@/graphql/graphql';
 import { Loader2 } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+} from 'recharts';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useQuery } from '@apollo/client';
@@ -22,25 +29,27 @@ interface RegimeTaxesChartProps {
 }
 
 const getChartConfig = (regime: Regime): ChartConfig => {
-  const isTreasury = [Regime.Ipca, Regime.Selic, Regime.Prefixed].includes(regime);
+  const isTreasury = [Regime.Ipca, Regime.Selic, Regime.Prefixed].includes(
+    regime,
+  );
   if (isTreasury) {
     return {
       selic: {
         label: 'Selic',
-        color: 'hsl(var(--primary))',
+        color: '#10b981', // emerald-500
       },
       ipca: {
         label: 'IPCA',
-        color: '#f97316', // orange-500
+        color: '#3b82f6', // blue-500
       },
     };
   }
-  
+
   const label = regime === Regime.Cdi ? 'CDI' : 'Poupança';
   return {
     value: {
       label,
-      color: 'hsl(var(--primary))',
+      color: '#10b981', // emerald-500
     },
   };
 };
@@ -57,15 +66,19 @@ export function RegimeTaxesChart({ regime }: RegimeTaxesChartProps) {
       // Data format is typically YYYY-MM-DD
       const date = new Date(point.date);
       // Adding timezone offset to avoid being offset to previous day
-      const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-      
+      const adjustedDate = new Date(
+        date.getTime() + date.getTimezoneOffset() * 60000,
+      );
+
       const res: any = {
         date: format(adjustedDate, 'MMM/yy', { locale: ptBR }),
         rawDate: point.date,
         timestamp: adjustedDate.getTime(),
       };
 
-      const isTreasury = [Regime.Ipca, Regime.Selic, Regime.Prefixed].includes(regime);
+      const isTreasury = [Regime.Ipca, Regime.Selic, Regime.Prefixed].includes(
+        regime,
+      );
       if (isTreasury) {
         res.selic = point.component1;
         res.ipca = point.component2;
@@ -80,7 +93,9 @@ export function RegimeTaxesChart({ regime }: RegimeTaxesChartProps) {
     <Card className="h-full">
       <CardHeader>
         <CardTitle className="text-lg">
-          {[Regime.Ipca, Regime.Selic, Regime.Prefixed].includes(regime) ? 'Taxas de Referência' : 'Evolução da Taxa'}
+          {[Regime.Ipca, Regime.Selic, Regime.Prefixed].includes(regime)
+            ? 'Taxas de Referência'
+            : 'Evolução da Taxa'}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -119,7 +134,9 @@ export function RegimeTaxesChart({ regime }: RegimeTaxesChartProps) {
                   <YAxis
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(value) => `${value.toLocaleString('pt-BR')}%`}
+                    tickFormatter={(value) =>
+                      `${value.toLocaleString('pt-BR')}%`
+                    }
                     className="text-xs text-muted-foreground"
                     domain={['auto', 'auto']}
                   />
@@ -127,7 +144,9 @@ export function RegimeTaxesChart({ regime }: RegimeTaxesChartProps) {
                     cursor={false}
                     content={<ChartTooltipContent indicator="line" />}
                   />
-                  {[Regime.Ipca, Regime.Selic, Regime.Prefixed].includes(regime) && (
+                  {[Regime.Ipca, Regime.Selic, Regime.Prefixed].includes(
+                    regime,
+                  ) && (
                     <Line
                       type="monotone"
                       dataKey="selic"
@@ -137,7 +156,9 @@ export function RegimeTaxesChart({ regime }: RegimeTaxesChartProps) {
                       connectNulls={true}
                     />
                   )}
-                  {[Regime.Ipca, Regime.Selic, Regime.Prefixed].includes(regime) && (
+                  {[Regime.Ipca, Regime.Selic, Regime.Prefixed].includes(
+                    regime,
+                  ) && (
                     <Line
                       type="monotone"
                       dataKey="ipca"
@@ -147,7 +168,9 @@ export function RegimeTaxesChart({ regime }: RegimeTaxesChartProps) {
                       connectNulls={true}
                     />
                   )}
-                  {![Regime.Ipca, Regime.Selic, Regime.Prefixed].includes(regime) && (
+                  {![Regime.Ipca, Regime.Selic, Regime.Prefixed].includes(
+                    regime,
+                  ) && (
                     <Line
                       type="monotone"
                       dataKey="value"

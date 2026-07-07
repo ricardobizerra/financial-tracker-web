@@ -3,11 +3,21 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Regime } from '@/graphql/graphql';
 import { Loader2 } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+} from 'recharts';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useQuery } from '@apollo/client';
-import { InvestmentTaxesHistoryQuery, InvestmentsQuery } from '../../graphql/investments-queries';
+import {
+  InvestmentTaxesHistoryQuery,
+  InvestmentsQuery,
+} from '../../graphql/investments-queries';
 import {
   ChartContainer,
   ChartTooltip,
@@ -16,7 +26,13 @@ import {
   ChartLegendContent,
 } from '@/components/ui/chart';
 import { useState, useEffect } from 'react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const chartConfig = {
   total: {
@@ -25,24 +41,30 @@ const chartConfig = {
   },
   fixo: {
     label: 'Spread / Fixo',
-    color: '#6366f1', // indigo-500
+    color: 'hsl(var(--muted-foreground))', // muted-ink
   },
   variavel: {
     label: 'IPCA / Selic',
-    color: '#f97316', // orange-500
+    color: '#3b82f6', // blue-500
   },
 };
 
 export function InvestmentTaxesChart({ regime }: { regime: Regime }) {
-  const [selectedInvestmentId, setSelectedInvestmentId] = useState<string | undefined>();
+  const [selectedInvestmentId, setSelectedInvestmentId] = useState<
+    string | undefined
+  >();
 
   // Fetch user's active treasury investments for this regime
-  const { data: investmentsData, loading: loadingInvestments } = useQuery(InvestmentsQuery, {
-    variables: { regime, first: 100 },
-  });
+  const { data: investmentsData, loading: loadingInvestments } = useQuery(
+    InvestmentsQuery,
+    {
+      variables: { regime, first: 100 },
+    },
+  );
 
-  const investments = investmentsData?.investments?.edges?.map((e) => e?.node) || [];
-  
+  const investments =
+    investmentsData?.investments?.edges?.map((e) => e?.node) || [];
+
   // Set first investment as default when loaded
   useEffect(() => {
     if (investments.length > 0 && !selectedInvestmentId) {
@@ -50,16 +72,21 @@ export function InvestmentTaxesChart({ regime }: { regime: Regime }) {
     }
   }, [investments, selectedInvestmentId]);
 
-  const { data: historyData, loading: loadingHistory } = useQuery(InvestmentTaxesHistoryQuery, {
-    variables: { investmentId: selectedInvestmentId || '' },
-    skip: !selectedInvestmentId,
-  });
+  const { data: historyData, loading: loadingHistory } = useQuery(
+    InvestmentTaxesHistoryQuery,
+    {
+      variables: { investmentId: selectedInvestmentId || '' },
+      skip: !selectedInvestmentId,
+    },
+  );
 
   const chartData =
     historyData?.investmentTaxesHistory.dataPoints?.map((point) => {
       const date = new Date(point.date);
-      const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-      
+      const adjustedDate = new Date(
+        date.getTime() + date.getTimezoneOffset() * 60000,
+      );
+
       return {
         date: format(adjustedDate, 'MMM/yy', { locale: ptBR }),
         rawDate: point.date,
@@ -71,7 +98,7 @@ export function InvestmentTaxesChart({ regime }: { regime: Regime }) {
     }) || [];
 
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="flex h-full flex-col">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-lg">Decomposição do Título</CardTitle>
         <div className="w-[180px]">
@@ -85,8 +112,17 @@ export function InvestmentTaxesChart({ regime }: { regime: Regime }) {
             </SelectTrigger>
             <SelectContent>
               {investments.map((inv) => {
-                const dateLabel = inv?.startDate ? format(new Date(inv.startDate), 'MMM/yyyy', { locale: ptBR }) : '';
-                const amountLabel = inv?.amount ? inv.amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
+                const dateLabel = inv?.startDate
+                  ? format(new Date(inv.startDate), 'MMM/yyyy', {
+                      locale: ptBR,
+                    })
+                  : '';
+                const amountLabel = inv?.amount
+                  ? inv.amount.toLocaleString('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL',
+                    })
+                  : '';
                 return (
                   <SelectItem key={inv?.id as string} value={inv?.id as string}>
                     {inv?.regimeName} - {amountLabel} ({dateLabel})
@@ -132,7 +168,9 @@ export function InvestmentTaxesChart({ regime }: { regime: Regime }) {
                   <YAxis
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(value) => `${value.toLocaleString('pt-BR')}%`}
+                    tickFormatter={(value) =>
+                      `${value.toLocaleString('pt-BR')}%`
+                    }
                     className="text-xs text-muted-foreground"
                     domain={['auto', 'auto']}
                   />
