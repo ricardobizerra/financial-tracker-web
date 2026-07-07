@@ -22,14 +22,24 @@ import { formatPercentage } from '@/lib/formatters/percentage';
 import { HelpCircle } from 'lucide-react';
 import { VariationBadge } from '@/components/variation-badge';
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from '@/components/ui/hover-card';
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { InvestmentStatusBadge } from './investment-status-badge';
 import { InvestmentActions } from './investment-actions';
@@ -40,10 +50,10 @@ export function InvestmentDetailsDrawer() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  
+
   const id = searchParams.get('investmentId');
   const isDesktop = useMediaQuery('(min-width: 768px)');
-  
+
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       const newParams = new URLSearchParams(searchParams.toString());
@@ -58,8 +68,8 @@ export function InvestmentDetailsDrawer() {
     <>
       {isDesktop ? (
         <Sheet open={!!id} onOpenChange={handleOpenChange}>
-          <SheetContent className="w-full sm:max-w-2xl lg:max-w-4xl p-0 flex flex-col gap-0 border-l border-border/50">
-            <SheetHeader className="px-6 py-4 border-b border-border/50 hidden">
+          <SheetContent className="flex w-full flex-col gap-0 border-l border-border/50 p-0 sm:max-w-2xl lg:max-w-4xl">
+            <SheetHeader className="hidden border-b border-border/50 px-6 py-4">
               <SheetTitle>Detalhes do Investimento</SheetTitle>
             </SheetHeader>
             <div className="flex-1 overflow-y-auto">
@@ -264,15 +274,15 @@ function InvestmentDetailsContent({ id }: { id: string }) {
 
       <Tabs defaultValue="overview" className="w-full">
         <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0">
-          <TabsTrigger 
-            value="overview" 
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2"
+          <TabsTrigger
+            value="overview"
+            className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-primary data-[state=active]:bg-transparent"
           >
             Resumo & Gráfico
           </TabsTrigger>
-          <TabsTrigger 
-            value="history" 
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2"
+          <TabsTrigger
+            value="history"
+            className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-primary data-[state=active]:bg-transparent"
           >
             Histórico & Timeline
           </TabsTrigger>
@@ -391,32 +401,44 @@ function InvestmentDetailsContent({ id }: { id: string }) {
               </div>
               <div className="flex flex-col gap-1.5 border-t border-muted/30 pt-3">
                 {investment?.taxesAndFees?.details?.length ? (
-                  investment.taxesAndFees.details.map((tax: any, idx: number) => (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between text-sm"
-                    >
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-muted-foreground">{tax.label}</span>
-                        {tax.reason && (
-                          <HoverCard>
-                            <HoverCardTrigger>
-                              <HelpCircle className="h-3.5 w-3.5 cursor-pointer text-muted-foreground/70 transition-colors hover:text-foreground" />
-                            </HoverCardTrigger>
-                            <HoverCardContent
-                              className="w-64 bg-background/95 text-sm backdrop-blur-sm"
-                              side="top"
-                            >
-                              {tax.reason}
-                            </HoverCardContent>
-                          </HoverCard>
-                        )}
+                  investment.taxesAndFees.details.map(
+                    (tax: any, idx: number) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between text-sm"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-muted-foreground">
+                            {tax.label}
+                          </span>
+                          {tax.reason && (
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <button
+                                  type="button"
+                                  className="inline-flex items-center justify-center rounded-full p-0.5 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                >
+                                  <HelpCircle className="h-3.5 w-3.5 cursor-pointer text-muted-foreground/70 transition-colors hover:text-foreground" />
+                                  <span className="sr-only">
+                                    Explicação sobre o imposto
+                                  </span>
+                                </button>
+                              </PopoverTrigger>
+                              <PopoverContent
+                                className="w-64 bg-background/95 p-3 text-sm backdrop-blur-sm"
+                                side="top"
+                              >
+                                {tax.reason}
+                              </PopoverContent>
+                            </Popover>
+                          )}
+                        </div>
+                        <span className="font-medium text-rose-500/90">
+                          -{formatCurrency(tax.amount)}
+                        </span>
                       </div>
-                      <span className="font-medium text-rose-500/90">
-                        -{formatCurrency(tax.amount)}
-                      </span>
-                    </div>
-                  ))
+                    ),
+                  )
                 ) : (
                   <span className="text-sm text-muted-foreground">
                     Nenhum imposto a deduzir.
@@ -455,7 +477,13 @@ function InvestmentDetailsContent({ id }: { id: string }) {
                       <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
                       <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                     </linearGradient>
-                    <linearGradient id="colorMarket" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient
+                      id="colorMarket"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
                       <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2} />
                       <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                     </linearGradient>
@@ -514,7 +542,7 @@ function InvestmentDetailsContent({ id }: { id: string }) {
           </div>
         </TabsContent>
         <TabsContent value="history" className="mt-6">
-           <InvestmentTimeline investment={investment} />
+          <InvestmentTimeline investment={investment} />
         </TabsContent>
       </Tabs>
     </div>
