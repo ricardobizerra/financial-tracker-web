@@ -64,9 +64,9 @@ export function TransactionPaymentMethod({
       <PayIcon
         className={cn(
           'h-5 w-5 shrink-0 transition-transform active:scale-95',
-          isExpense && 'text-red-600 dark:text-red-400',
-          isIncome && 'text-emerald-600 dark:text-emerald-400',
-          isBetweenAccounts && 'text-blue-600 dark:text-blue-400',
+          isExpense && 'text-destructive',
+          isIncome && 'text-green-700 dark:text-green-500',
+          isBetweenAccounts && 'text-blue-600 dark:text-blue-500',
           isExpenseForBilling &&
             'text-muted-foreground dark:text-muted-foreground',
           !disabled && isInteractive && 'cursor-pointer hover:scale-110',

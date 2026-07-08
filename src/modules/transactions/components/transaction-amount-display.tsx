@@ -47,9 +47,9 @@ export function TransactionAmountDisplay({
   const isBetweenAccounts = type === TransactionType.BetweenAccounts;
 
   const colorClasses = cn(
-    isIncome && 'text-emerald-600 dark:text-emerald-400',
-    isExpense && 'text-red-600 dark:text-red-400',
-    isBetweenAccounts && 'text-blue-600 dark:text-blue-400',
+    isIncome && 'text-green-700 dark:text-green-500',
+    isExpense && 'text-destructive',
+    isBetweenAccounts && 'text-blue-600 dark:text-blue-500',
     isExpenseForBilling && 'text-muted-foreground dark:text-muted-foreground',
   );
 
@@ -132,7 +132,7 @@ export function TransactionAmountDisplay({
             </div>
           }
           className={cn(
-            'h-9 w-48 text-right text-base font-semibold',
+            'h-9 w-48 text-right text-sm font-semibold tabular-nums',
             colorClasses,
           )}
         />
@@ -143,7 +143,7 @@ export function TransactionAmountDisplay({
   return (
     <div
       className={cn(
-        'group relative text-right text-base font-semibold transition-all',
+        'group relative text-right text-sm font-semibold tabular-nums transition-all',
         colorClasses,
         onUpdate &&
           !disabled &&
