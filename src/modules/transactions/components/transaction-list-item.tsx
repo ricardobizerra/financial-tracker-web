@@ -357,13 +357,13 @@ export function TransactionListItem({
                     onChange={(e) => setDescriptionValue(e.target.value)}
                     onKeyDown={handleDescriptionKeyDown}
                     rightSlot={
-                      <div className="flex items-center gap-0.5 pr-1">
+                      <div className="flex items-center gap-1 pr-1">
                         <SimpleTooltip label="Salvar" side="top">
                           <Button
                             variant="ghost"
                             size="icon"
                             className={cn(
-                              'h-6 w-6 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-950/30',
+                              'h-9 w-9 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-950/30',
                               descriptionValue === transaction.description &&
                                 'cursor-not-allowed opacity-30 grayscale',
                             )}
@@ -372,7 +372,7 @@ export function TransactionListItem({
                               descriptionValue === transaction.description
                             }
                           >
-                            <Check className="h-3.5 w-3.5" />
+                            <Check className="h-4 w-4" />
                             <span className="sr-only">Salvar</span>
                           </Button>
                         </SimpleTooltip>
@@ -380,7 +380,7 @@ export function TransactionListItem({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6 text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/30"
+                            className="h-9 w-9 text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/30"
                             onClick={() => {
                               setDescriptionValue(
                                 transaction.description || '',
@@ -388,13 +388,13 @@ export function TransactionListItem({
                               setIsDescriptionEditing(false);
                             }}
                           >
-                            <X className="h-3.5 w-3.5" />
+                            <X className="h-4 w-4" />
                             <span className="sr-only">Cancelar</span>
                           </Button>
                         </SimpleTooltip>
                       </div>
                     }
-                    className="h-8 min-w-[250px] py-1 text-sm font-semibold"
+                    className="h-10 min-w-[250px] py-2 text-sm font-semibold"
                   />
                 ) : (
                   <span
