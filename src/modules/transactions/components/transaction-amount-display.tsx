@@ -132,7 +132,7 @@ export function TransactionAmountDisplay({
             </div>
           }
           className={cn(
-            'h-9 w-48 text-right text-sm font-semibold tabular-nums',
+            'h-9 w-48 text-right text-base font-medium tabular-nums',
             colorClasses,
           )}
         />
@@ -143,7 +143,7 @@ export function TransactionAmountDisplay({
   return (
     <div
       className={cn(
-        'group relative text-right text-sm font-semibold tabular-nums transition-all',
+        'group relative text-right text-base font-medium tabular-nums transition-all',
         colorClasses,
         onUpdate &&
           !disabled &&
