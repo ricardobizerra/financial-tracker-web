@@ -97,7 +97,11 @@ export function TransactionListItem({
   destinyAccountIdFallback,
 }: TransactionListItemProps) {
   const [editOpen, setEditOpen] = useState(false);
-  const [descriptionEditOpen, setDescriptionEditOpen] = useState(false);
+  const handleEdit = () => {
+    if (!isBillingPayment) {
+      setEditOpen(true);
+    }
+  };
 
   const {
     cancelLoading,
@@ -115,34 +119,6 @@ export function TransactionListItem({
     refetchVariables,
   });
 
-  const [isDescriptionEditing, setIsDescriptionEditing] = useState(false);
-  const [descriptionValue, setDescriptionValue] = useState(
-    transaction.description || '',
-  );
-  const descriptionInputRef = React.useRef<HTMLInputElement>(null);
-
-  React.useEffect(() => {
-    if (isDescriptionEditing) {
-      descriptionInputRef.current?.focus();
-      descriptionInputRef.current?.select();
-    }
-  }, [isDescriptionEditing]);
-
-  const handleDescriptionSave = () => {
-    if (descriptionValue !== transaction.description) {
-      handleFastUpdate({ description: descriptionValue });
-    }
-    setIsDescriptionEditing(false);
-  };
-
-  const handleDescriptionKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handleDescriptionSave();
-    if (e.key === 'Escape') {
-      setDescriptionValue(transaction.description || '');
-      setIsDescriptionEditing(false);
-    }
-  };
-
   const isIncome = transaction.type === TransactionType.Income;
   const isExpense = transaction.type === TransactionType.Expense;
   const isBetweenAccounts =
@@ -159,18 +135,6 @@ export function TransactionListItem({
     isExpense &&
     (isPartOfBilling || (transaction.totalInstallments ?? 0) > 0) &&
     !hideWarnings;
-
-  // Transação é editável: tudo exceto CANCELED
-  const canEditFully = !isCanceled;
-
-  const handleEdit = () => {
-    if (!canEditFully) {
-      // Transação cancelada: só pode editar descrição
-      setDescriptionEditOpen(true);
-    } else {
-      setEditOpen(true);
-    }
-  };
 
   const renderEditForm = () => {
     const normalizedTransaction = normalizeTransactionForEdit(transaction);
@@ -308,8 +272,10 @@ export function TransactionListItem({
   return (
     <>
       <div
+        onClick={handleEdit}
         className={cn(
           'group flex items-center justify-between gap-4 border-b border-border/50 bg-card p-4 transition-colors last:border-b-0 hover:bg-muted/50',
+          !isBillingPayment && 'cursor-pointer',
           isOverdue && 'bg-red-50/30 dark:bg-red-950/10',
           (transaction.cardBilling ||
             (transaction.totalInstallments ?? 0) > 0) &&
@@ -350,92 +316,16 @@ export function TransactionListItem({
                       )}
                     </span>
                   </>
-                ) : isDescriptionEditing ? (
-                  <Input
-                    ref={descriptionInputRef}
-                    value={descriptionValue}
-                    onChange={(e) => setDescriptionValue(e.target.value)}
-                    onKeyDown={handleDescriptionKeyDown}
-                    rightSlot={
-                      <div className="flex items-center gap-1 pr-1">
-                        <SimpleTooltip label="Salvar" side="top">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className={cn(
-                              'h-9 w-9 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-950/30',
-                              descriptionValue === transaction.description &&
-                                'cursor-not-allowed opacity-30 grayscale',
-                            )}
-                            onClick={handleDescriptionSave}
-                            disabled={
-                              descriptionValue === transaction.description
-                            }
-                          >
-                            <Check className="h-4 w-4" />
-                            <span className="sr-only">Salvar</span>
-                          </Button>
-                        </SimpleTooltip>
-                        <SimpleTooltip label="Cancelar" side="top">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-9 w-9 text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/30"
-                            onClick={() => {
-                              setDescriptionValue(
-                                transaction.description || '',
-                              );
-                              setIsDescriptionEditing(false);
-                            }}
-                          >
-                            <X className="h-4 w-4" />
-                            <span className="sr-only">Cancelar</span>
-                          </Button>
-                        </SimpleTooltip>
-                      </div>
-                    }
-                    className="h-10 min-w-[250px] py-2 text-sm font-semibold"
-                  />
                 ) : (
                   <span
                     className={cn(
-                      'cursor-pointer decoration-muted-foreground/30 underline-offset-4 hover:underline',
+                      'truncate text-base font-semibold',
                       !transaction.description &&
                         'italic text-muted-foreground',
                     )}
-                    onClick={() =>
-                      !isBillingPayment &&
-                      !isCanceled &&
-                      setIsDescriptionEditing(true)
-                    }
                   >
                     {transaction.description || 'Sem descrição'}
                   </span>
-                )}
-
-                {/* Calendar Popover for Rescheduling */}
-                {!isBillingPayment && (
-                  <Popover>
-                    <SimpleTooltip label="Reagendar" side="top">
-                      <PopoverTrigger asChild>
-                        <button className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:scale-95">
-                          <CalendarIcon className="h-3 w-3" />
-                        </button>
-                      </PopoverTrigger>
-                    </SimpleTooltip>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={new Date(transaction.date)}
-                        onSelect={(date) => {
-                          if (date) {
-                            handleFastUpdate({ date });
-                          }
-                        }}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
                 )}
               </span>
               {(transaction.totalInstallments ?? 0) > 0 &&
@@ -448,27 +338,14 @@ export function TransactionListItem({
               <TransactionCategoryBadge
                 category={transaction.category}
                 className="ml-1"
-                onSelect={(category) => handleFastUpdate({ category })}
-                disabled={isCanceled}
+                disabled={true}
               />
             </div>
             {(!hideAccount || isBillingPayment) && (
               <TransactionAccountDisplay
                 transaction={transaction}
                 hideWarnings={hideWarnings}
-                onUpdateAccount={(accountId, type) =>
-                  handleFastUpdate({
-                    [type === 'source'
-                      ? 'sourceAccountId'
-                      : 'destinyAccountId']: accountId,
-                  })
-                }
-                onUpdateCard={(cardId) =>
-                  handleFastUpdate({
-                    sourceCardId: cardId,
-                  })
-                }
-                disabled={isCanceled}
+                disabled={true}
                 sourceAccountIdFallback={sourceAccountIdFallback}
                 destinyAccountIdFallback={destinyAccountIdFallback}
               />
@@ -484,24 +361,18 @@ export function TransactionListItem({
             isExpenseForBilling={isExpenseForBilling}
             isCardAccount={!!transaction.sourceCard}
             isDebitCard={transaction.sourceCard?.type === CardType.Debit}
-            onSelect={(method) => handleFastUpdate({ paymentMethod: method })}
-            disabled={isCanceled}
+            disabled={true}
           />
 
           <TransactionAmountDisplay
             amount={transaction.amount}
             type={transaction.type}
             isExpenseForBilling={isExpenseForBilling}
-            onUpdate={(amount) => handleFastUpdate({ amount })}
-            disabled={isCanceled}
+            disabled={true}
           />
 
           {/* Status */}
-          <TransactionStatusBadge
-            status={transaction.status}
-            onSelect={(status) => handleFastUpdate({ status })}
-            disabled={isCanceled}
-          />
+          <TransactionStatusBadge status={transaction.status} disabled={true} />
 
           {/* Ações inline */}
           <div className="flex items-center gap-1">
@@ -517,70 +388,17 @@ export function TransactionListItem({
                 </Button>
               </SimpleTooltip>
             )}
-
-            {!hideActions.includes('edit') && (
-              <SimpleTooltip label="Editar" side="top">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={handleEdit}
-                >
-                  <Pencil className="h-4 w-4" />
-                  <span className="sr-only">Editar</span>
-                </Button>
-              </SimpleTooltip>
-            )}
-
-            {!isBillingPayment &&
-              canEditFully &&
-              !hideActions.includes('cancel') && (
-                <SimpleTooltip
-                  label={
-                    transaction.canCancel
-                      ? 'Cancelar'
-                      : (transaction.cancelReason ?? 'Não pode ser cancelada')
-                  }
-                  side="top"
-                >
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={cn(
-                      'h-8 w-8',
-                      transaction.canCancel
-                        ? 'text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300'
-                        : 'cursor-not-allowed opacity-40',
-                    )}
-                    onClick={() => {
-                      if (!transaction.canCancel) return;
-                      setCancelDialogOpen(true);
-                    }}
-                    disabled={!transaction.canCancel}
-                  >
-                    <X className="h-4 w-4" />
-                    <span className="sr-only">Cancelar</span>
-                  </Button>
-                </SimpleTooltip>
-              )}
           </div>
         </div>
       </div>
 
-      {/* Modais de edição */}
       {renderEditForm()}
-      <TransactionEditDescriptionDialog
-        transaction={transaction}
-        open={descriptionEditOpen}
-        onOpenChange={setDescriptionEditOpen}
-      />
       <TransactionEditScopeDialog
         open={scopeDialogOpen}
         onOpenChange={handleScopeDialogClose}
         onSelectScope={handleScopeSelected}
       />
 
-      {/* Dialog de cancelamento */}
       <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
         <AlertDialogContent className="max-w-[450px]">
           <AlertDialogHeader>
