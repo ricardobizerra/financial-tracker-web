@@ -77,7 +77,8 @@ export function TransactionAccountDisplay({
               transaction.sourceAccount?.id || sourceAccountIdFallback
             }
             onSelect={(id) => onUpdateAccount?.(id, 'source')}
-            disabled={disabled || !onUpdateAccount}
+            disabled={disabled}
+            readOnly={!onUpdateAccount}
             placeholder="Adicionar conta"
           />
         </div>
@@ -93,7 +94,8 @@ export function TransactionAccountDisplay({
             transaction.sourceAccount?.id || sourceAccountIdFallback
           }
           onSelect={(id) => onUpdateAccount?.(id, 'source')}
-          disabled={disabled || !onUpdateAccount}
+          disabled={disabled}
+          readOnly={!onUpdateAccount}
           placeholder="Origem"
         />
         <ArrowRight className="h-3 w-3 text-muted-foreground" />
@@ -102,7 +104,8 @@ export function TransactionAccountDisplay({
             transaction.destinyAccount?.id || destinyAccountIdFallback
           }
           onSelect={(id) => onUpdateAccount?.(id, 'destiny')}
-          disabled={disabled || !onUpdateAccount}
+          disabled={disabled}
+          readOnly={!onUpdateAccount}
           placeholder="Destino"
         />
       </div>
@@ -217,7 +220,8 @@ export function TransactionAccountDisplay({
           onSelect={(id) =>
             onUpdateAccount?.(id, isIncome ? 'destiny' : 'source')
           }
-          disabled={disabled || !onUpdateAccount}
+          disabled={disabled}
+          readOnly={!onUpdateAccount}
           placeholder="Adicionar conta"
         />
       </div>

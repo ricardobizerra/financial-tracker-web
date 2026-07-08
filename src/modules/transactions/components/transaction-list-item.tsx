@@ -276,7 +276,7 @@ export function TransactionListItem({
         className={cn(
           'group flex items-center justify-between gap-4 border-b border-border/50 bg-card p-4 transition-colors last:border-b-0 hover:bg-muted/50',
           !isBillingPayment && 'cursor-pointer',
-          isOverdue && 'bg-red-50/30 dark:bg-red-950/10',
+          isOverdue && 'bg-destructive/5 dark:bg-destructive/10',
           (transaction.cardBilling ||
             (transaction.totalInstallments ?? 0) > 0) &&
             !hideWarnings &&
@@ -338,14 +338,12 @@ export function TransactionListItem({
               <TransactionCategoryBadge
                 category={transaction.category}
                 className="ml-1"
-                disabled={true}
               />
             </div>
             {(!hideAccount || isBillingPayment) && (
               <TransactionAccountDisplay
                 transaction={transaction}
                 hideWarnings={hideWarnings}
-                disabled={true}
                 sourceAccountIdFallback={sourceAccountIdFallback}
                 destinyAccountIdFallback={destinyAccountIdFallback}
               />
@@ -361,18 +359,16 @@ export function TransactionListItem({
             isExpenseForBilling={isExpenseForBilling}
             isCardAccount={!!transaction.sourceCard}
             isDebitCard={transaction.sourceCard?.type === CardType.Debit}
-            disabled={true}
           />
 
           <TransactionAmountDisplay
             amount={transaction.amount}
             type={transaction.type}
             isExpenseForBilling={isExpenseForBilling}
-            disabled={true}
           />
 
           {/* Status */}
-          <TransactionStatusBadge status={transaction.status} disabled={true} />
+          <TransactionStatusBadge status={transaction.status} />
 
           {/* Ações inline */}
           <div className="flex items-center gap-1">

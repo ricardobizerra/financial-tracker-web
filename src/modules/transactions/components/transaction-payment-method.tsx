@@ -69,7 +69,7 @@ export function TransactionPaymentMethod({
           isBetweenAccounts && 'text-blue-600 dark:text-blue-400',
           isExpenseForBilling &&
             'text-muted-foreground dark:text-muted-foreground',
-          !disabled && 'cursor-pointer hover:scale-110',
+          !disabled && isInteractive && 'cursor-pointer hover:scale-110',
         )}
       />
     );

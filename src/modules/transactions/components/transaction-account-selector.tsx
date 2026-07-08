@@ -18,6 +18,7 @@ interface TransactionAccountSelectorProps {
   currentAccountId?: string | null;
   onSelect: (accountId: string) => void;
   disabled?: boolean;
+  readOnly?: boolean;
   placeholder?: string;
   className?: string;
 }
@@ -26,6 +27,7 @@ export function TransactionAccountSelector({
   currentAccountId,
   onSelect,
   disabled = false,
+  readOnly = false,
   placeholder = 'Selecionar conta',
   className,
 }: TransactionAccountSelectorProps) {
@@ -41,8 +43,8 @@ export function TransactionAccountSelector({
         <Badge
           className={cn(
             'gap-1 whitespace-nowrap border border-dashed border-muted-foreground/30 bg-transparent text-muted-foreground transition-all hover:bg-muted/50 hover:text-muted-foreground',
-            !disabled && 'cursor-pointer active:scale-95',
-            disabled && 'cursor-default opacity-60',
+            !disabled && !readOnly && 'cursor-pointer active:scale-95',
+            disabled && !readOnly && 'cursor-default opacity-60',
             className,
           )}
           variant="outline"
@@ -61,8 +63,9 @@ export function TransactionAccountSelector({
         className={cn(
           'flex items-center gap-1.5 transition-all',
           !disabled &&
+            !readOnly &&
             'cursor-pointer rounded-md px-1 py-0.5 hover:bg-muted/50 active:scale-[0.98]',
-          disabled && 'opacity-60',
+          disabled && !readOnly && 'opacity-60',
           className,
         )}
       >
@@ -80,7 +83,7 @@ export function TransactionAccountSelector({
     );
   };
 
-  if (disabled) {
+  if (disabled || readOnly) {
     return renderTrigger();
   }
 

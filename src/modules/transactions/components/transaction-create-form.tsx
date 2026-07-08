@@ -3074,7 +3074,10 @@ function TransactionAccountCard({
       <div className="flex min-w-0 flex-1 items-center gap-2">
         <div
           className="h-8 w-1 flex-shrink-0 rounded"
-          style={{ backgroundColor: account.institution.color || '#888' }}
+          style={{
+            backgroundColor:
+              account.institution.color || 'hsl(var(--muted-foreground))',
+          }}
         />
         <div className="flex flex-col items-start">
           <span className="truncate font-semibold">{account.name}</span>
@@ -3117,7 +3120,10 @@ function TransactionCardCard({
       <div className="flex min-w-0 flex-1 items-center gap-2">
         <div
           className="h-8 w-1 flex-shrink-0 rounded"
-          style={{ backgroundColor: card.institution.color || '#888' }}
+          style={{
+            backgroundColor:
+              card.institution.color || 'hsl(var(--muted-foreground))',
+          }}
         />
         <div className="flex flex-col items-start">
           <span className="truncate font-semibold">{card.name}</span>
