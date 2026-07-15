@@ -12,6 +12,7 @@ import {
   UpdateRecurringTransactionsMutation,
   CancelTransactionMutation,
   UpdateTransactionMutation,
+  CancelRecurringTransactionsMutation,
 } from '../graphql/transactions-mutations';
 import {
   TransactionsQuery,
@@ -32,6 +33,9 @@ export function useTransactionMutations({
   const [scopeDialogOpen, setScopeDialogOpen] = useState(false);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [pendingData, setPendingData] = useState<any | null>(null);
+  const [pendingAction, setPendingAction] = useState<
+    'UPDATE' | 'CANCEL' | null
+  >(null);
 
   const scopeResolverRef = useRef<((shouldContinue: boolean) => void) | null>(
     null,
@@ -95,6 +99,24 @@ export function useTransactionMutations({
     },
   );
 
+  const [cancelRecurringTransactions] = useMutation(
+    CancelRecurringTransactionsMutation,
+    {
+      refetchQueries: [
+        TransactionsQuery,
+        TransactionsGroupedByPeriodQuery,
+        TransactionsSummaryQuery,
+        BillingQuery,
+      ],
+      onCompleted: () => {
+        toast.success('Transações canceladas!');
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    },
+  );
+
   const handleBeforeSubmit = async (data: any): Promise<boolean> => {
     const isRecurring = !!transaction.recurringTransactionId;
     if (!isRecurring) {
@@ -102,6 +124,7 @@ export function useTransactionMutations({
     }
 
     setPendingData(data);
+    setPendingAction('UPDATE');
     setScopeDialogOpen(true);
 
     return new Promise((resolve) => {
@@ -115,7 +138,11 @@ export function useTransactionMutations({
     if (scope === UpdateRecurringScope.ThisOnly) {
       scopeResolverRef.current?.(true);
       // For fast updates that already have pendingData, we need to trigger the updateTransaction mutation
-      if (pendingData && !scopeResolverRef.current) {
+      if (
+        pendingAction === 'UPDATE' &&
+        pendingData &&
+        !scopeResolverRef.current
+      ) {
         await updateTransaction({
           variables: {
             data: {
@@ -124,11 +151,13 @@ export function useTransactionMutations({
             },
           },
         });
+      } else if (pendingAction === 'CANCEL' && !scopeResolverRef.current) {
+        await cancelTransaction({ variables: { id: transaction.id } });
       }
     } else {
       scopeResolverRef.current?.(false);
 
-      if (pendingData) {
+      if (pendingAction === 'UPDATE' && pendingData) {
         // Recurring update only supports a subset of fields
         const recurringData: any = {
           transactionId: transaction.id,
@@ -147,11 +176,19 @@ export function useTransactionMutations({
             data: recurringData,
           },
         });
+      } else if (pendingAction === 'CANCEL') {
+        await cancelRecurringTransactions({
+          variables: {
+            transactionId: transaction.id,
+            scope,
+          },
+        });
       }
     }
 
     scopeResolverRef.current = null;
     setPendingData(null);
+    setPendingAction(null);
   };
 
   const handleScopeDialogClose = (open: boolean) => {
@@ -159,12 +196,21 @@ export function useTransactionMutations({
       scopeResolverRef.current(false);
       scopeResolverRef.current = null;
       setPendingData(null);
+      setPendingAction(null);
     }
     setScopeDialogOpen(open);
   };
 
   const handleCancel = () => {
-    cancelTransaction({ variables: { id: transaction.id } });
+    // Se for recorrente, abre o dialog de escopo, senão usa a mutation original.
+    // Usado pela lista de transações (fast-cancel)
+    const isRecurring = !!transaction.recurringTransactionId;
+    if (isRecurring) {
+      setPendingAction('CANCEL');
+      setScopeDialogOpen(true);
+    } else {
+      cancelTransaction({ variables: { id: transaction.id } });
+    }
   };
 
   const handleFastUpdate = async (update: any) => {
@@ -178,6 +224,7 @@ export function useTransactionMutations({
 
     if (isRecurring && canRecur) {
       setPendingData(update);
+      setPendingAction('UPDATE');
       setScopeDialogOpen(true);
     } else {
       await updateTransaction({
@@ -202,5 +249,6 @@ export function useTransactionMutations({
     handleBeforeSubmit,
     handleCancel,
     handleFastUpdate,
+    pendingAction,
   };
 }

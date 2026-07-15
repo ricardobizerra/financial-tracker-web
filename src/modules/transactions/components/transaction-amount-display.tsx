@@ -132,7 +132,7 @@ export function TransactionAmountDisplay({
             </div>
           }
           className={cn(
-            'h-9 w-48 text-right text-base font-medium tabular-nums',
+            'h-9 w-48 text-right text-base font-medium',
             colorClasses,
           )}
         />
@@ -143,13 +143,18 @@ export function TransactionAmountDisplay({
   return (
     <div
       className={cn(
-        'group relative text-right text-base font-medium tabular-nums transition-all',
+        'group relative text-right text-base font-medium transition-all',
         colorClasses,
         onUpdate &&
           !disabled &&
           'cursor-pointer underline-offset-4 hover:underline',
       )}
-      onClick={() => onUpdate && !disabled && setIsEditing(true)}
+      onClick={(e) => {
+        if (onUpdate && !disabled) {
+          e.stopPropagation();
+          setIsEditing(true);
+        }
+      }}
     >
       {isExpense && '-'}
       {formatCurrency(Number(amount))}

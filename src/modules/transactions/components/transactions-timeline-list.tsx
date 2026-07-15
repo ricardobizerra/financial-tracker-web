@@ -18,6 +18,9 @@ import { ptBR } from 'date-fns/locale';
 import { Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TimelinePaginationButton } from './timeline-pagination-button';
+import { useState } from 'react';
+import { useBulkTransactionMutations } from '../hooks/use-bulk-transaction-mutations';
+import { TransactionBulkActionBar } from './transaction-bulk-action-bar';
 
 interface TransactionsTimelineListProps {
   transactions: TransactionFragmentFragment[];
@@ -57,6 +60,20 @@ export function TransactionsTimelineList({
   refetchVariables,
 }: TransactionsTimelineListProps) {
   const groupedTransactions = useTimelineGrouping(transactions);
+
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const { categorizeTransactions, cancelTransactions, isLoading } =
+    useBulkTransactionMutations({
+      refetchVariables,
+      onCompleted: () => setSelectedIds([]),
+    });
+
+  const toggleSelection = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+    );
+  };
 
   return (
     <div className="flex flex-col gap-8 pb-8">
@@ -170,6 +187,8 @@ export function TransactionsTimelineList({
                     showType={showType}
                     hideWarnings={hideWarnings}
                     refetchVariables={refetchVariables}
+                    isSelected={selectedIds.includes(transaction.id)}
+                    onSelectToggle={() => toggleSelection(transaction.id)}
                   />
                 ))
               ) : (
@@ -213,6 +232,16 @@ export function TransactionsTimelineList({
           targetDate={subDays(windowStart, 30)}
         />
       )}
+
+      <TransactionBulkActionBar
+        selectedCount={selectedIds.length}
+        onClear={() => setSelectedIds([])}
+        onCategorize={(category) =>
+          categorizeTransactions(selectedIds, category)
+        }
+        onDelete={() => cancelTransactions(selectedIds)}
+        isLoading={isLoading}
+      />
     </div>
   );
 }

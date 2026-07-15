@@ -42,6 +42,7 @@ import {
   ExpenseTransactionCreateForm,
   BetweenAccountsTransactionCreateForm,
 } from './transaction-create-form';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   TransactionsQuery,
   TransactionsSummaryQuery,
@@ -84,6 +85,8 @@ interface TransactionListItemProps {
   refetchVariables?: any;
   sourceAccountIdFallback?: string;
   destinyAccountIdFallback?: string;
+  isSelected?: boolean;
+  onSelectToggle?: (selected: boolean) => void;
 }
 export function TransactionListItem({
   transaction,
@@ -95,8 +98,11 @@ export function TransactionListItem({
   refetchVariables,
   sourceAccountIdFallback,
   destinyAccountIdFallback,
+  isSelected = false,
+  onSelectToggle,
 }: TransactionListItemProps) {
   const [editOpen, setEditOpen] = useState(false);
+
   const handleEdit = () => {
     if (!isBillingPayment) {
       setEditOpen(true);
@@ -114,10 +120,39 @@ export function TransactionListItem({
     handleBeforeSubmit,
     handleCancel,
     handleFastUpdate,
+    pendingAction,
   } = useTransactionMutations({
     transaction,
     refetchVariables,
   });
+
+  const [isDescriptionEditing, setIsDescriptionEditing] = useState(false);
+  const [descriptionValue, setDescriptionValue] = useState(
+    transaction.description || '',
+  );
+  const descriptionInputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    if (isDescriptionEditing) {
+      descriptionInputRef.current?.focus();
+      descriptionInputRef.current?.select();
+    }
+  }, [isDescriptionEditing]);
+
+  const handleDescriptionSave = () => {
+    if (descriptionValue !== transaction.description) {
+      handleFastUpdate({ description: descriptionValue });
+    }
+    setIsDescriptionEditing(false);
+  };
+
+  const handleDescriptionKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleDescriptionSave();
+    if (e.key === 'Escape') {
+      setDescriptionValue(transaction.description || '');
+      setIsDescriptionEditing(false);
+    }
+  };
 
   const isIncome = transaction.type === TransactionType.Income;
   const isExpense = transaction.type === TransactionType.Expense;
@@ -274,8 +309,9 @@ export function TransactionListItem({
       <div
         onClick={handleEdit}
         className={cn(
-          'group flex items-center justify-between gap-4 border-b border-border/50 bg-card p-4 transition-colors last:border-b-0 hover:bg-muted/50',
+          'group flex items-center justify-between gap-4 border-b border-border/50 p-4 transition-colors last:border-b-0 hover:bg-muted/50',
           !isBillingPayment && 'cursor-pointer',
+          isSelected ? 'bg-muted/50' : 'bg-card',
           isOverdue && 'bg-destructive/5 dark:bg-destructive/10',
           (transaction.cardBilling ||
             (transaction.totalInstallments ?? 0) > 0) &&
@@ -284,6 +320,22 @@ export function TransactionListItem({
         )}
       >
         <div className="flex flex-1 items-center gap-4 overflow-hidden">
+          {/* Checkbox de seleção em lote */}
+          <div
+            className={cn(
+              'flex items-center',
+              isSelected
+                ? 'opacity-100'
+                : 'opacity-0 transition-opacity group-hover:opacity-100',
+            )}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectToggle?.(!isSelected);
+            }}
+          >
+            <Checkbox checked={isSelected} />
+          </div>
+
           {/* Ícone do tipo */}
           {showType && <TransactionTypeIcon type={transaction.type} />}
 
@@ -316,16 +368,62 @@ export function TransactionListItem({
                       )}
                     </span>
                   </>
+                ) : isDescriptionEditing ? (
+                  <Input
+                    ref={descriptionInputRef}
+                    value={descriptionValue}
+                    onChange={(e) => setDescriptionValue(e.target.value)}
+                    onKeyDown={handleDescriptionKeyDown}
+                    onBlur={handleDescriptionSave}
+                    onClick={(e) => e.stopPropagation()}
+                    className="h-7 w-48 text-base font-semibold"
+                  />
                 ) : (
                   <span
                     className={cn(
                       'truncate text-base font-semibold',
+                      !isBillingPayment &&
+                        !isCanceled &&
+                        'cursor-pointer underline-offset-4 hover:underline',
                       !transaction.description &&
                         'italic text-muted-foreground',
                     )}
+                    onClick={(e) => {
+                      if (!isBillingPayment && !isCanceled) {
+                        e.stopPropagation();
+                        setIsDescriptionEditing(true);
+                      }
+                    }}
                   >
                     {transaction.description || 'Sem descrição'}
                   </span>
+                )}
+
+                {/* Calendar Popover for Rescheduling */}
+                {!isBillingPayment && (
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <Popover>
+                      <SimpleTooltip label="Reagendar" side="top">
+                        <PopoverTrigger asChild>
+                          <button className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:scale-95">
+                            <CalendarIcon className="h-3 w-3" />
+                          </button>
+                        </PopoverTrigger>
+                      </SimpleTooltip>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={new Date(transaction.date)}
+                          onSelect={(date) => {
+                            if (date) {
+                              handleFastUpdate({ date });
+                            }
+                          }}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 )}
               </span>
               {(transaction.totalInstallments ?? 0) > 0 &&
@@ -335,18 +433,44 @@ export function TransactionListItem({
                     {transaction.totalInstallments}
                   </span>
                 )}
-              <TransactionCategoryBadge
-                category={transaction.category}
-                className="ml-1"
-              />
+              <div onClick={(e) => e.stopPropagation()}>
+                <TransactionCategoryBadge
+                  category={transaction.category}
+                  className="ml-1"
+                  onSelect={
+                    !isBillingPayment && !isCanceled
+                      ? (category) => handleFastUpdate({ category })
+                      : undefined
+                  }
+                  disabled={updateLoading}
+                />
+              </div>
             </div>
             {(!hideAccount || isBillingPayment) && (
-              <TransactionAccountDisplay
-                transaction={transaction}
-                hideWarnings={hideWarnings}
-                sourceAccountIdFallback={sourceAccountIdFallback}
-                destinyAccountIdFallback={destinyAccountIdFallback}
-              />
+              <div onClick={(e) => e.stopPropagation()}>
+                <TransactionAccountDisplay
+                  transaction={transaction}
+                  hideWarnings={hideWarnings}
+                  sourceAccountIdFallback={sourceAccountIdFallback}
+                  destinyAccountIdFallback={destinyAccountIdFallback}
+                  onUpdateAccount={
+                    !isBillingPayment && !isCanceled
+                      ? (accountId, type) =>
+                          handleFastUpdate({
+                            [type === 'source'
+                              ? 'sourceAccountId'
+                              : 'destinyAccountId']: accountId,
+                          })
+                      : undefined
+                  }
+                  onUpdateCard={
+                    !isBillingPayment && !isCanceled
+                      ? (cardId) => handleFastUpdate({ sourceCardId: cardId })
+                      : undefined
+                  }
+                  disabled={updateLoading}
+                />
+              </div>
             )}
           </div>
         </div>
@@ -365,10 +489,26 @@ export function TransactionListItem({
             amount={transaction.amount}
             type={transaction.type}
             isExpenseForBilling={isExpenseForBilling}
+            onUpdate={
+              !isBillingPayment && !isCanceled
+                ? (amount) => handleFastUpdate({ amount })
+                : undefined
+            }
+            disabled={updateLoading}
           />
 
           {/* Status */}
-          <TransactionStatusBadge status={transaction.status} />
+          <div onClick={(e) => e.stopPropagation()}>
+            <TransactionStatusBadge
+              status={transaction.status}
+              onSelect={
+                !isBillingPayment && !isCanceled
+                  ? (status) => handleFastUpdate({ status })
+                  : undefined
+              }
+              disabled={updateLoading}
+            />
+          </div>
 
           {/* Ações inline */}
           <div className="flex items-center gap-1">
@@ -384,6 +524,57 @@ export function TransactionListItem({
                 </Button>
               </SimpleTooltip>
             )}
+
+            {!hideActions.includes('edit') && (
+              <SimpleTooltip label="Editar" side="top">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEdit();
+                  }}
+                >
+                  <Pencil className="h-4 w-4" />
+                  <span className="sr-only">Editar</span>
+                </Button>
+              </SimpleTooltip>
+            )}
+
+            {!isBillingPayment &&
+              !isCanceled &&
+              !hideActions.includes('cancel') && (
+                <SimpleTooltip
+                  label={
+                    transaction.canCancel
+                      ? 'Cancelar'
+                      : (transaction.cancelReason ?? 'Não pode ser cancelada')
+                  }
+                  side="top"
+                >
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={cn(
+                      'h-8 w-8',
+                      transaction.canCancel
+                        ? 'text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300'
+                        : 'cursor-not-allowed opacity-40',
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (transaction.canCancel) {
+                        setCancelDialogOpen(true);
+                      }
+                    }}
+                    disabled={!transaction.canCancel}
+                  >
+                    <Ban className="h-4 w-4" />
+                    <span className="sr-only">Cancelar</span>
+                  </Button>
+                </SimpleTooltip>
+              )}
           </div>
         </div>
       </div>
@@ -393,6 +584,7 @@ export function TransactionListItem({
         open={scopeDialogOpen}
         onOpenChange={handleScopeDialogClose}
         onSelectScope={handleScopeSelected}
+        actionType={pendingAction || 'UPDATE'}
       />
 
       <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
