@@ -63,7 +63,7 @@ export function TransactionsTimelineList({
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  const { categorizeTransactions, cancelTransactions, isLoading } =
+  const { categorizeTransactions, updateBulkFields, cancelTransactions, isLoading } =
     useBulkTransactionMutations({
       refetchVariables,
       onCompleted: () => setSelectedIds([]),
@@ -239,6 +239,18 @@ export function TransactionsTimelineList({
         onCategorize={(category) =>
           categorizeTransactions(selectedIds, category)
         }
+        onUpdateStatus={(status) => {
+          updateBulkFields(selectedIds, { status });
+        }}
+        onUpdateAccount={(accountId) => {
+          updateBulkFields(selectedIds, { sourceAccountId: accountId });
+        }}
+        onUpdateDate={(date) => {
+          updateBulkFields(selectedIds, { date });
+        }}
+        onUpdatePaymentMethod={(paymentMethod) => {
+          updateBulkFields(selectedIds, { paymentMethod });
+        }}
         onDelete={() => cancelTransactions(selectedIds)}
         isLoading={isLoading}
       />

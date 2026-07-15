@@ -77,6 +77,20 @@ export function useBulkTransactionMutations({
     });
   };
 
+  const updateBulkFields = (
+    ids: string[],
+    fields: Omit<import('@/graphql/graphql').BulkUpdateTransactionsInput, 'ids'>
+  ) => {
+    return bulkUpdateTransactions({
+      variables: {
+        data: {
+          ids,
+          ...fields,
+        },
+      },
+    });
+  };
+
   const cancelTransactions = (ids: string[]) => {
     return bulkCancelTransactions({
       variables: {
@@ -89,6 +103,7 @@ export function useBulkTransactionMutations({
 
   return {
     categorizeTransactions,
+    updateBulkFields,
     cancelTransactions,
     isUpdating,
     isCanceling,

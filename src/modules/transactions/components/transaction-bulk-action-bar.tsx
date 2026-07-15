@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { X, Trash2, Tag, Loader2, Check } from 'lucide-react';
-import { TransactionCategory } from '@/graphql/graphql';
+import { X, Trash2, Tag, Loader2, Check, CheckCircle, Wallet, MoreHorizontal, Calendar, CreditCard } from 'lucide-react';
+import { TransactionCategory, TransactionStatus, PaymentMethod } from '@/graphql/graphql';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +20,10 @@ interface TransactionBulkActionBarProps {
   selectedCount: number;
   onClear: () => void;
   onCategorize: (category: TransactionCategory) => void;
+  onUpdateStatus: (status: TransactionStatus) => void;
+  onUpdateAccount: (accountId: string) => void;
+  onUpdateDate: (date: Date) => void;
+  onUpdatePaymentMethod: (method: PaymentMethod) => void;
   onDelete: () => void;
   isLoading?: boolean;
 }
@@ -28,10 +32,17 @@ export function TransactionBulkActionBar({
   selectedCount,
   onClear,
   onCategorize,
+  onUpdateStatus,
+  onUpdateAccount,
+  onUpdateDate,
+  onUpdatePaymentMethod,
   onDelete,
   isLoading = false,
 }: TransactionBulkActionBarProps) {
   const [categoryOpen, setCategoryOpen] = useState(false);
+  const [statusOpen, setStatusOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  // Add state for date and payment method popovers if needed, or put them inside the More menu directly.
 
   if (selectedCount === 0) return null;
 
@@ -95,6 +106,98 @@ export function TransactionBulkActionBar({
                 );
               },
             )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <DropdownMenu open={statusOpen} onOpenChange={setStatusOpen}>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 rounded-full text-background hover:bg-background/20 hover:text-background disabled:opacity-50"
+              disabled={isLoading}
+            >
+              <CheckCircle className="mr-2 h-4 w-4" />
+              Status
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="center" className="w-40 p-2">
+            <DropdownMenuItem
+              className="flex cursor-pointer items-center gap-2 rounded-md transition-colors"
+              onClick={() => {
+                onUpdateStatus(TransactionStatus.Completed);
+                setStatusOpen(false);
+              }}
+            >
+              <div className="h-2 w-2 rounded-full bg-emerald-500" />
+              <span>Marcar como Pago</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="flex cursor-pointer items-center gap-2 rounded-md transition-colors"
+              onClick={() => {
+                onUpdateStatus(TransactionStatus.Planned);
+                setStatusOpen(false);
+              }}
+            >
+              <div className="h-2 w-2 rounded-full bg-muted-foreground" />
+              <span>Marcar como Pendente</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Note: In a real app, Account selector would use the TransactionAccountSelector component properly positioned inside a Dropdown or Popover, but for simplicity here we add a Button that could trigger it. Let's just add a quick placeholder dropdown or use the More menu for Account too to save space if needed. */}
+        <DropdownMenu open={moreOpen} onOpenChange={setMoreOpen}>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 rounded-full text-background hover:bg-background/20 hover:text-background disabled:opacity-50"
+              disabled={isLoading}
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="center" className="w-56 p-2">
+            {/* Payment Method Sub-actions */}
+            <div className="mb-2 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Método de Pagamento
+            </div>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => {
+                onUpdatePaymentMethod(PaymentMethod.CreditCard);
+                setMoreOpen(false);
+              }}
+            >
+              <CreditCard className="mr-2 h-4 w-4" />
+              Cartão de Crédito
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => {
+                onUpdatePaymentMethod(PaymentMethod.Pix);
+                setMoreOpen(false);
+              }}
+            >
+              Pix
+            </DropdownMenuItem>
+            
+            {/* Quick Dates */}
+            <div className="mb-2 mt-4 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Mover Data
+            </div>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => {
+                onUpdateDate(new Date());
+                setMoreOpen(false);
+              }}
+            >
+              <Calendar className="mr-2 h-4 w-4" />
+              Para Hoje
+            </DropdownMenuItem>
+            
+            {/* Note: Account should ideally open a nested menu or dialog. We will trigger onUpdateAccount with a prompt or similar logic in parent, or add a nested dialog here. */}
           </DropdownMenuContent>
         </DropdownMenu>
 

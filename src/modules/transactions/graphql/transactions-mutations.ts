@@ -83,6 +83,10 @@ export const BulkUpdateTransactionsMutation = graphql(`
     bulkUpdateTransactions(data: $data) {
       id
       category
+      status
+      sourceAccountId
+      date
+      paymentMethod
     }
   }
 `);
