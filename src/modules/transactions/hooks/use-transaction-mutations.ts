@@ -10,9 +10,9 @@ import {
 } from '@/graphql/graphql';
 import {
   UpdateRecurringTransactionsMutation,
-  CancelTransactionMutation,
+  DeleteTransactionMutation,
   UpdateTransactionMutation,
-  CancelRecurringTransactionsMutation,
+  DeleteRecurringTransactionsMutation,
 } from '../graphql/transactions-mutations';
 import {
   TransactionsQuery,
@@ -31,10 +31,10 @@ export function useTransactionMutations({
   refetchVariables,
 }: UseTransactionMutationsProps) {
   const [scopeDialogOpen, setScopeDialogOpen] = useState(false);
-  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [pendingData, setPendingData] = useState<any | null>(null);
   const [pendingAction, setPendingAction] = useState<
-    'UPDATE' | 'CANCEL' | null
+    'UPDATE' | 'DELETE' | null
   >(null);
 
   const scopeResolverRef = useRef<((shouldContinue: boolean) => void) | null>(
@@ -80,8 +80,8 @@ export function useTransactionMutations({
     },
   );
 
-  const [cancelTransaction, { loading: cancelLoading }] = useMutation(
-    CancelTransactionMutation,
+  const [deleteTransaction, { loading: deleteLoading }] = useMutation(
+    DeleteTransactionMutation,
     {
       refetchQueries: [
         TransactionsQuery,
@@ -90,8 +90,8 @@ export function useTransactionMutations({
         BillingQuery,
       ],
       onCompleted: () => {
-        toast.success('Transação cancelada!');
-        setCancelDialogOpen(false);
+        toast.success('Transação excluída!');
+        setDeleteDialogOpen(false);
       },
       onError: (error) => {
         toast.error(error.message);
@@ -99,8 +99,8 @@ export function useTransactionMutations({
     },
   );
 
-  const [cancelRecurringTransactions] = useMutation(
-    CancelRecurringTransactionsMutation,
+  const [deleteRecurringTransactions] = useMutation(
+    DeleteRecurringTransactionsMutation,
     {
       refetchQueries: [
         TransactionsQuery,
@@ -109,7 +109,7 @@ export function useTransactionMutations({
         BillingQuery,
       ],
       onCompleted: () => {
-        toast.success('Transações canceladas!');
+        toast.success('Transações excluídas!');
       },
       onError: (error) => {
         toast.error(error.message);
@@ -151,8 +151,8 @@ export function useTransactionMutations({
             },
           },
         });
-      } else if (pendingAction === 'CANCEL' && !scopeResolverRef.current) {
-        await cancelTransaction({ variables: { id: transaction.id } });
+      } else if (pendingAction === 'DELETE' && !scopeResolverRef.current) {
+        await deleteTransaction({ variables: { id: transaction.id } });
       }
     } else {
       scopeResolverRef.current?.(false);
@@ -176,8 +176,8 @@ export function useTransactionMutations({
             data: recurringData,
           },
         });
-      } else if (pendingAction === 'CANCEL') {
-        await cancelRecurringTransactions({
+      } else if (pendingAction === 'DELETE') {
+        await deleteRecurringTransactions({
           variables: {
             transactionId: transaction.id,
             scope,
@@ -201,15 +201,15 @@ export function useTransactionMutations({
     setScopeDialogOpen(open);
   };
 
-  const handleCancel = () => {
+  const handleDelete = () => {
     // Se for recorrente, abre o dialog de escopo, senão usa a mutation original.
-    // Usado pela lista de transações (fast-cancel)
+    // Usado pela lista de transações (fast-delete)
     const isRecurring = !!transaction.recurringTransactionId;
     if (isRecurring) {
-      setPendingAction('CANCEL');
+      setPendingAction('DELETE');
       setScopeDialogOpen(true);
     } else {
-      cancelTransaction({ variables: { id: transaction.id } });
+      deleteTransaction({ variables: { id: transaction.id } });
     }
   };
 
@@ -239,15 +239,15 @@ export function useTransactionMutations({
   };
 
   return {
-    cancelLoading,
+    deleteLoading,
     updateLoading,
-    cancelDialogOpen,
-    setCancelDialogOpen,
+    deleteDialogOpen,
+    setDeleteDialogOpen,
     scopeDialogOpen,
     handleScopeDialogClose,
     handleScopeSelected,
     handleBeforeSubmit,
-    handleCancel,
+    handleDelete,
     handleFastUpdate,
     pendingAction,
   };

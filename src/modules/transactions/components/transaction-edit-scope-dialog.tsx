@@ -18,7 +18,7 @@ interface TransactionEditScopeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSelectScope: (scope: UpdateRecurringScope) => void;
-  actionType?: 'UPDATE' | 'CANCEL';
+  actionType?: 'UPDATE' | 'DELETE';
 }
 
 export function TransactionEditScopeDialog({
@@ -41,10 +41,10 @@ export function TransactionEditScopeDialog({
       <DialogContent className="max-w-[400px]">
         <DialogHeader>
           <DialogTitle>
-            {actionType === 'UPDATE' ? 'Editar' : 'Cancelar'} transação recorrente
+            {actionType === 'UPDATE' ? 'Editar' : 'Excluir'} transação recorrente
           </DialogTitle>
           <DialogDescription>
-            Esta transação faz parte de uma recorrência. Escolha o escopo da {actionType === 'UPDATE' ? 'edição' : 'cancelamento'}:
+            Esta transação faz parte de uma recorrência. Escolha o escopo da {actionType === 'UPDATE' ? 'edição' : 'exclusão'}:
           </DialogDescription>
         </DialogHeader>
 
@@ -63,7 +63,7 @@ export function TransactionEditScopeDialog({
             <Label htmlFor="this-only" className="flex-1 cursor-pointer">
               <p className="font-medium">Apenas esta</p>
               <p className="text-sm text-muted-foreground">
-                {actionType === 'UPDATE' ? 'Edita' : 'Cancela'} somente esta transação
+                {actionType === 'UPDATE' ? 'Edita' : 'Exclui'} somente esta transação
               </p>
             </Label>
           </div>
@@ -76,7 +76,7 @@ export function TransactionEditScopeDialog({
             <Label htmlFor="this-and-future" className="flex-1 cursor-pointer">
               <p className="font-medium">Esta e próximas</p>
               <p className="text-sm text-muted-foreground">
-                {actionType === 'UPDATE' ? 'Edita' : 'Cancela'} esta e todas as transações futuras planejadas
+                {actionType === 'UPDATE' ? 'Edita' : 'Exclui'} esta e todas as transações futuras planejadas
               </p>
             </Label>
           </div>
@@ -89,7 +89,7 @@ export function TransactionEditScopeDialog({
             <Label htmlFor="all-planned" className="flex-1 cursor-pointer">
               <p className="font-medium">Todas planejadas</p>
               <p className="text-sm text-muted-foreground">
-                {actionType === 'UPDATE' ? 'Edita' : 'Cancela'} todas as transações planejadas desta recorrência
+                {actionType === 'UPDATE' ? 'Edita' : 'Exclui'} todas as transações planejadas desta recorrência
               </p>
             </Label>
           </div>

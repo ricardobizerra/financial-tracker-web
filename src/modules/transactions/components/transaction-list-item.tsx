@@ -78,7 +78,7 @@ import { TransactionPaymentMethod } from './transaction-payment-method';
 interface TransactionListItemProps {
   transaction: TransactionFragmentFragment;
   hideAccount?: boolean;
-  hideActions?: ('confirm' | 'edit' | 'cancel')[];
+  hideActions?: ('confirm' | 'edit' | 'delete')[];
   compact?: boolean;
   hideWarnings?: boolean;
   showType?: boolean;
@@ -110,15 +110,15 @@ export function TransactionListItem({
   };
 
   const {
-    cancelLoading,
+    deleteLoading,
     updateLoading,
-    cancelDialogOpen,
-    setCancelDialogOpen,
+    deleteDialogOpen,
+    setDeleteDialogOpen,
     scopeDialogOpen,
     handleScopeDialogClose,
     handleScopeSelected,
     handleBeforeSubmit,
-    handleCancel,
+    handleDelete,
     handleFastUpdate,
     pendingAction,
   } = useTransactionMutations({
@@ -159,7 +159,7 @@ export function TransactionListItem({
   const isBetweenAccounts =
     transaction.type === TransactionType.BetweenAccounts;
   const isOverdue = transaction.status === TransactionStatus.Overdue;
-  const isCanceled = transaction.status === TransactionStatus.Canceled;
+  const isCanceled = false; // status CANCELED is removed
   const isBillingPayment = !!transaction.billingPayment;
   const cardId = transaction.billingPayment?.card?.id;
 
@@ -544,12 +544,12 @@ export function TransactionListItem({
 
             {!isBillingPayment &&
               !isCanceled &&
-              !hideActions.includes('cancel') && (
+              !hideActions.includes('delete') && (
                 <SimpleTooltip
                   label={
-                    transaction.canCancel
-                      ? 'Cancelar'
-                      : (transaction.cancelReason ?? 'Não pode ser cancelada')
+                    transaction.canDelete
+                      ? 'Excluir'
+                      : (transaction.deleteReason ?? 'Não pode ser excluída')
                   }
                   side="top"
                 >
@@ -558,20 +558,20 @@ export function TransactionListItem({
                     size="icon"
                     className={cn(
                       'h-8 w-8',
-                      transaction.canCancel
+                      transaction.canDelete
                         ? 'text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300'
                         : 'cursor-not-allowed opacity-40',
                     )}
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (transaction.canCancel) {
-                        setCancelDialogOpen(true);
+                      if (transaction.canDelete) {
+                        setDeleteDialogOpen(true);
                       }
                     }}
-                    disabled={!transaction.canCancel}
+                    disabled={!transaction.canDelete}
                   >
                     <Ban className="h-4 w-4" />
-                    <span className="sr-only">Cancelar</span>
+                    <span className="sr-only">Excluir</span>
                   </Button>
                 </SimpleTooltip>
               )}
@@ -587,21 +587,21 @@ export function TransactionListItem({
         actionType={pendingAction || 'UPDATE'}
       />
 
-      <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent className="max-w-[450px]">
           <AlertDialogHeader>
-            <AlertDialogTitle>Cancelar transação?</AlertDialogTitle>
+            <AlertDialogTitle>Excluir transação?</AlertDialogTitle>
             <AlertDialogDescription>
-              {transaction.cancelWarningMessage ? (
+              {transaction.deleteWarningMessage ? (
                 <>
                   <strong className="text-amber-600">
-                    {transaction.cancelWarningMessage}
+                    {transaction.deleteWarningMessage}
                   </strong>
                   <br />
                   <br />
                 </>
               ) : null}
-              Tem certeza que deseja cancelar esta transação? Esta ação não pode
+              Tem certeza que deseja excluir esta transação? Esta ação não pode
               ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -632,11 +632,11 @@ export function TransactionListItem({
           <AlertDialogFooter>
             <AlertDialogCancel>Voltar</AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleCancel}
-              disabled={cancelLoading}
+              onClick={handleDelete}
+              disabled={deleteLoading}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {cancelLoading ? 'Cancelando...' : 'Sim, cancelar'}
+              {deleteLoading ? 'Excluindo...' : 'Sim, excluir'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -35,11 +35,6 @@ export function TransactionStatusBadge({
         'bg-purple-100 hover:bg-purple-200/80 text-purple-800 dark:bg-purple-900/40 dark:hover:bg-purple-900/60 dark:text-purple-300 border-purple-500/50 dark:border-purple-400/50',
       dot: 'bg-purple-500 dark:bg-purple-400',
     },
-    CANCELED: {
-      background:
-        'bg-orange-100 hover:bg-orange-200/80 text-orange-800 dark:bg-orange-900/40 dark:hover:bg-orange-900/60 dark:text-orange-300 border-orange-500/50 dark:border-orange-400/50',
-      dot: 'bg-orange-500 dark:bg-orange-400',
-    },
     OVERDUE: {
       background:
         'bg-red-600 hover:bg-red-700 text-white dark:bg-red-500 dark:hover:bg-red-600 border-red-700 dark:border-red-400',

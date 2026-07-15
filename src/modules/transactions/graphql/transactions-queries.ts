@@ -102,9 +102,9 @@ export const TransactionsFragment = graphql(`
         paymentDate
       }
     }
-    canCancel
-    cancelReason
-    cancelWarningMessage
+    canDelete
+    deleteReason
+    deleteWarningMessage
     installmentStartDate
     installmentNumber
     totalInstallments

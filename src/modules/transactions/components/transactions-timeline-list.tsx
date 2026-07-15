@@ -25,7 +25,7 @@ import { TransactionBulkActionBar } from './transaction-bulk-action-bar';
 interface TransactionsTimelineListProps {
   transactions: TransactionFragmentFragment[];
   hideAccount?: boolean;
-  hideActions?: ('confirm' | 'edit' | 'cancel')[];
+  hideActions?: ('confirm' | 'edit' | 'delete')[];
   compact?: boolean;
   showType?: boolean;
   hideWarnings?: boolean;
@@ -63,7 +63,7 @@ export function TransactionsTimelineList({
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  const { categorizeTransactions, updateBulkFields, cancelTransactions, isLoading } =
+  const { categorizeTransactions, updateBulkFields, deleteTransactions, isLoading } =
     useBulkTransactionMutations({
       refetchVariables,
       onCompleted: () => setSelectedIds([]),
@@ -251,7 +251,7 @@ export function TransactionsTimelineList({
         onUpdatePaymentMethod={(paymentMethod) => {
           updateBulkFields(selectedIds, { paymentMethod });
         }}
-        onDelete={() => cancelTransactions(selectedIds)}
+        onDelete={() => deleteTransactions(selectedIds)}
         isLoading={isLoading}
       />
     </div>

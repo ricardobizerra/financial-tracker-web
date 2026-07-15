@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/client';
 import { toast } from 'sonner';
 import {
   BulkUpdateTransactionsMutation,
-  BulkCancelTransactionsMutation,
+  BulkDeleteTransactionsMutation,
 } from '../graphql/transactions-mutations';
 import {
   TransactionsQuery,
@@ -42,8 +42,8 @@ export function useBulkTransactionMutations({
     },
   );
 
-  const [bulkCancelTransactions, { loading: isCanceling }] = useMutation(
-    BulkCancelTransactionsMutation,
+  const [bulkDeleteTransactions, { loading: isDeleting }] = useMutation(
+    BulkDeleteTransactionsMutation,
     {
       refetchQueries: [
         refetchVariables
@@ -91,8 +91,8 @@ export function useBulkTransactionMutations({
     });
   };
 
-  const cancelTransactions = (ids: string[]) => {
-    return bulkCancelTransactions({
+  const deleteTransactions = (ids: string[]) => {
+    return bulkDeleteTransactions({
       variables: {
         data: {
           ids,
@@ -104,9 +104,9 @@ export function useBulkTransactionMutations({
   return {
     categorizeTransactions,
     updateBulkFields,
-    cancelTransactions,
+    deleteTransactions,
     isUpdating,
-    isCanceling,
-    isLoading: isUpdating || isCanceling,
+    isDeleting,
+    isLoading: isUpdating || isDeleting,
   };
 }

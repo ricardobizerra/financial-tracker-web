@@ -16,7 +16,6 @@ export const transactionTypeLabels: Record<TransactionType, string> = {
 export const transactionStatusLabel: Record<TransactionStatus, string> = {
   PLANNED: 'Agendada',
   COMPLETED: 'Realizada',
-  CANCELED: 'Cancelada',
   OVERDUE: 'Vencida',
 };
 
