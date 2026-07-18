@@ -153,7 +153,7 @@ export function RecurringTransactionSuggestionItem({
                   key={transaction.id}
                   transaction={transaction}
                   compact
-                  hideActions={['confirm', 'edit', 'cancel']}
+                  hideActions={['confirm', 'edit', 'delete']}
                 />
               ))}
             </div>

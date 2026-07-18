@@ -15,7 +15,7 @@ import {
 import { TransactionsCardList } from '@/modules/transactions/components/transactions-card-list';
 import { useMutation, useQuery } from '@apollo/client';
 import { AccountsQuery, BillingQuery } from '../../graphql/accounts-queries';
-import { CloseBillingMutation } from '../../graphql/accounts-mutations';
+import { ChangeBillingDatesMutation } from '../../graphql/accounts-mutations';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -73,43 +73,40 @@ export function AccountCreditCardTracking({
     fetchPolicy: 'cache-and-network',
   });
 
-  const [closeBillingMutation] = useMutation(CloseBillingMutation);
+  const [changeBillingDatesMutation] = useMutation(ChangeBillingDatesMutation);
 
   const billing = data?.billing?.billing;
   const nextBillingId = data?.billing?.nextBillingId;
   const previousBillingId = data?.billing?.previousBillingId;
 
-  const closeBillingForm = useForm<z.infer<typeof closeBillingSchema>>({
-    defaultValues: {
-      closeOnPredictedDate: true,
+  const changeBillingDatesForm = useForm<z.infer<typeof changeBillingDatesSchema>>({
+    values: {
+      closingDate: billing?.periodEnd ? new Date(billing.periodEnd) : new Date(),
+      paymentDate: billing?.paymentDate ? new Date(billing.paymentDate) : new Date(),
     },
   });
 
-  const handleCloseBilling = async (
-    data: z.infer<typeof closeBillingSchema>,
+  const handleChangeBillingDates = async (
+    data: z.infer<typeof changeBillingDatesSchema>,
   ) => {
     if (!billing) return;
 
     try {
       setIsProcessing(true);
-      const mutationVariables = data.closeOnPredictedDate
-        ? {
-            billingId: billing.id,
-          }
-        : {
-            billingId: billing.id,
-            closingDate: data.closingDate,
-          };
-      await closeBillingMutation({
-        variables: mutationVariables,
+      await changeBillingDatesMutation({
+        variables: {
+          billingId: billing.id,
+          closingDate: data.closingDate,
+          paymentDate: data.paymentDate,
+        },
       });
       await refetch();
       toast.success('Sucesso', {
-        description: 'Fatura fechada com sucesso',
+        description: 'Datas da fatura alteradas com sucesso',
       });
     } catch (error) {
       toast.error('Erro', {
-        description: 'Não foi possível fechar a fatura. Tente novamente.',
+        description: 'Não foi possível alterar as datas da fatura. Tente novamente.',
       });
     } finally {
       setIsProcessing(false);
@@ -134,27 +131,13 @@ export function AccountCreditCardTracking({
       ? `${day} de ${month}`
       : `${day} de ${month} de ${periodEnd.getFullYear()}`;
   }, [predictedClosingDate]);
-  const closeBillingSchema = useMemo(
+  const changeBillingDatesSchema = useMemo(
     () =>
-      z
-        .object({
-          closeOnPredictedDate: formFields.switch.describe(
-            `Fechamento ocorrido na data prevista: ${predictedClosingLabel}? // Em caso de mudança, desmarque para inserir a nova data`,
-          ),
-          closingDate: formFields.date
-            .optional()
-            .describe('Data de fechamento'),
-        })
-        .superRefine((data, ctx) => {
-          if (!data.closeOnPredictedDate && !data.closingDate) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              message: 'Data de fechamento é obrigatória',
-              path: ['closingDate'],
-            });
-          }
-        }),
-    [predictedClosingLabel],
+      z.object({
+        closingDate: formFields.date.describe('Data de Fechamento'),
+        paymentDate: formFields.date.describe('Data de Vencimento'),
+      }),
+    [],
   );
 
   if (loading && !billing) {
@@ -546,24 +529,23 @@ export function AccountCreditCardTracking({
                           Processando...
                         </>
                       ) : (
-                        'Fechar Fatura'
+                        'Alterar Datas'
                       )}
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                      <DialogTitle>Fechamento da Fatura</DialogTitle>
+                      <DialogTitle>Alterar Datas da Fatura</DialogTitle>
                     </DialogHeader>
                     <TsForm
-                      form={closeBillingForm}
-                      schema={closeBillingSchema}
-                      onSubmit={handleCloseBilling}
-                      defaultValues={{
-                        closeOnPredictedDate: true,
-                        closingDate: predictedClosingDate,
-                      }}
+                      form={changeBillingDatesForm}
+                      schema={changeBillingDatesSchema}
+                      onSubmit={handleChangeBillingDates}
                       props={{
                         closingDate: {
+                          minDate: billing.periodStart,
+                        },
+                        paymentDate: {
                           minDate: billing.periodStart,
                         },
                       }}
@@ -574,15 +556,14 @@ export function AccountCreditCardTracking({
                           disabled={isProcessing}
                           loading={isProcessing}
                         >
-                          Fechar Fatura
+                          Salvar Alterações
                         </Button>
                       )}
                     >
                       {(fields) => (
                         <>
-                          {fields.closeOnPredictedDate}
-                          {!closeBillingForm.watch('closeOnPredictedDate') &&
-                            fields.closingDate}
+                          {fields.closingDate}
+                          {fields.paymentDate}
                         </>
                       )}
                     </TsForm>

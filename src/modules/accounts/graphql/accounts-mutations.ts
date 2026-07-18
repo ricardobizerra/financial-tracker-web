@@ -17,9 +17,9 @@ export const CreateCardMutation = graphql(`
   }
 `);
 
-export const CloseBillingMutation = graphql(`
-  mutation CloseBilling($billingId: String!, $closingDate: DateTime) {
-    closeBilling(billingId: $billingId, closingDate: $closingDate) {
+export const ChangeBillingDatesMutation = graphql(`
+  mutation ChangeBillingDates($billingId: String!, $closingDate: DateTime, $paymentDate: DateTime) {
+    changeBillingDates(billingId: $billingId, closingDate: $closingDate, paymentDate: $paymentDate) {
       id
       periodStart
       periodEnd

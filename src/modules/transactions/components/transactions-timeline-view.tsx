@@ -13,7 +13,7 @@ import { TimelineSkeleton } from './timeline-skeleton';
 interface TransactionsTimelineViewProps {
   accountId?: string;
   hideAccount?: boolean;
-  hideActions?: ('confirm' | 'edit' | 'cancel')[];
+  hideActions?: ('confirm' | 'edit' | 'delete')[];
   compact?: boolean;
   isDebitCard?: boolean;
 }
