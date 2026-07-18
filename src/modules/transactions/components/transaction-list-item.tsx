@@ -400,31 +400,29 @@ export function TransactionListItem({
                 )}
 
                 {/* Calendar Popover for Rescheduling */}
-                {!isBillingPayment && (
-                  <div onClick={(e) => e.stopPropagation()}>
-                    <Popover>
-                      <SimpleTooltip label="Reagendar" side="top">
-                        <PopoverTrigger asChild>
-                          <button className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:scale-95">
-                            <CalendarIcon className="h-3 w-3" />
-                          </button>
-                        </PopoverTrigger>
-                      </SimpleTooltip>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={new Date(transaction.date)}
-                          onSelect={(date) => {
-                            if (date) {
-                              handleFastUpdate({ date });
-                            }
-                          }}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                )}
+                <div onClick={(e) => e.stopPropagation()}>
+                  <Popover>
+                    <SimpleTooltip label="Reagendar" side="top">
+                      <PopoverTrigger asChild>
+                        <button className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:scale-95">
+                          <CalendarIcon className="h-3 w-3" />
+                        </button>
+                      </PopoverTrigger>
+                    </SimpleTooltip>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={new Date(transaction.date)}
+                        onSelect={(date) => {
+                          if (date) {
+                            handleFastUpdate({ date });
+                          }
+                        }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </span>
               {(transaction.totalInstallments ?? 0) > 0 &&
                 (transaction.installmentNumber ?? 0) > 0 && (
