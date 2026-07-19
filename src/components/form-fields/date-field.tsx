@@ -17,12 +17,14 @@ export interface DateFieldProps extends BaseFieldProps {
   captionLayout?: CalendarProps['captionLayout'];
   minDate?: Date;
   maxDate?: Date;
+  defaultMonth?: Date;
 }
 
 export function DateField({
   captionLayout = 'label',
   minDate,
   maxDate,
+  defaultMonth,
   ...baseProps
 }: DateFieldProps) {
   const {
@@ -56,6 +58,7 @@ export function DateField({
           selected={value}
           onSelect={onChange}
           captionLayout={captionLayout}
+          defaultMonth={defaultMonth || value}
           disabled={[
             ...(!!minDate ? [{ before: minDate }] : []),
             ...(!!maxDate ? [{ after: maxDate }] : []),

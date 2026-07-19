@@ -68,17 +68,9 @@ export function CardSettingsEditDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-10 w-10 rounded-full"
-          aria-label="Configurações do cartão"
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.15)',
-            color: getTextColorForBackground(institutionColor ?? null),
-          }}
-        >
-          <Settings className="h-5 w-5" />
+        <Button variant="outline" size="sm" className="gap-2">
+          <Settings className="h-4 w-4" />
+          Editar configurações
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">

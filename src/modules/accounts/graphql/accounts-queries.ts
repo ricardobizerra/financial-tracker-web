@@ -211,6 +211,16 @@ export const BillingQuery = graphql(`
           institutionLinkId
           createdAt
           updatedAt
+          availableLimit
+          unpaidBalance
+          usagePercentage
+          billings {
+            id
+            periodStart
+            periodEnd
+            status
+            totalAmount
+          }
         }
         paymentTransaction {
           id
