@@ -9,7 +9,11 @@ export const CreateInvestmentMutation = graphql(`
       duration
       regimeName
       regimePercentage
-      userId
+      institutionLinkId
+      type
+      fixedRate
+      brokerageFee
+      maturityDate
       createdAt
       updatedAt
     }
@@ -19,5 +23,25 @@ export const CreateInvestmentMutation = graphql(`
 export const DeleteInvestmentMutation = graphql(`
   mutation DeleteInvestment($id: ID!) {
     deleteInvestment(id: $id)
+  }
+`);
+
+export const UpdateInvestmentMutation = graphql(`
+  mutation UpdateInvestment($data: UpdateInvestmentInput!) {
+    updateInvestment(data: $data) {
+      id
+      amount
+      startDate
+      duration
+      regimeName
+      regimePercentage
+      institutionLinkId
+      type
+      fixedRate
+      brokerageFee
+      maturityDate
+      createdAt
+      updatedAt
+    }
   }
 `);

@@ -4,6 +4,8 @@ import {
   TransactionType,
   TransactionCategory,
 } from '@/graphql/graphql';
+import { Banknote, CreditCard, Receipt } from 'lucide-react';
+import PixIcon from '@/static/pix-icon.svg';
 
 export const transactionTypeLabels: Record<TransactionType, string> = {
   [TransactionType.Expense]: 'Despesa',
@@ -13,8 +15,7 @@ export const transactionTypeLabels: Record<TransactionType, string> = {
 
 export const transactionStatusLabel: Record<TransactionStatus, string> = {
   PLANNED: 'Agendada',
-  COMPLETED: 'Concluída',
-  CANCELED: 'Cancelada',
+  COMPLETED: 'Realizada',
   OVERDUE: 'Vencida',
 };
 
@@ -24,6 +25,15 @@ export const paymentMethodLabel: Record<PaymentMethod, string> = {
   DEBIT_CARD: 'Cartão de débito',
   CASH: 'Dinheiro',
   PIX: 'Pix',
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const paymentMethodIcons: Record<PaymentMethod, any> = {
+  CASH: Banknote,
+  CREDIT_CARD: CreditCard,
+  DEBIT_CARD: CreditCard,
+  PIX: PixIcon,
+  BOLETO: Receipt,
 };
 
 export const transactionCategoryLabels: Record<TransactionCategory, string> = {

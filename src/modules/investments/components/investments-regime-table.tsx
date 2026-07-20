@@ -13,7 +13,7 @@ export function InvestmentRegimesTable({
   accountId,
 }: InvestmentRegimesTableProps) {
   const { data, networkStatus } = useQuery(InvestmentRegimesQuery, {
-    variables: { accountId },
+    variables: { institutionLinkId: accountId },
   });
 
   const regimes = data?.investmentRegimes.edges?.map((e) => e.node) || [];

@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { flexRender } from '@tanstack/react-table';
 import {
   Table,
@@ -49,7 +50,7 @@ export function DataTableContent() {
 }
 
 function DataTableBody() {
-  const { table, columns, networkStatus } = useDataTable();
+  const { table, columns, networkStatus, onRowClick, renderSubComponent } = useDataTable();
 
   const loading = networkStatus === NetworkStatus.loading;
 
@@ -89,16 +90,26 @@ function DataTableBody() {
             </TableRow>
           ) : table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && 'selected'}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
+              <React.Fragment key={row.id}>
+                <TableRow
+                  data-state={row.getIsSelected() && 'selected'}
+                  onClick={() => onRowClick?.(row)}
+                  className={onRowClick ? 'cursor-pointer hover:bg-muted/50' : ''}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+                {row.getIsExpanded() && renderSubComponent && (
+                  <TableRow>
+                    <TableCell colSpan={row.getVisibleCells().length}>
+                      {renderSubComponent({ row })}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </React.Fragment>
             ))
           ) : (
             <TableRow>

@@ -70,22 +70,85 @@ export function BalanceForecastChart({ accountId }: BalanceForecastChartProps) {
 
   const forecast = data?.balanceForecast;
 
-  const chartData =
-    forecast?.dataPoints?.map((point) => ({
-      date: new Date(point.date),
-      dateLabel: format(new Date(point.date), 'dd/MM', { locale: ptBR }),
-      balance: point.balance,
-      isProjected: point.isProjected,
-      incomeAmount: point.incomeAmount,
-      expenseAmount: point.expenseAmount,
-      transactionCount: point.transactionCount,
-      transactions: point.transactions,
-    })) || [];
+  // Flatten the accountSeries data by date
+  const chartDataByDate = new Map<string, any>();
+  const availableAccounts: { id: string; name: string; color: string }[] = [];
 
-  const minBalance =
-    chartData.length > 0 ? Math.min(...chartData.map((d) => d.balance)) : 0;
-  const maxBalance =
-    chartData.length > 0 ? Math.max(...chartData.map((d) => d.balance)) : 0;
+  const FALLBACK_COLORS = [
+    'hsl(var(--primary))',
+    '#3b82f6', // blue
+    '#10b981', // emerald
+    '#f59e0b', // amber
+    '#8b5cf6', // violet
+    '#ec4899', // pink
+    '#14b8a6', // teal
+    '#f43f5e', // rose
+  ];
+
+  if (forecast?.accountSeries) {
+    forecast.accountSeries.forEach((series, idx) => {
+      const color =
+        series.color || FALLBACK_COLORS[idx % FALLBACK_COLORS.length];
+      availableAccounts.push({
+        id: series.accountId,
+        name: series.accountName,
+        color,
+      });
+
+      series.dataPoints.forEach((point) => {
+        const dateKey = point.date.toString();
+
+        if (!chartDataByDate.has(dateKey)) {
+          chartDataByDate.set(dateKey, {
+            date: new Date(point.date),
+            dateLabel: format(new Date(point.date), 'dd/MM', { locale: ptBR }),
+            isProjected: point.isProjected,
+            transactions: [],
+          });
+        }
+
+        const existingPoint = chartDataByDate.get(dateKey);
+        existingPoint[`balance_${series.accountId}`] = point.balance;
+        existingPoint.totalIncome =
+          (existingPoint.totalIncome || 0) + point.incomeAmount;
+        existingPoint.totalExpense =
+          (existingPoint.totalExpense || 0) + point.expenseAmount;
+
+        if (point.transactions && point.transactions.length > 0) {
+          existingPoint.transactions.push(
+            ...point.transactions.map((tx: any) => ({
+              ...tx,
+              accountName: series.accountName,
+            })),
+          );
+        }
+      });
+    });
+  }
+
+  const chartData = Array.from(chartDataByDate.values()).sort(
+    (a, b) => a.date.getTime() - b.date.getTime(),
+  );
+
+  let minBalance = 0;
+  let maxBalance = 0;
+
+  if (chartData.length > 0) {
+    const allBalances: number[] = [];
+    chartData.forEach((point) => {
+      availableAccounts.forEach((account) => {
+        if (point[`balance_${account.id}`] !== undefined) {
+          allBalances.push(point[`balance_${account.id}`]);
+        }
+      });
+    });
+
+    if (allBalances.length > 0) {
+      minBalance = Math.min(...allBalances);
+      maxBalance = Math.max(...allBalances);
+    }
+  }
+
   const hasNegativeBalance = minBalance < 0;
 
   // Se todos os valores são positivos, começar do 0
@@ -95,7 +158,12 @@ export function BalanceForecastChart({ accountId }: BalanceForecastChartProps) {
     Math.ceil(maxBalance * 1.1),
   ];
 
-  const balanceTrend = forecast?.balanceTrend || 0;
+  // Sum balance trends across all returned series
+  const balanceTrend =
+    forecast?.accountSeries?.reduce(
+      (sum, series) => sum + series.balanceTrend,
+      0,
+    ) || 0;
 
   if (error) {
     return (
@@ -233,28 +301,34 @@ export function BalanceForecastChart({ accountId }: BalanceForecastChartProps) {
             </p>
           </div>
         ) : (
-          <div className="h-[300px] w-full">
+          <div className="mt-4 h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ left: 12, right: 12 }}>
+              <AreaChart
+                data={chartData}
+                margin={{ left: 12, right: 12, top: 12, bottom: 20 }}
+              >
                 <defs>
-                  <linearGradient
-                    id="balanceGradient"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop
-                      offset="5%"
-                      stopColor="hsl(var(--primary))"
-                      stopOpacity={0.3}
-                    />
-                    <stop
-                      offset="95%"
-                      stopColor="hsl(var(--primary))"
-                      stopOpacity={0}
-                    />
-                  </linearGradient>
+                  {availableAccounts.map((account) => (
+                    <linearGradient
+                      key={`gradient-${account.id}`}
+                      id={`balanceGradient-${account.id}`}
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop
+                        offset="5%"
+                        stopColor={account.color}
+                        stopOpacity={0.3}
+                      />
+                      <stop
+                        offset="95%"
+                        stopColor={account.color}
+                        stopOpacity={0}
+                      />
+                    </linearGradient>
+                  ))}
                 </defs>
                 <CartesianGrid
                   strokeDasharray="3 3"
@@ -286,46 +360,79 @@ export function BalanceForecastChart({ accountId }: BalanceForecastChartProps) {
                       <div className="max-w-xs rounded-lg border bg-background p-3 shadow-lg">
                         <p className="font-medium">
                           {format(point.date, "dd 'de' MMMM", { locale: ptBR })}
+                          {point.isProjected && (
+                            <span className="ml-2 text-xs text-muted-foreground">
+                              (Projetado)
+                            </span>
+                          )}
                         </p>
-                        <p
-                          className={`text-lg font-bold ${point.balance >= 0 ? 'text-emerald-600' : 'text-red-600'}`}
-                        >
-                          {formatCurrency(point.balance)}
-                        </p>
-                        {point.isProjected && (
-                          <p className="text-xs text-muted-foreground">
-                            Saldo projetado
-                          </p>
-                        )}
-                        {point.transactions &&
-                          point.transactions.length > 0 && (
-                            <div className="mt-2 space-y-1 border-t pt-2">
-                              {point.transactions.map((tx) => (
-                                <div
-                                  key={tx.id}
-                                  className="flex items-center justify-between gap-3 text-sm"
-                                >
-                                  <span className="truncate text-muted-foreground">
-                                    {tx.description}
-                                  </span>
+                        <div className="mt-2 space-y-2">
+                          {availableAccounts.map((account) => {
+                            const val = point[`balance_${account.id}`];
+                            if (val === undefined) return null;
+                            return (
+                              <div key={account.id} className="flex flex-col">
+                                <div className="flex items-center justify-between gap-4">
+                                  <div className="flex min-w-[120px] items-center gap-1.5">
+                                    <div
+                                      className="h-2.5 w-2.5 rounded-full"
+                                      style={{ backgroundColor: account.color }}
+                                    />
+                                    <span
+                                      className="truncate text-xs text-muted-foreground"
+                                      title={account.name}
+                                    >
+                                      {account.name}
+                                    </span>
+                                  </div>
                                   <span
-                                    className={`shrink-0 font-medium ${
-                                      tx.isIncome
-                                        ? 'text-emerald-600'
-                                        : 'text-red-600'
-                                    }`}
+                                    className={`text-sm font-bold ${val >= 0 ? 'text-emerald-600' : 'text-red-600'}`}
                                   >
-                                    {tx.isIncome ? '+' : '-'}
-                                    {formatCurrency(tx.amount)}
+                                    {formatCurrency(val)}
                                   </span>
                                 </div>
-                              ))}
-                            </div>
-                          )}
+                                {point.transactions &&
+                                  point.transactions.filter(
+                                    (tx: any) =>
+                                      tx.accountName === account.name,
+                                  ).length > 0 && (
+                                    <div className="ml-[5px] mt-1 border-l-2 border-muted pl-4">
+                                      {point.transactions
+                                        .filter(
+                                          (tx: any) =>
+                                            tx.accountName === account.name,
+                                        )
+                                        .map((tx: any) => (
+                                          <div
+                                            key={tx.id}
+                                            className="flex items-center justify-between gap-3 text-xs"
+                                          >
+                                            <span className="w-[80px] flex-1 truncate text-muted-foreground">
+                                              {tx.description}
+                                            </span>
+                                            <span
+                                              className={`shrink-0 font-medium ${
+                                                tx.isIncome
+                                                  ? 'text-emerald-500'
+                                                  : 'text-red-500'
+                                              }`}
+                                            >
+                                              {tx.isIncome ? '+' : '-'}
+                                              {formatCurrency(tx.amount)}
+                                            </span>
+                                          </div>
+                                        ))}
+                                    </div>
+                                  )}
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     );
                   }}
                 />
+                {/* Replaces Legend dynamically if needed, or we implement custom legend */}
                 {/* Linha de referência Y=0 quando há valores negativos */}
                 {hasNegativeBalance && (
                   <ReferenceLine
@@ -349,13 +456,18 @@ export function BalanceForecastChart({ accountId }: BalanceForecastChartProps) {
                     offset: 10,
                   }}
                 />
-                <Area
-                  type="monotone"
-                  dataKey="balance"
-                  stroke="hsl(var(--primary))"
-                  fill="url(#balanceGradient)"
-                  strokeWidth={2}
-                />
+                {availableAccounts.map((account) => (
+                  <Area
+                    key={`area-${account.id}`}
+                    type="monotone"
+                    dataKey={`balance_${account.id}`}
+                    name={account.name}
+                    stroke={account.color}
+                    fill={`url(#balanceGradient-${account.id})`}
+                    strokeWidth={2}
+                    activeDot={{ r: 6, strokeWidth: 0, fill: account.color }}
+                  />
+                ))}
               </AreaChart>
             </ResponsiveContainer>
           </div>

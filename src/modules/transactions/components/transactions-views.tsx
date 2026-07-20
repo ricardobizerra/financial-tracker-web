@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TransactionsCardView } from './transactions-card-view';
+import { TransactionsTimelineView } from './transactions-timeline-view';
 import { BalanceForecastChart } from './balance-forecast-chart';
 import { TransactionsCalendar } from './transactions-calendar';
 import { FinancialAgenda } from './financial-agenda';
-import { LineChart, Calendar, ClipboardList, LayoutGrid } from 'lucide-react';
+import { LineChart, Calendar, ClipboardList, LayoutList } from 'lucide-react';
 import { useParams } from 'next/navigation';
 
 interface TransactionsViewsProps {
@@ -20,16 +20,16 @@ export function TransactionsViews({
   hideAccount = false,
   isDebitCard = false,
 }: TransactionsViewsProps) {
-  const [activeTab, setActiveTab] = useState('cards');
+  const [activeTab, setActiveTab] = useState('timeline');
   const params = useParams<{ accountId?: string }>();
   const effectiveAccountId = accountId || params.accountId;
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <TabsList className="mb-4 grid w-full grid-cols-4">
-        <TabsTrigger value="cards" className="flex items-center gap-2">
-          <LayoutGrid className="h-4 w-4" />
-          <span className="hidden sm:inline">Cards</span>
+        <TabsTrigger value="timeline" className="flex items-center gap-2">
+          <LayoutList className="h-4 w-4" />
+          <span className="hidden sm:inline">Timeline</span>
         </TabsTrigger>
         <TabsTrigger value="forecast" className="flex items-center gap-2">
           <LineChart className="h-4 w-4" />
@@ -45,8 +45,8 @@ export function TransactionsViews({
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="cards" className="mt-0">
-        <TransactionsCardView
+      <TabsContent value="timeline" className="mt-0">
+        <TransactionsTimelineView
           accountId={effectiveAccountId}
           hideAccount={hideAccount}
           isDebitCard={isDebitCard}

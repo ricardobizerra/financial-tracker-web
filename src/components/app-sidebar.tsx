@@ -2,6 +2,7 @@
 
 import {
   ArrowLeftRight,
+  FlaskConical,
   Landmark,
   PiggyBank,
   ReceiptIcon,
@@ -56,6 +57,11 @@ const items = [
     title: 'Recorrências',
     url: '/recurring-transactions',
     icon: Repeat,
+  },
+  {
+    title: 'Simulações',
+    url: '/simulation',
+    icon: FlaskConical,
   },
 ];
 

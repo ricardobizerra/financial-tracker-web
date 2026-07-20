@@ -9,9 +9,26 @@ import {
 } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { TransactionStatus, TransactionType } from '@/graphql/graphql';
-import { CalendarIcon, Filter, X } from 'lucide-react';
-import { format } from 'date-fns';
+import {
+  CalendarIcon,
+  Filter,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+} from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { useEffect, useState, useRef } from 'react';
+import { useDebounce } from '@/hooks/use-debounce';
+import {
+  format,
+  addMonths,
+  subMonths,
+  startOfMonth,
+  endOfMonth,
+} from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import {
@@ -26,6 +43,7 @@ export interface TransactionFilters {
   endDate?: Date;
   types?: TransactionType[];
   statuses?: TransactionStatus[];
+  search?: string;
 }
 
 interface TransactionsFiltersProps {
@@ -37,11 +55,43 @@ export function TransactionsFilters({
   filters,
   onFiltersChange,
 }: TransactionsFiltersProps) {
+  const [searchValue, setSearchValue] = useState(filters.search || '');
+  const debouncedSearch = useDebounce(searchValue, 500);
+
+  // Manter referência do valor atual para sincronização sem triggers extras
+  const searchValueRef = useRef(searchValue);
+  useEffect(() => {
+    searchValueRef.current = searchValue;
+  }, [searchValue]);
+
+  const filtersRef = useRef(filters);
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
+
+  useEffect(() => {
+    const normalizedSearch = debouncedSearch || undefined;
+    if (filtersRef.current.search !== normalizedSearch) {
+      onFiltersChange({
+        ...filtersRef.current,
+        search: normalizedSearch,
+      });
+    }
+  }, [debouncedSearch, onFiltersChange]);
+
+  // Sincronizar se os filtros forem alterados externamente (ex: botão limpar)
+  useEffect(() => {
+    if (filters.search !== searchValueRef.current) {
+      setSearchValue(filters.search || '');
+    }
+  }, [filters.search]);
+
   const hasActiveFilters =
     filters.startDate ||
     filters.endDate ||
     (filters.types && filters.types.length > 0) ||
-    (filters.statuses && filters.statuses.length > 0);
+    (filters.statuses && filters.statuses.length > 0) ||
+    filters.search;
 
   const handleTypeChange = (type: TransactionType, checked: boolean) => {
     const currentTypes = filters.types || [];
@@ -66,11 +116,24 @@ export function TransactionsFilters({
   };
 
   const clearFilters = () => {
+    setSearchValue('');
     onFiltersChange({});
   };
 
   return (
     <div className="flex flex-wrap items-center gap-2">
+      {/* Search Input */}
+      <div className="relative w-full sm:w-64">
+        <Input
+          type="text"
+          placeholder="Buscar descrição..."
+          className="h-8"
+          leftSlot={<Search className="h-4 w-4 text-muted-foreground" />}
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+        />
+      </div>
+
       {/* Date Range Picker */}
       <Popover>
         <PopoverTrigger asChild>
@@ -78,25 +141,72 @@ export function TransactionsFilters({
             variant="outline"
             size="sm"
             className={cn(
-              'justify-start text-left font-normal',
+              'gap-2',
               (filters.startDate || filters.endDate) && 'border-primary',
             )}
           >
-            <CalendarIcon />
-            {filters.startDate && filters.endDate ? (
-              <>
-                {format(filters.startDate, 'dd/MM/yy', { locale: ptBR })} -{' '}
-                {format(filters.endDate, 'dd/MM/yy', { locale: ptBR })}
-              </>
-            ) : filters.startDate ? (
-              <>
-                A partir de{' '}
-                {format(filters.startDate, 'dd/MM/yy', { locale: ptBR })}
-              </>
-            ) : filters.endDate ? (
-              <>Até {format(filters.endDate, 'dd/MM/yy', { locale: ptBR })}</>
-            ) : (
-              'Período'
+            <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+            <span className="font-medium">Período</span>
+            {(filters.startDate || filters.endDate) && (
+              <Badge
+                variant="secondary"
+                size="sm"
+                className="gap-1 font-normal"
+              >
+                {(() => {
+                  const formatCustomDate = (date: Date) => {
+                    const isCurrentYear =
+                      date.getFullYear() === new Date().getFullYear();
+                    return format(
+                      date,
+                      isCurrentYear ? "dd 'de' MMMM" : "dd 'de' MMMM 'de' yyyy",
+                      { locale: ptBR },
+                    );
+                  };
+
+                  if (filters.startDate && filters.endDate) {
+                    const startFormatted = formatCustomDate(filters.startDate);
+                    const endFormatted = formatCustomDate(filters.endDate);
+
+                    if (startFormatted === endFormatted) {
+                      return startFormatted;
+                    }
+
+                    return `${startFormatted} - ${endFormatted}`;
+                  }
+                  if (filters.startDate) {
+                    return `Desde ${formatCustomDate(filters.startDate)}`;
+                  }
+                  return `Até ${formatCustomDate(filters.endDate!)}`;
+                })()}
+                <span
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onFiltersChange({
+                      ...filters,
+                      startDate: undefined,
+                      endDate: undefined,
+                    });
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onFiltersChange({
+                        ...filters,
+                        startDate: undefined,
+                        endDate: undefined,
+                      });
+                    }
+                  }}
+                  className="ml-1 inline-flex cursor-pointer rounded-full p-0.5 transition-colors hover:bg-black/10"
+                >
+                  <X className="h-3 w-3" />
+                </span>
+              </Badge>
             )}
           </Button>
         </PopoverTrigger>
@@ -127,15 +237,27 @@ export function TransactionsFilters({
             variant="outline"
             size="sm"
             className={cn(
+              'gap-2',
               filters.types && filters.types.length > 0 && 'border-primary',
             )}
           >
-            <Filter />
-            Tipo
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <span className="font-medium">Tipo</span>
             {filters.types && filters.types.length > 0 && (
-              <span className="ml-1 rounded-full bg-primary px-1.5 text-xs text-primary-foreground">
-                {filters.types.length}
-              </span>
+              <div className="flex gap-1">
+                {filters.types.map((t) => (
+                  <TransactionTypeBadge
+                    key={t}
+                    type={t}
+                    onClear={() => {
+                      onFiltersChange({
+                        ...filters,
+                        types: filters.types?.filter((type) => type !== t),
+                      });
+                    }}
+                  />
+                ))}
+              </div>
             )}
           </Button>
         </PopoverTrigger>
@@ -166,17 +288,31 @@ export function TransactionsFilters({
             variant="outline"
             size="sm"
             className={cn(
+              'gap-2',
               filters.statuses &&
                 filters.statuses.length > 0 &&
                 'border-primary',
             )}
           >
-            <Filter />
-            Status
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <span className="font-medium">Status</span>
             {filters.statuses && filters.statuses.length > 0 && (
-              <span className="ml-1 rounded-full bg-primary px-1.5 text-xs text-primary-foreground">
-                {filters.statuses.length}
-              </span>
+              <div className="flex gap-1">
+                {filters.statuses.map((s) => (
+                  <TransactionStatusBadge
+                    key={s}
+                    status={s}
+                    onClear={() => {
+                      onFiltersChange({
+                        ...filters,
+                        statuses: filters.statuses?.filter(
+                          (status) => status !== s,
+                        ),
+                      });
+                    }}
+                  />
+                ))}
+              </div>
             )}
           </Button>
         </PopoverTrigger>
@@ -202,8 +338,13 @@ export function TransactionsFilters({
 
       {/* Clear Filters */}
       {hasActiveFilters && (
-        <Button variant="ghost" size="sm" onClick={clearFilters}>
-          <X />
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={clearFilters}
+          className="gap-2"
+        >
+          <X className="h-4 w-4" />
           Limpar filtros
         </Button>
       )}

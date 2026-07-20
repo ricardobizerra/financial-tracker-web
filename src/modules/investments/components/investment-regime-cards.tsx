@@ -1,26 +1,14 @@
 'use client';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 import { formatCurrency } from '@/lib/formatters/currency';
 import { cn } from '@/lib/utils';
-import { EyeIcon, PiggyBank } from 'lucide-react';
+import { ChevronRight, PiggyBank } from 'lucide-react';
 import { VariationBadge } from '@/components/variation-badge';
 import { investmentRegimeLabel } from '../investment-regime-label';
-import { InvestmentCreateForm } from './investment-create-form';
-import {
-  Regime,
-  InvestmentRegimeSummaryFragmentFragment,
-} from '@/graphql/graphql';
 import { Skeleton } from '@/components/ui/skeleton';
+import { InvestmentRegimeSummaryFragmentFragment } from '@/graphql/graphql';
 
 interface InvestmentRegimeCardProps {
   regime: InvestmentRegimeSummaryFragmentFragment;
@@ -35,79 +23,48 @@ export function InvestmentRegimeCard({
     ? `/investments/${regime.name.toLowerCase()}?accountId=${accountId}`
     : `/investments/${regime.name.toLowerCase()}`;
 
+  const regimeName =
+    investmentRegimeLabel[regime.name as keyof typeof investmentRegimeLabel] ||
+    regime.name;
+
   return (
-    <Card className={cn(regime.quantity === 0 && 'opacity-50')}>
-      <CardContent>
-        <CardHeader className="flex flex-row items-center justify-between gap-4 space-y-0 px-0">
-          <CardTitle>
-            {investmentRegimeLabel[
-              regime.name as keyof typeof investmentRegimeLabel
-            ] || regime.name}
-          </CardTitle>
-          <CardDescription>
-            <span className="font-semibold">{regime.quantity}</span>{' '}
-            {regime.quantity === 1 ? 'investimento' : 'investimentos'}
-          </CardDescription>
-        </CardHeader>
+    <Link
+      href={href}
+      className="group flex items-center justify-between rounded-lg border bg-card p-4 text-card-foreground shadow-sm transition-colors hover:border-primary/50 hover:bg-muted/50"
+    >
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2">
+          <span className="font-medium">{regimeName}</span>
+          <span
+            className={cn(
+              'rounded-full px-2 py-0.5 text-xs',
+              regime.quantity === 0
+                ? 'bg-muted text-muted-foreground opacity-50'
+                : 'bg-secondary text-secondary-foreground',
+            )}
+          >
+            {regime.quantity} {regime.quantity === 1 ? 'ativo' : 'ativos'}
+          </span>
+        </div>
+      </div>
 
-        <div className="flex flex-wrap gap-2">
-          <div className="flex flex-1 flex-col">
-            <p className="text-xs text-muted-foreground">Total investido</p>
-            <p className="text-sm font-semibold">
-              {formatCurrency(regime.totalInvested)}
-            </p>
-          </div>
-
-          <div className="flex flex-1 flex-col">
-            <p className="text-xs text-muted-foreground">Total atual</p>
-            <div className="flex items-center gap-2">
-              <p className="text-sm font-semibold">
-                {formatCurrency(regime.currentInvested)}
-              </p>
-              <VariationBadge
-                variation={regime.currentInvestedPercentage}
-                size="sm"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-1 flex-col">
-            <p className="text-xs text-muted-foreground">
-              Total c/ dedução IRPF
-            </p>
-            <div className="flex items-center gap-2">
-              <p className="text-sm font-semibold">
-                {formatCurrency(regime.taxedInvested)}
-              </p>
-              <VariationBadge
-                variation={regime.taxedInvestedPercentage}
-                size="sm"
-              />
-            </div>
-          </div>
+      <div className="flex items-center gap-6">
+        <div className="flex flex-col items-end">
+          <span className="text-sm font-semibold">
+            {formatCurrency(regime.taxedInvested)}
+          </span>
+          <span className="text-xs text-muted-foreground">Saldo Líquido</span>
         </div>
 
-        <CardFooter className="flex flex-wrap gap-4 px-0 pb-0 pt-6">
-          <Button
-            variant="outline"
+        <div className="flex items-center gap-4">
+          <VariationBadge
+            variation={regime.taxedInvestedPercentage}
             size="sm"
-            disabled={regime.quantity === 0}
-            className="flex-1"
-            asChild
-          >
-            <Link href={href} className="flex items-center gap-1">
-              <EyeIcon className="h-4 w-4" />
-              Ver investimentos
-            </Link>
-          </Button>
-
-          <InvestmentCreateForm
-            defaultRegime={regime.name as Regime}
-            triggerClassName="flex-1"
           />
-        </CardFooter>
-      </CardContent>
-    </Card>
+          <ChevronRight className="h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-1" />
+        </div>
+      </div>
+    </Link>
   );
 }
 
@@ -123,21 +80,14 @@ export function InvestmentRegimeCardsGrid({
   regimes,
   loading = false,
   emptyMessage = 'Nenhum investimento registrado',
-  columns = 4,
   accountId,
 }: InvestmentRegimeCardsGridProps) {
-  const gridCols = {
-    2: 'md:grid-cols-2',
-    3: 'md:grid-cols-2 lg:grid-cols-3',
-    4: 'md:grid-cols-2 lg:grid-cols-4',
-  };
-
   if (loading) {
     return (
-      <div className={cn('grid grid-cols-1 gap-4', gridCols[columns])}>
-        <Skeleton className="h-48" />
-        <Skeleton className="h-48" />
-        <Skeleton className="h-48" />
+      <div className="flex flex-col gap-3">
+        <Skeleton className="h-16 w-full" />
+        <Skeleton className="h-16 w-full" />
+        <Skeleton className="h-16 w-full" />
       </div>
     );
   }
@@ -154,7 +104,7 @@ export function InvestmentRegimeCardsGrid({
   }
 
   return (
-    <div className={cn('grid grid-cols-1 gap-4', gridCols[columns])}>
+    <div className="flex flex-col gap-3">
       {regimes.map((regime) => (
         <InvestmentRegimeCard
           key={regime.name}

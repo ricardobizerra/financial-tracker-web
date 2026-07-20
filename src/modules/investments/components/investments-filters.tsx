@@ -17,7 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
 
 export interface InvestmentFilters {
-  accountIds?: string[];
+  institutionLinkIds?: string[];
 }
 
 interface InvestmentsFiltersProps {
@@ -39,16 +39,17 @@ export function InvestmentsFilters({
 
   const accounts = data?.investmentAccounts || [];
 
-  const hasActiveFilters = filters.accountIds && filters.accountIds.length > 0;
+  const hasActiveFilters =
+    filters.institutionLinkIds && filters.institutionLinkIds.length > 0;
 
   const handleAccountChange = (accountId: string, checked: boolean) => {
-    const currentAccountIds = filters.accountIds || [];
+    const currentAccountIds = filters.institutionLinkIds || [];
     const newAccountIds = checked
       ? [...currentAccountIds, accountId]
       : currentAccountIds.filter((id) => id !== accountId);
     onFiltersChange({
       ...filters,
-      accountIds: newAccountIds.length > 0 ? newAccountIds : undefined,
+      institutionLinkIds: newAccountIds.length > 0 ? newAccountIds : undefined,
     });
   };
 
@@ -65,18 +66,19 @@ export function InvestmentsFilters({
             variant="outline"
             size="sm"
             className={cn(
-              filters.accountIds &&
-                filters.accountIds.length > 0 &&
+              filters.institutionLinkIds &&
+                filters.institutionLinkIds.length > 0 &&
                 'border-primary',
             )}
           >
             <Building2 className="h-4 w-4" />
             Conta
-            {filters.accountIds && filters.accountIds.length > 0 && (
-              <span className="ml-1 rounded-full bg-primary px-1.5 text-xs text-primary-foreground">
-                {filters.accountIds.length}
-              </span>
-            )}
+            {filters.institutionLinkIds &&
+              filters.institutionLinkIds.length > 0 && (
+                <span className="ml-1 rounded-full bg-primary px-1.5 text-xs text-primary-foreground">
+                  {filters.institutionLinkIds.length}
+                </span>
+              )}
           </Button>
         </PopoverTrigger>
         <PopoverContent align="start">
@@ -90,7 +92,9 @@ export function InvestmentsFilters({
                 <div key={account.id} className="flex items-center space-x-2">
                   <Checkbox
                     id={`account-${account.id}`}
-                    checked={filters.accountIds?.includes(account.id) || false}
+                    checked={
+                      filters.institutionLinkIds?.includes(account.id) || false
+                    }
                     onCheckedChange={(checked) =>
                       handleAccountChange(account.id, checked as boolean)
                     }
@@ -102,7 +106,7 @@ export function InvestmentsFilters({
                     <div className="flex items-center gap-2">
                       <InstitutionLogo
                         logoUrl={account.institutionLogoUrl}
-                        name={account.institutionName || account.name}
+                        name={account.name}
                         size="sm"
                       />
                       <span>{account.name}</span>

@@ -1,6 +1,6 @@
 'use client';
 
-import { AccountFragmentFragment, AccountType } from '@/graphql/graphql';
+import { AccountFragmentFragment, InstitutionType } from '@/graphql/graphql';
 import { TransactionsViews } from '@/modules/transactions/components/transactions-views';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,13 +10,9 @@ import { InstitutionLogo } from '@/modules/accounts/components/institution-logo'
 
 interface AccountWalletTrackingProps {
   account: AccountFragmentFragment;
-  isDebitCard?: boolean;
 }
 
-export function AccountWalletTracking({
-  account,
-  isDebitCard = false,
-}: AccountWalletTrackingProps) {
+export function AccountWalletTracking({ account }: AccountWalletTrackingProps) {
   const balance = Number(account.balance || 0);
 
   return (
@@ -25,19 +21,21 @@ export function AccountWalletTracking({
       <Card>
         <CardContent className="flex items-center gap-4 p-6">
           <InstitutionLogo
-            logoUrl={account.institution?.logoUrl}
-            name={account.institution?.name || 'Sem instituição'}
-            color={account.institution?.color}
+            logoUrl={account.institutionLink?.institution?.logoUrl}
+            name={
+              account.institutionLink?.institution?.name || 'Sem instituição'
+            }
+            color={account.institutionLink?.institution?.color}
             size="xl"
           />
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold">{account.name}</h1>
-              <AccountTypeBadge type={account.type} />
+              <AccountTypeBadge type={InstitutionType.Checking} />
               {!account.isActive && <Badge variant="secondary">Inativa</Badge>}
             </div>
             <p className="text-muted-foreground">
-              {account.institution?.name}
+              {account.institutionLink?.institution?.name}
               {account.description && ` • ${account.description}`}
             </p>
           </div>
@@ -57,11 +55,7 @@ export function AccountWalletTracking({
       </Card>
 
       {/* Transaction Views with multiple visualization options */}
-      <TransactionsViews
-        accountId={account.id}
-        hideAccount
-        isDebitCard={isDebitCard}
-      />
+      <TransactionsViews accountId={account.id} hideAccount />
     </div>
   );
 }

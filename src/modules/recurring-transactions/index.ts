@@ -1,4 +1,5 @@
 export { RecurringTransactionsList } from './components/recurring-transactions-list';
+export { RecurringTransactionSuggestionsList } from './components/recurring-transaction-suggestions-list';
 export {
   IncomeRecurringTransactionCreateForm,
   ExpenseRecurringTransactionCreateForm,

@@ -18,22 +18,22 @@ export function InvestmentsCards() {
   const cards = [
     {
       title: 'Total investido',
-      value: data?.totalInvestments.initialAmount,
+      value: formatCurrency(data?.totalInvestments.initialAmount || 0),
     },
     {
-      title: 'Total atual',
-      value: data?.totalInvestments.currentAmount,
-      variation: data?.totalInvestments.currentVariation,
-    },
-    {
-      title: 'Total c/ dedução IRPF',
-      value: data?.totalInvestments.taxedAmount,
+      title: 'Saldo Líquido (c/ IRPF)',
+      value: formatCurrency(data?.totalInvestments.taxedAmount || 0),
       variation: data?.totalInvestments.taxedVariation,
+    },
+    {
+      title: 'Rentabilidade Real (vs IPCA)',
+      value: data?.totalInvestments.realVariation || '0,00%',
+      isRealYield: true,
     },
   ];
 
   return (
-    <div className="grid w-full grid-cols-3 gap-4">
+    <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-3">
       {loading ? (
         <>
           <Skeleton className="h-32" />
@@ -41,23 +41,45 @@ export function InvestmentsCards() {
           <Skeleton className="h-32" />
         </>
       ) : (
-        cards.map((card) => (
-          <Card key={card.title}>
-            <CardHeader className="relative">
-              <CardDescription>{card.title}</CardDescription>
+        cards.map((card) => {
+          const isNegative =
+            card.isRealYield && (card.value as string)?.startsWith('-');
+          const isPositive =
+            card.isRealYield && (card.value as string)?.startsWith('+');
 
-              <CardTitle className="text-2xl font-semibold min-[250px]:text-3xl">
-                {formatCurrency(card.value!)}
-              </CardTitle>
+          let cardClasses = '';
+          let textClasses = '';
 
-              {card.variation && (
-                <div className="absolute right-4 top-4">
-                  <VariationBadge variation={card.variation} size="lg" />
-                </div>
-              )}
-            </CardHeader>
-          </Card>
-        ))
+          if (isNegative) {
+            cardClasses = 'border-destructive/50 bg-destructive/5';
+            textClasses = 'text-destructive';
+          } else if (isPositive) {
+            cardClasses = 'border-emerald-500/30 bg-emerald-500/5';
+            textClasses = 'text-emerald-500';
+          }
+
+          return (
+            <Card key={card.title} className={cardClasses}>
+              <CardHeader className="relative h-full justify-center">
+                <CardDescription className={textClasses}>
+                  {card.title}
+                </CardDescription>
+
+                <CardTitle
+                  className={`text-2xl font-semibold min-[250px]:text-3xl ${textClasses}`}
+                >
+                  {card.value}
+                </CardTitle>
+
+                {card.variation && (
+                  <div className="absolute right-4 top-4">
+                    <VariationBadge variation={card.variation} size="lg" />
+                  </div>
+                )}
+              </CardHeader>
+            </Card>
+          );
+        })
       )}
     </div>
   );

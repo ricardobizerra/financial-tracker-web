@@ -45,7 +45,9 @@ function AccountDisplay({
 }: {
   account?: {
     name: string;
-    institution: { name: string; logoUrl: string | null };
+    institutionLink: {
+      institution: { name: string; logoUrl: string | null } | null;
+    } | null;
   } | null;
 }) {
   if (!account) return null;
@@ -53,8 +55,8 @@ function AccountDisplay({
   return (
     <div className="flex items-center gap-2">
       <InstitutionLogo
-        logoUrl={account.institution.logoUrl}
-        name={account.institution.name}
+        logoUrl={account.institutionLink?.institution?.logoUrl}
+        name={account.institutionLink?.institution?.name ?? ''}
         size="sm"
       />
       <span className="text-sm font-medium">{account.name}</span>

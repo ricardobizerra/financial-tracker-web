@@ -19,21 +19,67 @@ export const RecurringTransactionFragment = graphql(`
     sourceAccount {
       id
       name
-      institution {
-        name
-        logoUrl
+      institutionLink {
+        institution {
+          name
+          logoUrl
+        }
       }
     }
     destinyAccount {
       id
       name
-      institution {
-        name
-        logoUrl
+      institutionLink {
+        institution {
+          name
+          logoUrl
+        }
+      }
+    }
+    sourceCard {
+      id
+      name
+      type
+      institutionLink {
+        institution {
+          id
+          name
+          logoUrl
+        }
       }
     }
     createdAt
     updatedAt
+    transactions {
+      id
+      description
+      amount
+      date
+      status
+      type
+      paymentMethod
+      category
+      sourceAccount {
+        id
+        name
+        institutionLink {
+          institution {
+            name
+            logoUrl
+          }
+        }
+      }
+      destinyAccount {
+        id
+        name
+        institutionLink {
+          institution {
+            name
+            logoUrl
+          }
+        }
+      }
+    }
   }
 `);
 
@@ -77,6 +123,30 @@ export const RecurringTransactionQuery = graphql(`
   query RecurringTransaction($id: String!) {
     recurringTransaction(id: $id) {
       ...RecurringTransactionFragment
+    }
+  }
+`);
+
+export const RecurringTransactionSuggestionFragment = graphql(`
+  fragment RecurringTransactionSuggestionFragment on RecurringTransactionSuggestion {
+    description
+    averageAmount
+    frequency
+    suggestedDay
+    sourceAccountId
+    destinyAccountId
+    transactionIds
+    occurrenceCount
+    transactions {
+      ...TransactionFragment
+    }
+  }
+`);
+
+export const PossibleRecurringTransactionsQuery = graphql(`
+  query PossibleRecurringTransactions {
+    possibleRecurringTransactions {
+      ...RecurringTransactionSuggestionFragment
     }
   }
 `);

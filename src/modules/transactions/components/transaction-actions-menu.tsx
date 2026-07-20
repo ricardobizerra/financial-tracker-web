@@ -24,7 +24,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { MoreHorizontal, Check, X, Pencil } from 'lucide-react';
-import { CancelTransactionMutation } from '../graphql/transactions-mutations';
+import { DeleteTransactionMutation } from '../graphql/transactions-mutations';
 import { TransactionsQuery } from '../graphql/transactions-queries';
 import { toast } from 'sonner';
 
@@ -39,8 +39,8 @@ export function TransactionActionsMenu({
 }: TransactionActionsMenuProps) {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
-  const [cancelTransaction, { loading: cancelLoading }] = useMutation(
-    CancelTransactionMutation,
+  const [deleteTransaction, { loading: cancelLoading }] = useMutation(
+    DeleteTransactionMutation,
     {
       refetchQueries: [TransactionsQuery],
       onCompleted: () => {
@@ -54,7 +54,7 @@ export function TransactionActionsMenu({
   );
 
   const isCompleted = transaction.status === TransactionStatus.Completed;
-  const isCanceled = transaction.status === TransactionStatus.Canceled;
+  const isCanceled = false;
   const isImmutable = isCompleted || isCanceled;
   const isBillingPayment = !!transaction.billingPayment;
 
@@ -70,7 +70,7 @@ export function TransactionActionsMenu({
   const canPayBilling = isBillingPayment && isBillingClosed && !isImmutable;
 
   const handleConfirmCancel = () => {
-    cancelTransaction({ variables: { id: transaction.id } });
+    deleteTransaction({ variables: { id: transaction.id } });
   };
 
   return (

@@ -84,6 +84,8 @@ function useDataTableController<TData>({
   initialSorting,
   actionButtons,
   CustomBody,
+  onRowClick,
+  renderSubComponent,
 }: DataTableQueryProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([
     {
@@ -231,6 +233,8 @@ function useDataTableController<TData>({
     networkStatus,
     actionButtons,
     CustomBody,
+    onRowClick,
+    renderSubComponent,
   };
 }
 
@@ -254,6 +258,8 @@ function useDataTableNoQueryController<TData>({
   networkStatus,
   actionButtons,
   CustomBody,
+  onRowClick,
+  renderSubComponent,
 }: DataTableNoQueryProps<TData>) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
@@ -322,5 +328,7 @@ function useDataTableNoQueryController<TData>({
     networkStatus,
     actionButtons,
     CustomBody,
+    onRowClick,
+    renderSubComponent,
   };
 }

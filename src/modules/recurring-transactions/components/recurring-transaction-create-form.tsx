@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import {
   ArrowDown,
+  ArrowLeft,
   ArrowUp,
   Banknote,
   CalendarClock,
@@ -28,7 +29,7 @@ import {
   OrderDirection,
   PaymentMethod,
   RecurrenceFrequency,
-  AccountType,
+  DayMode,
   TransactionCategory,
 } from '@/graphql/graphql';
 import { useCallback, useState, useMemo } from 'react';
@@ -38,23 +39,19 @@ import { CreateRecurringTransactionMutation } from '../graphql/recurring-transac
 import { RecurringTransactionsQuery } from '../graphql/recurring-transactions-queries';
 import { TransactionsQuery } from '@/modules/transactions/graphql/transactions-queries';
 import { BalanceForecastQuery } from '@/modules/transactions/graphql/balance-forecast-queries';
-import { TransactionTypeBadge } from '@/modules/transactions/components/transaction-type-badge';
 import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
 import { AccountsQuery } from '@/modules/accounts/graphql/accounts-queries';
 import { Separator } from '@/components/ui/separator';
 import {
   paymentMethodLabel,
-  transactionTypeLabels,
   transactionCategoryLabels,
 } from '@/modules/transactions/transactions-constants';
 import { transactionCategoryIcons } from '@/modules/transactions/components/transaction-category-badge';
-import {
-  recurrenceFrequencyLabels,
-  monthLabels,
-} from '../recurring-transactions-constants';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import PixIcon from '@/static/pix-icon.svg';
+import { getRecurrenceDescription, RecurrenceData } from '../recurrence-utils';
+import { RecurrenceFormSection } from './shared/recurrence-form-section';
 
 interface RecurringTransactionCreateFormProps {
   accountId?: string;
@@ -93,15 +90,7 @@ const incomeRecurringSchema = z.object({
   paymentMethod: formFields.select.describe(
     'Método de pagamento * // Como será recebido',
   ),
-  frequency: formFields.select.describe('Frequência * // Com que frequência'),
-  dayOfMonth: formFields.number.describe(
-    'Dia do mês * // Dia do recebimento (1-28)',
-  ),
-  monthOfYear: formFields.select
-    .optional()
-    .describe('Mês do ano // Para recorrências anuais'),
   startDate: formFields.date.describe('Data de início * // Quando começa'),
-  endDate: formFields.date.optional().describe('Data de término // Opcional'),
 });
 
 const expenseRecurringSchema = z.object({
@@ -120,16 +109,17 @@ const expenseRecurringSchema = z.object({
   paymentMethod: formFields.select.describe(
     'Método de pagamento * // Como será pago',
   ),
-  frequency: formFields.select.describe('Frequência * // Com que frequência'),
-  dayOfMonth: formFields.number.describe(
-    'Dia do mês * // Dia do vencimento (1-28)',
-  ),
-  monthOfYear: formFields.select
-    .optional()
-    .describe('Mês do ano // Para recorrências anuais'),
   startDate: formFields.date.describe('Data de início * // Quando começa'),
-  endDate: formFields.date.optional().describe('Data de término // Opcional'),
 });
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const paymentMethodIcon: Record<PaymentMethod, any> = {
+  CASH: Banknote,
+  CREDIT_CARD: CreditCard,
+  DEBIT_CARD: CreditCard,
+  PIX: PixIcon,
+  BOLETO: Receipt,
+};
 
 export function IncomeRecurringTransactionCreateForm({
   triggerClassName,
@@ -140,6 +130,16 @@ export function IncomeRecurringTransactionCreateForm({
   const [createRecurringTransaction, { loading }] = useMutation(
     CreateRecurringTransactionMutation,
   );
+
+  // Recurrence config state
+  const [showRecurrenceStep, setShowRecurrenceStep] = useState(false);
+  const [recurrenceData, setRecurrenceData] = useState<RecurrenceData>({
+    frequency: RecurrenceFrequency.Monthly,
+    dayMode: DayMode.SpecificDay,
+    dayOfWeek: 1,
+    weekOfMonth: 1,
+    stopCondition: 'INFINITE',
+  });
 
   const form = useForm<z.infer<typeof incomeRecurringSchema>>({
     resolver: zodResolver(incomeRecurringSchema),
@@ -153,29 +153,16 @@ export function IncomeRecurringTransactionCreateForm({
     },
   });
 
-  const selectedFrequency = useWatch({
+  const watchedStartDate = useWatch({
     control: form.control,
-    name: 'frequency',
+    name: 'startDate',
   });
-
-  const frequencyOptions = Object.values(RecurrenceFrequency).map((freq) => ({
-    value: freq,
-    label: recurrenceFrequencyLabels[freq],
-  }));
-
-  const monthOptions = Object.entries(monthLabels).map(([value, label]) => ({
-    value: value,
-    label,
-  }));
 
   const institutionsQueryOptions = useQuery(AccountsQuery, {
     variables: {
       first: 50,
       orderBy: OrdenationAccountModel.Name,
       orderDirection: OrderDirection.Asc,
-      types: Object.values(AccountType).filter(
-        (t) => t !== AccountType.CreditCard,
-      ),
     },
     skip: !open,
     notifyOnNetworkStatusChange: true,
@@ -205,15 +192,6 @@ export function IncomeRecurringTransactionCreateForm({
       label: paymentMethodLabel[method],
     }));
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const paymentMethodIcon: Record<PaymentMethod, any> = {
-    CASH: Banknote,
-    CREDIT_CARD: CreditCard,
-    DEBIT_CARD: CreditCard,
-    PIX: PixIcon,
-    BOLETO: Receipt,
-  };
-
   const paginate = useCallback(() => {
     institutionsQueryOptions.fetchMore({
       variables: {
@@ -237,8 +215,28 @@ export function IncomeRecurringTransactionCreateForm({
     });
   }, [institutionsQueryOptions, institutionsPageInfo]);
 
+  const handleOpenChange = useCallback(
+    (isOpen: boolean) => {
+      setOpen(isOpen);
+      if (!isOpen) {
+        setTimeout(() => {
+          setShowRecurrenceStep(false);
+          setRecurrenceData({
+            frequency: RecurrenceFrequency.Monthly,
+            dayMode: DayMode.SpecificDay,
+            dayOfWeek: 1,
+            weekOfMonth: 1,
+            stopCondition: 'INFINITE',
+          });
+          form.reset();
+        }, 200);
+      }
+    },
+    [form],
+  );
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button
           size={triggerSize ?? 'sm'}
@@ -250,14 +248,16 @@ export function IncomeRecurringTransactionCreateForm({
           <p>Nova entrada recorrente</p>
         </Button>
       </DialogTrigger>
-      <DialogContent className="min-w-fit max-w-[90vw] md:max-w-fit">
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <CalendarClock className="h-5 w-5" />
             Nova entrada recorrente
           </DialogTitle>
           <DialogDescription>
-            Configure uma receita que se repete automaticamente.
+            {showRecurrenceStep
+              ? 'Configure a frequência e o dia da recorrência.'
+              : 'Preencha os dados da receita recorrente.'}
           </DialogDescription>
         </DialogHeader>
 
@@ -268,18 +268,6 @@ export function IncomeRecurringTransactionCreateForm({
             category: {
               options: categoryOptions,
               renderLabel: renderCategoryLabel,
-            } as any,
-            frequency: {
-              options: frequencyOptions,
-              renderLabel: (option) => (
-                <div className="flex items-center gap-2">
-                  <Repeat className="h-4 w-4" />
-                  <p>{option.label}</p>
-                </div>
-              ),
-            },
-            monthOfYear: {
-              options: monthOptions,
             } as any,
             paymentMethod: {
               options: paymentMethodOptions,
@@ -299,8 +287,10 @@ export function IncomeRecurringTransactionCreateForm({
                 <div className="flex items-center gap-3 py-1.5">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
                     <InstitutionLogo
-                      logoUrl={option.data.institution.logoUrl}
-                      name={option.data.institution.name}
+                      logoUrl={
+                        option.data.institutionLink?.institution?.logoUrl
+                      }
+                      name={option.data.institutionLink?.institution?.name}
                       size="sm"
                     />
                   </div>
@@ -309,7 +299,7 @@ export function IncomeRecurringTransactionCreateForm({
                       {option.data.name}
                     </p>
                     <p className="truncate text-xs text-muted-foreground">
-                      {option.data.institution.name}
+                      {option.data.institutionLink?.institution?.name}
                     </p>
                   </div>
                 </div>
@@ -320,6 +310,18 @@ export function IncomeRecurringTransactionCreateForm({
             },
           }}
           onSubmit={async (data) => {
+            const isWeeklyOrBiWeekly =
+              recurrenceData.frequency === RecurrenceFrequency.Weekly ||
+              recurrenceData.frequency === RecurrenceFrequency.BiWeekly;
+            const isYearly =
+              recurrenceData.frequency === RecurrenceFrequency.Yearly;
+            const needsDayOfWeek =
+              isWeeklyOrBiWeekly ||
+              recurrenceData.dayMode === DayMode.NthWeekday;
+            const needsDayOfMonth =
+              recurrenceData.dayMode === DayMode.SpecificDay &&
+              !isWeeklyOrBiWeekly;
+
             await createRecurringTransaction({
               variables: {
                 data: {
@@ -331,13 +333,32 @@ export function IncomeRecurringTransactionCreateForm({
                   category: data.category?.value as
                     | TransactionCategory
                     | undefined,
-                  frequency: data.frequency.value as RecurrenceFrequency,
-                  dayOfMonth: data.dayOfMonth,
-                  monthOfYear: data.monthOfYear?.value
-                    ? parseInt(data.monthOfYear.value as string)
+                  frequency: recurrenceData.frequency,
+                  dayMode: isWeeklyOrBiWeekly
+                    ? DayMode.SpecificDay
+                    : recurrenceData.dayMode,
+                  dayOfMonth: needsDayOfMonth
+                    ? data.startDate.getDate()
+                    : undefined,
+                  dayOfWeek: needsDayOfWeek
+                    ? recurrenceData.dayOfWeek
+                    : undefined,
+                  weekOfMonth:
+                    recurrenceData.dayMode === DayMode.NthWeekday
+                      ? recurrenceData.weekOfMonth
+                      : undefined,
+                  monthOfYear: isYearly
+                    ? data.startDate.getMonth() + 1
                     : undefined,
                   startDate: data.startDate,
-                  endDate: data.endDate,
+                  endDate:
+                    recurrenceData.stopCondition === 'UNTIL_DATE'
+                      ? recurrenceData.endDate
+                      : undefined,
+                  repeatCount:
+                    recurrenceData.stopCondition === 'REPEATS'
+                      ? recurrenceData.repeatCount
+                      : undefined,
                 },
               },
               refetchQueries: [
@@ -347,10 +368,14 @@ export function IncomeRecurringTransactionCreateForm({
               ],
               onCompleted: () => {
                 toast.success('Recorrência criada!', {
-                  description: 'As transações foram geradas automaticamente.',
+                  description: getRecurrenceDescription(
+                    recurrenceData.frequency,
+                    recurrenceData.dayMode,
+                    recurrenceData.dayOfWeek,
+                    recurrenceData.weekOfMonth,
+                  ),
                 });
-                setOpen(false);
-                form.reset();
+                handleOpenChange(false);
               },
               onError: (error) => {
                 toast.error('Erro ao criar recorrência', {
@@ -360,10 +385,48 @@ export function IncomeRecurringTransactionCreateForm({
             });
           }}
           renderAfter={() => (
-            <DialogFooter>
-              <Button type="submit" disabled={loading} loading={loading}>
-                Criar recorrência
-              </Button>
+            <DialogFooter className="flex-row justify-between gap-2 sm:justify-between">
+              {showRecurrenceStep ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowRecurrenceStep(false)}
+                  className="gap-1"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Voltar
+                </Button>
+              ) : (
+                <div />
+              )}
+
+              <div className="flex gap-2">
+                {!showRecurrenceStep && (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={async () => {
+                      const isValid = await form.trigger([
+                        'description',
+                        'estimatedAmount',
+                        'destinyAccount',
+                        'paymentMethod',
+                        'startDate',
+                      ]);
+                      if (isValid) {
+                        setShowRecurrenceStep(true);
+                      }
+                    }}
+                  >
+                    Próximo
+                  </Button>
+                )}
+                {showRecurrenceStep && (
+                  <Button type="submit" disabled={loading} loading={loading}>
+                    Criar recorrência
+                  </Button>
+                )}
+              </div>
             </DialogFooter>
           )}
         >
@@ -373,30 +436,31 @@ export function IncomeRecurringTransactionCreateForm({
             category,
             estimatedAmount,
             paymentMethod,
-            frequency,
-            dayOfMonth,
-            monthOfYear,
             startDate,
-            endDate,
           }) => (
             <>
-              {destinyAccount}
-              <Separator />
-              {description}
-              {category}
-              {estimatedAmount}
-              {paymentMethod}
-              <Separator />
-              <div className="grid grid-cols-2 gap-4">
-                {frequency}
-                {dayOfMonth}
-              </div>
-              {selectedFrequency?.value === RecurrenceFrequency.Yearly &&
-                monthOfYear}
-              <div className="grid grid-cols-2 gap-4">
-                {startDate}
-                {endDate}
-              </div>
+              {!showRecurrenceStep && (
+                <>
+                  {destinyAccount}
+                  <Separator />
+                  {description}
+                  {category}
+                  {estimatedAmount}
+                  {paymentMethod}
+                  <Separator />
+                  <div className="flex flex-col gap-4">{startDate}</div>
+                </>
+              )}
+
+              {showRecurrenceStep && (
+                <RecurrenceFormSection
+                  data={recurrenceData}
+                  onChange={(newData) =>
+                    setRecurrenceData((prev) => ({ ...prev, ...newData }))
+                  }
+                  startDate={watchedStartDate}
+                />
+              )}
             </>
           )}
         </TsForm>
@@ -415,6 +479,16 @@ export function ExpenseRecurringTransactionCreateForm({
     CreateRecurringTransactionMutation,
   );
 
+  // Recurrence config state
+  const [showRecurrenceStep, setShowRecurrenceStep] = useState(false);
+  const [recurrenceData, setRecurrenceData] = useState<RecurrenceData>({
+    frequency: RecurrenceFrequency.Monthly,
+    dayMode: DayMode.SpecificDay,
+    dayOfWeek: 1,
+    weekOfMonth: 1,
+    stopCondition: 'INFINITE',
+  });
+
   const form = useForm<z.infer<typeof expenseRecurringSchema>>({
     resolver: zodResolver(expenseRecurringSchema),
     defaultValues: {
@@ -427,25 +501,10 @@ export function ExpenseRecurringTransactionCreateForm({
     },
   });
 
-  const selectedFrequency = useWatch({
+  const watchedStartDate = useWatch({
     control: form.control,
-    name: 'frequency',
+    name: 'startDate',
   });
-
-  const selectedAccount = useWatch({
-    control: form.control,
-    name: 'sourceAccount',
-  });
-
-  const frequencyOptions = Object.values(RecurrenceFrequency).map((freq) => ({
-    value: freq,
-    label: recurrenceFrequencyLabels[freq],
-  }));
-
-  const monthOptions = Object.entries(monthLabels).map(([value, label]) => ({
-    value: value,
-    label,
-  }));
 
   const institutionsQueryOptions = useQuery(AccountsQuery, {
     variables: {
@@ -471,33 +530,15 @@ export function ExpenseRecurringTransactionCreateForm({
 
   const institutionsPageInfo = institutionsQueryOptions.data?.accounts.pageInfo;
 
-  const allPaymentMethodOptions = Object.values(PaymentMethod).map(
-    (method) => ({
+  const paymentMethodOptions = Object.values(PaymentMethod)
+    .filter(
+      (method) =>
+        ![PaymentMethod.CreditCard, PaymentMethod.DebitCard].includes(method),
+    )
+    .map((method) => ({
       value: method,
       label: paymentMethodLabel[method],
-    }),
-  );
-
-  const paymentMethodOptions = useMemo(() => {
-    if (selectedAccount?.data?.type !== AccountType.CreditCard) {
-      return allPaymentMethodOptions.filter(
-        (option) =>
-          ![PaymentMethod.CreditCard, PaymentMethod.DebitCard].includes(
-            option.value as PaymentMethod,
-          ),
-      );
-    }
-    return allPaymentMethodOptions;
-  }, [selectedAccount?.data?.type, allPaymentMethodOptions]);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const paymentMethodIcon: Record<PaymentMethod, any> = {
-    CASH: Banknote,
-    CREDIT_CARD: CreditCard,
-    DEBIT_CARD: CreditCard,
-    PIX: PixIcon,
-    BOLETO: Receipt,
-  };
+    }));
 
   const paginate = useCallback(() => {
     institutionsQueryOptions.fetchMore({
@@ -522,8 +563,28 @@ export function ExpenseRecurringTransactionCreateForm({
     });
   }, [institutionsQueryOptions, institutionsPageInfo]);
 
+  const handleOpenChange = useCallback(
+    (isOpen: boolean) => {
+      setOpen(isOpen);
+      if (!isOpen) {
+        setTimeout(() => {
+          setShowRecurrenceStep(false);
+          setRecurrenceData({
+            frequency: RecurrenceFrequency.Monthly,
+            dayMode: DayMode.SpecificDay,
+            dayOfWeek: 1,
+            weekOfMonth: 1,
+            stopCondition: 'INFINITE',
+          });
+          form.reset();
+        }, 200);
+      }
+    },
+    [form],
+  );
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button
           size={triggerSize ?? 'sm'}
@@ -535,14 +596,16 @@ export function ExpenseRecurringTransactionCreateForm({
           <p>Nova despesa recorrente</p>
         </Button>
       </DialogTrigger>
-      <DialogContent className="min-w-fit max-w-[90vw] md:max-w-fit">
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <CalendarClock className="h-5 w-5" />
             Nova despesa recorrente
           </DialogTitle>
           <DialogDescription>
-            Configure uma despesa que se repete automaticamente.
+            {showRecurrenceStep
+              ? 'Configure a frequência e o dia da recorrência.'
+              : 'Preencha os dados da despesa recorrente.'}
           </DialogDescription>
         </DialogHeader>
 
@@ -553,18 +616,6 @@ export function ExpenseRecurringTransactionCreateForm({
             category: {
               options: categoryOptions,
               renderLabel: renderCategoryLabel,
-            } as any,
-            frequency: {
-              options: frequencyOptions,
-              renderLabel: (option) => (
-                <div className="flex items-center gap-2">
-                  <Repeat className="h-4 w-4" />
-                  <p>{option.label}</p>
-                </div>
-              ),
-            },
-            monthOfYear: {
-              options: monthOptions,
             } as any,
             paymentMethod: {
               options: paymentMethodOptions,
@@ -584,8 +635,10 @@ export function ExpenseRecurringTransactionCreateForm({
                 <div className="flex items-center gap-3 py-1.5">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-muted">
                     <InstitutionLogo
-                      logoUrl={option.data.institution.logoUrl}
-                      name={option.data.institution.name}
+                      logoUrl={
+                        option.data.institutionLink?.institution?.logoUrl
+                      }
+                      name={option.data.institutionLink?.institution?.name}
                       size="sm"
                     />
                   </div>
@@ -594,7 +647,7 @@ export function ExpenseRecurringTransactionCreateForm({
                       {option.data.name}
                     </p>
                     <p className="truncate text-xs text-muted-foreground">
-                      {option.data.institution.name}
+                      {option.data.institutionLink?.institution?.name}
                     </p>
                   </div>
                 </div>
@@ -605,6 +658,18 @@ export function ExpenseRecurringTransactionCreateForm({
             },
           }}
           onSubmit={async (data) => {
+            const isWeeklyOrBiWeekly =
+              recurrenceData.frequency === RecurrenceFrequency.Weekly ||
+              recurrenceData.frequency === RecurrenceFrequency.BiWeekly;
+            const isYearly =
+              recurrenceData.frequency === RecurrenceFrequency.Yearly;
+            const needsDayOfWeek =
+              isWeeklyOrBiWeekly ||
+              recurrenceData.dayMode === DayMode.NthWeekday;
+            const needsDayOfMonth =
+              recurrenceData.dayMode === DayMode.SpecificDay &&
+              !isWeeklyOrBiWeekly;
+
             await createRecurringTransaction({
               variables: {
                 data: {
@@ -616,13 +681,32 @@ export function ExpenseRecurringTransactionCreateForm({
                   category: data.category?.value as
                     | TransactionCategory
                     | undefined,
-                  frequency: data.frequency.value as RecurrenceFrequency,
-                  dayOfMonth: data.dayOfMonth,
-                  monthOfYear: data.monthOfYear?.value
-                    ? parseInt(data.monthOfYear.value as string)
+                  frequency: recurrenceData.frequency,
+                  dayMode: isWeeklyOrBiWeekly
+                    ? DayMode.SpecificDay
+                    : recurrenceData.dayMode,
+                  dayOfMonth: needsDayOfMonth
+                    ? data.startDate.getDate()
+                    : undefined,
+                  dayOfWeek: needsDayOfWeek
+                    ? recurrenceData.dayOfWeek
+                    : undefined,
+                  weekOfMonth:
+                    recurrenceData.dayMode === DayMode.NthWeekday
+                      ? recurrenceData.weekOfMonth
+                      : undefined,
+                  monthOfYear: isYearly
+                    ? data.startDate.getMonth() + 1
                     : undefined,
                   startDate: data.startDate,
-                  endDate: data.endDate,
+                  endDate:
+                    recurrenceData.stopCondition === 'UNTIL_DATE'
+                      ? recurrenceData.endDate
+                      : undefined,
+                  repeatCount:
+                    recurrenceData.stopCondition === 'REPEATS'
+                      ? recurrenceData.repeatCount
+                      : undefined,
                 },
               },
               refetchQueries: [
@@ -632,10 +716,14 @@ export function ExpenseRecurringTransactionCreateForm({
               ],
               onCompleted: () => {
                 toast.success('Recorrência criada!', {
-                  description: 'As transações foram geradas automaticamente.',
+                  description: getRecurrenceDescription(
+                    recurrenceData.frequency,
+                    recurrenceData.dayMode,
+                    recurrenceData.dayOfWeek,
+                    recurrenceData.weekOfMonth,
+                  ),
                 });
-                setOpen(false);
-                form.reset();
+                handleOpenChange(false);
               },
               onError: (error) => {
                 toast.error('Erro ao criar recorrência', {
@@ -645,10 +733,48 @@ export function ExpenseRecurringTransactionCreateForm({
             });
           }}
           renderAfter={() => (
-            <DialogFooter>
-              <Button type="submit" disabled={loading} loading={loading}>
-                Criar recorrência
-              </Button>
+            <DialogFooter className="flex-row justify-between gap-2 sm:justify-between">
+              {showRecurrenceStep ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowRecurrenceStep(false)}
+                  className="gap-1"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Voltar
+                </Button>
+              ) : (
+                <div />
+              )}
+
+              <div className="flex gap-2">
+                {!showRecurrenceStep && (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={async () => {
+                      const isValid = await form.trigger([
+                        'description',
+                        'estimatedAmount',
+                        'sourceAccount',
+                        'paymentMethod',
+                        'startDate',
+                      ]);
+                      if (isValid) {
+                        setShowRecurrenceStep(true);
+                      }
+                    }}
+                  >
+                    Próximo
+                  </Button>
+                )}
+                {showRecurrenceStep && (
+                  <Button type="submit" disabled={loading} loading={loading}>
+                    Criar recorrência
+                  </Button>
+                )}
+              </div>
             </DialogFooter>
           )}
         >
@@ -658,30 +784,31 @@ export function ExpenseRecurringTransactionCreateForm({
             category,
             estimatedAmount,
             paymentMethod,
-            frequency,
-            dayOfMonth,
-            monthOfYear,
             startDate,
-            endDate,
           }) => (
             <>
-              {sourceAccount}
-              <Separator />
-              {description}
-              {category}
-              {estimatedAmount}
-              {paymentMethod}
-              <Separator />
-              <div className="grid grid-cols-2 gap-4">
-                {frequency}
-                {dayOfMonth}
-              </div>
-              {selectedFrequency?.value === RecurrenceFrequency.Yearly &&
-                monthOfYear}
-              <div className="grid grid-cols-2 gap-4">
-                {startDate}
-                {endDate}
-              </div>
+              {!showRecurrenceStep && (
+                <>
+                  {sourceAccount}
+                  <Separator />
+                  {description}
+                  {category}
+                  {estimatedAmount}
+                  {paymentMethod}
+                  <Separator />
+                  <div className="flex flex-col gap-4">{startDate}</div>
+                </>
+              )}
+
+              {showRecurrenceStep && (
+                <RecurrenceFormSection
+                  data={recurrenceData}
+                  onChange={(newData) =>
+                    setRecurrenceData((prev) => ({ ...prev, ...newData }))
+                  }
+                  startDate={watchedStartDate}
+                />
+              )}
             </>
           )}
         </TsForm>

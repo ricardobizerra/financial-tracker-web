@@ -12,6 +12,26 @@ export const InvestmentFragment = graphql(`
     startDate
     duration
     status
+    type
+    fixedRate
+    currentMarketRate
+    maturityDate
+    regimeName
+    regimePercentage
+    brokerageFee
+    institutionLinkId
+    taxesAndFees {
+      details {
+        label
+        amount
+        reason
+      }
+      totalTaxesAndFees
+    }
+    sellFeasibility {
+      status
+      message
+    }
   }
 `);
 
@@ -24,7 +44,8 @@ export const InvestmentsQuery = graphql(`
     $last: Int
     $before: String
     $regime: Regime
-    $accountIds: [String!]
+    $status: InvestmentStatus
+    $institutionLinkIds: [ID!]
   ) {
     investments(
       first: $first
@@ -34,7 +55,8 @@ export const InvestmentsQuery = graphql(`
       last: $last
       before: $before
       regime: $regime
-      accountIds: $accountIds
+      status: $status
+      institutionLinkIds: $institutionLinkIds
     ) {
       edges {
         cursor
@@ -49,6 +71,20 @@ export const InvestmentsQuery = graphql(`
   }
 `);
 
+export const AvailableTreasuryBondsQuery = graphql(`
+  query AvailableTreasuryBonds($regime: Regime!) {
+    availableTreasuryBonds(regime: $regime)
+  }
+`);
+
+export const GetInvestmentQuery = graphql(`
+  query GetInvestment($id: String!) {
+    investment(id: $id) {
+      ...InvestmentFragment
+    }
+  }
+`);
+
 export const TotalInvestmentsQuery = graphql(`
   query TotalInvestments {
     totalInvestments {
@@ -57,6 +93,7 @@ export const TotalInvestmentsQuery = graphql(`
       currentVariation
       taxedAmount
       taxedVariation
+      realVariation
     }
   }
 `);
@@ -74,8 +111,8 @@ export const InvestmentRegimeSummaryFragment = graphql(`
 `);
 
 export const InvestmentRegimesQuery = graphql(`
-  query InvestmentRegimes($accountId: String) {
-    investmentRegimes(accountId: $accountId) {
+  query InvestmentRegimes($institutionLinkId: String) {
+    investmentRegimes(institutionLinkId: $institutionLinkId) {
       edges {
         cursor
         node {
@@ -90,8 +127,9 @@ export const InvestmentEvolutionQuery = graphql(`
   query InvestmentEvolution(
     $period: InvestmentEvolutionPeriod
     $accountId: String
+    $regime: Regime
   ) {
-    investmentEvolution(period: $period, accountId: $accountId) {
+    investmentEvolution(period: $period, accountId: $accountId, regime: $regime) {
       dataPoints {
         date
         invested
@@ -113,9 +151,46 @@ export const InvestmentAccountsQuery = graphql(`
     investmentAccounts(regime: $regime) {
       id
       name
-      institutionName
       institutionLogoUrl
       investmentCount
+    }
+  }
+`);
+
+export const InvestmentChartDataQuery = graphql(`
+  query InvestmentChartData($investmentId: String!) {
+    investmentChartData(investmentId: $investmentId) {
+      date
+      theoreticalValue
+      marketValue
+    }
+  }
+`);
+
+export const RegimeTaxesHistoryQuery = graphql(`
+  query RegimeTaxesHistory($regime: Regime!) {
+    regimeTaxesHistory(regime: $regime) {
+      dataPoints {
+        date
+        value
+        component1
+        component2
+        total
+      }
+    }
+  }
+`);
+
+export const InvestmentTaxesHistoryQuery = graphql(`
+  query InvestmentTaxesHistory($investmentId: String!) {
+    investmentTaxesHistory(investmentId: $investmentId) {
+      dataPoints {
+        date
+        value
+        component1
+        component2
+        total
+      }
     }
   }
 `);

@@ -1,4 +1,4 @@
-import { TransactionsCardView } from '@/modules/transactions/components/transactions-card-view';
+import { TransactionsTimelineView } from '@/modules/transactions/components/transactions-timeline-view';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -7,9 +7,9 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="flex flex-col gap-4 lg:min-h-0 lg:flex-1">
-      <h1 className="text-2xl font-bold">Movimentações</h1>
-      <TransactionsCardView />
+    <div className="flex min-h-screen flex-col">
+      {/* O header agora é stick na página toda, mas o scroll é o do body */}
+      <TransactionsTimelineView />
     </div>
   );
 }

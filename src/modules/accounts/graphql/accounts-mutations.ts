@@ -4,20 +4,29 @@ export const CreateAccountMutation = graphql(`
   mutation CreateAccount($data: CreateAccountInput!) {
     createAccount(data: $data) {
       id
+      startDate
     }
   }
 `);
 
-export const CloseBillingMutation = graphql(`
-  mutation CloseBilling($billingId: String!, $closingDate: DateTime) {
-    closeBilling(billingId: $billingId, closingDate: $closingDate) {
+export const CreateCardMutation = graphql(`
+  mutation CreateCard($data: CreateCardInput!) {
+    createCard(data: $data) {
+      id
+    }
+  }
+`);
+
+export const ChangeBillingDatesMutation = graphql(`
+  mutation ChangeBillingDates($billingId: String!, $closingDate: DateTime, $paymentDate: DateTime) {
+    changeBillingDates(billingId: $billingId, closingDate: $closingDate, paymentDate: $paymentDate) {
       id
       periodStart
       periodEnd
       paymentDate
       limit
       status
-      accountCardId
+      cardId
       paymentTransactionId
       createdAt
       updatedAt
@@ -44,7 +53,7 @@ export const UpdateAccountCardMutation = graphql(`
       billingPaymentDay
       type
       defaultLimit
-      accountId
+      institutionLinkId
       createdAt
       updatedAt
     }

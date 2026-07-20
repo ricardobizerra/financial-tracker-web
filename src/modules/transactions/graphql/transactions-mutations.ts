@@ -21,11 +21,11 @@ export const UpdateTransactionMutation = graphql(`
   }
 `);
 
-export const CancelTransactionMutation = graphql(`
-  mutation CancelTransaction($id: String!) {
-    cancelTransaction(id: $id) {
+export const DeleteTransactionMutation = graphql(`
+  mutation DeleteTransaction($id: String!) {
+    deleteTransaction(id: $id) {
       id
-      status
+      deletedAt
     }
   }
 `);
@@ -52,6 +52,18 @@ export const UpdateRecurringTransactionsMutation = graphql(`
   }
 `);
 
+export const DeleteRecurringTransactionsMutation = graphql(`
+  mutation DeleteRecurringTransactions(
+    $transactionId: String!
+    $scope: UpdateRecurringScope!
+  ) {
+    deleteRecurringTransactions(transactionId: $transactionId, scope: $scope) {
+      id
+      deletedAt
+    }
+  }
+`);
+
 export const CreateInstallmentTransactionMutation = graphql(`
   mutation CreateInstallmentTransaction(
     $data: CreateInstallmentTransactionInput!
@@ -62,6 +74,28 @@ export const CreateInstallmentTransactionMutation = graphql(`
       amount
       date
       status
+    }
+  }
+`);
+
+export const BulkUpdateTransactionsMutation = graphql(`
+  mutation BulkUpdateTransactions($data: BulkUpdateTransactionsInput!) {
+    bulkUpdateTransactions(data: $data) {
+      id
+      category
+      status
+      sourceAccountId
+      date
+      paymentMethod
+    }
+  }
+`);
+
+export const BulkDeleteTransactionsMutation = graphql(`
+  mutation BulkDeleteTransactions($data: BulkDeleteTransactionsInput!) {
+    bulkDeleteTransactions(data: $data) {
+      id
+      deletedAt
     }
   }
 `);

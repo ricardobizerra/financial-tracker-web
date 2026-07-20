@@ -2,12 +2,24 @@ import { Badge } from '@/components/ui/badge';
 import { TransactionStatus } from '@/graphql/graphql';
 import { cn } from '@/lib/utils';
 import { transactionStatusLabel } from '../transactions-constants';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Check, X } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export function TransactionStatusBadge({
   status,
+  onSelect,
+  onClear,
+  disabled = false,
 }: {
   status: TransactionStatus;
+  onSelect?: (status: TransactionStatus) => void;
+  onClear?: () => void;
+  disabled?: boolean;
 }) {
   const accountStatusColors: Record<
     TransactionStatus,
@@ -15,39 +27,107 @@ export function TransactionStatusBadge({
   > = {
     PLANNED: {
       background:
-        'bg-green-100 hover:bg-green-100/80 text-green-800 dark:bg-green-900/30 dark:hover:bg-green-900/20 dark:text-green-300 border-green-500 dark:border-green-400',
+        'bg-green-100 hover:bg-green-200/80 text-green-800 dark:bg-green-900/40 dark:hover:bg-green-900/60 dark:text-green-300 border-green-500/50 dark:border-green-400/50',
       dot: 'bg-green-500 dark:bg-green-400',
     },
     COMPLETED: {
       background:
-        'bg-purple-100 hover:bg-purple-100/80 text-purple-800 dark:bg-purple-900/30 dark:hover:bg-purple-900/20 dark:text-purple-300 border-purple-500 dark:border-purple-400',
+        'bg-purple-100 hover:bg-purple-200/80 text-purple-800 dark:bg-purple-900/40 dark:hover:bg-purple-900/60 dark:text-purple-300 border-purple-500/50 dark:border-purple-400/50',
       dot: 'bg-purple-500 dark:bg-purple-400',
-    },
-    CANCELED: {
-      background:
-        'bg-orange-100 hover:bg-orange-100/80 text-orange-800 dark:bg-orange-900/30 dark:hover:bg-orange-900/20 dark:text-orange-300 border-orange-500 dark:border-orange-400',
-      dot: 'bg-orange-500 dark:bg-orange-400',
     },
     OVERDUE: {
       background:
-        'text-destructive-foreground hover:text-destructive-foreground/95 bg-red-700 dark:bg-red-500 border-destructive',
-      dot: 'text-destructive-foreground',
+        'bg-red-600 hover:bg-red-700 text-white dark:bg-red-500 dark:hover:bg-red-600 border-red-700 dark:border-red-400',
+      dot: 'bg-white dark:bg-red-100',
     },
   } as const;
 
-  const colors = accountStatusColors[status];
-  const label = transactionStatusLabel[status];
+  const renderBadge = (
+    transactionStatus: TransactionStatus,
+    isInteractive = false,
+  ) => {
+    const colors = accountStatusColors[transactionStatus];
+    const label = transactionStatusLabel[transactionStatus];
+    return (
+      <Badge
+        className={cn(
+          'whitespace-nowrap border transition-all',
+          colors.background,
+          isInteractive && !disabled && 'cursor-pointer active:scale-95',
+          disabled && 'cursor-default opacity-60',
+        )}
+        variant="outline"
+        size="sm"
+      >
+        {transactionStatus === TransactionStatus.Overdue ? (
+          <AlertTriangle className="mr-1.5 h-3.5 w-3.5 shrink-0" />
+        ) : (
+          <div
+            className={cn(
+              'mr-1.5 h-2.5 w-2.5 shrink-0 rounded-full',
+              colors.dot,
+            )}
+          />
+        )}
+        <span className="font-semibold">{label}</span>
+        {onClear && (
+          <span
+            role="button"
+            tabIndex={0}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onClear();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                onClear();
+              }
+            }}
+            className="ml-1 inline-flex cursor-pointer rounded-full p-0.5 transition-colors hover:bg-black/10 dark:hover:bg-white/20"
+          >
+            <X className="h-3 w-3" />
+          </span>
+        )}
+      </Badge>
+    );
+  };
+
+  if (disabled || !onSelect) {
+    return renderBadge(status);
+  }
 
   return (
-    <Badge className={colors.background} variant="outline" size="sm">
-      {status === TransactionStatus.Overdue ? (
-        <AlertTriangle className="mr-1 h-4 min-w-4 max-w-4 text-destructive-foreground" />
-      ) : (
-        <div
-          className={cn('mr-1 h-3 min-w-3 max-w-3 rounded-full', colors.dot)}
-        />
-      )}
-      <p>{label}</p>
-    </Badge>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <div className="inline-block">{renderBadge(status, true)}</div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48 space-y-1 p-2">
+        {Object.entries(transactionStatusLabel).map(
+          ([statusKey, statusLabel]) => {
+            const isSelected = status === statusKey;
+            const statusTyped = statusKey as TransactionStatus;
+
+            return (
+              <DropdownMenuItem
+                key={statusKey}
+                className={cn(
+                  'flex cursor-pointer items-center justify-between gap-3 rounded-md px-2 py-1.5 transition-colors focus:bg-muted',
+                  isSelected && 'bg-muted/50',
+                )}
+                onClick={() => onSelect(statusTyped)}
+              >
+                <div className="shrink-0">{renderBadge(statusTyped)}</div>
+                {isSelected && (
+                  <Check className="h-4 w-4 shrink-0 opacity-60" />
+                )}
+              </DropdownMenuItem>
+            );
+          },
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

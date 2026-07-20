@@ -2,229 +2,46 @@
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K];
-};
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
-export type MakeEmpty<
-  T extends { [key: string]: unknown },
-  K extends keyof T,
-> = { [_ in K]?: never };
-export type Incremental<T> =
-  | T
-  | {
-      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
-    };
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
-  String: { input: string; output: string };
-  Boolean: { input: boolean; output: boolean };
-  Int: { input: number; output: number };
-  Float: { input: number; output: number };
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
   /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
-  DateTime: { input: any; output: any };
+  DateTime: { input: any; output: any; }
   /** An arbitrary-precision Decimal type */
-  Decimal: { input: any; output: any };
+  Decimal: { input: any; output: any; }
 };
 
 export type Account = {
   __typename?: 'Account';
   _count: AccountCount;
-  accountCard: Maybe<AccountCard>;
   createdAt: Scalars['DateTime']['output'];
   description: Maybe<Scalars['String']['output']>;
   destinyRecurringTransactions: Maybe<Array<RecurringTransaction>>;
   destinyTransactions: Maybe<Array<Transaction>>;
   id: Scalars['ID']['output'];
   initialBalance: Scalars['Decimal']['output'];
-  institution: Institution;
-  institutionId: Scalars['String']['output'];
-  investmentTransactions: Maybe<Array<InvestmentTransaction>>;
-  investments: Maybe<Array<Investment>>;
+  institutionLink: InstitutionLink;
+  institutionLinkId: Scalars['String']['output'];
   isActive: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   sourceRecurringTransactions: Maybe<Array<RecurringTransaction>>;
   sourceTransactions: Maybe<Array<Transaction>>;
-  type: AccountType;
+  startDate: Scalars['DateTime']['output'];
   updatedAt: Scalars['DateTime']['output'];
-  user: User;
-  userId: Scalars['String']['output'];
 };
 
 export type AccountAvgAggregate = {
   __typename?: 'AccountAvgAggregate';
   initialBalance: Maybe<Scalars['Decimal']['output']>;
-};
-
-export type AccountCard = {
-  __typename?: 'AccountCard';
-  _count: AccountCardCount;
-  account: Account;
-  accountId: Scalars['String']['output'];
-  billingCycleDay: Scalars['Int']['output'];
-  billingPaymentDay: Scalars['Int']['output'];
-  billings: Maybe<Array<CardBilling>>;
-  createdAt: Scalars['DateTime']['output'];
-  defaultLimit: Scalars['Decimal']['output'];
-  id: Scalars['ID']['output'];
-  lastFourDigits: Maybe<Scalars['String']['output']>;
-  type: CardType;
-  updatedAt: Scalars['DateTime']['output'];
-};
-
-export type AccountCardAvgAggregate = {
-  __typename?: 'AccountCardAvgAggregate';
-  billingCycleDay: Maybe<Scalars['Float']['output']>;
-  billingPaymentDay: Maybe<Scalars['Float']['output']>;
-  defaultLimit: Maybe<Scalars['Decimal']['output']>;
-};
-
-export type AccountCardCount = {
-  __typename?: 'AccountCardCount';
-  billings: Scalars['Int']['output'];
-};
-
-export type AccountCardCountAggregate = {
-  __typename?: 'AccountCardCountAggregate';
-  _all: Scalars['Int']['output'];
-  accountId: Scalars['Int']['output'];
-  billingCycleDay: Scalars['Int']['output'];
-  billingPaymentDay: Scalars['Int']['output'];
-  createdAt: Scalars['Int']['output'];
-  defaultLimit: Scalars['Int']['output'];
-  id: Scalars['Int']['output'];
-  lastFourDigits: Scalars['Int']['output'];
-  type: Scalars['Int']['output'];
-  updatedAt: Scalars['Int']['output'];
-};
-
-export type AccountCardCreateNestedOneWithoutAccountInput = {
-  connect?: InputMaybe<AccountCardWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<AccountCardCreateOrConnectWithoutAccountInput>;
-  create?: InputMaybe<AccountCardCreateWithoutAccountInput>;
-};
-
-export type AccountCardCreateNestedOneWithoutBillingsInput = {
-  connect?: InputMaybe<AccountCardWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<AccountCardCreateOrConnectWithoutBillingsInput>;
-  create?: InputMaybe<AccountCardCreateWithoutBillingsInput>;
-};
-
-export type AccountCardCreateOrConnectWithoutAccountInput = {
-  create: AccountCardCreateWithoutAccountInput;
-  where: AccountCardWhereUniqueInput;
-};
-
-export type AccountCardCreateOrConnectWithoutBillingsInput = {
-  create: AccountCardCreateWithoutBillingsInput;
-  where: AccountCardWhereUniqueInput;
-};
-
-export type AccountCardCreateWithoutAccountInput = {
-  billingCycleDay: Scalars['Int']['input'];
-  billingPaymentDay: Scalars['Int']['input'];
-  billings?: InputMaybe<CardBillingCreateNestedManyWithoutAccountCardInput>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  defaultLimit: Scalars['Decimal']['input'];
-  id?: InputMaybe<Scalars['String']['input']>;
-  lastFourDigits?: InputMaybe<Scalars['String']['input']>;
-  type: CardType;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type AccountCardCreateWithoutBillingsInput = {
-  account: AccountCreateNestedOneWithoutAccountCardInput;
-  billingCycleDay: Scalars['Int']['input'];
-  billingPaymentDay: Scalars['Int']['input'];
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  defaultLimit: Scalars['Decimal']['input'];
-  id?: InputMaybe<Scalars['String']['input']>;
-  lastFourDigits?: InputMaybe<Scalars['String']['input']>;
-  type: CardType;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type AccountCardMaxAggregate = {
-  __typename?: 'AccountCardMaxAggregate';
-  accountId: Maybe<Scalars['String']['output']>;
-  billingCycleDay: Maybe<Scalars['Int']['output']>;
-  billingPaymentDay: Maybe<Scalars['Int']['output']>;
-  createdAt: Maybe<Scalars['DateTime']['output']>;
-  defaultLimit: Maybe<Scalars['Decimal']['output']>;
-  id: Maybe<Scalars['String']['output']>;
-  lastFourDigits: Maybe<Scalars['String']['output']>;
-  type: Maybe<CardType>;
-  updatedAt: Maybe<Scalars['DateTime']['output']>;
-};
-
-export type AccountCardMinAggregate = {
-  __typename?: 'AccountCardMinAggregate';
-  accountId: Maybe<Scalars['String']['output']>;
-  billingCycleDay: Maybe<Scalars['Int']['output']>;
-  billingPaymentDay: Maybe<Scalars['Int']['output']>;
-  createdAt: Maybe<Scalars['DateTime']['output']>;
-  defaultLimit: Maybe<Scalars['Decimal']['output']>;
-  id: Maybe<Scalars['String']['output']>;
-  lastFourDigits: Maybe<Scalars['String']['output']>;
-  type: Maybe<CardType>;
-  updatedAt: Maybe<Scalars['DateTime']['output']>;
-};
-
-export type AccountCardNullableRelationFilter = {
-  is?: InputMaybe<AccountCardWhereInput>;
-  isNot?: InputMaybe<AccountCardWhereInput>;
-};
-
-export type AccountCardRelationFilter = {
-  is?: InputMaybe<AccountCardWhereInput>;
-  isNot?: InputMaybe<AccountCardWhereInput>;
-};
-
-export type AccountCardSumAggregate = {
-  __typename?: 'AccountCardSumAggregate';
-  billingCycleDay: Maybe<Scalars['Int']['output']>;
-  billingPaymentDay: Maybe<Scalars['Int']['output']>;
-  defaultLimit: Maybe<Scalars['Decimal']['output']>;
-};
-
-export type AccountCardWhereInput = {
-  AND?: InputMaybe<Array<AccountCardWhereInput>>;
-  NOT?: InputMaybe<Array<AccountCardWhereInput>>;
-  OR?: InputMaybe<Array<AccountCardWhereInput>>;
-  account?: InputMaybe<AccountRelationFilter>;
-  accountId?: InputMaybe<StringFilter>;
-  billingCycleDay?: InputMaybe<IntFilter>;
-  billingPaymentDay?: InputMaybe<IntFilter>;
-  billings?: InputMaybe<CardBillingListRelationFilter>;
-  createdAt?: InputMaybe<DateTimeFilter>;
-  defaultLimit?: InputMaybe<DecimalFilter>;
-  id?: InputMaybe<StringFilter>;
-  lastFourDigits?: InputMaybe<StringNullableFilter>;
-  type?: InputMaybe<EnumCardTypeFilter>;
-  updatedAt?: InputMaybe<DateTimeFilter>;
-};
-
-export type AccountCardWhereUniqueInput = {
-  AND?: InputMaybe<Array<AccountCardWhereInput>>;
-  NOT?: InputMaybe<Array<AccountCardWhereInput>>;
-  OR?: InputMaybe<Array<AccountCardWhereInput>>;
-  account?: InputMaybe<AccountRelationFilter>;
-  accountId?: InputMaybe<Scalars['String']['input']>;
-  billingCycleDay?: InputMaybe<IntFilter>;
-  billingPaymentDay?: InputMaybe<IntFilter>;
-  billings?: InputMaybe<CardBillingListRelationFilter>;
-  createdAt?: InputMaybe<DateTimeFilter>;
-  defaultLimit?: InputMaybe<DecimalFilter>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  lastFourDigits?: InputMaybe<StringNullableFilter>;
-  type?: InputMaybe<EnumCardTypeFilter>;
-  updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
 export type AccountConnection = {
@@ -237,8 +54,6 @@ export type AccountCount = {
   __typename?: 'AccountCount';
   destinyRecurringTransactions: Scalars['Int']['output'];
   destinyTransactions: Scalars['Int']['output'];
-  investmentTransactions: Scalars['Int']['output'];
-  investments: Scalars['Int']['output'];
   sourceRecurringTransactions: Scalars['Int']['output'];
   sourceTransactions: Scalars['Int']['output'];
 };
@@ -250,42 +65,11 @@ export type AccountCountAggregate = {
   description: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
   initialBalance: Scalars['Int']['output'];
-  institutionId: Scalars['Int']['output'];
+  institutionLinkId: Scalars['Int']['output'];
   isActive: Scalars['Int']['output'];
   name: Scalars['Int']['output'];
-  type: Scalars['Int']['output'];
+  startDate: Scalars['Int']['output'];
   updatedAt: Scalars['Int']['output'];
-  userId: Scalars['Int']['output'];
-};
-
-export type AccountCreateManyUserInput = {
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
-  institutionId: Scalars['String']['input'];
-  isActive?: InputMaybe<Scalars['Boolean']['input']>;
-  name: Scalars['String']['input'];
-  type: AccountType;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type AccountCreateManyUserInputEnvelope = {
-  data: Array<AccountCreateManyUserInput>;
-  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-export type AccountCreateNestedManyWithoutUserInput = {
-  connect?: InputMaybe<Array<AccountWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<Array<AccountCreateOrConnectWithoutUserInput>>;
-  create?: InputMaybe<Array<AccountCreateWithoutUserInput>>;
-  createMany?: InputMaybe<AccountCreateManyUserInputEnvelope>;
-};
-
-export type AccountCreateNestedOneWithoutAccountCardInput = {
-  connect?: InputMaybe<AccountWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<AccountCreateOrConnectWithoutAccountCardInput>;
-  create?: InputMaybe<AccountCreateWithoutAccountCardInput>;
 };
 
 export type AccountCreateNestedOneWithoutDestinyRecurringTransactionsInput = {
@@ -300,16 +84,10 @@ export type AccountCreateNestedOneWithoutDestinyTransactionsInput = {
   create?: InputMaybe<AccountCreateWithoutDestinyTransactionsInput>;
 };
 
-export type AccountCreateNestedOneWithoutInvestmentTransactionsInput = {
+export type AccountCreateNestedOneWithoutInstitutionLinkInput = {
   connect?: InputMaybe<AccountWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<AccountCreateOrConnectWithoutInvestmentTransactionsInput>;
-  create?: InputMaybe<AccountCreateWithoutInvestmentTransactionsInput>;
-};
-
-export type AccountCreateNestedOneWithoutInvestmentsInput = {
-  connect?: InputMaybe<AccountWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<AccountCreateOrConnectWithoutInvestmentsInput>;
-  create?: InputMaybe<AccountCreateWithoutInvestmentsInput>;
+  connectOrCreate?: InputMaybe<AccountCreateOrConnectWithoutInstitutionLinkInput>;
+  create?: InputMaybe<AccountCreateWithoutInstitutionLinkInput>;
 };
 
 export type AccountCreateNestedOneWithoutSourceRecurringTransactionsInput = {
@@ -324,11 +102,6 @@ export type AccountCreateNestedOneWithoutSourceTransactionsInput = {
   create?: InputMaybe<AccountCreateWithoutSourceTransactionsInput>;
 };
 
-export type AccountCreateOrConnectWithoutAccountCardInput = {
-  create: AccountCreateWithoutAccountCardInput;
-  where: AccountWhereUniqueInput;
-};
-
 export type AccountCreateOrConnectWithoutDestinyRecurringTransactionsInput = {
   create: AccountCreateWithoutDestinyRecurringTransactionsInput;
   where: AccountWhereUniqueInput;
@@ -339,13 +112,8 @@ export type AccountCreateOrConnectWithoutDestinyTransactionsInput = {
   where: AccountWhereUniqueInput;
 };
 
-export type AccountCreateOrConnectWithoutInvestmentTransactionsInput = {
-  create: AccountCreateWithoutInvestmentTransactionsInput;
-  where: AccountWhereUniqueInput;
-};
-
-export type AccountCreateOrConnectWithoutInvestmentsInput = {
-  create: AccountCreateWithoutInvestmentsInput;
+export type AccountCreateOrConnectWithoutInstitutionLinkInput = {
+  create: AccountCreateWithoutInstitutionLinkInput;
   where: AccountWhereUniqueInput;
 };
 
@@ -359,167 +127,79 @@ export type AccountCreateOrConnectWithoutSourceTransactionsInput = {
   where: AccountWhereUniqueInput;
 };
 
-export type AccountCreateOrConnectWithoutUserInput = {
-  create: AccountCreateWithoutUserInput;
-  where: AccountWhereUniqueInput;
-};
-
-export type AccountCreateWithoutAccountCardInput = {
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
-  destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
-  institution: InstitutionCreateNestedOneWithoutAccountsInput;
-  investmentTransactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutAccountInput>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
-  isActive?: InputMaybe<Scalars['Boolean']['input']>;
-  name: Scalars['String']['input'];
-  sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
-  sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
-  type: AccountType;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  user: UserCreateNestedOneWithoutAccountsInput;
-};
-
 export type AccountCreateWithoutDestinyRecurringTransactionsInput = {
-  accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
   id?: InputMaybe<Scalars['String']['input']>;
   initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
-  institution: InstitutionCreateNestedOneWithoutAccountsInput;
-  investmentTransactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutAccountInput>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
+  institutionLink: InstitutionLinkCreateNestedOneWithoutAccountInput;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
   sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
-  type: AccountType;
+  startDate: Scalars['DateTime']['input'];
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  user: UserCreateNestedOneWithoutAccountsInput;
 };
 
 export type AccountCreateWithoutDestinyTransactionsInput = {
-  accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
   id?: InputMaybe<Scalars['String']['input']>;
   initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
-  institution: InstitutionCreateNestedOneWithoutAccountsInput;
-  investmentTransactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutAccountInput>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
+  institutionLink: InstitutionLinkCreateNestedOneWithoutAccountInput;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
   sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
-  type: AccountType;
+  startDate: Scalars['DateTime']['input'];
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  user: UserCreateNestedOneWithoutAccountsInput;
 };
 
-export type AccountCreateWithoutInvestmentTransactionsInput = {
-  accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
+export type AccountCreateWithoutInstitutionLinkInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
   destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
   id?: InputMaybe<Scalars['String']['input']>;
   initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
-  institution: InstitutionCreateNestedOneWithoutAccountsInput;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
   sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
-  type: AccountType;
+  startDate: Scalars['DateTime']['input'];
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  user: UserCreateNestedOneWithoutAccountsInput;
-};
-
-export type AccountCreateWithoutInvestmentsInput = {
-  accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
-  destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
-  institution: InstitutionCreateNestedOneWithoutAccountsInput;
-  investmentTransactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutAccountInput>;
-  isActive?: InputMaybe<Scalars['Boolean']['input']>;
-  name: Scalars['String']['input'];
-  sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
-  sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
-  type: AccountType;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  user: UserCreateNestedOneWithoutAccountsInput;
 };
 
 export type AccountCreateWithoutSourceRecurringTransactionsInput = {
-  accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
   destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
   id?: InputMaybe<Scalars['String']['input']>;
   initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
-  institution: InstitutionCreateNestedOneWithoutAccountsInput;
-  investmentTransactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutAccountInput>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
+  institutionLink: InstitutionLinkCreateNestedOneWithoutAccountInput;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
-  type: AccountType;
+  startDate: Scalars['DateTime']['input'];
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  user: UserCreateNestedOneWithoutAccountsInput;
 };
 
 export type AccountCreateWithoutSourceTransactionsInput = {
-  accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
   destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
   id?: InputMaybe<Scalars['String']['input']>;
   initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
-  institution: InstitutionCreateNestedOneWithoutAccountsInput;
-  investmentTransactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutAccountInput>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
+  institutionLink: InstitutionLinkCreateNestedOneWithoutAccountInput;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
-  type: AccountType;
+  startDate: Scalars['DateTime']['input'];
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  user: UserCreateNestedOneWithoutAccountsInput;
-};
-
-export type AccountCreateWithoutUserInput = {
-  accountCard?: InputMaybe<AccountCardCreateNestedOneWithoutAccountInput>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  destinyRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutDestinyAccountInput>;
-  destinyTransactions?: InputMaybe<TransactionCreateNestedManyWithoutDestinyAccountInput>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  initialBalance?: InputMaybe<Scalars['Decimal']['input']>;
-  institution: InstitutionCreateNestedOneWithoutAccountsInput;
-  investmentTransactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutAccountInput>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutAccountInput>;
-  isActive?: InputMaybe<Scalars['Boolean']['input']>;
-  name: Scalars['String']['input'];
-  sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceAccountInput>;
-  sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceAccountInput>;
-  type: AccountType;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type AccountListRelationFilter = {
-  every?: InputMaybe<AccountWhereInput>;
-  none?: InputMaybe<AccountWhereInput>;
-  some?: InputMaybe<AccountWhereInput>;
 };
 
 export type AccountMaxAggregate = {
@@ -528,12 +208,11 @@ export type AccountMaxAggregate = {
   description: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['String']['output']>;
   initialBalance: Maybe<Scalars['Decimal']['output']>;
-  institutionId: Maybe<Scalars['String']['output']>;
+  institutionLinkId: Maybe<Scalars['String']['output']>;
   isActive: Maybe<Scalars['Boolean']['output']>;
   name: Maybe<Scalars['String']['output']>;
-  type: Maybe<AccountType>;
+  startDate: Maybe<Scalars['DateTime']['output']>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
-  userId: Maybe<Scalars['String']['output']>;
 };
 
 export type AccountMinAggregate = {
@@ -542,18 +221,16 @@ export type AccountMinAggregate = {
   description: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['String']['output']>;
   initialBalance: Maybe<Scalars['Decimal']['output']>;
-  institutionId: Maybe<Scalars['String']['output']>;
+  institutionLinkId: Maybe<Scalars['String']['output']>;
   isActive: Maybe<Scalars['Boolean']['output']>;
   name: Maybe<Scalars['String']['output']>;
-  type: Maybe<AccountType>;
+  startDate: Maybe<Scalars['DateTime']['output']>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
-  userId: Maybe<Scalars['String']['output']>;
 };
 
 export type AccountModel = {
   __typename?: 'AccountModel';
   _count: AccountCount;
-  accountCard: Maybe<AccountCard>;
   balance: Maybe<Scalars['Decimal']['output']>;
   createdAt: Scalars['DateTime']['output'];
   currentBillingAmount: Maybe<Scalars['Decimal']['output']>;
@@ -562,16 +239,14 @@ export type AccountModel = {
   destinyTransactions: Maybe<Array<Transaction>>;
   id: Scalars['ID']['output'];
   initialBalance: Scalars['Decimal']['output'];
-  institution: Institution;
-  institutionId: Scalars['String']['output'];
-  investmentTransactions: Maybe<Array<InvestmentTransaction>>;
-  investments: Maybe<Array<Investment>>;
+  institutionLink: InstitutionLink;
+  institutionLinkId: Scalars['String']['output'];
   isActive: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   sourceRecurringTransactions: Maybe<Array<RecurringTransaction>>;
   sourceTransactions: Maybe<Array<Transaction>>;
+  startDate: Scalars['DateTime']['output'];
   totalInvested: Maybe<Scalars['Decimal']['output']>;
-  type: AccountType;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -586,80 +261,55 @@ export type AccountNullableRelationFilter = {
   isNot?: InputMaybe<AccountWhereInput>;
 };
 
-export type AccountRelationFilter = {
-  is?: InputMaybe<AccountWhereInput>;
-  isNot?: InputMaybe<AccountWhereInput>;
-};
-
 export type AccountSumAggregate = {
   __typename?: 'AccountSumAggregate';
   initialBalance: Maybe<Scalars['Decimal']['output']>;
 };
 
-export enum AccountType {
-  Checking = 'CHECKING',
-  CreditCard = 'CREDIT_CARD',
-  Investment = 'INVESTMENT',
-  Other = 'OTHER',
-  Savings = 'SAVINGS',
-  Wallet = 'WALLET',
-}
-
 export type AccountWhereInput = {
   AND?: InputMaybe<Array<AccountWhereInput>>;
   NOT?: InputMaybe<Array<AccountWhereInput>>;
   OR?: InputMaybe<Array<AccountWhereInput>>;
-  accountCard?: InputMaybe<AccountCardNullableRelationFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringNullableFilter>;
   destinyRecurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
   destinyTransactions?: InputMaybe<TransactionListRelationFilter>;
   id?: InputMaybe<StringFilter>;
   initialBalance?: InputMaybe<DecimalFilter>;
-  institution?: InputMaybe<InstitutionRelationFilter>;
-  institutionId?: InputMaybe<StringFilter>;
-  investmentTransactions?: InputMaybe<InvestmentTransactionListRelationFilter>;
-  investments?: InputMaybe<InvestmentListRelationFilter>;
+  institutionLink?: InputMaybe<InstitutionLinkRelationFilter>;
+  institutionLinkId?: InputMaybe<StringFilter>;
   isActive?: InputMaybe<BoolFilter>;
   name?: InputMaybe<StringFilter>;
   sourceRecurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
   sourceTransactions?: InputMaybe<TransactionListRelationFilter>;
-  type?: InputMaybe<EnumAccountTypeFilter>;
+  startDate?: InputMaybe<DateTimeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
-  user?: InputMaybe<UserRelationFilter>;
-  userId?: InputMaybe<StringFilter>;
 };
 
 export type AccountWhereUniqueInput = {
   AND?: InputMaybe<Array<AccountWhereInput>>;
   NOT?: InputMaybe<Array<AccountWhereInput>>;
   OR?: InputMaybe<Array<AccountWhereInput>>;
-  accountCard?: InputMaybe<AccountCardNullableRelationFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringNullableFilter>;
   destinyRecurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
   destinyTransactions?: InputMaybe<TransactionListRelationFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   initialBalance?: InputMaybe<DecimalFilter>;
-  institution?: InputMaybe<InstitutionRelationFilter>;
-  institutionId?: InputMaybe<StringFilter>;
-  investmentTransactions?: InputMaybe<InvestmentTransactionListRelationFilter>;
-  investments?: InputMaybe<InvestmentListRelationFilter>;
+  institutionLink?: InputMaybe<InstitutionLinkRelationFilter>;
+  institutionLinkId?: InputMaybe<Scalars['String']['input']>;
   isActive?: InputMaybe<BoolFilter>;
   name?: InputMaybe<StringFilter>;
   sourceRecurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
   sourceTransactions?: InputMaybe<TransactionListRelationFilter>;
-  type?: InputMaybe<EnumAccountTypeFilter>;
+  startDate?: InputMaybe<DateTimeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
-  user?: InputMaybe<UserRelationFilter>;
-  userId?: InputMaybe<StringFilter>;
 };
 
 export type AccountWithInvestmentCount = {
   __typename?: 'AccountWithInvestmentCount';
   id: Scalars['String']['output'];
   institutionLogoUrl: Maybe<Scalars['String']['output']>;
-  institutionName: Maybe<Scalars['String']['output']>;
   investmentCount: Scalars['Int']['output'];
   name: Scalars['String']['output'];
 };
@@ -683,7 +333,7 @@ export type AgendaTransactionModel = {
 };
 
 export enum AuthProviderName {
-  Google = 'GOOGLE',
+  Google = 'GOOGLE'
 }
 
 export type AuthSignInInput = {
@@ -728,9 +378,7 @@ export type AuthUserProviderCreateManyUserInputEnvelope = {
 
 export type AuthUserProviderCreateNestedManyWithoutUserInput = {
   connect?: InputMaybe<Array<AuthUserProviderWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<AuthUserProviderCreateOrConnectWithoutUserInput>
-  >;
+  connectOrCreate?: InputMaybe<Array<AuthUserProviderCreateOrConnectWithoutUserInput>>;
   create?: InputMaybe<Array<AuthUserProviderCreateWithoutUserInput>>;
   createMany?: InputMaybe<AuthUserProviderCreateManyUserInputEnvelope>;
 };
@@ -809,11 +457,8 @@ export type AuthUserProviderWhereUniqueInput = {
 
 export type BalanceForecastModel = {
   __typename?: 'BalanceForecastModel';
-  balanceTrend: Scalars['Float']['output'];
-  currentBalance: Scalars['Float']['output'];
-  dataPoints: Array<BalanceForecastPointModel>;
+  accountSeries: Array<BalanceForecastSeriesModel>;
   endDate: Scalars['DateTime']['output'];
-  projectedBalance: Scalars['Float']['output'];
   startDate: Scalars['DateTime']['output'];
 };
 
@@ -824,7 +469,7 @@ export enum BalanceForecastPeriod {
   SixMonths = 'SIX_MONTHS',
   ThreeMonths = 'THREE_MONTHS',
   Week = 'WEEK',
-  Year = 'YEAR',
+  Year = 'YEAR'
 }
 
 export type BalanceForecastPointModel = {
@@ -833,9 +478,21 @@ export type BalanceForecastPointModel = {
   date: Scalars['DateTime']['output'];
   expenseAmount: Scalars['Float']['output'];
   incomeAmount: Scalars['Float']['output'];
+  isInitialBalance: Maybe<Scalars['Boolean']['output']>;
   isProjected: Scalars['Boolean']['output'];
   transactionCount: Scalars['Float']['output'];
   transactions: Array<BalanceForecastTransactionModel>;
+};
+
+export type BalanceForecastSeriesModel = {
+  __typename?: 'BalanceForecastSeriesModel';
+  accountId: Scalars['String']['output'];
+  accountName: Scalars['String']['output'];
+  balanceTrend: Scalars['Float']['output'];
+  color: Maybe<Scalars['String']['output']>;
+  currentBalance: Scalars['Float']['output'];
+  dataPoints: Array<BalanceForecastPointModel>;
+  projectedBalance: Scalars['Float']['output'];
 };
 
 export type BalanceForecastTransactionModel = {
@@ -850,6 +507,19 @@ export type BalanceForecastTransactionModel = {
 export type BoolFilter = {
   equals?: InputMaybe<Scalars['Boolean']['input']>;
   not?: InputMaybe<NestedBoolFilter>;
+};
+
+export type BulkDeleteTransactionsInput = {
+  ids: Array<Scalars['ID']['input']>;
+};
+
+export type BulkUpdateTransactionsInput = {
+  category?: InputMaybe<TransactionCategory>;
+  date?: InputMaybe<Scalars['DateTime']['input']>;
+  ids: Array<Scalars['ID']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  sourceAccountId?: InputMaybe<Scalars['ID']['input']>;
+  status?: InputMaybe<TransactionStatus>;
 };
 
 export type CalendarDayModel = {
@@ -870,11 +540,42 @@ export type CalendarDayTransactionModel = {
   type: Scalars['String']['output'];
 };
 
+export type Card = {
+  __typename?: 'Card';
+  _count: CardCount;
+  availableLimit: Scalars['Decimal']['output'];
+  billingCycleDay: Scalars['Int']['output'];
+  billingPaymentDay: Scalars['Int']['output'];
+  billings: Maybe<Array<CardBilling>>;
+  createdAt: Scalars['DateTime']['output'];
+  currentBilling: Maybe<CardBillingModel>;
+  defaultLimit: Scalars['Decimal']['output'];
+  id: Scalars['ID']['output'];
+  institutionLink: InstitutionLink;
+  institutionLinkId: Scalars['String']['output'];
+  lastFourDigits: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  payableBillings: Maybe<Array<CardBillingModel>>;
+  sourceRecurringTransactions: Maybe<Array<RecurringTransaction>>;
+  sourceTransactions: Maybe<Array<Transaction>>;
+  type: CardType;
+  unpaidBalance: Scalars['Decimal']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  usagePercentage: Scalars['Float']['output'];
+};
+
+export type CardAvgAggregate = {
+  __typename?: 'CardAvgAggregate';
+  billingCycleDay: Maybe<Scalars['Float']['output']>;
+  billingPaymentDay: Maybe<Scalars['Float']['output']>;
+  defaultLimit: Maybe<Scalars['Decimal']['output']>;
+};
+
 export type CardBilling = {
   __typename?: 'CardBilling';
   _count: CardBillingCount;
-  accountCard: AccountCard;
-  accountCardId: Scalars['String']['output'];
+  card: Card;
+  cardId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   installments: Maybe<Array<TransactionInstallment>>;
@@ -886,18 +587,19 @@ export type CardBilling = {
   periodStart: Scalars['DateTime']['output'];
   status: CardBillingStatus;
   statusHistory: Maybe<Array<CardBillingHistory>>;
+  totalAmount: Scalars['Decimal']['output'];
   transactions: Maybe<Array<Transaction>>;
   updatedAt: Scalars['DateTime']['output'];
-};
-
-export type CardBillingAccountCardIdPeriodStartCompoundUniqueInput = {
-  accountCardId: Scalars['String']['input'];
-  periodStart: Scalars['DateTime']['input'];
 };
 
 export type CardBillingAvgAggregate = {
   __typename?: 'CardBillingAvgAggregate';
   limit: Maybe<Scalars['Decimal']['output']>;
+};
+
+export type CardBillingCardIdPeriodStartCompoundUniqueInput = {
+  cardId: Scalars['String']['input'];
+  periodStart: Scalars['DateTime']['input'];
 };
 
 export type CardBillingCount = {
@@ -910,7 +612,7 @@ export type CardBillingCount = {
 export type CardBillingCountAggregate = {
   __typename?: 'CardBillingCountAggregate';
   _all: Scalars['Int']['output'];
-  accountCardId: Scalars['Int']['output'];
+  cardId: Scalars['Int']['output'];
   createdAt: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
   limit: Scalars['Int']['output'];
@@ -922,7 +624,7 @@ export type CardBillingCountAggregate = {
   updatedAt: Scalars['Int']['output'];
 };
 
-export type CardBillingCreateManyAccountCardInput = {
+export type CardBillingCreateManyCardInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   limit: Scalars['Decimal']['input'];
@@ -934,18 +636,16 @@ export type CardBillingCreateManyAccountCardInput = {
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
-export type CardBillingCreateManyAccountCardInputEnvelope = {
-  data: Array<CardBillingCreateManyAccountCardInput>;
+export type CardBillingCreateManyCardInputEnvelope = {
+  data: Array<CardBillingCreateManyCardInput>;
   skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type CardBillingCreateNestedManyWithoutAccountCardInput = {
+export type CardBillingCreateNestedManyWithoutCardInput = {
   connect?: InputMaybe<Array<CardBillingWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<CardBillingCreateOrConnectWithoutAccountCardInput>
-  >;
-  create?: InputMaybe<Array<CardBillingCreateWithoutAccountCardInput>>;
-  createMany?: InputMaybe<CardBillingCreateManyAccountCardInputEnvelope>;
+  connectOrCreate?: InputMaybe<Array<CardBillingCreateOrConnectWithoutCardInput>>;
+  create?: InputMaybe<Array<CardBillingCreateWithoutCardInput>>;
+  createMany?: InputMaybe<CardBillingCreateManyCardInputEnvelope>;
 };
 
 export type CardBillingCreateNestedOneWithoutInstallmentsInput = {
@@ -960,20 +660,14 @@ export type CardBillingCreateNestedOneWithoutPaymentTransactionInput = {
   create?: InputMaybe<CardBillingCreateWithoutPaymentTransactionInput>;
 };
 
-export type CardBillingCreateNestedOneWithoutStatusHistoryInput = {
-  connect?: InputMaybe<CardBillingWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<CardBillingCreateOrConnectWithoutStatusHistoryInput>;
-  create?: InputMaybe<CardBillingCreateWithoutStatusHistoryInput>;
-};
-
 export type CardBillingCreateNestedOneWithoutTransactionsInput = {
   connect?: InputMaybe<CardBillingWhereUniqueInput>;
   connectOrCreate?: InputMaybe<CardBillingCreateOrConnectWithoutTransactionsInput>;
   create?: InputMaybe<CardBillingCreateWithoutTransactionsInput>;
 };
 
-export type CardBillingCreateOrConnectWithoutAccountCardInput = {
-  create: CardBillingCreateWithoutAccountCardInput;
+export type CardBillingCreateOrConnectWithoutCardInput = {
+  create: CardBillingCreateWithoutCardInput;
   where: CardBillingWhereUniqueInput;
 };
 
@@ -987,17 +681,12 @@ export type CardBillingCreateOrConnectWithoutPaymentTransactionInput = {
   where: CardBillingWhereUniqueInput;
 };
 
-export type CardBillingCreateOrConnectWithoutStatusHistoryInput = {
-  create: CardBillingCreateWithoutStatusHistoryInput;
-  where: CardBillingWhereUniqueInput;
-};
-
 export type CardBillingCreateOrConnectWithoutTransactionsInput = {
   create: CardBillingCreateWithoutTransactionsInput;
   where: CardBillingWhereUniqueInput;
 };
 
-export type CardBillingCreateWithoutAccountCardInput = {
+export type CardBillingCreateWithoutCardInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutCardBillingInput>;
@@ -1013,7 +702,7 @@ export type CardBillingCreateWithoutAccountCardInput = {
 };
 
 export type CardBillingCreateWithoutInstallmentsInput = {
-  accountCard: AccountCardCreateNestedOneWithoutBillingsInput;
+  card: CardCreateNestedOneWithoutBillingsInput;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   limit: Scalars['Decimal']['input'];
@@ -1028,7 +717,7 @@ export type CardBillingCreateWithoutInstallmentsInput = {
 };
 
 export type CardBillingCreateWithoutPaymentTransactionInput = {
-  accountCard: AccountCardCreateNestedOneWithoutBillingsInput;
+  card: CardCreateNestedOneWithoutBillingsInput;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutCardBillingInput>;
@@ -1042,23 +731,8 @@ export type CardBillingCreateWithoutPaymentTransactionInput = {
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
-export type CardBillingCreateWithoutStatusHistoryInput = {
-  accountCard: AccountCardCreateNestedOneWithoutBillingsInput;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutCardBillingInput>;
-  limit: Scalars['Decimal']['input'];
-  paymentDate?: InputMaybe<Scalars['DateTime']['input']>;
-  paymentTransaction?: InputMaybe<TransactionCreateNestedOneWithoutBillingPaymentInput>;
-  periodEnd?: InputMaybe<Scalars['DateTime']['input']>;
-  periodStart: Scalars['DateTime']['input'];
-  status: CardBillingStatus;
-  transactions?: InputMaybe<TransactionCreateNestedManyWithoutCardBillingInput>;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
 export type CardBillingCreateWithoutTransactionsInput = {
-  accountCard: AccountCardCreateNestedOneWithoutBillingsInput;
+  card: CardCreateNestedOneWithoutBillingsInput;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutCardBillingInput>;
@@ -1077,8 +751,6 @@ export type CardBillingHistory = {
   cardBilling: CardBilling;
   cardBillingId: Scalars['String']['output'];
   changedAt: Scalars['DateTime']['output'];
-  changedBy: Maybe<User>;
-  changedById: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   status: CardBillingStatus;
 };
@@ -1088,14 +760,12 @@ export type CardBillingHistoryCountAggregate = {
   _all: Scalars['Int']['output'];
   cardBillingId: Scalars['Int']['output'];
   changedAt: Scalars['Int']['output'];
-  changedById: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
   status: Scalars['Int']['output'];
 };
 
 export type CardBillingHistoryCreateManyCardBillingInput = {
   changedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  changedById?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   status: CardBillingStatus;
 };
@@ -1105,34 +775,11 @@ export type CardBillingHistoryCreateManyCardBillingInputEnvelope = {
   skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type CardBillingHistoryCreateManyChangedByInput = {
-  cardBillingId: Scalars['String']['input'];
-  changedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  status: CardBillingStatus;
-};
-
-export type CardBillingHistoryCreateManyChangedByInputEnvelope = {
-  data: Array<CardBillingHistoryCreateManyChangedByInput>;
-  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
 export type CardBillingHistoryCreateNestedManyWithoutCardBillingInput = {
   connect?: InputMaybe<Array<CardBillingHistoryWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<CardBillingHistoryCreateOrConnectWithoutCardBillingInput>
-  >;
+  connectOrCreate?: InputMaybe<Array<CardBillingHistoryCreateOrConnectWithoutCardBillingInput>>;
   create?: InputMaybe<Array<CardBillingHistoryCreateWithoutCardBillingInput>>;
   createMany?: InputMaybe<CardBillingHistoryCreateManyCardBillingInputEnvelope>;
-};
-
-export type CardBillingHistoryCreateNestedManyWithoutChangedByInput = {
-  connect?: InputMaybe<Array<CardBillingHistoryWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<CardBillingHistoryCreateOrConnectWithoutChangedByInput>
-  >;
-  create?: InputMaybe<Array<CardBillingHistoryCreateWithoutChangedByInput>>;
-  createMany?: InputMaybe<CardBillingHistoryCreateManyChangedByInputEnvelope>;
 };
 
 export type CardBillingHistoryCreateOrConnectWithoutCardBillingInput = {
@@ -1140,20 +787,7 @@ export type CardBillingHistoryCreateOrConnectWithoutCardBillingInput = {
   where: CardBillingHistoryWhereUniqueInput;
 };
 
-export type CardBillingHistoryCreateOrConnectWithoutChangedByInput = {
-  create: CardBillingHistoryCreateWithoutChangedByInput;
-  where: CardBillingHistoryWhereUniqueInput;
-};
-
 export type CardBillingHistoryCreateWithoutCardBillingInput = {
-  changedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  changedBy?: InputMaybe<UserCreateNestedOneWithoutCardBillingStatusHistoriesInput>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  status: CardBillingStatus;
-};
-
-export type CardBillingHistoryCreateWithoutChangedByInput = {
-  cardBilling: CardBillingCreateNestedOneWithoutStatusHistoryInput;
   changedAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   status: CardBillingStatus;
@@ -1169,7 +803,6 @@ export type CardBillingHistoryMaxAggregate = {
   __typename?: 'CardBillingHistoryMaxAggregate';
   cardBillingId: Maybe<Scalars['String']['output']>;
   changedAt: Maybe<Scalars['DateTime']['output']>;
-  changedById: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['String']['output']>;
   status: Maybe<CardBillingStatus>;
 };
@@ -1178,7 +811,6 @@ export type CardBillingHistoryMinAggregate = {
   __typename?: 'CardBillingHistoryMinAggregate';
   cardBillingId: Maybe<Scalars['String']['output']>;
   changedAt: Maybe<Scalars['DateTime']['output']>;
-  changedById: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['String']['output']>;
   status: Maybe<CardBillingStatus>;
 };
@@ -1190,8 +822,6 @@ export type CardBillingHistoryWhereInput = {
   cardBilling?: InputMaybe<CardBillingRelationFilter>;
   cardBillingId?: InputMaybe<StringFilter>;
   changedAt?: InputMaybe<DateTimeFilter>;
-  changedBy?: InputMaybe<UserNullableRelationFilter>;
-  changedById?: InputMaybe<StringNullableFilter>;
   id?: InputMaybe<StringFilter>;
   status?: InputMaybe<EnumCardBillingStatusFilter>;
 };
@@ -1203,8 +833,6 @@ export type CardBillingHistoryWhereUniqueInput = {
   cardBilling?: InputMaybe<CardBillingRelationFilter>;
   cardBillingId?: InputMaybe<StringFilter>;
   changedAt?: InputMaybe<DateTimeFilter>;
-  changedBy?: InputMaybe<UserNullableRelationFilter>;
-  changedById?: InputMaybe<StringNullableFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<EnumCardBillingStatusFilter>;
 };
@@ -1217,7 +845,7 @@ export type CardBillingListRelationFilter = {
 
 export type CardBillingMaxAggregate = {
   __typename?: 'CardBillingMaxAggregate';
-  accountCardId: Maybe<Scalars['String']['output']>;
+  cardId: Maybe<Scalars['String']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   id: Maybe<Scalars['String']['output']>;
   limit: Maybe<Scalars['Decimal']['output']>;
@@ -1231,7 +859,7 @@ export type CardBillingMaxAggregate = {
 
 export type CardBillingMinAggregate = {
   __typename?: 'CardBillingMinAggregate';
-  accountCardId: Maybe<Scalars['String']['output']>;
+  cardId: Maybe<Scalars['String']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   id: Maybe<Scalars['String']['output']>;
   limit: Maybe<Scalars['Decimal']['output']>;
@@ -1245,8 +873,8 @@ export type CardBillingMinAggregate = {
 
 export type CardBillingModel = {
   __typename?: 'CardBillingModel';
-  accountCard: AccountCard;
-  accountCardId: Scalars['String']['output'];
+  card: Card;
+  cardId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   installments: Maybe<Array<TransactionInstallment>>;
@@ -1285,9 +913,10 @@ export type CardBillingRelationFilter = {
 export enum CardBillingStatus {
   Closed = 'CLOSED',
   Completed = 'COMPLETED',
+  Future = 'FUTURE',
   Overdue = 'OVERDUE',
   Paid = 'PAID',
-  Pending = 'PENDING',
+  Pending = 'PENDING'
 }
 
 export type CardBillingSumAggregate = {
@@ -1299,8 +928,8 @@ export type CardBillingWhereInput = {
   AND?: InputMaybe<Array<CardBillingWhereInput>>;
   NOT?: InputMaybe<Array<CardBillingWhereInput>>;
   OR?: InputMaybe<Array<CardBillingWhereInput>>;
-  accountCard?: InputMaybe<AccountCardRelationFilter>;
-  accountCardId?: InputMaybe<StringFilter>;
+  card?: InputMaybe<CardRelationFilter>;
+  cardId?: InputMaybe<StringFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<StringFilter>;
   installments?: InputMaybe<TransactionInstallmentListRelationFilter>;
@@ -1320,9 +949,9 @@ export type CardBillingWhereUniqueInput = {
   AND?: InputMaybe<Array<CardBillingWhereInput>>;
   NOT?: InputMaybe<Array<CardBillingWhereInput>>;
   OR?: InputMaybe<Array<CardBillingWhereInput>>;
-  accountCard?: InputMaybe<AccountCardRelationFilter>;
-  accountCardId?: InputMaybe<StringFilter>;
-  accountCardId_periodStart?: InputMaybe<CardBillingAccountCardIdPeriodStartCompoundUniqueInput>;
+  card?: InputMaybe<CardRelationFilter>;
+  cardId?: InputMaybe<StringFilter>;
+  cardId_periodStart?: InputMaybe<CardBillingCardIdPeriodStartCompoundUniqueInput>;
   createdAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
   installments?: InputMaybe<TransactionInstallmentListRelationFilter>;
@@ -1338,10 +967,257 @@ export type CardBillingWhereUniqueInput = {
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
+export type CardConnection = {
+  __typename?: 'CardConnection';
+  edges: Maybe<Array<CardEdge>>;
+  pageInfo: Maybe<PageInfo>;
+};
+
+export type CardCount = {
+  __typename?: 'CardCount';
+  billings: Scalars['Int']['output'];
+  sourceRecurringTransactions: Scalars['Int']['output'];
+  sourceTransactions: Scalars['Int']['output'];
+};
+
+export type CardCountAggregate = {
+  __typename?: 'CardCountAggregate';
+  _all: Scalars['Int']['output'];
+  billingCycleDay: Scalars['Int']['output'];
+  billingPaymentDay: Scalars['Int']['output'];
+  createdAt: Scalars['Int']['output'];
+  defaultLimit: Scalars['Int']['output'];
+  id: Scalars['Int']['output'];
+  institutionLinkId: Scalars['Int']['output'];
+  lastFourDigits: Scalars['Int']['output'];
+  name: Scalars['Int']['output'];
+  type: Scalars['Int']['output'];
+  updatedAt: Scalars['Int']['output'];
+};
+
+export type CardCreateManyInstitutionLinkInput = {
+  billingCycleDay: Scalars['Int']['input'];
+  billingPaymentDay: Scalars['Int']['input'];
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  defaultLimit: Scalars['Decimal']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  lastFourDigits?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  type: CardType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type CardCreateManyInstitutionLinkInputEnvelope = {
+  data: Array<CardCreateManyInstitutionLinkInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type CardCreateNestedManyWithoutInstitutionLinkInput = {
+  connect?: InputMaybe<Array<CardWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<Array<CardCreateOrConnectWithoutInstitutionLinkInput>>;
+  create?: InputMaybe<Array<CardCreateWithoutInstitutionLinkInput>>;
+  createMany?: InputMaybe<CardCreateManyInstitutionLinkInputEnvelope>;
+};
+
+export type CardCreateNestedOneWithoutBillingsInput = {
+  connect?: InputMaybe<CardWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<CardCreateOrConnectWithoutBillingsInput>;
+  create?: InputMaybe<CardCreateWithoutBillingsInput>;
+};
+
+export type CardCreateNestedOneWithoutSourceRecurringTransactionsInput = {
+  connect?: InputMaybe<CardWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<CardCreateOrConnectWithoutSourceRecurringTransactionsInput>;
+  create?: InputMaybe<CardCreateWithoutSourceRecurringTransactionsInput>;
+};
+
+export type CardCreateNestedOneWithoutSourceTransactionsInput = {
+  connect?: InputMaybe<CardWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<CardCreateOrConnectWithoutSourceTransactionsInput>;
+  create?: InputMaybe<CardCreateWithoutSourceTransactionsInput>;
+};
+
+export type CardCreateOrConnectWithoutBillingsInput = {
+  create: CardCreateWithoutBillingsInput;
+  where: CardWhereUniqueInput;
+};
+
+export type CardCreateOrConnectWithoutInstitutionLinkInput = {
+  create: CardCreateWithoutInstitutionLinkInput;
+  where: CardWhereUniqueInput;
+};
+
+export type CardCreateOrConnectWithoutSourceRecurringTransactionsInput = {
+  create: CardCreateWithoutSourceRecurringTransactionsInput;
+  where: CardWhereUniqueInput;
+};
+
+export type CardCreateOrConnectWithoutSourceTransactionsInput = {
+  create: CardCreateWithoutSourceTransactionsInput;
+  where: CardWhereUniqueInput;
+};
+
+export type CardCreateWithoutBillingsInput = {
+  billingCycleDay: Scalars['Int']['input'];
+  billingPaymentDay: Scalars['Int']['input'];
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  defaultLimit: Scalars['Decimal']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  institutionLink: InstitutionLinkCreateNestedOneWithoutCardsInput;
+  lastFourDigits?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceCardInput>;
+  sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceCardInput>;
+  type: CardType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type CardCreateWithoutInstitutionLinkInput = {
+  billingCycleDay: Scalars['Int']['input'];
+  billingPaymentDay: Scalars['Int']['input'];
+  billings?: InputMaybe<CardBillingCreateNestedManyWithoutCardInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  defaultLimit: Scalars['Decimal']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  lastFourDigits?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceCardInput>;
+  sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceCardInput>;
+  type: CardType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type CardCreateWithoutSourceRecurringTransactionsInput = {
+  billingCycleDay: Scalars['Int']['input'];
+  billingPaymentDay: Scalars['Int']['input'];
+  billings?: InputMaybe<CardBillingCreateNestedManyWithoutCardInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  defaultLimit: Scalars['Decimal']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  institutionLink: InstitutionLinkCreateNestedOneWithoutCardsInput;
+  lastFourDigits?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  sourceTransactions?: InputMaybe<TransactionCreateNestedManyWithoutSourceCardInput>;
+  type: CardType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type CardCreateWithoutSourceTransactionsInput = {
+  billingCycleDay: Scalars['Int']['input'];
+  billingPaymentDay: Scalars['Int']['input'];
+  billings?: InputMaybe<CardBillingCreateNestedManyWithoutCardInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  defaultLimit: Scalars['Decimal']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  institutionLink: InstitutionLinkCreateNestedOneWithoutCardsInput;
+  lastFourDigits?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  sourceRecurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutSourceCardInput>;
+  type: CardType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type CardEdge = {
+  __typename?: 'CardEdge';
+  cursor: Scalars['String']['output'];
+  node: Card;
+};
+
+export type CardListRelationFilter = {
+  every?: InputMaybe<CardWhereInput>;
+  none?: InputMaybe<CardWhereInput>;
+  some?: InputMaybe<CardWhereInput>;
+};
+
+export type CardMaxAggregate = {
+  __typename?: 'CardMaxAggregate';
+  billingCycleDay: Maybe<Scalars['Int']['output']>;
+  billingPaymentDay: Maybe<Scalars['Int']['output']>;
+  createdAt: Maybe<Scalars['DateTime']['output']>;
+  defaultLimit: Maybe<Scalars['Decimal']['output']>;
+  id: Maybe<Scalars['String']['output']>;
+  institutionLinkId: Maybe<Scalars['String']['output']>;
+  lastFourDigits: Maybe<Scalars['String']['output']>;
+  name: Maybe<Scalars['String']['output']>;
+  type: Maybe<CardType>;
+  updatedAt: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type CardMinAggregate = {
+  __typename?: 'CardMinAggregate';
+  billingCycleDay: Maybe<Scalars['Int']['output']>;
+  billingPaymentDay: Maybe<Scalars['Int']['output']>;
+  createdAt: Maybe<Scalars['DateTime']['output']>;
+  defaultLimit: Maybe<Scalars['Decimal']['output']>;
+  id: Maybe<Scalars['String']['output']>;
+  institutionLinkId: Maybe<Scalars['String']['output']>;
+  lastFourDigits: Maybe<Scalars['String']['output']>;
+  name: Maybe<Scalars['String']['output']>;
+  type: Maybe<CardType>;
+  updatedAt: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type CardNullableRelationFilter = {
+  is?: InputMaybe<CardWhereInput>;
+  isNot?: InputMaybe<CardWhereInput>;
+};
+
+export type CardRelationFilter = {
+  is?: InputMaybe<CardWhereInput>;
+  isNot?: InputMaybe<CardWhereInput>;
+};
+
+export type CardSumAggregate = {
+  __typename?: 'CardSumAggregate';
+  billingCycleDay: Maybe<Scalars['Int']['output']>;
+  billingPaymentDay: Maybe<Scalars['Int']['output']>;
+  defaultLimit: Maybe<Scalars['Decimal']['output']>;
+};
+
 export enum CardType {
   Credit = 'CREDIT',
-  Debit = 'DEBIT',
+  Debit = 'DEBIT'
 }
+
+export type CardWhereInput = {
+  AND?: InputMaybe<Array<CardWhereInput>>;
+  NOT?: InputMaybe<Array<CardWhereInput>>;
+  OR?: InputMaybe<Array<CardWhereInput>>;
+  billingCycleDay?: InputMaybe<IntFilter>;
+  billingPaymentDay?: InputMaybe<IntFilter>;
+  billings?: InputMaybe<CardBillingListRelationFilter>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  defaultLimit?: InputMaybe<DecimalFilter>;
+  id?: InputMaybe<StringFilter>;
+  institutionLink?: InputMaybe<InstitutionLinkRelationFilter>;
+  institutionLinkId?: InputMaybe<StringFilter>;
+  lastFourDigits?: InputMaybe<StringNullableFilter>;
+  name?: InputMaybe<StringFilter>;
+  sourceRecurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
+  sourceTransactions?: InputMaybe<TransactionListRelationFilter>;
+  type?: InputMaybe<EnumCardTypeFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
+export type CardWhereUniqueInput = {
+  AND?: InputMaybe<Array<CardWhereInput>>;
+  NOT?: InputMaybe<Array<CardWhereInput>>;
+  OR?: InputMaybe<Array<CardWhereInput>>;
+  billingCycleDay?: InputMaybe<IntFilter>;
+  billingPaymentDay?: InputMaybe<IntFilter>;
+  billings?: InputMaybe<CardBillingListRelationFilter>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  defaultLimit?: InputMaybe<DecimalFilter>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  institutionLink?: InputMaybe<InstitutionLinkRelationFilter>;
+  institutionLinkId?: InputMaybe<StringFilter>;
+  lastFourDigits?: InputMaybe<StringNullableFilter>;
+  name?: InputMaybe<StringFilter>;
+  sourceRecurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
+  sourceTransactions?: InputMaybe<TransactionListRelationFilter>;
+  type?: InputMaybe<EnumCardTypeFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+};
 
 export type CategorySuggestion = {
   __typename?: 'CategorySuggestion';
@@ -1355,28 +1231,29 @@ export type ChatResponse = {
   message: Scalars['String']['output'];
 };
 
-export type CreateAccountCardInfos = {
+export type CreateAccountInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  initialBalance: Scalars['Decimal']['input'];
+  institutionLinkId: Scalars['ID']['input'];
+  isActive: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type CreateCardInput = {
   billingCycleDay?: InputMaybe<Scalars['Float']['input']>;
   billingPaymentDay?: InputMaybe<Scalars['Float']['input']>;
   defaultLimit?: InputMaybe<Scalars['Decimal']['input']>;
-  type: CardType;
-};
-
-export type CreateAccountInput = {
-  cardInfos?: InputMaybe<CreateAccountCardInfos>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  initialBalance: Scalars['Decimal']['input'];
-  institutionId: Scalars['ID']['input'];
-  isActive: Scalars['Boolean']['input'];
+  institutionLinkId: Scalars['ID']['input'];
   name: Scalars['String']['input'];
-  type: AccountType;
+  type: CardType;
 };
 
 export type CreateInstallmentTransactionInput = {
   /** Descrição da transação */
   description: Scalars['String']['input'];
   /** ID da conta cartão de crédito */
-  sourceAccountId: Scalars['ID']['input'];
+  sourceCardId: Scalars['ID']['input'];
   /** Data da primeira parcela */
   startDate: Scalars['DateTime']['input'];
   /** Valor total da compra */
@@ -1385,20 +1262,28 @@ export type CreateInstallmentTransactionInput = {
   totalInstallments: Scalars['Int']['input'];
 };
 
+export type CreateInstitutionLinkInput = {
+  institutionId: Scalars['String']['input'];
+};
+
 export type CreateInvestmentInput = {
-  accountId: Scalars['ID']['input'];
   amount: Scalars['Float']['input'];
+  brokerageFee?: InputMaybe<Scalars['Float']['input']>;
   correctedAmount?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
   finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  fixedRate?: InputMaybe<Scalars['Float']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
+  institutionLinkId: Scalars['ID']['input'];
   lastCorrectedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  maturityDate?: InputMaybe<Scalars['DateTime']['input']>;
   regimeName: Regime;
   regimePercentage?: InputMaybe<Scalars['Float']['input']>;
   startDate: Scalars['DateTime']['input'];
   status?: InputMaybe<InvestmentStatus>;
   taxedAmount?: InputMaybe<Scalars['Float']['input']>;
+  type?: InputMaybe<InvestmentType>;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
@@ -1412,12 +1297,16 @@ export type CreateRecurringTransactionInput = {
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   estimatedAmount: Scalars['Float']['input'];
   frequency: RecurrenceFrequency;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
   monthOfYear?: InputMaybe<Scalars['Int']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurrenceType?: InputMaybe<RecurrenceType>;
+  repeatCount?: InputMaybe<Scalars['Int']['input']>;
   sourceAccountId?: InputMaybe<Scalars['ID']['input']>;
+  sourceCardId?: InputMaybe<Scalars['ID']['input']>;
   startDate: Scalars['DateTime']['input'];
   totalInstallments?: InputMaybe<Scalars['Int']['input']>;
+  transactionIdsToLink?: InputMaybe<Array<Scalars['ID']['input']>>;
   type: TransactionType;
   weekOfMonth?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -1428,6 +1317,7 @@ export type CreateTransactionInput = {
   category?: InputMaybe<TransactionCategory>;
   categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   date: Scalars['DateTime']['input'];
+  deletedAt?: InputMaybe<Scalars['DateTime']['input']>;
   description: Scalars['String']['input'];
   destinyAccountId?: InputMaybe<Scalars['ID']['input']>;
   installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutTransactionInput>;
@@ -1438,6 +1328,7 @@ export type CreateTransactionInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccountId?: InputMaybe<Scalars['ID']['input']>;
+  sourceCardId?: InputMaybe<Scalars['ID']['input']>;
   status?: InputMaybe<TransactionStatus>;
   type: TransactionType;
 };
@@ -1469,7 +1360,7 @@ export enum DayMode {
   LastBusinessDay = 'LAST_BUSINESS_DAY',
   LastDay = 'LAST_DAY',
   NthWeekday = 'NTH_WEEKDAY',
-  SpecificDay = 'SPECIFIC_DAY',
+  SpecificDay = 'SPECIFIC_DAY'
 }
 
 export type DecimalFilter = {
@@ -1481,21 +1372,6 @@ export type DecimalFilter = {
   lte?: InputMaybe<Scalars['Decimal']['input']>;
   not?: InputMaybe<NestedDecimalFilter>;
   notIn?: InputMaybe<Array<Scalars['Decimal']['input']>>;
-};
-
-export type EnumAccountTypeFilter = {
-  equals?: InputMaybe<AccountType>;
-  in?: InputMaybe<Array<AccountType>>;
-  not?: InputMaybe<NestedEnumAccountTypeFilter>;
-  notIn?: InputMaybe<Array<AccountType>>;
-};
-
-export type EnumAccountTypeNullableListFilter = {
-  equals?: InputMaybe<Array<AccountType>>;
-  has?: InputMaybe<AccountType>;
-  hasEvery?: InputMaybe<Array<AccountType>>;
-  hasSome?: InputMaybe<Array<AccountType>>;
-  isEmpty?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type EnumAuthProviderNameFilter = {
@@ -1526,6 +1402,14 @@ export type EnumDayModeFilter = {
   notIn?: InputMaybe<Array<DayMode>>;
 };
 
+export type EnumInstitutionTypeNullableListFilter = {
+  equals?: InputMaybe<Array<InstitutionType>>;
+  has?: InputMaybe<InstitutionType>;
+  hasEvery?: InputMaybe<Array<InstitutionType>>;
+  hasSome?: InputMaybe<Array<InstitutionType>>;
+  isEmpty?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type EnumInvestmentStatusFilter = {
   equals?: InputMaybe<InvestmentStatus>;
   in?: InputMaybe<Array<InvestmentStatus>>;
@@ -1538,6 +1422,13 @@ export type EnumInvestmentTransactionRoleFilter = {
   in?: InputMaybe<Array<InvestmentTransactionRole>>;
   not?: InputMaybe<NestedEnumInvestmentTransactionRoleFilter>;
   notIn?: InputMaybe<Array<InvestmentTransactionRole>>;
+};
+
+export type EnumInvestmentTypeFilter = {
+  equals?: InputMaybe<InvestmentType>;
+  in?: InputMaybe<Array<InvestmentType>>;
+  not?: InputMaybe<NestedEnumInvestmentTypeFilter>;
+  notIn?: InputMaybe<Array<InvestmentType>>;
 };
 
 export type EnumPaymentMethodNullableFilter = {
@@ -1630,14 +1521,14 @@ export type FloatNullableFilter = {
 export type Institution = {
   __typename?: 'Institution';
   _count: InstitutionCount;
-  accounts: Maybe<Array<Account>>;
   code: Scalars['String']['output'];
   color: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  institutionLinks: Maybe<Array<InstitutionLink>>;
   logoUrl: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
-  types: Maybe<Array<AccountType>>;
+  types: Maybe<Array<InstitutionType>>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -1649,7 +1540,7 @@ export type InstitutionConnection = {
 
 export type InstitutionCount = {
   __typename?: 'InstitutionCount';
-  accounts: Scalars['Int']['output'];
+  institutionLinks: Scalars['Int']['output'];
 };
 
 export type InstitutionCountAggregate = {
@@ -1665,18 +1556,18 @@ export type InstitutionCountAggregate = {
   updatedAt: Scalars['Int']['output'];
 };
 
-export type InstitutionCreateNestedOneWithoutAccountsInput = {
+export type InstitutionCreateNestedOneWithoutInstitutionLinksInput = {
   connect?: InputMaybe<InstitutionWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<InstitutionCreateOrConnectWithoutAccountsInput>;
-  create?: InputMaybe<InstitutionCreateWithoutAccountsInput>;
+  connectOrCreate?: InputMaybe<InstitutionCreateOrConnectWithoutInstitutionLinksInput>;
+  create?: InputMaybe<InstitutionCreateWithoutInstitutionLinksInput>;
 };
 
-export type InstitutionCreateOrConnectWithoutAccountsInput = {
-  create: InstitutionCreateWithoutAccountsInput;
+export type InstitutionCreateOrConnectWithoutInstitutionLinksInput = {
+  create: InstitutionCreateWithoutInstitutionLinksInput;
   where: InstitutionWhereUniqueInput;
 };
 
-export type InstitutionCreateWithoutAccountsInput = {
+export type InstitutionCreateWithoutInstitutionLinksInput = {
   code: Scalars['String']['input'];
   color?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -1688,7 +1579,211 @@ export type InstitutionCreateWithoutAccountsInput = {
 };
 
 export type InstitutionCreatetypesInput = {
-  set: Array<AccountType>;
+  set: Array<InstitutionType>;
+};
+
+export type InstitutionLink = {
+  __typename?: 'InstitutionLink';
+  _count: InstitutionLinkCount;
+  account: Maybe<Account>;
+  cards: Maybe<Array<Card>>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  institution: Institution;
+  institutionId: Scalars['String']['output'];
+  investments: Maybe<Array<Investment>>;
+  updatedAt: Scalars['DateTime']['output'];
+  user: User;
+  userId: Scalars['String']['output'];
+};
+
+export type InstitutionLinkConnection = {
+  __typename?: 'InstitutionLinkConnection';
+  edges: Maybe<Array<InstitutionLinkModelEdge>>;
+  pageInfo: Maybe<PageInfo>;
+};
+
+export type InstitutionLinkCount = {
+  __typename?: 'InstitutionLinkCount';
+  cards: Scalars['Int']['output'];
+  investments: Scalars['Int']['output'];
+};
+
+export type InstitutionLinkCountAggregate = {
+  __typename?: 'InstitutionLinkCountAggregate';
+  _all: Scalars['Int']['output'];
+  createdAt: Scalars['Int']['output'];
+  id: Scalars['Int']['output'];
+  institutionId: Scalars['Int']['output'];
+  updatedAt: Scalars['Int']['output'];
+  userId: Scalars['Int']['output'];
+};
+
+export type InstitutionLinkCreateManyUserInput = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  institutionId: Scalars['String']['input'];
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type InstitutionLinkCreateManyUserInputEnvelope = {
+  data: Array<InstitutionLinkCreateManyUserInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type InstitutionLinkCreateNestedManyWithoutUserInput = {
+  connect?: InputMaybe<Array<InstitutionLinkWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<Array<InstitutionLinkCreateOrConnectWithoutUserInput>>;
+  create?: InputMaybe<Array<InstitutionLinkCreateWithoutUserInput>>;
+  createMany?: InputMaybe<InstitutionLinkCreateManyUserInputEnvelope>;
+};
+
+export type InstitutionLinkCreateNestedOneWithoutAccountInput = {
+  connect?: InputMaybe<InstitutionLinkWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<InstitutionLinkCreateOrConnectWithoutAccountInput>;
+  create?: InputMaybe<InstitutionLinkCreateWithoutAccountInput>;
+};
+
+export type InstitutionLinkCreateNestedOneWithoutCardsInput = {
+  connect?: InputMaybe<InstitutionLinkWhereUniqueInput>;
+  connectOrCreate?: InputMaybe<InstitutionLinkCreateOrConnectWithoutCardsInput>;
+  create?: InputMaybe<InstitutionLinkCreateWithoutCardsInput>;
+};
+
+export type InstitutionLinkCreateOrConnectWithoutAccountInput = {
+  create: InstitutionLinkCreateWithoutAccountInput;
+  where: InstitutionLinkWhereUniqueInput;
+};
+
+export type InstitutionLinkCreateOrConnectWithoutCardsInput = {
+  create: InstitutionLinkCreateWithoutCardsInput;
+  where: InstitutionLinkWhereUniqueInput;
+};
+
+export type InstitutionLinkCreateOrConnectWithoutUserInput = {
+  create: InstitutionLinkCreateWithoutUserInput;
+  where: InstitutionLinkWhereUniqueInput;
+};
+
+export type InstitutionLinkCreateWithoutAccountInput = {
+  cards?: InputMaybe<CardCreateNestedManyWithoutInstitutionLinkInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  institution: InstitutionCreateNestedOneWithoutInstitutionLinksInput;
+  investments?: InputMaybe<InvestmentCreateNestedManyWithoutInstitutionLinkInput>;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutInstitutionLinksInput;
+};
+
+export type InstitutionLinkCreateWithoutCardsInput = {
+  account?: InputMaybe<AccountCreateNestedOneWithoutInstitutionLinkInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  institution: InstitutionCreateNestedOneWithoutInstitutionLinksInput;
+  investments?: InputMaybe<InvestmentCreateNestedManyWithoutInstitutionLinkInput>;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutInstitutionLinksInput;
+};
+
+export type InstitutionLinkCreateWithoutUserInput = {
+  account?: InputMaybe<AccountCreateNestedOneWithoutInstitutionLinkInput>;
+  cards?: InputMaybe<CardCreateNestedManyWithoutInstitutionLinkInput>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  institution: InstitutionCreateNestedOneWithoutInstitutionLinksInput;
+  investments?: InputMaybe<InvestmentCreateNestedManyWithoutInstitutionLinkInput>;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type InstitutionLinkInstitutionIdUserIdCompoundUniqueInput = {
+  institutionId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+};
+
+export type InstitutionLinkListRelationFilter = {
+  every?: InputMaybe<InstitutionLinkWhereInput>;
+  none?: InputMaybe<InstitutionLinkWhereInput>;
+  some?: InputMaybe<InstitutionLinkWhereInput>;
+};
+
+export type InstitutionLinkMaxAggregate = {
+  __typename?: 'InstitutionLinkMaxAggregate';
+  createdAt: Maybe<Scalars['DateTime']['output']>;
+  id: Maybe<Scalars['String']['output']>;
+  institutionId: Maybe<Scalars['String']['output']>;
+  updatedAt: Maybe<Scalars['DateTime']['output']>;
+  userId: Maybe<Scalars['String']['output']>;
+};
+
+export type InstitutionLinkMinAggregate = {
+  __typename?: 'InstitutionLinkMinAggregate';
+  createdAt: Maybe<Scalars['DateTime']['output']>;
+  id: Maybe<Scalars['String']['output']>;
+  institutionId: Maybe<Scalars['String']['output']>;
+  updatedAt: Maybe<Scalars['DateTime']['output']>;
+  userId: Maybe<Scalars['String']['output']>;
+};
+
+export type InstitutionLinkModel = {
+  __typename?: 'InstitutionLinkModel';
+  _count: InstitutionLinkCount;
+  account: Maybe<AccountModel>;
+  cards: Maybe<Array<Card>>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  institution: Institution;
+  institutionId: Scalars['String']['output'];
+  investments: Maybe<Array<Investment>>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type InstitutionLinkModelEdge = {
+  __typename?: 'InstitutionLinkModelEdge';
+  cursor: Scalars['String']['output'];
+  node: InstitutionLinkModel;
+};
+
+export type InstitutionLinkNullableRelationFilter = {
+  is?: InputMaybe<InstitutionLinkWhereInput>;
+  isNot?: InputMaybe<InstitutionLinkWhereInput>;
+};
+
+export type InstitutionLinkRelationFilter = {
+  is?: InputMaybe<InstitutionLinkWhereInput>;
+  isNot?: InputMaybe<InstitutionLinkWhereInput>;
+};
+
+export type InstitutionLinkWhereInput = {
+  AND?: InputMaybe<Array<InstitutionLinkWhereInput>>;
+  NOT?: InputMaybe<Array<InstitutionLinkWhereInput>>;
+  OR?: InputMaybe<Array<InstitutionLinkWhereInput>>;
+  account?: InputMaybe<AccountNullableRelationFilter>;
+  cards?: InputMaybe<CardListRelationFilter>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<StringFilter>;
+  institution?: InputMaybe<InstitutionRelationFilter>;
+  institutionId?: InputMaybe<StringFilter>;
+  investments?: InputMaybe<InvestmentListRelationFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+  user?: InputMaybe<UserRelationFilter>;
+  userId?: InputMaybe<StringFilter>;
+};
+
+export type InstitutionLinkWhereUniqueInput = {
+  AND?: InputMaybe<Array<InstitutionLinkWhereInput>>;
+  NOT?: InputMaybe<Array<InstitutionLinkWhereInput>>;
+  OR?: InputMaybe<Array<InstitutionLinkWhereInput>>;
+  account?: InputMaybe<AccountNullableRelationFilter>;
+  cards?: InputMaybe<CardListRelationFilter>;
+  createdAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  institution?: InputMaybe<InstitutionRelationFilter>;
+  institutionId?: InputMaybe<StringFilter>;
+  institutionId_userId?: InputMaybe<InstitutionLinkInstitutionIdUserIdCompoundUniqueInput>;
+  investments?: InputMaybe<InvestmentListRelationFilter>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+  user?: InputMaybe<UserRelationFilter>;
+  userId?: InputMaybe<StringFilter>;
 };
 
 export type InstitutionMaxAggregate = {
@@ -1715,14 +1810,14 @@ export type InstitutionMinAggregate = {
 
 export type InstitutionModel = {
   __typename?: 'InstitutionModel';
-  accounts: Maybe<Array<Account>>;
   code: Scalars['String']['output'];
   color: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  institutionLinks: Maybe<Array<InstitutionLink>>;
   logoUrl: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
-  types: Maybe<Array<AccountType>>;
+  types: Maybe<Array<InstitutionType>>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -1737,18 +1832,24 @@ export type InstitutionRelationFilter = {
   isNot?: InputMaybe<InstitutionWhereInput>;
 };
 
+export enum InstitutionType {
+  Card = 'CARD',
+  Checking = 'CHECKING',
+  Investment = 'INVESTMENT'
+}
+
 export type InstitutionWhereInput = {
   AND?: InputMaybe<Array<InstitutionWhereInput>>;
   NOT?: InputMaybe<Array<InstitutionWhereInput>>;
   OR?: InputMaybe<Array<InstitutionWhereInput>>;
-  accounts?: InputMaybe<AccountListRelationFilter>;
   code?: InputMaybe<StringFilter>;
   color?: InputMaybe<StringNullableFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<StringFilter>;
+  institutionLinks?: InputMaybe<InstitutionLinkListRelationFilter>;
   logoUrl?: InputMaybe<StringNullableFilter>;
   name?: InputMaybe<StringFilter>;
-  types?: InputMaybe<EnumAccountTypeNullableListFilter>;
+  types?: InputMaybe<EnumInstitutionTypeNullableListFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -1756,14 +1857,14 @@ export type InstitutionWhereUniqueInput = {
   AND?: InputMaybe<Array<InstitutionWhereInput>>;
   NOT?: InputMaybe<Array<InstitutionWhereInput>>;
   OR?: InputMaybe<Array<InstitutionWhereInput>>;
-  accounts?: InputMaybe<AccountListRelationFilter>;
   code?: InputMaybe<StringFilter>;
   color?: InputMaybe<StringNullableFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
+  institutionLinks?: InputMaybe<InstitutionLinkListRelationFilter>;
   logoUrl?: InputMaybe<StringNullableFilter>;
   name?: InputMaybe<StringFilter>;
-  types?: InputMaybe<EnumAccountTypeNullableListFilter>;
+  types?: InputMaybe<EnumInstitutionTypeNullableListFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -1792,33 +1893,44 @@ export type IntNullableFilter = {
 export type Investment = {
   __typename?: 'Investment';
   _count: InvestmentCount;
-  account: Account;
-  accountId: Scalars['String']['output'];
   amount: Scalars['Float']['output'];
+  brokerageFee: Maybe<Scalars['Float']['output']>;
   correctedAmount: Maybe<Scalars['Float']['output']>;
   createdAt: Scalars['DateTime']['output'];
   duration: Maybe<Scalars['Int']['output']>;
   finishedAt: Maybe<Scalars['DateTime']['output']>;
+  fixedRate: Maybe<Scalars['Float']['output']>;
   id: Scalars['ID']['output'];
+  institutionLink: Maybe<InstitutionLink>;
+  institutionLinkId: Scalars['String']['output'];
   lastCorrectedAt: Maybe<Scalars['DateTime']['output']>;
+  maturityDate: Maybe<Scalars['DateTime']['output']>;
   regimeName: Regime;
   regimePercentage: Maybe<Scalars['Float']['output']>;
   startDate: Scalars['DateTime']['output'];
   status: InvestmentStatus;
   taxedAmount: Maybe<Scalars['Float']['output']>;
   transactions: Maybe<Array<InvestmentTransaction>>;
+  type: InvestmentType;
   updatedAt: Scalars['DateTime']['output'];
-  user: User;
-  userId: Scalars['String']['output'];
 };
 
 export type InvestmentAvgAggregate = {
   __typename?: 'InvestmentAvgAggregate';
   amount: Maybe<Scalars['Float']['output']>;
+  brokerageFee: Maybe<Scalars['Float']['output']>;
   correctedAmount: Maybe<Scalars['Float']['output']>;
   duration: Maybe<Scalars['Float']['output']>;
+  fixedRate: Maybe<Scalars['Float']['output']>;
   regimePercentage: Maybe<Scalars['Float']['output']>;
   taxedAmount: Maybe<Scalars['Float']['output']>;
+};
+
+export type InvestmentChartDataPoint = {
+  __typename?: 'InvestmentChartDataPoint';
+  date: Scalars['String']['output'];
+  marketValue: Maybe<Scalars['Float']['output']>;
+  theoreticalValue: Scalars['Float']['output'];
 };
 
 export type InvestmentConnection = {
@@ -1835,157 +1947,81 @@ export type InvestmentCount = {
 export type InvestmentCountAggregate = {
   __typename?: 'InvestmentCountAggregate';
   _all: Scalars['Int']['output'];
-  accountId: Scalars['Int']['output'];
   amount: Scalars['Int']['output'];
+  brokerageFee: Scalars['Int']['output'];
   correctedAmount: Scalars['Int']['output'];
   createdAt: Scalars['Int']['output'];
   duration: Scalars['Int']['output'];
   finishedAt: Scalars['Int']['output'];
+  fixedRate: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
+  institutionLinkId: Scalars['Int']['output'];
   lastCorrectedAt: Scalars['Int']['output'];
+  maturityDate: Scalars['Int']['output'];
   regimeName: Scalars['Int']['output'];
   regimePercentage: Scalars['Int']['output'];
   startDate: Scalars['Int']['output'];
   status: Scalars['Int']['output'];
   taxedAmount: Scalars['Int']['output'];
+  type: Scalars['Int']['output'];
   updatedAt: Scalars['Int']['output'];
-  userId: Scalars['Int']['output'];
 };
 
-export type InvestmentCreateManyAccountInput = {
+export type InvestmentCreateManyInstitutionLinkInput = {
   amount: Scalars['Float']['input'];
+  brokerageFee?: InputMaybe<Scalars['Float']['input']>;
   correctedAmount?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
   finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  fixedRate?: InputMaybe<Scalars['Float']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   lastCorrectedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  maturityDate?: InputMaybe<Scalars['DateTime']['input']>;
   regimeName: Regime;
   regimePercentage?: InputMaybe<Scalars['Float']['input']>;
   startDate: Scalars['DateTime']['input'];
   status?: InputMaybe<InvestmentStatus>;
   taxedAmount?: InputMaybe<Scalars['Float']['input']>;
+  type?: InputMaybe<InvestmentType>;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  userId: Scalars['String']['input'];
 };
 
-export type InvestmentCreateManyAccountInputEnvelope = {
-  data: Array<InvestmentCreateManyAccountInput>;
+export type InvestmentCreateManyInstitutionLinkInputEnvelope = {
+  data: Array<InvestmentCreateManyInstitutionLinkInput>;
   skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type InvestmentCreateManyUserInput = {
-  accountId: Scalars['String']['input'];
+export type InvestmentCreateNestedManyWithoutInstitutionLinkInput = {
+  connect?: InputMaybe<Array<InvestmentWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<Array<InvestmentCreateOrConnectWithoutInstitutionLinkInput>>;
+  create?: InputMaybe<Array<InvestmentCreateWithoutInstitutionLinkInput>>;
+  createMany?: InputMaybe<InvestmentCreateManyInstitutionLinkInputEnvelope>;
+};
+
+export type InvestmentCreateOrConnectWithoutInstitutionLinkInput = {
+  create: InvestmentCreateWithoutInstitutionLinkInput;
+  where: InvestmentWhereUniqueInput;
+};
+
+export type InvestmentCreateWithoutInstitutionLinkInput = {
   amount: Scalars['Float']['input'];
+  brokerageFee?: InputMaybe<Scalars['Float']['input']>;
   correctedAmount?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
   finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  fixedRate?: InputMaybe<Scalars['Float']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   lastCorrectedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  regimeName: Regime;
-  regimePercentage?: InputMaybe<Scalars['Float']['input']>;
-  startDate: Scalars['DateTime']['input'];
-  status?: InputMaybe<InvestmentStatus>;
-  taxedAmount?: InputMaybe<Scalars['Float']['input']>;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type InvestmentCreateManyUserInputEnvelope = {
-  data: Array<InvestmentCreateManyUserInput>;
-  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-export type InvestmentCreateNestedManyWithoutAccountInput = {
-  connect?: InputMaybe<Array<InvestmentWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<InvestmentCreateOrConnectWithoutAccountInput>
-  >;
-  create?: InputMaybe<Array<InvestmentCreateWithoutAccountInput>>;
-  createMany?: InputMaybe<InvestmentCreateManyAccountInputEnvelope>;
-};
-
-export type InvestmentCreateNestedManyWithoutUserInput = {
-  connect?: InputMaybe<Array<InvestmentWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<InvestmentCreateOrConnectWithoutUserInput>
-  >;
-  create?: InputMaybe<Array<InvestmentCreateWithoutUserInput>>;
-  createMany?: InputMaybe<InvestmentCreateManyUserInputEnvelope>;
-};
-
-export type InvestmentCreateNestedOneWithoutTransactionsInput = {
-  connect?: InputMaybe<InvestmentWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<InvestmentCreateOrConnectWithoutTransactionsInput>;
-  create?: InputMaybe<InvestmentCreateWithoutTransactionsInput>;
-};
-
-export type InvestmentCreateOrConnectWithoutAccountInput = {
-  create: InvestmentCreateWithoutAccountInput;
-  where: InvestmentWhereUniqueInput;
-};
-
-export type InvestmentCreateOrConnectWithoutTransactionsInput = {
-  create: InvestmentCreateWithoutTransactionsInput;
-  where: InvestmentWhereUniqueInput;
-};
-
-export type InvestmentCreateOrConnectWithoutUserInput = {
-  create: InvestmentCreateWithoutUserInput;
-  where: InvestmentWhereUniqueInput;
-};
-
-export type InvestmentCreateWithoutAccountInput = {
-  amount: Scalars['Float']['input'];
-  correctedAmount?: InputMaybe<Scalars['Float']['input']>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  duration?: InputMaybe<Scalars['Int']['input']>;
-  finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  lastCorrectedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  maturityDate?: InputMaybe<Scalars['DateTime']['input']>;
   regimeName: Regime;
   regimePercentage?: InputMaybe<Scalars['Float']['input']>;
   startDate: Scalars['DateTime']['input'];
   status?: InputMaybe<InvestmentStatus>;
   taxedAmount?: InputMaybe<Scalars['Float']['input']>;
   transactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutInvestmentInput>;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  user: UserCreateNestedOneWithoutInvestmentsInput;
-};
-
-export type InvestmentCreateWithoutTransactionsInput = {
-  account: AccountCreateNestedOneWithoutInvestmentsInput;
-  amount: Scalars['Float']['input'];
-  correctedAmount?: InputMaybe<Scalars['Float']['input']>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  duration?: InputMaybe<Scalars['Int']['input']>;
-  finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  lastCorrectedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  regimeName: Regime;
-  regimePercentage?: InputMaybe<Scalars['Float']['input']>;
-  startDate: Scalars['DateTime']['input'];
-  status?: InputMaybe<InvestmentStatus>;
-  taxedAmount?: InputMaybe<Scalars['Float']['input']>;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  user: UserCreateNestedOneWithoutInvestmentsInput;
-};
-
-export type InvestmentCreateWithoutUserInput = {
-  account: AccountCreateNestedOneWithoutInvestmentsInput;
-  amount: Scalars['Float']['input'];
-  correctedAmount?: InputMaybe<Scalars['Float']['input']>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  duration?: InputMaybe<Scalars['Int']['input']>;
-  finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  lastCorrectedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  regimeName: Regime;
-  regimePercentage?: InputMaybe<Scalars['Float']['input']>;
-  startDate: Scalars['DateTime']['input'];
-  status?: InputMaybe<InvestmentStatus>;
-  taxedAmount?: InputMaybe<Scalars['Float']['input']>;
-  transactions?: InputMaybe<InvestmentTransactionCreateNestedManyWithoutInvestmentInput>;
+  type?: InputMaybe<InvestmentType>;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
@@ -2004,7 +2040,7 @@ export enum InvestmentEvolutionPeriod {
   Month = 'MONTH',
   SixMonths = 'SIX_MONTHS',
   ThreeMonths = 'THREE_MONTHS',
-  Year = 'YEAR',
+  Year = 'YEAR'
 }
 
 export type InvestmentEvolutionPointModel = {
@@ -2024,62 +2060,75 @@ export type InvestmentListRelationFilter = {
 
 export type InvestmentMaxAggregate = {
   __typename?: 'InvestmentMaxAggregate';
-  accountId: Maybe<Scalars['String']['output']>;
   amount: Maybe<Scalars['Float']['output']>;
+  brokerageFee: Maybe<Scalars['Float']['output']>;
   correctedAmount: Maybe<Scalars['Float']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   duration: Maybe<Scalars['Int']['output']>;
   finishedAt: Maybe<Scalars['DateTime']['output']>;
+  fixedRate: Maybe<Scalars['Float']['output']>;
   id: Maybe<Scalars['String']['output']>;
+  institutionLinkId: Maybe<Scalars['String']['output']>;
   lastCorrectedAt: Maybe<Scalars['DateTime']['output']>;
+  maturityDate: Maybe<Scalars['DateTime']['output']>;
   regimeName: Maybe<Regime>;
   regimePercentage: Maybe<Scalars['Float']['output']>;
   startDate: Maybe<Scalars['DateTime']['output']>;
   status: Maybe<InvestmentStatus>;
   taxedAmount: Maybe<Scalars['Float']['output']>;
+  type: Maybe<InvestmentType>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
-  userId: Maybe<Scalars['String']['output']>;
 };
 
 export type InvestmentMinAggregate = {
   __typename?: 'InvestmentMinAggregate';
-  accountId: Maybe<Scalars['String']['output']>;
   amount: Maybe<Scalars['Float']['output']>;
+  brokerageFee: Maybe<Scalars['Float']['output']>;
   correctedAmount: Maybe<Scalars['Float']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   duration: Maybe<Scalars['Int']['output']>;
   finishedAt: Maybe<Scalars['DateTime']['output']>;
+  fixedRate: Maybe<Scalars['Float']['output']>;
   id: Maybe<Scalars['String']['output']>;
+  institutionLinkId: Maybe<Scalars['String']['output']>;
   lastCorrectedAt: Maybe<Scalars['DateTime']['output']>;
+  maturityDate: Maybe<Scalars['DateTime']['output']>;
   regimeName: Maybe<Regime>;
   regimePercentage: Maybe<Scalars['Float']['output']>;
   startDate: Maybe<Scalars['DateTime']['output']>;
   status: Maybe<InvestmentStatus>;
   taxedAmount: Maybe<Scalars['Float']['output']>;
+  type: Maybe<InvestmentType>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
-  userId: Maybe<Scalars['String']['output']>;
 };
 
 export type InvestmentModel = {
   __typename?: 'InvestmentModel';
-  account: Account;
-  accountId: Scalars['String']['output'];
   amount: Scalars['Float']['output'];
+  brokerageFee: Maybe<Scalars['Float']['output']>;
   correctedAmount: Maybe<Scalars['Float']['output']>;
   createdAt: Scalars['DateTime']['output'];
+  currentMarketRate: Maybe<Scalars['Float']['output']>;
   currentVariation: Scalars['String']['output'];
   duration: Maybe<Scalars['Int']['output']>;
   finishedAt: Maybe<Scalars['DateTime']['output']>;
+  fixedRate: Maybe<Scalars['Float']['output']>;
   id: Scalars['ID']['output'];
+  institutionLink: Maybe<InstitutionLink>;
+  institutionLinkId: Scalars['String']['output'];
   lastCorrectedAt: Maybe<Scalars['DateTime']['output']>;
+  maturityDate: Maybe<Scalars['DateTime']['output']>;
   regimeName: Regime;
   regimePercentage: Maybe<Scalars['Float']['output']>;
+  sellFeasibility: SellFeasibility;
   startDate: Scalars['DateTime']['output'];
   status: InvestmentStatus;
   taxPercentage: Scalars['String']['output'];
   taxedAmount: Maybe<Scalars['Float']['output']>;
   taxedVariation: Scalars['String']['output'];
+  taxesAndFees: InvestmentTaxesAndFees;
   transactions: Maybe<Array<InvestmentTransaction>>;
+  type: InvestmentType;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -2119,22 +2168,40 @@ export type InvestmentRelationFilter = {
 
 export enum InvestmentStatus {
   Closed = 'CLOSED',
-  Open = 'OPEN',
+  Open = 'OPEN'
 }
 
 export type InvestmentSumAggregate = {
   __typename?: 'InvestmentSumAggregate';
   amount: Maybe<Scalars['Float']['output']>;
+  brokerageFee: Maybe<Scalars['Float']['output']>;
   correctedAmount: Maybe<Scalars['Float']['output']>;
   duration: Maybe<Scalars['Int']['output']>;
+  fixedRate: Maybe<Scalars['Float']['output']>;
   regimePercentage: Maybe<Scalars['Float']['output']>;
   taxedAmount: Maybe<Scalars['Float']['output']>;
 };
 
+export type InvestmentTaxDetail = {
+  __typename?: 'InvestmentTaxDetail';
+  amount: Scalars['Float']['output'];
+  label: Scalars['String']['output'];
+  reason: Scalars['String']['output'];
+};
+
+export type InvestmentTaxesAndFees = {
+  __typename?: 'InvestmentTaxesAndFees';
+  details: Array<InvestmentTaxDetail>;
+  totalTaxesAndFees: Scalars['Float']['output'];
+};
+
+export type InvestmentTaxesHistoryModel = {
+  __typename?: 'InvestmentTaxesHistoryModel';
+  dataPoints: Array<TaxHistoryPointModel>;
+};
+
 export type InvestmentTransaction = {
   __typename?: 'InvestmentTransaction';
-  account: Account;
-  accountId: Scalars['String']['output'];
   amount: Scalars['Decimal']['output'];
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
@@ -2152,7 +2219,6 @@ export type InvestmentTransactionAvgAggregate = {
 export type InvestmentTransactionCountAggregate = {
   __typename?: 'InvestmentTransactionCountAggregate';
   _all: Scalars['Int']['output'];
-  accountId: Scalars['Int']['output'];
   amount: Scalars['Int']['output'];
   createdAt: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
@@ -2161,22 +2227,7 @@ export type InvestmentTransactionCountAggregate = {
   updatedAt: Scalars['Int']['output'];
 };
 
-export type InvestmentTransactionCreateManyAccountInput = {
-  amount: Scalars['Decimal']['input'];
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  investmentId: Scalars['String']['input'];
-  role: InvestmentTransactionRole;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type InvestmentTransactionCreateManyAccountInputEnvelope = {
-  data: Array<InvestmentTransactionCreateManyAccountInput>;
-  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
 export type InvestmentTransactionCreateManyInvestmentInput = {
-  accountId: Scalars['String']['input'];
   amount: Scalars['Decimal']['input'];
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -2189,27 +2240,11 @@ export type InvestmentTransactionCreateManyInvestmentInputEnvelope = {
   skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type InvestmentTransactionCreateNestedManyWithoutAccountInput = {
-  connect?: InputMaybe<Array<InvestmentTransactionWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<InvestmentTransactionCreateOrConnectWithoutAccountInput>
-  >;
-  create?: InputMaybe<Array<InvestmentTransactionCreateWithoutAccountInput>>;
-  createMany?: InputMaybe<InvestmentTransactionCreateManyAccountInputEnvelope>;
-};
-
 export type InvestmentTransactionCreateNestedManyWithoutInvestmentInput = {
   connect?: InputMaybe<Array<InvestmentTransactionWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<InvestmentTransactionCreateOrConnectWithoutInvestmentInput>
-  >;
+  connectOrCreate?: InputMaybe<Array<InvestmentTransactionCreateOrConnectWithoutInvestmentInput>>;
   create?: InputMaybe<Array<InvestmentTransactionCreateWithoutInvestmentInput>>;
   createMany?: InputMaybe<InvestmentTransactionCreateManyInvestmentInputEnvelope>;
-};
-
-export type InvestmentTransactionCreateOrConnectWithoutAccountInput = {
-  create: InvestmentTransactionCreateWithoutAccountInput;
-  where: InvestmentTransactionWhereUniqueInput;
 };
 
 export type InvestmentTransactionCreateOrConnectWithoutInvestmentInput = {
@@ -2217,17 +2252,7 @@ export type InvestmentTransactionCreateOrConnectWithoutInvestmentInput = {
   where: InvestmentTransactionWhereUniqueInput;
 };
 
-export type InvestmentTransactionCreateWithoutAccountInput = {
-  amount: Scalars['Decimal']['input'];
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  id?: InputMaybe<Scalars['String']['input']>;
-  investment: InvestmentCreateNestedOneWithoutTransactionsInput;
-  role: InvestmentTransactionRole;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
 export type InvestmentTransactionCreateWithoutInvestmentInput = {
-  account: AccountCreateNestedOneWithoutInvestmentTransactionsInput;
   amount: Scalars['Decimal']['input'];
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -2243,7 +2268,6 @@ export type InvestmentTransactionListRelationFilter = {
 
 export type InvestmentTransactionMaxAggregate = {
   __typename?: 'InvestmentTransactionMaxAggregate';
-  accountId: Maybe<Scalars['String']['output']>;
   amount: Maybe<Scalars['Decimal']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   id: Maybe<Scalars['String']['output']>;
@@ -2254,7 +2278,6 @@ export type InvestmentTransactionMaxAggregate = {
 
 export type InvestmentTransactionMinAggregate = {
   __typename?: 'InvestmentTransactionMinAggregate';
-  accountId: Maybe<Scalars['String']['output']>;
   amount: Maybe<Scalars['Decimal']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   id: Maybe<Scalars['String']['output']>;
@@ -2267,7 +2290,7 @@ export enum InvestmentTransactionRole {
   Fee = 'FEE',
   Funding = 'FUNDING',
   Income = 'INCOME',
-  Redemption = 'REDEMPTION',
+  Redemption = 'REDEMPTION'
 }
 
 export type InvestmentTransactionSumAggregate = {
@@ -2279,8 +2302,6 @@ export type InvestmentTransactionWhereInput = {
   AND?: InputMaybe<Array<InvestmentTransactionWhereInput>>;
   NOT?: InputMaybe<Array<InvestmentTransactionWhereInput>>;
   OR?: InputMaybe<Array<InvestmentTransactionWhereInput>>;
-  account?: InputMaybe<AccountRelationFilter>;
-  accountId?: InputMaybe<StringFilter>;
   amount?: InputMaybe<DecimalFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<StringFilter>;
@@ -2294,8 +2315,6 @@ export type InvestmentTransactionWhereUniqueInput = {
   AND?: InputMaybe<Array<InvestmentTransactionWhereInput>>;
   NOT?: InputMaybe<Array<InvestmentTransactionWhereInput>>;
   OR?: InputMaybe<Array<InvestmentTransactionWhereInput>>;
-  account?: InputMaybe<AccountRelationFilter>;
-  accountId?: InputMaybe<StringFilter>;
   amount?: InputMaybe<DecimalFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -2305,155 +2324,238 @@ export type InvestmentTransactionWhereUniqueInput = {
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
+export enum InvestmentType {
+  FixedIncome = 'FIXED_INCOME',
+  Savings = 'SAVINGS',
+  Treasury = 'TREASURY',
+  VariableIncome = 'VARIABLE_INCOME'
+}
+
 export type InvestmentWhereInput = {
   AND?: InputMaybe<Array<InvestmentWhereInput>>;
   NOT?: InputMaybe<Array<InvestmentWhereInput>>;
   OR?: InputMaybe<Array<InvestmentWhereInput>>;
-  account?: InputMaybe<AccountRelationFilter>;
-  accountId?: InputMaybe<StringFilter>;
   amount?: InputMaybe<FloatFilter>;
+  brokerageFee?: InputMaybe<FloatNullableFilter>;
   correctedAmount?: InputMaybe<FloatNullableFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   duration?: InputMaybe<IntNullableFilter>;
   finishedAt?: InputMaybe<DateTimeNullableFilter>;
+  fixedRate?: InputMaybe<FloatNullableFilter>;
   id?: InputMaybe<StringFilter>;
+  institutionLink?: InputMaybe<InstitutionLinkNullableRelationFilter>;
+  institutionLinkId?: InputMaybe<StringFilter>;
   lastCorrectedAt?: InputMaybe<DateTimeNullableFilter>;
+  maturityDate?: InputMaybe<DateTimeNullableFilter>;
   regimeName?: InputMaybe<EnumRegimeFilter>;
   regimePercentage?: InputMaybe<FloatNullableFilter>;
   startDate?: InputMaybe<DateTimeFilter>;
   status?: InputMaybe<EnumInvestmentStatusFilter>;
   taxedAmount?: InputMaybe<FloatNullableFilter>;
   transactions?: InputMaybe<InvestmentTransactionListRelationFilter>;
+  type?: InputMaybe<EnumInvestmentTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
-  user?: InputMaybe<UserRelationFilter>;
-  userId?: InputMaybe<StringFilter>;
 };
 
 export type InvestmentWhereUniqueInput = {
   AND?: InputMaybe<Array<InvestmentWhereInput>>;
   NOT?: InputMaybe<Array<InvestmentWhereInput>>;
   OR?: InputMaybe<Array<InvestmentWhereInput>>;
-  account?: InputMaybe<AccountRelationFilter>;
-  accountId?: InputMaybe<StringFilter>;
   amount?: InputMaybe<FloatFilter>;
+  brokerageFee?: InputMaybe<FloatNullableFilter>;
   correctedAmount?: InputMaybe<FloatNullableFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   duration?: InputMaybe<IntNullableFilter>;
   finishedAt?: InputMaybe<DateTimeNullableFilter>;
+  fixedRate?: InputMaybe<FloatNullableFilter>;
   id?: InputMaybe<Scalars['String']['input']>;
+  institutionLink?: InputMaybe<InstitutionLinkNullableRelationFilter>;
+  institutionLinkId?: InputMaybe<StringFilter>;
   lastCorrectedAt?: InputMaybe<DateTimeNullableFilter>;
+  maturityDate?: InputMaybe<DateTimeNullableFilter>;
   regimeName?: InputMaybe<EnumRegimeFilter>;
   regimePercentage?: InputMaybe<FloatNullableFilter>;
   startDate?: InputMaybe<DateTimeFilter>;
   status?: InputMaybe<EnumInvestmentStatusFilter>;
   taxedAmount?: InputMaybe<FloatNullableFilter>;
   transactions?: InputMaybe<InvestmentTransactionListRelationFilter>;
+  type?: InputMaybe<EnumInvestmentTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
-  user?: InputMaybe<UserRelationFilter>;
-  userId?: InputMaybe<StringFilter>;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
   authSignIn: SignIn;
   authSignOut: Scalars['Boolean']['output'];
-  cancelTransaction: TransactionModel;
+  bulkDeleteTransactions: Array<TransactionModel>;
+  bulkUpdateTransactions: Array<TransactionModel>;
+  changeBillingDates: CardBilling;
   chat: ChatResponse;
   closeBilling: CardBilling;
   createAccount: AccountModel;
+  createCard: Card;
   createInstallmentTransaction: TransactionModel;
+  createInstitutionLink: InstitutionLinkModel;
   createInvestment: Investment;
   createRecurringTransaction: RecurringTransactionModel;
   createTransaction: TransactionModel;
   createUser: SignIn;
   deleteInvestment: Scalars['ID']['output'];
   deleteRecurringTransaction: RecurringTransactionModel;
+  deleteRecurringTransactions: TransactionModel;
+  deleteTransaction: TransactionModel;
   endRecurringTransaction: RecurringTransactionModel;
+  ignorePossibleRecurrence: Scalars['Boolean']['output'];
   pauseRecurringTransaction: RecurringTransactionModel;
+  redeemInvestment: Investment;
   requestPasswordReset: Scalars['Boolean']['output'];
   rescheduleTransaction: TransactionModel;
   resetPassword: Scalars['Boolean']['output'];
   resumeRecurringTransaction: RecurringTransactionModel;
-  updateAccountCard: AccountCard;
+  updateAccountCard: Card;
+  updateInvestment: Investment;
   updateRecurringTransactionFromDate: RecurringTransactionModel;
   updateRecurringTransactions: TransactionModel;
   updateTransaction: TransactionModel;
 };
 
+
 export type MutationAuthSignInArgs = {
   data: AuthSignInInput;
 };
 
-export type MutationCancelTransactionArgs = {
-  id: Scalars['String']['input'];
+
+export type MutationBulkDeleteTransactionsArgs = {
+  data: BulkDeleteTransactionsInput;
 };
+
+
+export type MutationBulkUpdateTransactionsArgs = {
+  data: BulkUpdateTransactionsInput;
+};
+
+
+export type MutationChangeBillingDatesArgs = {
+  billingId: Scalars['String']['input'];
+  closingDate?: InputMaybe<Scalars['DateTime']['input']>;
+  paymentDate?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
 
 export type MutationChatArgs = {
   message: Scalars['String']['input'];
 };
+
 
 export type MutationCloseBillingArgs = {
   billingId: Scalars['String']['input'];
   closingDate?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+
 export type MutationCreateAccountArgs = {
   data: CreateAccountInput;
 };
+
+
+export type MutationCreateCardArgs = {
+  data: CreateCardInput;
+};
+
 
 export type MutationCreateInstallmentTransactionArgs = {
   data: CreateInstallmentTransactionInput;
 };
 
+
+export type MutationCreateInstitutionLinkArgs = {
+  data: CreateInstitutionLinkInput;
+};
+
+
 export type MutationCreateInvestmentArgs = {
   data: CreateInvestmentInput;
 };
+
 
 export type MutationCreateRecurringTransactionArgs = {
   data: CreateRecurringTransactionInput;
 };
 
+
 export type MutationCreateTransactionArgs = {
   data: CreateTransactionInput;
 };
+
 
 export type MutationCreateUserArgs = {
   data: UserCreateInput;
 };
 
+
 export type MutationDeleteInvestmentArgs = {
   id: Scalars['ID']['input'];
 };
 
+
 export type MutationDeleteRecurringTransactionArgs = {
+  deleteAllTransactions?: Scalars['Boolean']['input'];
   id: Scalars['String']['input'];
 };
+
+
+export type MutationDeleteRecurringTransactionsArgs = {
+  scope: UpdateRecurringScope;
+  transactionId: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteTransactionArgs = {
+  id: Scalars['String']['input'];
+};
+
 
 export type MutationEndRecurringTransactionArgs = {
   endDate: Scalars['DateTime']['input'];
   id: Scalars['String']['input'];
 };
 
+
+export type MutationIgnorePossibleRecurrenceArgs = {
+  description: Scalars['String']['input'];
+};
+
+
 export type MutationPauseRecurringTransactionArgs = {
   id: Scalars['String']['input'];
 };
+
+
+export type MutationRedeemInvestmentArgs = {
+  data: RedeemInvestmentInput;
+};
+
 
 export type MutationRequestPasswordResetArgs = {
   email: Scalars['String']['input'];
 };
 
+
 export type MutationRescheduleTransactionArgs = {
   data: RescheduleTransactionInput;
 };
+
 
 export type MutationResetPasswordArgs = {
   newPassword: Scalars['String']['input'];
   token: Scalars['String']['input'];
 };
 
+
 export type MutationResumeRecurringTransactionArgs = {
   id: Scalars['String']['input'];
 };
+
 
 export type MutationUpdateAccountCardArgs = {
   billingCycleDay?: InputMaybe<Scalars['Float']['input']>;
@@ -2462,15 +2564,23 @@ export type MutationUpdateAccountCardArgs = {
   defaultLimit?: InputMaybe<Scalars['Float']['input']>;
 };
 
+
+export type MutationUpdateInvestmentArgs = {
+  data: UpdateInvestmentInput;
+};
+
+
 export type MutationUpdateRecurringTransactionFromDateArgs = {
   data: UpdateRecurringTransactionInput;
   fromDate: Scalars['DateTime']['input'];
   id: Scalars['String']['input'];
 };
 
+
 export type MutationUpdateRecurringTransactionsArgs = {
   data: UpdateRecurringTransactionsInput;
 };
+
 
 export type MutationUpdateTransactionArgs = {
   data: UpdateTransactionInput;
@@ -2514,13 +2624,6 @@ export type NestedDecimalFilter = {
   notIn?: InputMaybe<Array<Scalars['Decimal']['input']>>;
 };
 
-export type NestedEnumAccountTypeFilter = {
-  equals?: InputMaybe<AccountType>;
-  in?: InputMaybe<Array<AccountType>>;
-  not?: InputMaybe<NestedEnumAccountTypeFilter>;
-  notIn?: InputMaybe<Array<AccountType>>;
-};
-
 export type NestedEnumAuthProviderNameFilter = {
   equals?: InputMaybe<AuthProviderName>;
   in?: InputMaybe<Array<AuthProviderName>>;
@@ -2561,6 +2664,13 @@ export type NestedEnumInvestmentTransactionRoleFilter = {
   in?: InputMaybe<Array<InvestmentTransactionRole>>;
   not?: InputMaybe<NestedEnumInvestmentTransactionRoleFilter>;
   notIn?: InputMaybe<Array<InvestmentTransactionRole>>;
+};
+
+export type NestedEnumInvestmentTypeFilter = {
+  equals?: InputMaybe<InvestmentType>;
+  in?: InputMaybe<Array<InvestmentType>>;
+  not?: InputMaybe<NestedEnumInvestmentTypeFilter>;
+  notIn?: InputMaybe<Array<InvestmentType>>;
 };
 
 export type NestedEnumPaymentMethodNullableFilter = {
@@ -2693,55 +2803,80 @@ export type NestedStringNullableFilter = {
 
 export enum OrdenationAccountModel {
   Count = '_count',
-  AccountCard = 'accountCard',
   Balance = 'balance',
   CreatedAt = 'createdAt',
   CurrentBillingAmount = 'currentBillingAmount',
   DestinyRecurringTransactions = 'destinyRecurringTransactions',
   DestinyTransactions = 'destinyTransactions',
   InitialBalance = 'initialBalance',
-  Institution = 'institution',
-  InstitutionId = 'institutionId',
-  InvestmentTransactions = 'investmentTransactions',
-  Investments = 'investments',
+  InstitutionLink = 'institutionLink',
+  InstitutionLinkId = 'institutionLinkId',
   IsActive = 'isActive',
   Name = 'name',
   SourceRecurringTransactions = 'sourceRecurringTransactions',
   SourceTransactions = 'sourceTransactions',
+  StartDate = 'startDate',
   TotalInvested = 'totalInvested',
-  Type = 'type',
-  UpdatedAt = 'updatedAt',
+  UpdatedAt = 'updatedAt'
+}
+
+export enum OrdenationCard {
+  BillingCycleDay = 'billingCycleDay',
+  BillingPaymentDay = 'billingPaymentDay',
+  CreatedAt = 'createdAt',
+  DefaultLimit = 'defaultLimit',
+  Id = 'id',
+  InstitutionLinkId = 'institutionLinkId',
+  LastFourDigits = 'lastFourDigits',
+  Name = 'name',
+  Type = 'type'
+}
+
+export enum OrdenationInstitutionLinkModel {
+  Count = '_count',
+  Account = 'account',
+  Cards = 'cards',
+  Institution = 'institution',
+  InstitutionId = 'institutionId',
+  Investments = 'investments'
 }
 
 export enum OrdenationInstitutionModel {
-  Accounts = 'accounts',
   Code = 'code',
   Color = 'color',
   CreatedAt = 'createdAt',
   Id = 'id',
+  InstitutionLinks = 'institutionLinks',
   LogoUrl = 'logoUrl',
   Name = 'name',
   Types = 'types',
-  UpdatedAt = 'updatedAt',
+  UpdatedAt = 'updatedAt'
 }
 
 export enum OrdenationInvestmentModel {
-  Account = 'account',
-  AccountId = 'accountId',
   Amount = 'amount',
+  BrokerageFee = 'brokerageFee',
   CorrectedAmount = 'correctedAmount',
   CreatedAt = 'createdAt',
+  CurrentMarketRate = 'currentMarketRate',
   Duration = 'duration',
   FinishedAt = 'finishedAt',
+  FixedRate = 'fixedRate',
   Id = 'id',
+  InstitutionLink = 'institutionLink',
+  InstitutionLinkId = 'institutionLinkId',
   LastCorrectedAt = 'lastCorrectedAt',
+  MaturityDate = 'maturityDate',
   RegimeName = 'regimeName',
   RegimePercentage = 'regimePercentage',
+  SellFeasibility = 'sellFeasibility',
   StartDate = 'startDate',
   Status = 'status',
   TaxedAmount = 'taxedAmount',
+  TaxesAndFees = 'taxesAndFees',
   Transactions = 'transactions',
-  UpdatedAt = 'updatedAt',
+  Type = 'type',
+  UpdatedAt = 'updatedAt'
 }
 
 export enum OrdenationRecurringTransactionModel {
@@ -2760,29 +2895,33 @@ export enum OrdenationRecurringTransactionModel {
   MonthOfYear = 'monthOfYear',
   PaymentMethod = 'paymentMethod',
   RecurrenceType = 'recurrenceType',
+  RepeatCount = 'repeatCount',
   SourceAccount = 'sourceAccount',
   SourceAccountId = 'sourceAccountId',
+  SourceCard = 'sourceCard',
+  SourceCardId = 'sourceCardId',
   StartDate = 'startDate',
   TotalInstallments = 'totalInstallments',
   Transactions = 'transactions',
   Type = 'type',
   UpdatedAt = 'updatedAt',
-  WeekOfMonth = 'weekOfMonth',
+  WeekOfMonth = 'weekOfMonth'
 }
 
 export enum OrdenationTransactionModel {
   Count = '_count',
   Amount = 'amount',
   BillingPayment = 'billingPayment',
-  CanCancel = 'canCancel',
-  CancelReason = 'cancelReason',
-  CancelWarningMessage = 'cancelWarningMessage',
+  CanDelete = 'canDelete',
   CardBilling = 'cardBilling',
   CardBillingId = 'cardBillingId',
   Category = 'category',
   CategoryConfidence = 'categoryConfidence',
   CreatedAt = 'createdAt',
   Date = 'date',
+  DeleteReason = 'deleteReason',
+  DeleteWarningMessage = 'deleteWarningMessage',
+  DeletedAt = 'deletedAt',
   Description = 'description',
   DestinyAccount = 'destinyAccount',
   DestinyAccountId = 'destinyAccountId',
@@ -2797,22 +2936,24 @@ export enum OrdenationTransactionModel {
   RecurringTransactionId = 'recurringTransactionId',
   SourceAccount = 'sourceAccount',
   SourceAccountId = 'sourceAccountId',
+  SourceCard = 'sourceCard',
+  SourceCardId = 'sourceCardId',
   Status = 'status',
   TotalInstallments = 'totalInstallments',
   Type = 'type',
-  UpdatedAt = 'updatedAt',
+  UpdatedAt = 'updatedAt'
 }
 
 export enum OrdenationUserModel {
   Email = 'email',
   Id = 'id',
   Name = 'name',
-  Role = 'role',
+  Role = 'role'
 }
 
 export enum OrderDirection {
   Asc = 'Asc',
-  Desc = 'Desc',
+  Desc = 'Desc'
 }
 
 export type PageInfo = {
@@ -2828,27 +2969,36 @@ export enum PaymentMethod {
   Cash = 'CASH',
   CreditCard = 'CREDIT_CARD',
   DebitCard = 'DEBIT_CARD',
-  Pix = 'PIX',
+  Pix = 'PIX'
 }
 
 export type Query = {
   __typename?: 'Query';
   account: AccountModel;
-  accountCard: Maybe<AccountCard>;
   accounts: AccountConnection;
+  availableTreasuryBonds: Array<Scalars['String']['output']>;
   balanceForecast: BalanceForecastModel;
   billing: CardBillingOnDate;
   billingTransactions: Array<TransactionModel>;
+  card: Maybe<Card>;
+  cards: CardConnection;
   financialAgenda: FinancialAgendaModel;
   health: Scalars['String']['output'];
   institution: InstitutionModel;
+  institutionLinks: InstitutionLinkConnection;
   institutions: InstitutionConnection;
+  investment: InvestmentModel;
   investmentAccounts: Array<AccountWithInvestmentCount>;
+  investmentChartData: Array<InvestmentChartDataPoint>;
   investmentEvolution: InvestmentEvolutionModel;
   investmentRegimes: InvestmentRegimeSummaryConnection;
+  investmentTaxesHistory: InvestmentTaxesHistoryModel;
   investments: InvestmentConnection;
+  possibleRecurringTransactions: Array<RecurringTransactionSuggestion>;
   recurringTransaction: Maybe<RecurringTransactionModel>;
   recurringTransactions: RecurringTransactionConnection;
+  regimeTaxesHistory: RegimeTaxesHistoryModel;
+  simulateBalanceForecast: BalanceForecastModel;
   suggestCategory: CategorySuggestion;
   totalInvestments: TotalInvestmentsModel;
   transactions: TransactionConnection;
@@ -2859,13 +3009,11 @@ export type Query = {
   users: UserConnection;
 };
 
+
 export type QueryAccountArgs = {
   id: Scalars['ID']['input'];
 };
 
-export type QueryAccountCardArgs = {
-  id: Scalars['String']['input'];
-};
 
 export type QueryAccountsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
@@ -2875,8 +3023,13 @@ export type QueryAccountsArgs = {
   orderBy?: InputMaybe<OrdenationAccountModel>;
   orderDirection?: InputMaybe<OrderDirection>;
   search?: InputMaybe<Scalars['String']['input']>;
-  types?: InputMaybe<Array<AccountType>>;
 };
+
+
+export type QueryAvailableTreasuryBondsArgs = {
+  regime: Regime;
+};
+
 
 export type QueryBalanceForecastArgs = {
   accountId?: InputMaybe<Scalars['String']['input']>;
@@ -2885,23 +3038,59 @@ export type QueryBalanceForecastArgs = {
   startDate?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+
 export type QueryBillingArgs = {
-  accountId: Scalars['ID']['input'];
+  cardId: Scalars['ID']['input'];
   id?: InputMaybe<Scalars['ID']['input']>;
 };
 
+
 export type QueryBillingTransactionsArgs = {
   billingId: Scalars['ID']['input'];
+  search?: InputMaybe<Scalars['String']['input']>;
 };
+
+
+export type QueryCardArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryCardsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  institutionLinkId?: InputMaybe<Scalars['String']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<OrdenationCard>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  types?: InputMaybe<Array<CardType>>;
+};
+
 
 export type QueryFinancialAgendaArgs = {
   accountId?: InputMaybe<Scalars['String']['input']>;
   daysAhead?: Scalars['Int']['input'];
 };
 
+
 export type QueryInstitutionArgs = {
   id: Scalars['String']['input'];
 };
+
+
+export type QueryInstitutionLinksArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  institutionTypes?: InputMaybe<Array<InstitutionType>>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<OrdenationInstitutionLinkModel>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  search?: InputMaybe<Scalars['String']['input']>;
+};
+
 
 export type QueryInstitutionsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
@@ -2911,41 +3100,65 @@ export type QueryInstitutionsArgs = {
   orderBy?: InputMaybe<OrdenationInstitutionModel>;
   orderDirection?: InputMaybe<OrderDirection>;
   search?: InputMaybe<Scalars['String']['input']>;
-  types?: InputMaybe<Array<AccountType>>;
+  types?: InputMaybe<Array<InstitutionType>>;
 };
+
+
+export type QueryInvestmentArgs = {
+  id: Scalars['String']['input'];
+};
+
 
 export type QueryInvestmentAccountsArgs = {
   regime: Regime;
 };
 
+
+export type QueryInvestmentChartDataArgs = {
+  investmentId: Scalars['String']['input'];
+};
+
+
 export type QueryInvestmentEvolutionArgs = {
   accountId?: InputMaybe<Scalars['String']['input']>;
   period?: InvestmentEvolutionPeriod;
+  regime?: InputMaybe<Regime>;
 };
+
 
 export type QueryInvestmentRegimesArgs = {
-  accountId?: InputMaybe<Scalars['String']['input']>;
+  institutionLinkId?: InputMaybe<Scalars['String']['input']>;
 };
 
+
+export type QueryInvestmentTaxesHistoryArgs = {
+  investmentId: Scalars['String']['input'];
+};
+
+
 export type QueryInvestmentsArgs = {
-  accountIds?: InputMaybe<Array<Scalars['String']['input']>>;
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  institutionLinkIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<OrdenationInvestmentModel>;
   orderDirection?: InputMaybe<OrderDirection>;
   regime?: InputMaybe<Regime>;
+  status?: InputMaybe<InvestmentStatus>;
 };
+
 
 export type QueryRecurringTransactionArgs = {
   id: Scalars['String']['input'];
 };
 
+
 export type QueryRecurringTransactionsArgs = {
   accountId?: InputMaybe<Scalars['ID']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  cardId?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -2954,15 +3167,28 @@ export type QueryRecurringTransactionsArgs = {
   search?: InputMaybe<Scalars['String']['input']>;
 };
 
+
+export type QueryRegimeTaxesHistoryArgs = {
+  regime: Regime;
+};
+
+
+export type QuerySimulateBalanceForecastArgs = {
+  input: SimulateBalanceForecastInput;
+};
+
+
 export type QuerySuggestCategoryArgs = {
   description: Scalars['String']['input'];
 };
+
 
 export type QueryTransactionsArgs = {
   accountId?: InputMaybe<Scalars['ID']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   cardBillingId?: InputMaybe<Scalars['ID']['input']>;
+  cardId?: InputMaybe<Scalars['ID']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -2974,15 +3200,18 @@ export type QueryTransactionsArgs = {
   types?: InputMaybe<Array<TransactionType>>;
 };
 
+
 export type QueryTransactionsCalendarArgs = {
   accountId?: InputMaybe<Scalars['String']['input']>;
   month: Scalars['Int']['input'];
   year: Scalars['Int']['input'];
 };
 
+
 export type QueryTransactionsGroupedByPeriodArgs = {
   accountId?: InputMaybe<Scalars['ID']['input']>;
   cardBillingId?: InputMaybe<Scalars['ID']['input']>;
+  cardId?: InputMaybe<Scalars['ID']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   limitPerGroup?: InputMaybe<Scalars['Int']['input']>;
   startDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -2990,15 +3219,18 @@ export type QueryTransactionsGroupedByPeriodArgs = {
   types?: InputMaybe<Array<TransactionType>>;
 };
 
+
 export type QueryTransactionsSummaryArgs = {
   accountId?: InputMaybe<Scalars['ID']['input']>;
   cardBillingId?: InputMaybe<Scalars['ID']['input']>;
+  cardId?: InputMaybe<Scalars['ID']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   startDate?: InputMaybe<Scalars['DateTime']['input']>;
   statuses?: InputMaybe<Array<TransactionStatus>>;
   types?: InputMaybe<Array<TransactionType>>;
 };
+
 
 export type QueryUsersArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
@@ -3012,19 +3244,19 @@ export type QueryUsersArgs = {
 
 export enum QueryMode {
   Default = 'default',
-  Insensitive = 'insensitive',
+  Insensitive = 'insensitive'
 }
 
 export enum RecurrenceFrequency {
   BiWeekly = 'BI_WEEKLY',
   Monthly = 'MONTHLY',
   Weekly = 'WEEKLY',
-  Yearly = 'YEARLY',
+  Yearly = 'YEARLY'
 }
 
 export enum RecurrenceType {
   Installment = 'INSTALLMENT',
-  Periodic = 'PERIODIC',
+  Periodic = 'PERIODIC'
 }
 
 export type RecurringTransaction = {
@@ -3045,8 +3277,11 @@ export type RecurringTransaction = {
   monthOfYear: Maybe<Scalars['Int']['output']>;
   paymentMethod: Maybe<PaymentMethod>;
   recurrenceType: RecurrenceType;
+  repeatCount: Maybe<Scalars['Int']['output']>;
   sourceAccount: Maybe<Account>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
+  sourceCard: Maybe<Card>;
+  sourceCardId: Maybe<Scalars['String']['output']>;
   startDate: Scalars['DateTime']['output'];
   totalInstallments: Maybe<Scalars['Int']['output']>;
   transactions: Maybe<Array<Transaction>>;
@@ -3063,6 +3298,7 @@ export type RecurringTransactionAvgAggregate = {
   dayOfWeek: Maybe<Scalars['Float']['output']>;
   estimatedAmount: Maybe<Scalars['Decimal']['output']>;
   monthOfYear: Maybe<Scalars['Float']['output']>;
+  repeatCount: Maybe<Scalars['Float']['output']>;
   totalInstallments: Maybe<Scalars['Float']['output']>;
   weekOfMonth: Maybe<Scalars['Float']['output']>;
 };
@@ -3095,7 +3331,9 @@ export type RecurringTransactionCountAggregate = {
   monthOfYear: Scalars['Int']['output'];
   paymentMethod: Scalars['Int']['output'];
   recurrenceType: Scalars['Int']['output'];
+  repeatCount: Scalars['Int']['output'];
   sourceAccountId: Scalars['Int']['output'];
+  sourceCardId: Scalars['Int']['output'];
   startDate: Scalars['Int']['output'];
   totalInstallments: Scalars['Int']['output'];
   type: Scalars['Int']['output'];
@@ -3118,7 +3356,9 @@ export type RecurringTransactionCreateManyDestinyAccountInput = {
   monthOfYear?: InputMaybe<Scalars['Int']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurrenceType?: InputMaybe<RecurrenceType>;
+  repeatCount?: InputMaybe<Scalars['Int']['input']>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
+  sourceCardId?: InputMaybe<Scalars['String']['input']>;
   startDate: Scalars['DateTime']['input'];
   totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
@@ -3147,6 +3387,8 @@ export type RecurringTransactionCreateManySourceAccountInput = {
   monthOfYear?: InputMaybe<Scalars['Int']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurrenceType?: InputMaybe<RecurrenceType>;
+  repeatCount?: InputMaybe<Scalars['Int']['input']>;
+  sourceCardId?: InputMaybe<Scalars['String']['input']>;
   startDate: Scalars['DateTime']['input'];
   totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
@@ -3157,6 +3399,36 @@ export type RecurringTransactionCreateManySourceAccountInput = {
 
 export type RecurringTransactionCreateManySourceAccountInputEnvelope = {
   data: Array<RecurringTransactionCreateManySourceAccountInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type RecurringTransactionCreateManySourceCardInput = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  dayMode?: InputMaybe<DayMode>;
+  dayOfMonth?: InputMaybe<Scalars['Int']['input']>;
+  dayOfWeek?: InputMaybe<Scalars['Int']['input']>;
+  description: Scalars['String']['input'];
+  destinyAccountId?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  estimatedAmount: Scalars['Decimal']['input'];
+  frequency: RecurrenceFrequency;
+  id?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  monthOfYear?: InputMaybe<Scalars['Int']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  recurrenceType?: InputMaybe<RecurrenceType>;
+  repeatCount?: InputMaybe<Scalars['Int']['input']>;
+  sourceAccountId?: InputMaybe<Scalars['String']['input']>;
+  startDate: Scalars['DateTime']['input'];
+  totalInstallments?: InputMaybe<Scalars['Int']['input']>;
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  userId: Scalars['String']['input'];
+  weekOfMonth?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type RecurringTransactionCreateManySourceCardInputEnvelope = {
+  data: Array<RecurringTransactionCreateManySourceCardInput>;
   skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -3175,7 +3447,9 @@ export type RecurringTransactionCreateManyUserInput = {
   monthOfYear?: InputMaybe<Scalars['Int']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurrenceType?: InputMaybe<RecurrenceType>;
+  repeatCount?: InputMaybe<Scalars['Int']['input']>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
+  sourceCardId?: InputMaybe<Scalars['String']['input']>;
   startDate: Scalars['DateTime']['input'];
   totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
@@ -3190,31 +3464,28 @@ export type RecurringTransactionCreateManyUserInputEnvelope = {
 
 export type RecurringTransactionCreateNestedManyWithoutDestinyAccountInput = {
   connect?: InputMaybe<Array<RecurringTransactionWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<RecurringTransactionCreateOrConnectWithoutDestinyAccountInput>
-  >;
-  create?: InputMaybe<
-    Array<RecurringTransactionCreateWithoutDestinyAccountInput>
-  >;
+  connectOrCreate?: InputMaybe<Array<RecurringTransactionCreateOrConnectWithoutDestinyAccountInput>>;
+  create?: InputMaybe<Array<RecurringTransactionCreateWithoutDestinyAccountInput>>;
   createMany?: InputMaybe<RecurringTransactionCreateManyDestinyAccountInputEnvelope>;
 };
 
 export type RecurringTransactionCreateNestedManyWithoutSourceAccountInput = {
   connect?: InputMaybe<Array<RecurringTransactionWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<RecurringTransactionCreateOrConnectWithoutSourceAccountInput>
-  >;
-  create?: InputMaybe<
-    Array<RecurringTransactionCreateWithoutSourceAccountInput>
-  >;
+  connectOrCreate?: InputMaybe<Array<RecurringTransactionCreateOrConnectWithoutSourceAccountInput>>;
+  create?: InputMaybe<Array<RecurringTransactionCreateWithoutSourceAccountInput>>;
   createMany?: InputMaybe<RecurringTransactionCreateManySourceAccountInputEnvelope>;
+};
+
+export type RecurringTransactionCreateNestedManyWithoutSourceCardInput = {
+  connect?: InputMaybe<Array<RecurringTransactionWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<Array<RecurringTransactionCreateOrConnectWithoutSourceCardInput>>;
+  create?: InputMaybe<Array<RecurringTransactionCreateWithoutSourceCardInput>>;
+  createMany?: InputMaybe<RecurringTransactionCreateManySourceCardInputEnvelope>;
 };
 
 export type RecurringTransactionCreateNestedManyWithoutUserInput = {
   connect?: InputMaybe<Array<RecurringTransactionWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<RecurringTransactionCreateOrConnectWithoutUserInput>
-  >;
+  connectOrCreate?: InputMaybe<Array<RecurringTransactionCreateOrConnectWithoutUserInput>>;
   create?: InputMaybe<Array<RecurringTransactionCreateWithoutUserInput>>;
   createMany?: InputMaybe<RecurringTransactionCreateManyUserInputEnvelope>;
 };
@@ -3232,6 +3503,11 @@ export type RecurringTransactionCreateOrConnectWithoutDestinyAccountInput = {
 
 export type RecurringTransactionCreateOrConnectWithoutSourceAccountInput = {
   create: RecurringTransactionCreateWithoutSourceAccountInput;
+  where: RecurringTransactionWhereUniqueInput;
+};
+
+export type RecurringTransactionCreateOrConnectWithoutSourceCardInput = {
+  create: RecurringTransactionCreateWithoutSourceCardInput;
   where: RecurringTransactionWhereUniqueInput;
 };
 
@@ -3259,7 +3535,9 @@ export type RecurringTransactionCreateWithoutDestinyAccountInput = {
   monthOfYear?: InputMaybe<Scalars['Int']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurrenceType?: InputMaybe<RecurrenceType>;
+  repeatCount?: InputMaybe<Scalars['Int']['input']>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceRecurringTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceRecurringTransactionsInput>;
   startDate: Scalars['DateTime']['input'];
   totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   transactions?: InputMaybe<TransactionCreateNestedManyWithoutRecurringTransactionInput>;
@@ -3284,6 +3562,34 @@ export type RecurringTransactionCreateWithoutSourceAccountInput = {
   monthOfYear?: InputMaybe<Scalars['Int']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurrenceType?: InputMaybe<RecurrenceType>;
+  repeatCount?: InputMaybe<Scalars['Int']['input']>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceRecurringTransactionsInput>;
+  startDate: Scalars['DateTime']['input'];
+  totalInstallments?: InputMaybe<Scalars['Int']['input']>;
+  transactions?: InputMaybe<TransactionCreateNestedManyWithoutRecurringTransactionInput>;
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutRecurringTransactionsInput;
+  weekOfMonth?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type RecurringTransactionCreateWithoutSourceCardInput = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  dayMode?: InputMaybe<DayMode>;
+  dayOfMonth?: InputMaybe<Scalars['Int']['input']>;
+  dayOfWeek?: InputMaybe<Scalars['Int']['input']>;
+  description: Scalars['String']['input'];
+  destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyRecurringTransactionsInput>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  estimatedAmount: Scalars['Decimal']['input'];
+  frequency: RecurrenceFrequency;
+  id?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  monthOfYear?: InputMaybe<Scalars['Int']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  recurrenceType?: InputMaybe<RecurrenceType>;
+  repeatCount?: InputMaybe<Scalars['Int']['input']>;
+  sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceRecurringTransactionsInput>;
   startDate: Scalars['DateTime']['input'];
   totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   transactions?: InputMaybe<TransactionCreateNestedManyWithoutRecurringTransactionInput>;
@@ -3308,7 +3614,9 @@ export type RecurringTransactionCreateWithoutTransactionsInput = {
   monthOfYear?: InputMaybe<Scalars['Int']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurrenceType?: InputMaybe<RecurrenceType>;
+  repeatCount?: InputMaybe<Scalars['Int']['input']>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceRecurringTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceRecurringTransactionsInput>;
   startDate: Scalars['DateTime']['input'];
   totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   type: TransactionType;
@@ -3332,7 +3640,9 @@ export type RecurringTransactionCreateWithoutUserInput = {
   monthOfYear?: InputMaybe<Scalars['Int']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurrenceType?: InputMaybe<RecurrenceType>;
+  repeatCount?: InputMaybe<Scalars['Int']['input']>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceRecurringTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceRecurringTransactionsInput>;
   startDate: Scalars['DateTime']['input'];
   totalInstallments?: InputMaybe<Scalars['Int']['input']>;
   transactions?: InputMaybe<TransactionCreateNestedManyWithoutRecurringTransactionInput>;
@@ -3363,7 +3673,9 @@ export type RecurringTransactionMaxAggregate = {
   monthOfYear: Maybe<Scalars['Int']['output']>;
   paymentMethod: Maybe<PaymentMethod>;
   recurrenceType: Maybe<RecurrenceType>;
+  repeatCount: Maybe<Scalars['Int']['output']>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
+  sourceCardId: Maybe<Scalars['String']['output']>;
   startDate: Maybe<Scalars['DateTime']['output']>;
   totalInstallments: Maybe<Scalars['Int']['output']>;
   type: Maybe<TransactionType>;
@@ -3388,7 +3700,9 @@ export type RecurringTransactionMinAggregate = {
   monthOfYear: Maybe<Scalars['Int']['output']>;
   paymentMethod: Maybe<PaymentMethod>;
   recurrenceType: Maybe<RecurrenceType>;
+  repeatCount: Maybe<Scalars['Int']['output']>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
+  sourceCardId: Maybe<Scalars['String']['output']>;
   startDate: Maybe<Scalars['DateTime']['output']>;
   totalInstallments: Maybe<Scalars['Int']['output']>;
   type: Maybe<TransactionType>;
@@ -3415,11 +3729,14 @@ export type RecurringTransactionModel = {
   monthOfYear: Maybe<Scalars['Int']['output']>;
   paymentMethod: Maybe<PaymentMethod>;
   recurrenceType: RecurrenceType;
+  repeatCount: Maybe<Scalars['Int']['output']>;
   sourceAccount: Maybe<Account>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
+  sourceCard: Maybe<Card>;
+  sourceCardId: Maybe<Scalars['String']['output']>;
   startDate: Scalars['DateTime']['output'];
   totalInstallments: Maybe<Scalars['Int']['output']>;
-  transactions: Maybe<Array<Transaction>>;
+  transactions: Maybe<Array<TransactionModel>>;
   type: TransactionType;
   updatedAt: Scalars['DateTime']['output'];
   weekOfMonth: Maybe<Scalars['Int']['output']>;
@@ -3436,12 +3753,26 @@ export type RecurringTransactionNullableRelationFilter = {
   isNot?: InputMaybe<RecurringTransactionWhereInput>;
 };
 
+export type RecurringTransactionSuggestion = {
+  __typename?: 'RecurringTransactionSuggestion';
+  averageAmount: Scalars['Float']['output'];
+  description: Scalars['String']['output'];
+  destinyAccountId: Maybe<Scalars['ID']['output']>;
+  frequency: RecurrenceFrequency;
+  occurrenceCount: Scalars['Int']['output'];
+  sourceAccountId: Maybe<Scalars['ID']['output']>;
+  suggestedDay: Maybe<Scalars['Int']['output']>;
+  transactionIds: Array<Scalars['ID']['output']>;
+  transactions: Array<TransactionModel>;
+};
+
 export type RecurringTransactionSumAggregate = {
   __typename?: 'RecurringTransactionSumAggregate';
   dayOfMonth: Maybe<Scalars['Int']['output']>;
   dayOfWeek: Maybe<Scalars['Int']['output']>;
   estimatedAmount: Maybe<Scalars['Decimal']['output']>;
   monthOfYear: Maybe<Scalars['Int']['output']>;
+  repeatCount: Maybe<Scalars['Int']['output']>;
   totalInstallments: Maybe<Scalars['Int']['output']>;
   weekOfMonth: Maybe<Scalars['Int']['output']>;
 };
@@ -3465,8 +3796,11 @@ export type RecurringTransactionWhereInput = {
   monthOfYear?: InputMaybe<IntNullableFilter>;
   paymentMethod?: InputMaybe<EnumPaymentMethodNullableFilter>;
   recurrenceType?: InputMaybe<EnumRecurrenceTypeFilter>;
+  repeatCount?: InputMaybe<IntNullableFilter>;
   sourceAccount?: InputMaybe<AccountNullableRelationFilter>;
   sourceAccountId?: InputMaybe<StringNullableFilter>;
+  sourceCard?: InputMaybe<CardNullableRelationFilter>;
+  sourceCardId?: InputMaybe<StringNullableFilter>;
   startDate?: InputMaybe<DateTimeFilter>;
   totalInstallments?: InputMaybe<IntNullableFilter>;
   transactions?: InputMaybe<TransactionListRelationFilter>;
@@ -3496,8 +3830,11 @@ export type RecurringTransactionWhereUniqueInput = {
   monthOfYear?: InputMaybe<IntNullableFilter>;
   paymentMethod?: InputMaybe<EnumPaymentMethodNullableFilter>;
   recurrenceType?: InputMaybe<EnumRecurrenceTypeFilter>;
+  repeatCount?: InputMaybe<IntNullableFilter>;
   sourceAccount?: InputMaybe<AccountNullableRelationFilter>;
   sourceAccountId?: InputMaybe<StringNullableFilter>;
+  sourceCard?: InputMaybe<CardNullableRelationFilter>;
+  sourceCardId?: InputMaybe<StringNullableFilter>;
   startDate?: InputMaybe<DateTimeFilter>;
   totalInstallments?: InputMaybe<IntNullableFilter>;
   transactions?: InputMaybe<TransactionListRelationFilter>;
@@ -3508,10 +3845,23 @@ export type RecurringTransactionWhereUniqueInput = {
   weekOfMonth?: InputMaybe<IntNullableFilter>;
 };
 
+export type RedeemInvestmentInput = {
+  finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  investmentId: Scalars['ID']['input'];
+};
+
 export enum Regime {
   Cdi = 'CDI',
+  Ipca = 'IPCA',
   Poupanca = 'POUPANCA',
+  Prefixed = 'PREFIXED',
+  Selic = 'SELIC'
 }
+
+export type RegimeTaxesHistoryModel = {
+  __typename?: 'RegimeTaxesHistoryModel';
+  dataPoints: Array<TaxHistoryPointModel>;
+};
 
 export type RescheduleTransactionInput = {
   id: Scalars['ID']['input'];
@@ -3520,12 +3870,54 @@ export type RescheduleTransactionInput = {
 
 export enum Role {
   Admin = 'ADMIN',
-  User = 'USER',
+  User = 'USER'
+}
+
+export type SellFeasibility = {
+  __typename?: 'SellFeasibility';
+  message: Scalars['String']['output'];
+  status: SellFeasibilityStatus;
+};
+
+export enum SellFeasibilityStatus {
+  Favorable = 'FAVORABLE',
+  Neutral = 'NEUTRAL',
+  NotApplicable = 'NOT_APPLICABLE',
+  Unfavorable = 'UNFAVORABLE'
 }
 
 export type SignIn = {
   __typename?: 'SignIn';
   user: Maybe<UserModel>;
+};
+
+export type SimulateBalanceForecastInput = {
+  accountId?: InputMaybe<Scalars['ID']['input']>;
+  endDate: Scalars['DateTime']['input'];
+  simulatedInvestments: Array<SimulatedInvestmentInput>;
+  simulatedTransactions: Array<SimulatedTransactionInput>;
+  startDate: Scalars['DateTime']['input'];
+};
+
+export type SimulatedInvestmentInput = {
+  accountId: Scalars['ID']['input'];
+  annualRate: Scalars['Float']['input'];
+  description: Scalars['String']['input'];
+  initialAmount: Scalars['Float']['input'];
+  regime: Regime;
+  startDate: Scalars['DateTime']['input'];
+};
+
+export type SimulatedTransactionInput = {
+  accountId: Scalars['ID']['input'];
+  amount: Scalars['Float']['input'];
+  date: Scalars['DateTime']['input'];
+  description: Scalars['String']['input'];
+  destinyAccountId?: InputMaybe<Scalars['ID']['input']>;
+  isRecurring: Scalars['Boolean']['input'];
+  recurrenceEndDate?: InputMaybe<Scalars['DateTime']['input']>;
+  recurrenceFrequency?: InputMaybe<RecurrenceFrequency>;
+  type: TransactionType;
 };
 
 export type StringFilter = {
@@ -3563,13 +3955,23 @@ export type Subscription = {
   userAdded: UserModel;
 };
 
+export type TaxHistoryPointModel = {
+  __typename?: 'TaxHistoryPointModel';
+  component1: Maybe<Scalars['Float']['output']>;
+  component2: Maybe<Scalars['Float']['output']>;
+  date: Scalars['String']['output'];
+  total: Maybe<Scalars['Float']['output']>;
+  value: Maybe<Scalars['Float']['output']>;
+};
+
 export type TotalInvestmentsModel = {
   __typename?: 'TotalInvestmentsModel';
-  currentAmount: Scalars['Float']['output'];
-  currentVariation: Scalars['String']['output'];
-  initialAmount: Scalars['Float']['output'];
-  taxedAmount: Scalars['Float']['output'];
-  taxedVariation: Scalars['String']['output'];
+  currentAmount: Maybe<Scalars['Float']['output']>;
+  currentVariation: Maybe<Scalars['String']['output']>;
+  initialAmount: Maybe<Scalars['Float']['output']>;
+  realVariation: Maybe<Scalars['String']['output']>;
+  taxedAmount: Maybe<Scalars['Float']['output']>;
+  taxedVariation: Maybe<Scalars['String']['output']>;
 };
 
 export type Transaction = {
@@ -3583,6 +3985,7 @@ export type Transaction = {
   categoryConfidence: Maybe<Scalars['Float']['output']>;
   createdAt: Scalars['DateTime']['output'];
   date: Scalars['DateTime']['output'];
+  deletedAt: Maybe<Scalars['DateTime']['output']>;
   description: Scalars['String']['output'];
   destinyAccount: Maybe<Account>;
   destinyAccountId: Maybe<Scalars['String']['output']>;
@@ -3595,6 +3998,8 @@ export type Transaction = {
   recurringTransactionId: Maybe<Scalars['String']['output']>;
   sourceAccount: Maybe<Account>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
+  sourceCard: Maybe<Card>;
+  sourceCardId: Maybe<Scalars['String']['output']>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt: Scalars['DateTime']['output'];
@@ -3621,7 +4026,7 @@ export enum TransactionCategory {
   Transfer = 'TRANSFER',
   Transport = 'TRANSPORT',
   Travel = 'TRAVEL',
-  Utilities = 'UTILITIES',
+  Utilities = 'UTILITIES'
 }
 
 export type TransactionConnection = {
@@ -3644,6 +4049,7 @@ export type TransactionCountAggregate = {
   categoryConfidence: Scalars['Int']['output'];
   createdAt: Scalars['Int']['output'];
   date: Scalars['Int']['output'];
+  deletedAt: Scalars['Int']['output'];
   description: Scalars['Int']['output'];
   destinyAccountId: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
@@ -3652,6 +4058,7 @@ export type TransactionCountAggregate = {
   paymentMethod: Scalars['Int']['output'];
   recurringTransactionId: Scalars['Int']['output'];
   sourceAccountId: Scalars['Int']['output'];
+  sourceCardId: Scalars['Int']['output'];
   status: Scalars['Int']['output'];
   type: Scalars['Int']['output'];
   updatedAt: Scalars['Int']['output'];
@@ -3664,6 +4071,7 @@ export type TransactionCreateManyCardBillingInput = {
   categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
+  deletedAt?: InputMaybe<Scalars['DateTime']['input']>;
   description: Scalars['String']['input'];
   destinyAccountId?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -3672,6 +4080,7 @@ export type TransactionCreateManyCardBillingInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransactionId?: InputMaybe<Scalars['String']['input']>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
+  sourceCardId?: InputMaybe<Scalars['String']['input']>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3690,6 +4099,7 @@ export type TransactionCreateManyDestinyAccountInput = {
   categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
+  deletedAt?: InputMaybe<Scalars['DateTime']['input']>;
   description: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
   paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3697,6 +4107,7 @@ export type TransactionCreateManyDestinyAccountInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransactionId?: InputMaybe<Scalars['String']['input']>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
+  sourceCardId?: InputMaybe<Scalars['String']['input']>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3715,6 +4126,7 @@ export type TransactionCreateManyRecurringTransactionInput = {
   categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
+  deletedAt?: InputMaybe<Scalars['DateTime']['input']>;
   description: Scalars['String']['input'];
   destinyAccountId?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -3722,6 +4134,7 @@ export type TransactionCreateManyRecurringTransactionInput = {
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
+  sourceCardId?: InputMaybe<Scalars['String']['input']>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3740,6 +4153,7 @@ export type TransactionCreateManySourceAccountInput = {
   categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
+  deletedAt?: InputMaybe<Scalars['DateTime']['input']>;
   description: Scalars['String']['input'];
   destinyAccountId?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -3747,6 +4161,7 @@ export type TransactionCreateManySourceAccountInput = {
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransactionId?: InputMaybe<Scalars['String']['input']>;
+  sourceCardId?: InputMaybe<Scalars['String']['input']>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3758,13 +4173,14 @@ export type TransactionCreateManySourceAccountInputEnvelope = {
   skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type TransactionCreateManyUserInput = {
+export type TransactionCreateManySourceCardInput = {
   amount: Scalars['Decimal']['input'];
   cardBillingId?: InputMaybe<Scalars['String']['input']>;
   category?: InputMaybe<TransactionCategory>;
   categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
+  deletedAt?: InputMaybe<Scalars['DateTime']['input']>;
   description: Scalars['String']['input'];
   destinyAccountId?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -3773,6 +4189,34 @@ export type TransactionCreateManyUserInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransactionId?: InputMaybe<Scalars['String']['input']>;
   sourceAccountId?: InputMaybe<Scalars['String']['input']>;
+  status: TransactionStatus;
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  userId: Scalars['String']['input'];
+};
+
+export type TransactionCreateManySourceCardInputEnvelope = {
+  data: Array<TransactionCreateManySourceCardInput>;
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type TransactionCreateManyUserInput = {
+  amount: Scalars['Decimal']['input'];
+  cardBillingId?: InputMaybe<Scalars['String']['input']>;
+  category?: InputMaybe<TransactionCategory>;
+  categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  date: Scalars['DateTime']['input'];
+  deletedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  description: Scalars['String']['input'];
+  destinyAccountId?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  recurringTransactionId?: InputMaybe<Scalars['String']['input']>;
+  sourceAccountId?: InputMaybe<Scalars['String']['input']>;
+  sourceCardId?: InputMaybe<Scalars['String']['input']>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3785,45 +4229,42 @@ export type TransactionCreateManyUserInputEnvelope = {
 
 export type TransactionCreateNestedManyWithoutCardBillingInput = {
   connect?: InputMaybe<Array<TransactionWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<TransactionCreateOrConnectWithoutCardBillingInput>
-  >;
+  connectOrCreate?: InputMaybe<Array<TransactionCreateOrConnectWithoutCardBillingInput>>;
   create?: InputMaybe<Array<TransactionCreateWithoutCardBillingInput>>;
   createMany?: InputMaybe<TransactionCreateManyCardBillingInputEnvelope>;
 };
 
 export type TransactionCreateNestedManyWithoutDestinyAccountInput = {
   connect?: InputMaybe<Array<TransactionWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<TransactionCreateOrConnectWithoutDestinyAccountInput>
-  >;
+  connectOrCreate?: InputMaybe<Array<TransactionCreateOrConnectWithoutDestinyAccountInput>>;
   create?: InputMaybe<Array<TransactionCreateWithoutDestinyAccountInput>>;
   createMany?: InputMaybe<TransactionCreateManyDestinyAccountInputEnvelope>;
 };
 
 export type TransactionCreateNestedManyWithoutRecurringTransactionInput = {
   connect?: InputMaybe<Array<TransactionWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<TransactionCreateOrConnectWithoutRecurringTransactionInput>
-  >;
+  connectOrCreate?: InputMaybe<Array<TransactionCreateOrConnectWithoutRecurringTransactionInput>>;
   create?: InputMaybe<Array<TransactionCreateWithoutRecurringTransactionInput>>;
   createMany?: InputMaybe<TransactionCreateManyRecurringTransactionInputEnvelope>;
 };
 
 export type TransactionCreateNestedManyWithoutSourceAccountInput = {
   connect?: InputMaybe<Array<TransactionWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<TransactionCreateOrConnectWithoutSourceAccountInput>
-  >;
+  connectOrCreate?: InputMaybe<Array<TransactionCreateOrConnectWithoutSourceAccountInput>>;
   create?: InputMaybe<Array<TransactionCreateWithoutSourceAccountInput>>;
   createMany?: InputMaybe<TransactionCreateManySourceAccountInputEnvelope>;
 };
 
+export type TransactionCreateNestedManyWithoutSourceCardInput = {
+  connect?: InputMaybe<Array<TransactionWhereUniqueInput>>;
+  connectOrCreate?: InputMaybe<Array<TransactionCreateOrConnectWithoutSourceCardInput>>;
+  create?: InputMaybe<Array<TransactionCreateWithoutSourceCardInput>>;
+  createMany?: InputMaybe<TransactionCreateManySourceCardInputEnvelope>;
+};
+
 export type TransactionCreateNestedManyWithoutUserInput = {
   connect?: InputMaybe<Array<TransactionWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<TransactionCreateOrConnectWithoutUserInput>
-  >;
+  connectOrCreate?: InputMaybe<Array<TransactionCreateOrConnectWithoutUserInput>>;
   create?: InputMaybe<Array<TransactionCreateWithoutUserInput>>;
   createMany?: InputMaybe<TransactionCreateManyUserInputEnvelope>;
 };
@@ -3870,6 +4311,11 @@ export type TransactionCreateOrConnectWithoutSourceAccountInput = {
   where: TransactionWhereUniqueInput;
 };
 
+export type TransactionCreateOrConnectWithoutSourceCardInput = {
+  create: TransactionCreateWithoutSourceCardInput;
+  where: TransactionWhereUniqueInput;
+};
+
 export type TransactionCreateOrConnectWithoutUserInput = {
   create: TransactionCreateWithoutUserInput;
   where: TransactionWhereUniqueInput;
@@ -3882,6 +4328,7 @@ export type TransactionCreateWithoutBillingPaymentInput = {
   categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
+  deletedAt?: InputMaybe<Scalars['DateTime']['input']>;
   description: Scalars['String']['input'];
   destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyTransactionsInput>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -3891,6 +4338,7 @@ export type TransactionCreateWithoutBillingPaymentInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3904,6 +4352,7 @@ export type TransactionCreateWithoutCardBillingInput = {
   categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
+  deletedAt?: InputMaybe<Scalars['DateTime']['input']>;
   description: Scalars['String']['input'];
   destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyTransactionsInput>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -3913,6 +4362,7 @@ export type TransactionCreateWithoutCardBillingInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3927,6 +4377,7 @@ export type TransactionCreateWithoutDestinyAccountInput = {
   categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
+  deletedAt?: InputMaybe<Scalars['DateTime']['input']>;
   description: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
   installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutTransactionInput>;
@@ -3935,6 +4386,7 @@ export type TransactionCreateWithoutDestinyAccountInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3949,6 +4401,7 @@ export type TransactionCreateWithoutInstallmentsInput = {
   categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
+  deletedAt?: InputMaybe<Scalars['DateTime']['input']>;
   description: Scalars['String']['input'];
   destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyTransactionsInput>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -3957,6 +4410,7 @@ export type TransactionCreateWithoutInstallmentsInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3971,6 +4425,7 @@ export type TransactionCreateWithoutRecurringTransactionInput = {
   categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
+  deletedAt?: InputMaybe<Scalars['DateTime']['input']>;
   description: Scalars['String']['input'];
   destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyTransactionsInput>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -3979,6 +4434,7 @@ export type TransactionCreateWithoutRecurringTransactionInput = {
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3993,6 +4449,7 @@ export type TransactionCreateWithoutSourceAccountInput = {
   categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
+  deletedAt?: InputMaybe<Scalars['DateTime']['input']>;
   description: Scalars['String']['input'];
   destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyTransactionsInput>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -4001,6 +4458,31 @@ export type TransactionCreateWithoutSourceAccountInput = {
   paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceTransactionsInput>;
+  status: TransactionStatus;
+  type: TransactionType;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  user: UserCreateNestedOneWithoutTransactionsInput;
+};
+
+export type TransactionCreateWithoutSourceCardInput = {
+  amount: Scalars['Decimal']['input'];
+  billingPayment?: InputMaybe<CardBillingCreateNestedOneWithoutPaymentTransactionInput>;
+  cardBilling?: InputMaybe<CardBillingCreateNestedOneWithoutTransactionsInput>;
+  category?: InputMaybe<TransactionCategory>;
+  categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  date: Scalars['DateTime']['input'];
+  deletedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  description: Scalars['String']['input'];
+  destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyTransactionsInput>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  installments?: InputMaybe<TransactionInstallmentCreateNestedManyWithoutTransactionInput>;
+  paymentEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  paymentLimit?: InputMaybe<Scalars['DateTime']['input']>;
+  paymentMethod?: InputMaybe<PaymentMethod>;
+  recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
+  sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -4015,6 +4497,7 @@ export type TransactionCreateWithoutUserInput = {
   categoryConfidence?: InputMaybe<Scalars['Float']['input']>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   date: Scalars['DateTime']['input'];
+  deletedAt?: InputMaybe<Scalars['DateTime']['input']>;
   description: Scalars['String']['input'];
   destinyAccount?: InputMaybe<AccountCreateNestedOneWithoutDestinyTransactionsInput>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -4024,6 +4507,7 @@ export type TransactionCreateWithoutUserInput = {
   paymentMethod?: InputMaybe<PaymentMethod>;
   recurringTransaction?: InputMaybe<RecurringTransactionCreateNestedOneWithoutTransactionsInput>;
   sourceAccount?: InputMaybe<AccountCreateNestedOneWithoutSourceTransactionsInput>;
+  sourceCard?: InputMaybe<CardCreateNestedOneWithoutSourceTransactionsInput>;
   status: TransactionStatus;
   type: TransactionType;
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -4099,23 +4583,15 @@ export type TransactionInstallmentCreateManyTransactionInputEnvelope = {
 
 export type TransactionInstallmentCreateNestedManyWithoutCardBillingInput = {
   connect?: InputMaybe<Array<TransactionInstallmentWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<TransactionInstallmentCreateOrConnectWithoutCardBillingInput>
-  >;
-  create?: InputMaybe<
-    Array<TransactionInstallmentCreateWithoutCardBillingInput>
-  >;
+  connectOrCreate?: InputMaybe<Array<TransactionInstallmentCreateOrConnectWithoutCardBillingInput>>;
+  create?: InputMaybe<Array<TransactionInstallmentCreateWithoutCardBillingInput>>;
   createMany?: InputMaybe<TransactionInstallmentCreateManyCardBillingInputEnvelope>;
 };
 
 export type TransactionInstallmentCreateNestedManyWithoutTransactionInput = {
   connect?: InputMaybe<Array<TransactionInstallmentWhereUniqueInput>>;
-  connectOrCreate?: InputMaybe<
-    Array<TransactionInstallmentCreateOrConnectWithoutTransactionInput>
-  >;
-  create?: InputMaybe<
-    Array<TransactionInstallmentCreateWithoutTransactionInput>
-  >;
+  connectOrCreate?: InputMaybe<Array<TransactionInstallmentCreateOrConnectWithoutTransactionInput>>;
+  create?: InputMaybe<Array<TransactionInstallmentCreateWithoutTransactionInput>>;
   createMany?: InputMaybe<TransactionInstallmentCreateManyTransactionInputEnvelope>;
 };
 
@@ -4225,6 +4701,7 @@ export type TransactionMaxAggregate = {
   categoryConfidence: Maybe<Scalars['Float']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   date: Maybe<Scalars['DateTime']['output']>;
+  deletedAt: Maybe<Scalars['DateTime']['output']>;
   description: Maybe<Scalars['String']['output']>;
   destinyAccountId: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['String']['output']>;
@@ -4233,6 +4710,7 @@ export type TransactionMaxAggregate = {
   paymentMethod: Maybe<PaymentMethod>;
   recurringTransactionId: Maybe<Scalars['String']['output']>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
+  sourceCardId: Maybe<Scalars['String']['output']>;
   status: Maybe<TransactionStatus>;
   type: Maybe<TransactionType>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
@@ -4247,6 +4725,7 @@ export type TransactionMinAggregate = {
   categoryConfidence: Maybe<Scalars['Float']['output']>;
   createdAt: Maybe<Scalars['DateTime']['output']>;
   date: Maybe<Scalars['DateTime']['output']>;
+  deletedAt: Maybe<Scalars['DateTime']['output']>;
   description: Maybe<Scalars['String']['output']>;
   destinyAccountId: Maybe<Scalars['String']['output']>;
   id: Maybe<Scalars['String']['output']>;
@@ -4255,6 +4734,7 @@ export type TransactionMinAggregate = {
   paymentMethod: Maybe<PaymentMethod>;
   recurringTransactionId: Maybe<Scalars['String']['output']>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
+  sourceCardId: Maybe<Scalars['String']['output']>;
   status: Maybe<TransactionStatus>;
   type: Maybe<TransactionType>;
   updatedAt: Maybe<Scalars['DateTime']['output']>;
@@ -4266,15 +4746,16 @@ export type TransactionModel = {
   _count: TransactionCount;
   amount: Scalars['Decimal']['output'];
   billingPayment: Maybe<CardBilling>;
-  canCancel: Maybe<Scalars['Boolean']['output']>;
-  cancelReason: Maybe<Scalars['String']['output']>;
-  cancelWarningMessage: Maybe<Scalars['String']['output']>;
+  canDelete: Maybe<Scalars['Boolean']['output']>;
   cardBilling: Maybe<CardBilling>;
   cardBillingId: Maybe<Scalars['String']['output']>;
   category: Maybe<TransactionCategory>;
   categoryConfidence: Maybe<Scalars['Float']['output']>;
   createdAt: Scalars['DateTime']['output'];
   date: Scalars['DateTime']['output'];
+  deleteReason: Maybe<Scalars['String']['output']>;
+  deleteWarningMessage: Maybe<Scalars['String']['output']>;
+  deletedAt: Maybe<Scalars['DateTime']['output']>;
   description: Scalars['String']['output'];
   destinyAccount: Maybe<Account>;
   destinyAccountId: Maybe<Scalars['String']['output']>;
@@ -4290,6 +4771,8 @@ export type TransactionModel = {
   recurringTransactionId: Maybe<Scalars['String']['output']>;
   sourceAccount: Maybe<Account>;
   sourceAccountId: Maybe<Scalars['String']['output']>;
+  sourceCard: Maybe<Card>;
+  sourceCardId: Maybe<Scalars['String']['output']>;
   status: TransactionStatus;
   totalInstallments: Maybe<Scalars['Int']['output']>;
   type: TransactionType;
@@ -4315,7 +4798,7 @@ export enum TransactionPeriod {
   Past = 'PAST',
   ThisMonth = 'THIS_MONTH',
   ThisWeek = 'THIS_WEEK',
-  Today = 'TODAY',
+  Today = 'TODAY'
 }
 
 export type TransactionRelationFilter = {
@@ -4324,10 +4807,9 @@ export type TransactionRelationFilter = {
 };
 
 export enum TransactionStatus {
-  Canceled = 'CANCELED',
   Completed = 'COMPLETED',
   Overdue = 'OVERDUE',
-  Planned = 'PLANNED',
+  Planned = 'PLANNED'
 }
 
 export type TransactionSumAggregate = {
@@ -4339,7 +4821,7 @@ export type TransactionSumAggregate = {
 export enum TransactionType {
   BetweenAccounts = 'BETWEEN_ACCOUNTS',
   Expense = 'EXPENSE',
-  Income = 'INCOME',
+  Income = 'INCOME'
 }
 
 export type TransactionWhereInput = {
@@ -4354,6 +4836,7 @@ export type TransactionWhereInput = {
   categoryConfidence?: InputMaybe<FloatNullableFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   date?: InputMaybe<DateTimeFilter>;
+  deletedAt?: InputMaybe<DateTimeNullableFilter>;
   description?: InputMaybe<StringFilter>;
   destinyAccount?: InputMaybe<AccountNullableRelationFilter>;
   destinyAccountId?: InputMaybe<StringNullableFilter>;
@@ -4366,6 +4849,8 @@ export type TransactionWhereInput = {
   recurringTransactionId?: InputMaybe<StringNullableFilter>;
   sourceAccount?: InputMaybe<AccountNullableRelationFilter>;
   sourceAccountId?: InputMaybe<StringNullableFilter>;
+  sourceCard?: InputMaybe<CardNullableRelationFilter>;
+  sourceCardId?: InputMaybe<StringNullableFilter>;
   status?: InputMaybe<EnumTransactionStatusFilter>;
   type?: InputMaybe<EnumTransactionTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
@@ -4385,6 +4870,7 @@ export type TransactionWhereUniqueInput = {
   categoryConfidence?: InputMaybe<FloatNullableFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   date?: InputMaybe<DateTimeFilter>;
+  deletedAt?: InputMaybe<DateTimeNullableFilter>;
   description?: InputMaybe<StringFilter>;
   destinyAccount?: InputMaybe<AccountNullableRelationFilter>;
   destinyAccountId?: InputMaybe<StringNullableFilter>;
@@ -4397,6 +4883,8 @@ export type TransactionWhereUniqueInput = {
   recurringTransactionId?: InputMaybe<StringNullableFilter>;
   sourceAccount?: InputMaybe<AccountNullableRelationFilter>;
   sourceAccountId?: InputMaybe<StringNullableFilter>;
+  sourceCard?: InputMaybe<CardNullableRelationFilter>;
+  sourceCardId?: InputMaybe<StringNullableFilter>;
   status?: InputMaybe<EnumTransactionStatusFilter>;
   type?: InputMaybe<EnumTransactionTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
@@ -4426,11 +4914,32 @@ export type TransactionsSummaryModel = {
   transactionCount: Scalars['Int']['output'];
 };
 
+export type UpdateInvestmentInput = {
+  amount?: InputMaybe<Scalars['Float']['input']>;
+  brokerageFee?: InputMaybe<Scalars['Float']['input']>;
+  correctedAmount?: InputMaybe<Scalars['Float']['input']>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  duration?: InputMaybe<Scalars['Int']['input']>;
+  finishedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  fixedRate?: InputMaybe<Scalars['Float']['input']>;
+  id: Scalars['ID']['input'];
+  institutionLinkId?: InputMaybe<Scalars['ID']['input']>;
+  lastCorrectedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  maturityDate?: InputMaybe<Scalars['DateTime']['input']>;
+  regimeName?: InputMaybe<Regime>;
+  regimePercentage?: InputMaybe<Scalars['Float']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  status?: InputMaybe<InvestmentStatus>;
+  taxedAmount?: InputMaybe<Scalars['Float']['input']>;
+  type?: InputMaybe<InvestmentType>;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
 /** Scope for updating recurring transactions */
 export enum UpdateRecurringScope {
   AllPlanned = 'ALL_PLANNED',
   ThisAndFuture = 'THIS_AND_FUTURE',
-  ThisOnly = 'THIS_ONLY',
+  ThisOnly = 'THIS_ONLY'
 }
 
 export type UpdateRecurringTransactionInput = {
@@ -4443,6 +4952,7 @@ export type UpdateRecurringTransactionInput = {
   monthOfYear?: InputMaybe<Scalars['Int']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
   sourceAccountId?: InputMaybe<Scalars['ID']['input']>;
+  sourceCardId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type UpdateRecurringTransactionsInput = {
@@ -4458,23 +4968,23 @@ export type UpdateTransactionInput = {
   category?: InputMaybe<TransactionCategory>;
   date?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  destinyAccountId?: InputMaybe<Scalars['ID']['input']>;
   id: Scalars['ID']['input'];
   /** Se true e a data for hoje, marca como COMPLETED. Se false ou não informado, usa PLANNED para hoje. */
   isCompleted?: InputMaybe<Scalars['Boolean']['input']>;
   paymentMethod?: InputMaybe<PaymentMethod>;
+  sourceAccountId?: InputMaybe<Scalars['ID']['input']>;
   status?: InputMaybe<TransactionStatus>;
 };
 
 export type User = {
   __typename?: 'User';
   _count: UserCount;
-  accounts: Maybe<Array<Account>>;
   authUserProviders: Maybe<Array<AuthUserProvider>>;
-  cardBillingStatusHistories: Maybe<Array<CardBillingHistory>>;
   createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  investments: Maybe<Array<Investment>>;
+  institutionLinks: Maybe<Array<InstitutionLink>>;
   name: Scalars['String']['output'];
   password: Maybe<Scalars['String']['output']>;
   recurringTransactions: Maybe<Array<RecurringTransaction>>;
@@ -4491,10 +5001,8 @@ export type UserConnection = {
 
 export type UserCount = {
   __typename?: 'UserCount';
-  accounts: Scalars['Int']['output'];
   authUserProviders: Scalars['Int']['output'];
-  cardBillingStatusHistories: Scalars['Int']['output'];
-  investments: Scalars['Int']['output'];
+  institutionLinks: Scalars['Int']['output'];
   recurringTransactions: Scalars['Int']['output'];
   transactions: Scalars['Int']['output'];
 };
@@ -4512,13 +5020,11 @@ export type UserCountAggregate = {
 };
 
 export type UserCreateInput = {
-  accounts?: InputMaybe<AccountCreateNestedManyWithoutUserInput>;
   authUserProviders?: InputMaybe<AuthUserProviderCreateNestedManyWithoutUserInput>;
-  cardBillingStatusHistories?: InputMaybe<CardBillingHistoryCreateNestedManyWithoutChangedByInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   email: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
+  institutionLinks?: InputMaybe<InstitutionLinkCreateNestedManyWithoutUserInput>;
   name: Scalars['String']['input'];
   password?: InputMaybe<Scalars['String']['input']>;
   recurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutUserInput>;
@@ -4527,22 +5033,10 @@ export type UserCreateInput = {
   updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
-export type UserCreateNestedOneWithoutAccountsInput = {
+export type UserCreateNestedOneWithoutInstitutionLinksInput = {
   connect?: InputMaybe<UserWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutAccountsInput>;
-  create?: InputMaybe<UserCreateWithoutAccountsInput>;
-};
-
-export type UserCreateNestedOneWithoutCardBillingStatusHistoriesInput = {
-  connect?: InputMaybe<UserWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutCardBillingStatusHistoriesInput>;
-  create?: InputMaybe<UserCreateWithoutCardBillingStatusHistoriesInput>;
-};
-
-export type UserCreateNestedOneWithoutInvestmentsInput = {
-  connect?: InputMaybe<UserWhereUniqueInput>;
-  connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutInvestmentsInput>;
-  create?: InputMaybe<UserCreateWithoutInvestmentsInput>;
+  connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutInstitutionLinksInput>;
+  create?: InputMaybe<UserCreateWithoutInstitutionLinksInput>;
 };
 
 export type UserCreateNestedOneWithoutRecurringTransactionsInput = {
@@ -4557,18 +5051,8 @@ export type UserCreateNestedOneWithoutTransactionsInput = {
   create?: InputMaybe<UserCreateWithoutTransactionsInput>;
 };
 
-export type UserCreateOrConnectWithoutAccountsInput = {
-  create: UserCreateWithoutAccountsInput;
-  where: UserWhereUniqueInput;
-};
-
-export type UserCreateOrConnectWithoutCardBillingStatusHistoriesInput = {
-  create: UserCreateWithoutCardBillingStatusHistoriesInput;
-  where: UserWhereUniqueInput;
-};
-
-export type UserCreateOrConnectWithoutInvestmentsInput = {
-  create: UserCreateWithoutInvestmentsInput;
+export type UserCreateOrConnectWithoutInstitutionLinksInput = {
+  create: UserCreateWithoutInstitutionLinksInput;
   where: UserWhereUniqueInput;
 };
 
@@ -4582,40 +5066,8 @@ export type UserCreateOrConnectWithoutTransactionsInput = {
   where: UserWhereUniqueInput;
 };
 
-export type UserCreateWithoutAccountsInput = {
+export type UserCreateWithoutInstitutionLinksInput = {
   authUserProviders?: InputMaybe<AuthUserProviderCreateNestedManyWithoutUserInput>;
-  cardBillingStatusHistories?: InputMaybe<CardBillingHistoryCreateNestedManyWithoutChangedByInput>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  email: Scalars['String']['input'];
-  id?: InputMaybe<Scalars['String']['input']>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
-  name: Scalars['String']['input'];
-  password?: InputMaybe<Scalars['String']['input']>;
-  recurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutUserInput>;
-  role: Role;
-  transactions?: InputMaybe<TransactionCreateNestedManyWithoutUserInput>;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type UserCreateWithoutCardBillingStatusHistoriesInput = {
-  accounts?: InputMaybe<AccountCreateNestedManyWithoutUserInput>;
-  authUserProviders?: InputMaybe<AuthUserProviderCreateNestedManyWithoutUserInput>;
-  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  email: Scalars['String']['input'];
-  id?: InputMaybe<Scalars['String']['input']>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
-  name: Scalars['String']['input'];
-  password?: InputMaybe<Scalars['String']['input']>;
-  recurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutUserInput>;
-  role: Role;
-  transactions?: InputMaybe<TransactionCreateNestedManyWithoutUserInput>;
-  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type UserCreateWithoutInvestmentsInput = {
-  accounts?: InputMaybe<AccountCreateNestedManyWithoutUserInput>;
-  authUserProviders?: InputMaybe<AuthUserProviderCreateNestedManyWithoutUserInput>;
-  cardBillingStatusHistories?: InputMaybe<CardBillingHistoryCreateNestedManyWithoutChangedByInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   email: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
@@ -4628,13 +5080,11 @@ export type UserCreateWithoutInvestmentsInput = {
 };
 
 export type UserCreateWithoutRecurringTransactionsInput = {
-  accounts?: InputMaybe<AccountCreateNestedManyWithoutUserInput>;
   authUserProviders?: InputMaybe<AuthUserProviderCreateNestedManyWithoutUserInput>;
-  cardBillingStatusHistories?: InputMaybe<CardBillingHistoryCreateNestedManyWithoutChangedByInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   email: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
+  institutionLinks?: InputMaybe<InstitutionLinkCreateNestedManyWithoutUserInput>;
   name: Scalars['String']['input'];
   password?: InputMaybe<Scalars['String']['input']>;
   role: Role;
@@ -4643,13 +5093,11 @@ export type UserCreateWithoutRecurringTransactionsInput = {
 };
 
 export type UserCreateWithoutTransactionsInput = {
-  accounts?: InputMaybe<AccountCreateNestedManyWithoutUserInput>;
   authUserProviders?: InputMaybe<AuthUserProviderCreateNestedManyWithoutUserInput>;
-  cardBillingStatusHistories?: InputMaybe<CardBillingHistoryCreateNestedManyWithoutChangedByInput>;
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   email: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
-  investments?: InputMaybe<InvestmentCreateNestedManyWithoutUserInput>;
+  institutionLinks?: InputMaybe<InstitutionLinkCreateNestedManyWithoutUserInput>;
   name: Scalars['String']['input'];
   password?: InputMaybe<Scalars['String']['input']>;
   recurringTransactions?: InputMaybe<RecurringTransactionCreateNestedManyWithoutUserInput>;
@@ -4693,11 +5141,6 @@ export type UserModelEdge = {
   node: UserModel;
 };
 
-export type UserNullableRelationFilter = {
-  is?: InputMaybe<UserWhereInput>;
-  isNot?: InputMaybe<UserWhereInput>;
-};
-
 export type UserRelationFilter = {
   is?: InputMaybe<UserWhereInput>;
   isNot?: InputMaybe<UserWhereInput>;
@@ -4707,13 +5150,11 @@ export type UserWhereInput = {
   AND?: InputMaybe<Array<UserWhereInput>>;
   NOT?: InputMaybe<Array<UserWhereInput>>;
   OR?: InputMaybe<Array<UserWhereInput>>;
-  accounts?: InputMaybe<AccountListRelationFilter>;
   authUserProviders?: InputMaybe<AuthUserProviderListRelationFilter>;
-  cardBillingStatusHistories?: InputMaybe<CardBillingHistoryListRelationFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   email?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
-  investments?: InputMaybe<InvestmentListRelationFilter>;
+  institutionLinks?: InputMaybe<InstitutionLinkListRelationFilter>;
   name?: InputMaybe<StringFilter>;
   password?: InputMaybe<StringNullableFilter>;
   recurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
@@ -4726,13 +5167,11 @@ export type UserWhereUniqueInput = {
   AND?: InputMaybe<Array<UserWhereInput>>;
   NOT?: InputMaybe<Array<UserWhereInput>>;
   OR?: InputMaybe<Array<UserWhereInput>>;
-  accounts?: InputMaybe<AccountListRelationFilter>;
   authUserProviders?: InputMaybe<AuthUserProviderListRelationFilter>;
-  cardBillingStatusHistories?: InputMaybe<CardBillingHistoryListRelationFilter>;
   createdAt?: InputMaybe<DateTimeFilter>;
   email?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
-  investments?: InputMaybe<InvestmentListRelationFilter>;
+  institutionLinks?: InputMaybe<InstitutionLinkListRelationFilter>;
   name?: InputMaybe<StringFilter>;
   password?: InputMaybe<StringNullableFilter>;
   recurringTransactions?: InputMaybe<RecurringTransactionListRelationFilter>;
@@ -4745,32 +5184,24 @@ export type CreateAccountMutationVariables = Exact<{
   data: CreateAccountInput;
 }>;
 
-export type CreateAccountMutation = {
-  __typename?: 'Mutation';
-  createAccount: { __typename?: 'AccountModel'; id: string };
-};
 
-export type CloseBillingMutationVariables = Exact<{
-  billingId: Scalars['String']['input'];
-  closingDate?: InputMaybe<Scalars['DateTime']['input']>;
+export type CreateAccountMutation = { __typename?: 'Mutation', createAccount: { __typename?: 'AccountModel', id: string, startDate: any } };
+
+export type CreateCardMutationVariables = Exact<{
+  data: CreateCardInput;
 }>;
 
-export type CloseBillingMutation = {
-  __typename?: 'Mutation';
-  closeBilling: {
-    __typename?: 'CardBilling';
-    id: string;
-    periodStart: any;
-    periodEnd: any | null;
-    paymentDate: any | null;
-    limit: any;
-    status: CardBillingStatus;
-    accountCardId: string;
-    paymentTransactionId: string | null;
-    createdAt: any;
-    updatedAt: any;
-  };
-};
+
+export type CreateCardMutation = { __typename?: 'Mutation', createCard: { __typename?: 'Card', id: string } };
+
+export type ChangeBillingDatesMutationVariables = Exact<{
+  billingId: Scalars['String']['input'];
+  closingDate?: InputMaybe<Scalars['DateTime']['input']>;
+  paymentDate?: InputMaybe<Scalars['DateTime']['input']>;
+}>;
+
+
+export type ChangeBillingDatesMutation = { __typename?: 'Mutation', changeBillingDates: { __typename?: 'CardBilling', id: string, periodStart: any, periodEnd: any | null, paymentDate: any | null, limit: any, status: CardBillingStatus, cardId: string, paymentTransactionId: string | null, createdAt: any, updatedAt: any } };
 
 export type UpdateAccountCardMutationVariables = Exact<{
   cardId: Scalars['ID']['input'];
@@ -4779,46 +5210,10 @@ export type UpdateAccountCardMutationVariables = Exact<{
   defaultLimit?: InputMaybe<Scalars['Float']['input']>;
 }>;
 
-export type UpdateAccountCardMutation = {
-  __typename?: 'Mutation';
-  updateAccountCard: {
-    __typename?: 'AccountCard';
-    id: string;
-    lastFourDigits: string | null;
-    billingCycleDay: number;
-    billingPaymentDay: number;
-    type: CardType;
-    defaultLimit: any;
-    accountId: string;
-    createdAt: any;
-    updatedAt: any;
-  };
-};
 
-export type AccountFragmentFragment = {
-  __typename?: 'AccountModel';
-  id: string;
-  name: string;
-  type: AccountType;
-  balance: any | null;
-  currentBillingAmount: any | null;
-  totalInvested: any | null;
-  description: string | null;
-  isActive: boolean;
-  institutionId: string;
-  createdAt: any;
-  updatedAt: any;
-  institution: {
-    __typename?: 'Institution';
-    id: string;
-    code: string;
-    name: string;
-    logoUrl: string | null;
-    color: string | null;
-    createdAt: any;
-    updatedAt: any;
-  };
-};
+export type UpdateAccountCardMutation = { __typename?: 'Mutation', updateAccountCard: { __typename?: 'Card', id: string, lastFourDigits: string | null, billingCycleDay: number, billingPaymentDay: number, type: CardType, defaultLimit: any, institutionLinkId: string, createdAt: any, updatedAt: any } };
+
+export type AccountFragmentFragment = { __typename?: 'AccountModel', id: string, name: string, balance: any | null, description: string | null, isActive: boolean, startDate: any, institutionLinkId: string, createdAt: any, updatedAt: any, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, code: string, name: string, logoUrl: string | null, color: string | null, types: Array<InstitutionType> | null, createdAt: any, updatedAt: any } } };
 
 export type AccountsQueryVariables = Exact<{
   orderBy?: InputMaybe<OrdenationAccountModel>;
@@ -4828,98 +5223,41 @@ export type AccountsQueryVariables = Exact<{
   search?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  types?: InputMaybe<Array<AccountType> | AccountType>;
 }>;
 
-export type AccountsQuery = {
-  __typename?: 'Query';
-  accounts: {
-    __typename?: 'AccountConnection';
-    edges: Array<{
-      __typename?: 'AccountModelEdge';
-      cursor: string;
-      node: {
-        __typename?: 'AccountModel';
-        id: string;
-        name: string;
-        type: AccountType;
-        balance: any | null;
-        currentBillingAmount: any | null;
-        totalInvested: any | null;
-        description: string | null;
-        isActive: boolean;
-        institutionId: string;
-        createdAt: any;
-        updatedAt: any;
-        institution: {
-          __typename?: 'Institution';
-          id: string;
-          code: string;
-          name: string;
-          logoUrl: string | null;
-          color: string | null;
-          createdAt: any;
-          updatedAt: any;
-        };
-      };
-    }> | null;
-    pageInfo: {
-      __typename?: 'PageInfo';
-      startCursor: string | null;
-      endCursor: string | null;
-      hasPreviousPage: boolean;
-      hasNextPage: boolean;
-    } | null;
-  };
-};
+
+export type AccountsQuery = { __typename?: 'Query', accounts: { __typename?: 'AccountConnection', edges: Array<{ __typename?: 'AccountModelEdge', cursor: string, node: { __typename?: 'AccountModel', id: string, name: string, balance: any | null, description: string | null, isActive: boolean, startDate: any, institutionLinkId: string, createdAt: any, updatedAt: any, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, code: string, name: string, logoUrl: string | null, color: string | null, types: Array<InstitutionType> | null, createdAt: any, updatedAt: any } } } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasPreviousPage: boolean, hasNextPage: boolean } | null } };
 
 export type AccountQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
-export type AccountQuery = {
-  __typename?: 'Query';
-  account: {
-    __typename?: 'AccountModel';
-    id: string;
-    name: string;
-    type: AccountType;
-    balance: any | null;
-    currentBillingAmount: any | null;
-    totalInvested: any | null;
-    description: string | null;
-    isActive: boolean;
-    institutionId: string;
-    createdAt: any;
-    updatedAt: any;
-    accountCard: {
-      __typename?: 'AccountCard';
-      id: string;
-      type: CardType;
-    } | null;
-    institution: {
-      __typename?: 'Institution';
-      id: string;
-      code: string;
-      name: string;
-      logoUrl: string | null;
-      color: string | null;
-      createdAt: any;
-      updatedAt: any;
-    };
-  };
-};
 
-export type InstitutionFragmentFragment = {
-  __typename?: 'InstitutionModel';
-  id: string;
-  code: string;
-  name: string;
-  logoUrl: string | null;
-  color: string | null;
-  createdAt: any;
-  updatedAt: any;
-};
+export type AccountQuery = { __typename?: 'Query', account: { __typename?: 'AccountModel', id: string, name: string, balance: any | null, description: string | null, isActive: boolean, startDate: any, institutionLinkId: string, createdAt: any, updatedAt: any, institutionLink: { __typename?: 'InstitutionLink', cards: Array<{ __typename?: 'Card', id: string, type: CardType }> | null, institution: { __typename?: 'Institution', id: string, code: string, name: string, logoUrl: string | null, color: string | null, types: Array<InstitutionType> | null, createdAt: any, updatedAt: any } } } };
+
+export type CardFragmentFragment = { __typename?: 'Card', id: string, name: string, lastFourDigits: string | null, billingCycleDay: number, billingPaymentDay: number, defaultLimit: any, type: CardType, institutionLinkId: string, createdAt: any, updatedAt: any, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, code: string, name: string, logoUrl: string | null, color: string | null, types: Array<InstitutionType> | null, createdAt: any, updatedAt: any }, cards: Array<{ __typename?: 'Card', id: string, type: CardType }> | null } };
+
+export type CardQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type CardQuery = { __typename?: 'Query', card: { __typename?: 'Card', id: string, name: string, lastFourDigits: string | null, billingCycleDay: number, billingPaymentDay: number, defaultLimit: any, type: CardType, institutionLinkId: string, createdAt: any, updatedAt: any, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, code: string, name: string, logoUrl: string | null, color: string | null, types: Array<InstitutionType> | null, createdAt: any, updatedAt: any }, cards: Array<{ __typename?: 'Card', id: string, type: CardType }> | null } } | null };
+
+export type CardsQueryVariables = Exact<{
+  orderBy?: InputMaybe<OrdenationCard>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type CardsQuery = { __typename?: 'Query', cards: { __typename?: 'CardConnection', edges: Array<{ __typename?: 'CardEdge', cursor: string, node: { __typename?: 'Card', id: string, name: string, lastFourDigits: string | null, billingCycleDay: number, billingPaymentDay: number, defaultLimit: any, type: CardType, institutionLinkId: string, createdAt: any, updatedAt: any, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, code: string, name: string, logoUrl: string | null, color: string | null, types: Array<InstitutionType> | null, createdAt: any, updatedAt: any }, cards: Array<{ __typename?: 'Card', id: string, type: CardType }> | null } } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasPreviousPage: boolean, hasNextPage: boolean } | null } };
+
+export type InstitutionFragmentFragment = { __typename?: 'InstitutionModel', id: string, code: string, name: string, logoUrl: string | null, color: string | null, types: Array<InstitutionType> | null, createdAt: any, updatedAt: any };
 
 export type InstitutionsQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -4927,224 +5265,82 @@ export type InstitutionsQueryVariables = Exact<{
   search?: InputMaybe<Scalars['String']['input']>;
   orderBy?: InputMaybe<OrdenationInstitutionModel>;
   orderDirection?: InputMaybe<OrderDirection>;
-  types?: InputMaybe<Array<AccountType> | AccountType>;
+  types?: InputMaybe<Array<InstitutionType> | InstitutionType>;
 }>;
 
-export type InstitutionsQuery = {
-  __typename?: 'Query';
-  institutions: {
-    __typename?: 'InstitutionConnection';
-    edges: Array<{
-      __typename?: 'InstitutionModelEdge';
-      cursor: string;
-      node: {
-        __typename?: 'InstitutionModel';
-        id: string;
-        code: string;
-        name: string;
-        logoUrl: string | null;
-        color: string | null;
-        createdAt: any;
-        updatedAt: any;
-      };
-    }> | null;
-    pageInfo: {
-      __typename?: 'PageInfo';
-      startCursor: string | null;
-      endCursor: string | null;
-      hasPreviousPage: boolean;
-      hasNextPage: boolean;
-    } | null;
-  };
-};
+
+export type InstitutionsQuery = { __typename?: 'Query', institutions: { __typename?: 'InstitutionConnection', edges: Array<{ __typename?: 'InstitutionModelEdge', cursor: string, node: { __typename?: 'InstitutionModel', id: string, code: string, name: string, logoUrl: string | null, color: string | null, types: Array<InstitutionType> | null, createdAt: any, updatedAt: any } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasPreviousPage: boolean, hasNextPage: boolean } | null } };
 
 export type BillingQueryVariables = Exact<{
-  accountId: Scalars['ID']['input'];
+  cardId: Scalars['ID']['input'];
   id?: InputMaybe<Scalars['ID']['input']>;
 }>;
 
-export type BillingQuery = {
-  __typename?: 'Query';
-  billing: {
-    __typename?: 'CardBillingOnDate';
-    nextBillingId: string | null;
-    previousBillingId: string | null;
-    billing: {
-      __typename?: 'CardBillingModel';
-      id: string;
-      periodStart: any;
-      periodEnd: any | null;
-      paymentDate: any | null;
-      totalAmount: any;
-      limit: any;
-      usagePercentage: number;
-      status: CardBillingStatus;
-      accountCardId: string;
-      createdAt: any;
-      updatedAt: any;
-      transactionsCount: number;
-      accountCard: {
-        __typename?: 'AccountCard';
-        id: string;
-        lastFourDigits: string | null;
-        billingCycleDay: number;
-        billingPaymentDay: number;
-        defaultLimit: any;
-        type: CardType;
-        accountId: string;
-        createdAt: any;
-        updatedAt: any;
-      };
-      paymentTransaction: {
-        __typename?: 'Transaction';
-        id: string;
-        description: string;
-        amount: any;
-        date: any;
-        status: TransactionStatus;
-        type: TransactionType;
-        paymentMethod: PaymentMethod | null;
-        sourceAccountId: string | null;
-        destinyAccountId: string | null;
-        cardBillingId: string | null;
-        userId: string;
-        createdAt: any;
-        updatedAt: any;
-      } | null;
-      transactions: Array<{
-        __typename?: 'Transaction';
-        id: string;
-        status: TransactionStatus;
-      }> | null;
-    } | null;
-  };
-};
+
+export type BillingQuery = { __typename?: 'Query', billing: { __typename?: 'CardBillingOnDate', nextBillingId: string | null, previousBillingId: string | null, billing: { __typename?: 'CardBillingModel', id: string, periodStart: any, periodEnd: any | null, paymentDate: any | null, totalAmount: any, limit: any, usagePercentage: number, status: CardBillingStatus, cardId: string, createdAt: any, updatedAt: any, transactionsCount: number, card: { __typename?: 'Card', id: string, lastFourDigits: string | null, billingCycleDay: number, billingPaymentDay: number, defaultLimit: any, type: CardType, institutionLinkId: string, createdAt: any, updatedAt: any, availableLimit: any, unpaidBalance: any, usagePercentage: number, billings: Array<{ __typename?: 'CardBilling', id: string, periodStart: any, periodEnd: any | null, status: CardBillingStatus, totalAmount: any }> | null }, paymentTransaction: { __typename?: 'Transaction', id: string, description: string, amount: any, date: any, status: TransactionStatus, type: TransactionType, paymentMethod: PaymentMethod | null, sourceAccountId: string | null, destinyAccountId: string | null, cardBillingId: string | null, userId: string, createdAt: any, updatedAt: any } | null, transactions: Array<{ __typename?: 'Transaction', id: string, status: TransactionStatus }> | null } | null } };
 
 export type SuggestCategoryQueryVariables = Exact<{
   description: Scalars['String']['input'];
 }>;
 
-export type SuggestCategoryQuery = {
-  __typename?: 'Query';
-  suggestCategory: {
-    __typename?: 'CategorySuggestion';
-    category: TransactionCategory;
-    confidence: number;
-    reasoning: string | null;
-  };
-};
+
+export type SuggestCategoryQuery = { __typename?: 'Query', suggestCategory: { __typename?: 'CategorySuggestion', category: TransactionCategory, confidence: number, reasoning: string | null } };
 
 export type ChatMutationVariables = Exact<{
   message: Scalars['String']['input'];
 }>;
 
-export type ChatMutation = {
-  __typename?: 'Mutation';
-  chat: { __typename?: 'ChatResponse'; message: string };
-};
+
+export type ChatMutation = { __typename?: 'Mutation', chat: { __typename?: 'ChatResponse', message: string } };
 
 export type AuthSignInMutationVariables = Exact<{
   data: AuthSignInInput;
 }>;
 
-export type AuthSignInMutation = {
-  __typename?: 'Mutation';
-  authSignIn: {
-    __typename?: 'SignIn';
-    user: {
-      __typename?: 'UserModel';
-      id: string;
-      email: string;
-      name: string;
-    } | null;
-  };
-};
 
-export type AuthSignOutMutationVariables = Exact<{ [key: string]: never }>;
+export type AuthSignInMutation = { __typename?: 'Mutation', authSignIn: { __typename?: 'SignIn', user: { __typename?: 'UserModel', id: string, email: string, name: string } | null } };
 
-export type AuthSignOutMutation = {
-  __typename?: 'Mutation';
-  authSignOut: boolean;
-};
+export type AuthSignOutMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AuthSignOutMutation = { __typename?: 'Mutation', authSignOut: boolean };
 
 export type CreateUserMutationVariables = Exact<{
   data: UserCreateInput;
 }>;
 
-export type CreateUserMutation = {
-  __typename?: 'Mutation';
-  createUser: {
-    __typename?: 'SignIn';
-    user: { __typename?: 'UserModel'; id: string } | null;
-  };
-};
+
+export type CreateUserMutation = { __typename?: 'Mutation', createUser: { __typename?: 'SignIn', user: { __typename?: 'UserModel', id: string } | null } };
 
 export type RequestPasswordResetMutationVariables = Exact<{
   email: Scalars['String']['input'];
 }>;
 
-export type RequestPasswordResetMutation = {
-  __typename?: 'Mutation';
-  requestPasswordReset: boolean;
-};
+
+export type RequestPasswordResetMutation = { __typename?: 'Mutation', requestPasswordReset: boolean };
 
 export type ResetPasswordMutationVariables = Exact<{
   token: Scalars['String']['input'];
   newPassword: Scalars['String']['input'];
 }>;
 
-export type ResetPasswordMutation = {
-  __typename?: 'Mutation';
-  resetPassword: boolean;
-};
 
-export type UserQueryVariables = Exact<{ [key: string]: never }>;
+export type ResetPasswordMutation = { __typename?: 'Mutation', resetPassword: boolean };
 
-export type UserQuery = {
-  __typename?: 'Query';
-  user: {
-    __typename?: 'UserModel';
-    id: string;
-    name: string;
-    email: string;
-    role: Role;
-  };
-};
+export type UserQueryVariables = Exact<{ [key: string]: never; }>;
 
-export type BalanceForecastQueryVariables = Exact<{
+
+export type UserQuery = { __typename?: 'Query', user: { __typename?: 'UserModel', id: string, name: string, email: string, role: Role } };
+
+export type CashFlowBalanceForecastQueryVariables = Exact<{
   accountId?: InputMaybe<Scalars['String']['input']>;
   period: BalanceForecastPeriod;
   startDate?: InputMaybe<Scalars['DateTime']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
 }>;
 
-export type BalanceForecastQuery = {
-  __typename?: 'Query';
-  balanceForecast: {
-    __typename?: 'BalanceForecastModel';
-    currentBalance: number;
-    projectedBalance: number;
-    balanceTrend: number;
-    startDate: any;
-    endDate: any;
-    dataPoints: Array<{
-      __typename?: 'BalanceForecastPointModel';
-      date: any;
-      balance: number;
-      isProjected: boolean;
-      incomeAmount: number;
-      expenseAmount: number;
-      transactionCount: number;
-      transactions: Array<{
-        __typename?: 'BalanceForecastTransactionModel';
-        id: string;
-        description: string;
-        amount: number;
-        isIncome: boolean;
-      }>;
-    }>;
-  };
-};
+
+export type CashFlowBalanceForecastQuery = { __typename?: 'Query', balanceForecast: { __typename?: 'BalanceForecastModel', startDate: any, endDate: any, accountSeries: Array<{ __typename?: 'BalanceForecastSeriesModel', accountId: string, accountName: string, color: string | null, currentBalance: number, projectedBalance: number, balanceTrend: number, dataPoints: Array<{ __typename?: 'BalanceForecastPointModel', date: any, balance: number, isProjected: boolean, isInitialBalance: boolean | null, incomeAmount: number, expenseAmount: number, transactionCount: number, transactions: Array<{ __typename?: 'BalanceForecastTransactionModel', id: string, description: string, amount: number, isIncome: boolean }> }> }> } };
 
 export type TransactionsSummaryForCashFlowQueryVariables = Exact<{
   accountId?: InputMaybe<Scalars['ID']['input']>;
@@ -5154,73 +5350,54 @@ export type TransactionsSummaryForCashFlowQueryVariables = Exact<{
   statuses?: InputMaybe<Array<TransactionStatus> | TransactionStatus>;
 }>;
 
-export type TransactionsSummaryForCashFlowQuery = {
-  __typename?: 'Query';
-  transactionsSummary: {
-    __typename?: 'TransactionsSummaryModel';
-    totalIncome: any;
-    totalExpense: any;
-    balance: any;
-    transactionCount: number;
-    realizedIncome: any;
-    realizedExpense: any;
-    realizedBalance: any;
-    forecastIncome: any;
-    forecastExpense: any;
-    forecastBalance: any;
-  };
-};
 
-export type PageInfoFragmentFragment = {
-  __typename?: 'PageInfo';
-  startCursor: string | null;
-  endCursor: string | null;
-  hasPreviousPage: boolean;
-  hasNextPage: boolean;
-};
+export type TransactionsSummaryForCashFlowQuery = { __typename?: 'Query', transactionsSummary: { __typename?: 'TransactionsSummaryModel', totalIncome: any, totalExpense: any, balance: any, transactionCount: number, realizedIncome: any, realizedExpense: any, realizedBalance: any, forecastIncome: any, forecastExpense: any, forecastBalance: any } };
+
+export type PageInfoFragmentFragment = { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasPreviousPage: boolean, hasNextPage: boolean };
+
+export type CreateInstitutionLinkMutationVariables = Exact<{
+  data: CreateInstitutionLinkInput;
+}>;
+
+
+export type CreateInstitutionLinkMutation = { __typename?: 'Mutation', createInstitutionLink: { __typename?: 'InstitutionLinkModel', id: string, createdAt: any, updatedAt: any } };
+
+export type InstitutionLinkFragmentFragment = { __typename?: 'InstitutionLinkModel', id: string, institutionId: string, createdAt: any, updatedAt: any, institution: { __typename?: 'Institution', id: string, code: string, name: string, logoUrl: string | null, color: string | null }, account: { __typename?: 'AccountModel', id: string, name: string, initialBalance: any, balance: any | null, description: string | null, isActive: boolean } | null, cards: Array<{ __typename?: 'Card', id: string, name: string, lastFourDigits: string | null, billingCycleDay: number, billingPaymentDay: number, type: CardType, defaultLimit: any, currentBilling: { __typename?: 'CardBillingModel', id: string, status: CardBillingStatus, totalAmount: any, periodStart: any, periodEnd: any | null, paymentDate: any | null } | null, payableBillings: Array<{ __typename?: 'CardBillingModel', id: string, status: CardBillingStatus, totalAmount: any, periodStart: any, periodEnd: any | null, paymentDate: any | null }> | null }> | null, investments: Array<{ __typename?: 'Investment', id: string, amount: number, startDate: any, duration: number | null, status: InvestmentStatus, regimeName: Regime, regimePercentage: number | null }> | null };
+
+export type InstitutionLinksQueryVariables = Exact<{
+  first?: InputMaybe<Scalars['Int']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  orderBy?: InputMaybe<OrdenationInstitutionLinkModel>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  institutionTypes?: InputMaybe<Array<InstitutionType> | InstitutionType>;
+}>;
+
+
+export type InstitutionLinksQuery = { __typename?: 'Query', institutionLinks: { __typename?: 'InstitutionLinkConnection', edges: Array<{ __typename?: 'InstitutionLinkModelEdge', cursor: string, node: { __typename?: 'InstitutionLinkModel', id: string, institutionId: string, createdAt: any, updatedAt: any, institution: { __typename?: 'Institution', id: string, code: string, name: string, logoUrl: string | null, color: string | null }, account: { __typename?: 'AccountModel', id: string, name: string, initialBalance: any, balance: any | null, description: string | null, isActive: boolean } | null, cards: Array<{ __typename?: 'Card', id: string, name: string, lastFourDigits: string | null, billingCycleDay: number, billingPaymentDay: number, type: CardType, defaultLimit: any, currentBilling: { __typename?: 'CardBillingModel', id: string, status: CardBillingStatus, totalAmount: any, periodStart: any, periodEnd: any | null, paymentDate: any | null } | null, payableBillings: Array<{ __typename?: 'CardBillingModel', id: string, status: CardBillingStatus, totalAmount: any, periodStart: any, periodEnd: any | null, paymentDate: any | null }> | null }> | null, investments: Array<{ __typename?: 'Investment', id: string, amount: number, startDate: any, duration: number | null, status: InvestmentStatus, regimeName: Regime, regimePercentage: number | null }> | null } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasPreviousPage: boolean, hasNextPage: boolean } | null } };
 
 export type CreateInvestmentMutationVariables = Exact<{
   data: CreateInvestmentInput;
 }>;
 
-export type CreateInvestmentMutation = {
-  __typename?: 'Mutation';
-  createInvestment: {
-    __typename?: 'Investment';
-    id: string;
-    amount: number;
-    startDate: any;
-    duration: number | null;
-    regimeName: Regime;
-    regimePercentage: number | null;
-    userId: string;
-    createdAt: any;
-    updatedAt: any;
-  };
-};
+
+export type CreateInvestmentMutation = { __typename?: 'Mutation', createInvestment: { __typename?: 'Investment', id: string, amount: number, startDate: any, duration: number | null, regimeName: Regime, regimePercentage: number | null, institutionLinkId: string, type: InvestmentType, fixedRate: number | null, brokerageFee: number | null, maturityDate: any | null, createdAt: any, updatedAt: any } };
 
 export type DeleteInvestmentMutationVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
-export type DeleteInvestmentMutation = {
-  __typename?: 'Mutation';
-  deleteInvestment: string;
-};
 
-export type InvestmentFragmentFragment = {
-  __typename?: 'InvestmentModel';
-  id: string;
-  amount: number;
-  correctedAmount: number | null;
-  currentVariation: string;
-  taxPercentage: string;
-  taxedAmount: number | null;
-  taxedVariation: string;
-  startDate: any;
-  duration: number | null;
-  status: InvestmentStatus;
-};
+export type DeleteInvestmentMutation = { __typename?: 'Mutation', deleteInvestment: string };
+
+export type UpdateInvestmentMutationVariables = Exact<{
+  data: UpdateInvestmentInput;
+}>;
+
+
+export type UpdateInvestmentMutation = { __typename?: 'Mutation', updateInvestment: { __typename?: 'Investment', id: string, amount: number, startDate: any, duration: number | null, regimeName: Regime, regimePercentage: number | null, institutionLinkId: string, type: InvestmentType, fixedRate: number | null, brokerageFee: number | null, maturityDate: any | null, createdAt: any, updatedAt: any } };
+
+export type InvestmentFragmentFragment = { __typename?: 'InvestmentModel', id: string, amount: number, correctedAmount: number | null, currentVariation: string, taxPercentage: string, taxedAmount: number | null, taxedVariation: string, startDate: any, duration: number | null, status: InvestmentStatus, type: InvestmentType, fixedRate: number | null, currentMarketRate: number | null, maturityDate: any | null, regimeName: Regime, regimePercentage: number | null, brokerageFee: number | null, institutionLinkId: string, taxesAndFees: { __typename?: 'InvestmentTaxesAndFees', totalTaxesAndFees: number, details: Array<{ __typename?: 'InvestmentTaxDetail', label: string, amount: number, reason: string }> }, sellFeasibility: { __typename?: 'SellFeasibility', status: SellFeasibilityStatus, message: string } };
 
 export type InvestmentsQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -5230,144 +5407,84 @@ export type InvestmentsQueryVariables = Exact<{
   last?: InputMaybe<Scalars['Int']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   regime?: InputMaybe<Regime>;
-  accountIds?: InputMaybe<
-    Array<Scalars['String']['input']> | Scalars['String']['input']
-  >;
+  status?: InputMaybe<InvestmentStatus>;
+  institutionLinkIds?: InputMaybe<Array<Scalars['ID']['input']> | Scalars['ID']['input']>;
 }>;
 
-export type InvestmentsQuery = {
-  __typename?: 'Query';
-  investments: {
-    __typename?: 'InvestmentConnection';
-    edges: Array<{
-      __typename?: 'InvestmentModelEdge';
-      cursor: string;
-      node: {
-        __typename?: 'InvestmentModel';
-        id: string;
-        amount: number;
-        correctedAmount: number | null;
-        currentVariation: string;
-        taxPercentage: string;
-        taxedAmount: number | null;
-        taxedVariation: string;
-        startDate: any;
-        duration: number | null;
-        status: InvestmentStatus;
-      };
-    }> | null;
-    pageInfo: {
-      __typename?: 'PageInfo';
-      startCursor: string | null;
-      endCursor: string | null;
-      hasPreviousPage: boolean;
-      hasNextPage: boolean;
-    } | null;
-  };
-};
 
-export type TotalInvestmentsQueryVariables = Exact<{ [key: string]: never }>;
+export type InvestmentsQuery = { __typename?: 'Query', investments: { __typename?: 'InvestmentConnection', edges: Array<{ __typename?: 'InvestmentModelEdge', cursor: string, node: { __typename?: 'InvestmentModel', id: string, amount: number, correctedAmount: number | null, currentVariation: string, taxPercentage: string, taxedAmount: number | null, taxedVariation: string, startDate: any, duration: number | null, status: InvestmentStatus, type: InvestmentType, fixedRate: number | null, currentMarketRate: number | null, maturityDate: any | null, regimeName: Regime, regimePercentage: number | null, brokerageFee: number | null, institutionLinkId: string, taxesAndFees: { __typename?: 'InvestmentTaxesAndFees', totalTaxesAndFees: number, details: Array<{ __typename?: 'InvestmentTaxDetail', label: string, amount: number, reason: string }> }, sellFeasibility: { __typename?: 'SellFeasibility', status: SellFeasibilityStatus, message: string } } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasPreviousPage: boolean, hasNextPage: boolean } | null } };
 
-export type TotalInvestmentsQuery = {
-  __typename?: 'Query';
-  totalInvestments: {
-    __typename?: 'TotalInvestmentsModel';
-    initialAmount: number;
-    currentAmount: number;
-    currentVariation: string;
-    taxedAmount: number;
-    taxedVariation: string;
-  };
-};
+export type AvailableTreasuryBondsQueryVariables = Exact<{
+  regime: Regime;
+}>;
 
-export type InvestmentRegimeSummaryFragmentFragment = {
-  __typename?: 'InvestmentRegimeSummary';
-  name: Regime;
-  quantity: number;
-  totalInvested: number;
-  currentInvested: number;
-  currentInvestedPercentage: string;
-  taxedInvested: number;
-  taxedInvestedPercentage: string;
-};
+
+export type AvailableTreasuryBondsQuery = { __typename?: 'Query', availableTreasuryBonds: Array<string> };
+
+export type GetInvestmentQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetInvestmentQuery = { __typename?: 'Query', investment: { __typename?: 'InvestmentModel', id: string, amount: number, correctedAmount: number | null, currentVariation: string, taxPercentage: string, taxedAmount: number | null, taxedVariation: string, startDate: any, duration: number | null, status: InvestmentStatus, type: InvestmentType, fixedRate: number | null, currentMarketRate: number | null, maturityDate: any | null, regimeName: Regime, regimePercentage: number | null, brokerageFee: number | null, institutionLinkId: string, taxesAndFees: { __typename?: 'InvestmentTaxesAndFees', totalTaxesAndFees: number, details: Array<{ __typename?: 'InvestmentTaxDetail', label: string, amount: number, reason: string }> }, sellFeasibility: { __typename?: 'SellFeasibility', status: SellFeasibilityStatus, message: string } } };
+
+export type TotalInvestmentsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TotalInvestmentsQuery = { __typename?: 'Query', totalInvestments: { __typename?: 'TotalInvestmentsModel', initialAmount: number | null, currentAmount: number | null, currentVariation: string | null, taxedAmount: number | null, taxedVariation: string | null, realVariation: string | null } };
+
+export type InvestmentRegimeSummaryFragmentFragment = { __typename?: 'InvestmentRegimeSummary', name: Regime, quantity: number, totalInvested: number, currentInvested: number, currentInvestedPercentage: string, taxedInvested: number, taxedInvestedPercentage: string };
 
 export type InvestmentRegimesQueryVariables = Exact<{
-  accountId?: InputMaybe<Scalars['String']['input']>;
+  institutionLinkId?: InputMaybe<Scalars['String']['input']>;
 }>;
 
-export type InvestmentRegimesQuery = {
-  __typename?: 'Query';
-  investmentRegimes: {
-    __typename?: 'InvestmentRegimeSummaryConnection';
-    edges: Array<{
-      __typename?: 'InvestmentRegimeSummaryEdge';
-      cursor: string;
-      node: {
-        __typename?: 'InvestmentRegimeSummary';
-        name: Regime;
-        quantity: number;
-        totalInvested: number;
-        currentInvested: number;
-        currentInvestedPercentage: string;
-        taxedInvested: number;
-        taxedInvestedPercentage: string;
-      };
-    }> | null;
-  };
-};
+
+export type InvestmentRegimesQuery = { __typename?: 'Query', investmentRegimes: { __typename?: 'InvestmentRegimeSummaryConnection', edges: Array<{ __typename?: 'InvestmentRegimeSummaryEdge', cursor: string, node: { __typename?: 'InvestmentRegimeSummary', name: Regime, quantity: number, totalInvested: number, currentInvested: number, currentInvestedPercentage: string, taxedInvested: number, taxedInvestedPercentage: string } }> | null } };
 
 export type InvestmentEvolutionQueryVariables = Exact<{
   period?: InputMaybe<InvestmentEvolutionPeriod>;
   accountId?: InputMaybe<Scalars['String']['input']>;
+  regime?: InputMaybe<Regime>;
 }>;
 
-export type InvestmentEvolutionQuery = {
-  __typename?: 'Query';
-  investmentEvolution: {
-    __typename?: 'InvestmentEvolutionModel';
-    totalInvested: number;
-    totalCurrentAmount: number;
-    totalTaxedAmount: number;
-    totalProfit: string;
-    totalProfitPercentage: string;
-    dataPoints: Array<{
-      __typename?: 'InvestmentEvolutionPointModel';
-      date: any;
-      invested: number;
-      currentAmount: number;
-      taxedAmount: number;
-      profit: number;
-    }>;
-  };
-};
+
+export type InvestmentEvolutionQuery = { __typename?: 'Query', investmentEvolution: { __typename?: 'InvestmentEvolutionModel', totalInvested: number, totalCurrentAmount: number, totalTaxedAmount: number, totalProfit: string, totalProfitPercentage: string, dataPoints: Array<{ __typename?: 'InvestmentEvolutionPointModel', date: any, invested: number, currentAmount: number, taxedAmount: number, profit: number }> } };
 
 export type InvestmentAccountsQueryVariables = Exact<{
   regime: Regime;
 }>;
 
-export type InvestmentAccountsQuery = {
-  __typename?: 'Query';
-  investmentAccounts: Array<{
-    __typename?: 'AccountWithInvestmentCount';
-    id: string;
-    name: string;
-    institutionName: string | null;
-    institutionLogoUrl: string | null;
-    investmentCount: number;
-  }>;
-};
+
+export type InvestmentAccountsQuery = { __typename?: 'Query', investmentAccounts: Array<{ __typename?: 'AccountWithInvestmentCount', id: string, name: string, institutionLogoUrl: string | null, investmentCount: number }> };
+
+export type InvestmentChartDataQueryVariables = Exact<{
+  investmentId: Scalars['String']['input'];
+}>;
+
+
+export type InvestmentChartDataQuery = { __typename?: 'Query', investmentChartData: Array<{ __typename?: 'InvestmentChartDataPoint', date: string, theoreticalValue: number, marketValue: number | null }> };
+
+export type RegimeTaxesHistoryQueryVariables = Exact<{
+  regime: Regime;
+}>;
+
+
+export type RegimeTaxesHistoryQuery = { __typename?: 'Query', regimeTaxesHistory: { __typename?: 'RegimeTaxesHistoryModel', dataPoints: Array<{ __typename?: 'TaxHistoryPointModel', date: string, value: number | null, component1: number | null, component2: number | null, total: number | null }> } };
+
+export type InvestmentTaxesHistoryQueryVariables = Exact<{
+  investmentId: Scalars['String']['input'];
+}>;
+
+
+export type InvestmentTaxesHistoryQuery = { __typename?: 'Query', investmentTaxesHistory: { __typename?: 'InvestmentTaxesHistoryModel', dataPoints: Array<{ __typename?: 'TaxHistoryPointModel', date: string, value: number | null, component1: number | null, component2: number | null, total: number | null }> } };
 
 export type CreateRecurringTransactionMutationVariables = Exact<{
   data: CreateRecurringTransactionInput;
 }>;
 
-export type CreateRecurringTransactionMutation = {
-  __typename?: 'Mutation';
-  createRecurringTransaction: {
-    __typename?: 'RecurringTransactionModel';
-    id: string;
-  };
-};
+
+export type CreateRecurringTransactionMutation = { __typename?: 'Mutation', createRecurringTransaction: { __typename?: 'RecurringTransactionModel', id: string } };
 
 export type UpdateRecurringTransactionFromDateMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -5375,106 +5492,47 @@ export type UpdateRecurringTransactionFromDateMutationVariables = Exact<{
   data: UpdateRecurringTransactionInput;
 }>;
 
-export type UpdateRecurringTransactionFromDateMutation = {
-  __typename?: 'Mutation';
-  updateRecurringTransactionFromDate: {
-    __typename?: 'RecurringTransactionModel';
-    id: string;
-  };
-};
+
+export type UpdateRecurringTransactionFromDateMutation = { __typename?: 'Mutation', updateRecurringTransactionFromDate: { __typename?: 'RecurringTransactionModel', id: string } };
 
 export type PauseRecurringTransactionMutationVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
-export type PauseRecurringTransactionMutation = {
-  __typename?: 'Mutation';
-  pauseRecurringTransaction: {
-    __typename?: 'RecurringTransactionModel';
-    id: string;
-    isActive: boolean;
-  };
-};
+
+export type PauseRecurringTransactionMutation = { __typename?: 'Mutation', pauseRecurringTransaction: { __typename?: 'RecurringTransactionModel', id: string, isActive: boolean } };
 
 export type ResumeRecurringTransactionMutationVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
-export type ResumeRecurringTransactionMutation = {
-  __typename?: 'Mutation';
-  resumeRecurringTransaction: {
-    __typename?: 'RecurringTransactionModel';
-    id: string;
-    isActive: boolean;
-  };
-};
+
+export type ResumeRecurringTransactionMutation = { __typename?: 'Mutation', resumeRecurringTransaction: { __typename?: 'RecurringTransactionModel', id: string, isActive: boolean } };
 
 export type EndRecurringTransactionMutationVariables = Exact<{
   id: Scalars['String']['input'];
   endDate: Scalars['DateTime']['input'];
 }>;
 
-export type EndRecurringTransactionMutation = {
-  __typename?: 'Mutation';
-  endRecurringTransaction: {
-    __typename?: 'RecurringTransactionModel';
-    id: string;
-    endDate: any | null;
-    isActive: boolean;
-  };
-};
+
+export type EndRecurringTransactionMutation = { __typename?: 'Mutation', endRecurringTransaction: { __typename?: 'RecurringTransactionModel', id: string, endDate: any | null, isActive: boolean } };
 
 export type DeleteRecurringTransactionMutationVariables = Exact<{
   id: Scalars['String']['input'];
+  deleteAllTransactions?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
-export type DeleteRecurringTransactionMutation = {
-  __typename?: 'Mutation';
-  deleteRecurringTransaction: {
-    __typename?: 'RecurringTransactionModel';
-    id: string;
-  };
-};
 
-export type RecurringTransactionFragmentFragment = {
-  __typename?: 'RecurringTransactionModel';
-  id: string;
-  description: string;
-  estimatedAmount: any;
-  type: TransactionType;
-  paymentMethod: PaymentMethod | null;
-  frequency: RecurrenceFrequency;
-  dayMode: DayMode;
-  dayOfMonth: number | null;
-  dayOfWeek: number | null;
-  weekOfMonth: number | null;
-  monthOfYear: number | null;
-  startDate: any;
-  endDate: any | null;
-  isActive: boolean;
-  createdAt: any;
-  updatedAt: any;
-  sourceAccount: {
-    __typename?: 'Account';
-    id: string;
-    name: string;
-    institution: {
-      __typename?: 'Institution';
-      name: string;
-      logoUrl: string | null;
-    };
-  } | null;
-  destinyAccount: {
-    __typename?: 'Account';
-    id: string;
-    name: string;
-    institution: {
-      __typename?: 'Institution';
-      name: string;
-      logoUrl: string | null;
-    };
-  } | null;
-};
+export type DeleteRecurringTransactionMutation = { __typename?: 'Mutation', deleteRecurringTransaction: { __typename?: 'RecurringTransactionModel', id: string } };
+
+export type IgnorePossibleRecurrenceMutationVariables = Exact<{
+  description: Scalars['String']['input'];
+}>;
+
+
+export type IgnorePossibleRecurrenceMutation = { __typename?: 'Mutation', ignorePossibleRecurrence: boolean };
+
+export type RecurringTransactionFragmentFragment = { __typename?: 'RecurringTransactionModel', id: string, description: string, estimatedAmount: any, type: TransactionType, paymentMethod: PaymentMethod | null, frequency: RecurrenceFrequency, dayMode: DayMode, dayOfMonth: number | null, dayOfWeek: number | null, weekOfMonth: number | null, monthOfYear: number | null, startDate: any, endDate: any | null, isActive: boolean, createdAt: any, updatedAt: any, sourceAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', name: string, logoUrl: string | null } } } | null, destinyAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', name: string, logoUrl: string | null } } } | null, sourceCard: { __typename?: 'Card', id: string, name: string, type: CardType, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, transactions: Array<{ __typename?: 'TransactionModel', id: string, description: string, amount: any, date: any, status: TransactionStatus, type: TransactionType, paymentMethod: PaymentMethod | null, category: TransactionCategory | null, sourceAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', name: string, logoUrl: string | null } } } | null, destinyAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', name: string, logoUrl: string | null } } } | null }> | null };
 
 export type RecurringTransactionsQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -5488,109 +5546,48 @@ export type RecurringTransactionsQueryVariables = Exact<{
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
 
-export type RecurringTransactionsQuery = {
-  __typename?: 'Query';
-  recurringTransactions: {
-    __typename?: 'RecurringTransactionConnection';
-    edges: Array<{
-      __typename?: 'RecurringTransactionModelEdge';
-      cursor: string;
-      node: {
-        __typename?: 'RecurringTransactionModel';
-        id: string;
-        description: string;
-        estimatedAmount: any;
-        type: TransactionType;
-        paymentMethod: PaymentMethod | null;
-        frequency: RecurrenceFrequency;
-        dayMode: DayMode;
-        dayOfMonth: number | null;
-        dayOfWeek: number | null;
-        weekOfMonth: number | null;
-        monthOfYear: number | null;
-        startDate: any;
-        endDate: any | null;
-        isActive: boolean;
-        createdAt: any;
-        updatedAt: any;
-        sourceAccount: {
-          __typename?: 'Account';
-          id: string;
-          name: string;
-          institution: {
-            __typename?: 'Institution';
-            name: string;
-            logoUrl: string | null;
-          };
-        } | null;
-        destinyAccount: {
-          __typename?: 'Account';
-          id: string;
-          name: string;
-          institution: {
-            __typename?: 'Institution';
-            name: string;
-            logoUrl: string | null;
-          };
-        } | null;
-      };
-    }> | null;
-    pageInfo: {
-      __typename?: 'PageInfo';
-      startCursor: string | null;
-      endCursor: string | null;
-      hasPreviousPage: boolean;
-      hasNextPage: boolean;
-    } | null;
-  };
-};
+
+export type RecurringTransactionsQuery = { __typename?: 'Query', recurringTransactions: { __typename?: 'RecurringTransactionConnection', edges: Array<{ __typename?: 'RecurringTransactionModelEdge', cursor: string, node: { __typename?: 'RecurringTransactionModel', id: string, description: string, estimatedAmount: any, type: TransactionType, paymentMethod: PaymentMethod | null, frequency: RecurrenceFrequency, dayMode: DayMode, dayOfMonth: number | null, dayOfWeek: number | null, weekOfMonth: number | null, monthOfYear: number | null, startDate: any, endDate: any | null, isActive: boolean, createdAt: any, updatedAt: any, sourceAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', name: string, logoUrl: string | null } } } | null, destinyAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', name: string, logoUrl: string | null } } } | null, sourceCard: { __typename?: 'Card', id: string, name: string, type: CardType, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, transactions: Array<{ __typename?: 'TransactionModel', id: string, description: string, amount: any, date: any, status: TransactionStatus, type: TransactionType, paymentMethod: PaymentMethod | null, category: TransactionCategory | null, sourceAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', name: string, logoUrl: string | null } } } | null, destinyAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', name: string, logoUrl: string | null } } } | null }> | null } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasPreviousPage: boolean, hasNextPage: boolean } | null } };
 
 export type RecurringTransactionQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
-export type RecurringTransactionQuery = {
-  __typename?: 'Query';
-  recurringTransaction: {
-    __typename?: 'RecurringTransactionModel';
-    id: string;
-    description: string;
-    estimatedAmount: any;
-    type: TransactionType;
-    paymentMethod: PaymentMethod | null;
-    frequency: RecurrenceFrequency;
-    dayMode: DayMode;
-    dayOfMonth: number | null;
-    dayOfWeek: number | null;
-    weekOfMonth: number | null;
-    monthOfYear: number | null;
-    startDate: any;
-    endDate: any | null;
-    isActive: boolean;
-    createdAt: any;
-    updatedAt: any;
-    sourceAccount: {
-      __typename?: 'Account';
-      id: string;
-      name: string;
-      institution: {
-        __typename?: 'Institution';
-        name: string;
-        logoUrl: string | null;
-      };
-    } | null;
-    destinyAccount: {
-      __typename?: 'Account';
-      id: string;
-      name: string;
-      institution: {
-        __typename?: 'Institution';
-        name: string;
-        logoUrl: string | null;
-      };
-    } | null;
-  } | null;
-};
+
+export type RecurringTransactionQuery = { __typename?: 'Query', recurringTransaction: { __typename?: 'RecurringTransactionModel', id: string, description: string, estimatedAmount: any, type: TransactionType, paymentMethod: PaymentMethod | null, frequency: RecurrenceFrequency, dayMode: DayMode, dayOfMonth: number | null, dayOfWeek: number | null, weekOfMonth: number | null, monthOfYear: number | null, startDate: any, endDate: any | null, isActive: boolean, createdAt: any, updatedAt: any, sourceAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', name: string, logoUrl: string | null } } } | null, destinyAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', name: string, logoUrl: string | null } } } | null, sourceCard: { __typename?: 'Card', id: string, name: string, type: CardType, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, transactions: Array<{ __typename?: 'TransactionModel', id: string, description: string, amount: any, date: any, status: TransactionStatus, type: TransactionType, paymentMethod: PaymentMethod | null, category: TransactionCategory | null, sourceAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', name: string, logoUrl: string | null } } } | null, destinyAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', name: string, logoUrl: string | null } } } | null }> | null } | null };
+
+export type RecurringTransactionSuggestionFragmentFragment = { __typename?: 'RecurringTransactionSuggestion', description: string, averageAmount: number, frequency: RecurrenceFrequency, suggestedDay: number | null, sourceAccountId: string | null, destinyAccountId: string | null, transactionIds: Array<string>, occurrenceCount: number, transactions: Array<{ __typename?: 'TransactionModel', id: string, description: string, amount: any, date: any, type: TransactionType, category: TransactionCategory | null, createdAt: any, updatedAt: any, status: TransactionStatus, paymentMethod: PaymentMethod | null, recurringTransactionId: string | null, canDelete: boolean | null, deleteReason: string | null, deleteWarningMessage: string | null, installmentStartDate: any | null, installmentNumber: number | null, totalInstallments: number | null, installmentId: string | null, sourceAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, sourceCard: { __typename?: 'Card', id: string, name: string, type: CardType, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, destinyAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, billingPayment: { __typename?: 'CardBilling', id: string, status: CardBillingStatus, periodStart: any, periodEnd: any | null, paymentDate: any | null, limit: any, card: { __typename?: 'Card', id: string, name: string, lastFourDigits: string | null, institutionLink: { __typename?: 'InstitutionLink', id: string, account: { __typename?: 'Account', id: string, name: string } | null, institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } } | null, cardBilling: { __typename?: 'CardBilling', id: string, status: CardBillingStatus, periodEnd: any | null, paymentDate: any | null, paymentTransaction: { __typename?: 'Transaction', description: string, sourceAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null } | null } | null, installments: Array<{ __typename?: 'TransactionInstallment', id: string, installmentNumber: number, amount: any, cardBilling: { __typename?: 'CardBilling', id: string, periodEnd: any | null, paymentDate: any | null } | null }> | null }> };
+
+export type PossibleRecurringTransactionsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PossibleRecurringTransactionsQuery = { __typename?: 'Query', possibleRecurringTransactions: Array<{ __typename?: 'RecurringTransactionSuggestion', description: string, averageAmount: number, frequency: RecurrenceFrequency, suggestedDay: number | null, sourceAccountId: string | null, destinyAccountId: string | null, transactionIds: Array<string>, occurrenceCount: number, transactions: Array<{ __typename?: 'TransactionModel', id: string, description: string, amount: any, date: any, type: TransactionType, category: TransactionCategory | null, createdAt: any, updatedAt: any, status: TransactionStatus, paymentMethod: PaymentMethod | null, recurringTransactionId: string | null, canDelete: boolean | null, deleteReason: string | null, deleteWarningMessage: string | null, installmentStartDate: any | null, installmentNumber: number | null, totalInstallments: number | null, installmentId: string | null, sourceAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, sourceCard: { __typename?: 'Card', id: string, name: string, type: CardType, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, destinyAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, billingPayment: { __typename?: 'CardBilling', id: string, status: CardBillingStatus, periodStart: any, periodEnd: any | null, paymentDate: any | null, limit: any, card: { __typename?: 'Card', id: string, name: string, lastFourDigits: string | null, institutionLink: { __typename?: 'InstitutionLink', id: string, account: { __typename?: 'Account', id: string, name: string } | null, institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } } | null, cardBilling: { __typename?: 'CardBilling', id: string, status: CardBillingStatus, periodEnd: any | null, paymentDate: any | null, paymentTransaction: { __typename?: 'Transaction', description: string, sourceAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null } | null } | null, installments: Array<{ __typename?: 'TransactionInstallment', id: string, installmentNumber: number, amount: any, cardBilling: { __typename?: 'CardBilling', id: string, periodEnd: any | null, paymentDate: any | null } | null }> | null }> }> };
+
+export type RealBalanceForecastSimulationQueryVariables = Exact<{
+  accountId?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+}>;
+
+
+export type RealBalanceForecastSimulationQuery = { __typename?: 'Query', balanceForecast: { __typename?: 'BalanceForecastModel', startDate: any, endDate: any, accountSeries: Array<{ __typename?: 'BalanceForecastSeriesModel', accountId: string, accountName: string, color: string | null, currentBalance: number, projectedBalance: number, balanceTrend: number, dataPoints: Array<{ __typename?: 'BalanceForecastPointModel', date: any, balance: number, isProjected: boolean, isInitialBalance: boolean | null, incomeAmount: number, expenseAmount: number, transactionCount: number, transactions: Array<{ __typename?: 'BalanceForecastTransactionModel', id: string, description: string, amount: number, isIncome: boolean }> }> }> } };
+
+export type SimulateBalanceForecastQueryVariables = Exact<{
+  input: SimulateBalanceForecastInput;
+}>;
+
+
+export type SimulateBalanceForecastQuery = { __typename?: 'Query', simulateBalanceForecast: { __typename?: 'BalanceForecastModel', startDate: any, endDate: any, accountSeries: Array<{ __typename?: 'BalanceForecastSeriesModel', accountId: string, accountName: string, color: string | null, currentBalance: number, projectedBalance: number, balanceTrend: number, dataPoints: Array<{ __typename?: 'BalanceForecastPointModel', date: any, balance: number, isProjected: boolean, isInitialBalance: boolean | null, incomeAmount: number, expenseAmount: number, transactionCount: number, transactions: Array<{ __typename?: 'BalanceForecastTransactionModel', id: string, description: string, amount: number, isIncome: boolean }> }> }> } };
+
+export type BalanceForecastQueryVariables = Exact<{
+  accountId?: InputMaybe<Scalars['String']['input']>;
+  period: BalanceForecastPeriod;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
+}>;
+
+
+export type BalanceForecastQuery = { __typename?: 'Query', balanceForecast: { __typename?: 'BalanceForecastModel', startDate: any, endDate: any, accountSeries: Array<{ __typename?: 'BalanceForecastSeriesModel', accountId: string, accountName: string, color: string | null, currentBalance: number, projectedBalance: number, balanceTrend: number, dataPoints: Array<{ __typename?: 'BalanceForecastPointModel', date: any, balance: number, isProjected: boolean, isInitialBalance: boolean | null, incomeAmount: number, expenseAmount: number, transactionCount: number, transactions: Array<{ __typename?: 'BalanceForecastTransactionModel', id: string, description: string, amount: number, isIncome: boolean }> }> }> } };
 
 export type TransactionsCalendarQueryVariables = Exact<{
   accountId?: InputMaybe<Scalars['String']['input']>;
@@ -5598,230 +5595,82 @@ export type TransactionsCalendarQueryVariables = Exact<{
   month: Scalars['Int']['input'];
 }>;
 
-export type TransactionsCalendarQuery = {
-  __typename?: 'Query';
-  transactionsCalendar: {
-    __typename?: 'TransactionsCalendarModel';
-    monthTotalIncome: number;
-    monthTotalExpense: number;
-    monthBalance: number;
-    days: Array<{
-      __typename?: 'CalendarDayModel';
-      date: any;
-      totalIncome: number;
-      totalExpense: number;
-      transactionCount: number;
-      transactions: Array<{
-        __typename?: 'CalendarDayTransactionModel';
-        id: string;
-        description: string;
-        amount: number;
-        type: string;
-        status: string;
-      }>;
-    }>;
-  };
-};
+
+export type TransactionsCalendarQuery = { __typename?: 'Query', transactionsCalendar: { __typename?: 'TransactionsCalendarModel', monthTotalIncome: number, monthTotalExpense: number, monthBalance: number, days: Array<{ __typename?: 'CalendarDayModel', date: any, totalIncome: number, totalExpense: number, transactionCount: number, transactions: Array<{ __typename?: 'CalendarDayTransactionModel', id: string, description: string, amount: number, type: string, status: string }> }> } };
 
 export type FinancialAgendaQueryVariables = Exact<{
   accountId?: InputMaybe<Scalars['String']['input']>;
   daysAhead: Scalars['Int']['input'];
 }>;
 
-export type FinancialAgendaQuery = {
-  __typename?: 'Query';
-  financialAgenda: {
-    __typename?: 'FinancialAgendaModel';
-    totalIncome: number;
-    totalExpense: number;
-    balance: number;
-    pendingCount: number;
-    groups: Array<{
-      __typename?: 'AgendaGroupModel';
-      label: string;
-      transactions: Array<{
-        __typename?: 'AgendaTransactionModel';
-        id: string;
-        description: string;
-        amount: number;
-        type: string;
-        status: string;
-        date: any;
-        daysUntilDue: number;
-        isOverdue: boolean;
-      }>;
-    }>;
-  };
-};
+
+export type FinancialAgendaQuery = { __typename?: 'Query', financialAgenda: { __typename?: 'FinancialAgendaModel', totalIncome: number, totalExpense: number, balance: number, pendingCount: number, groups: Array<{ __typename?: 'AgendaGroupModel', label: string, transactions: Array<{ __typename?: 'AgendaTransactionModel', id: string, description: string, amount: number, type: string, status: string, date: any, daysUntilDue: number, isOverdue: boolean }> }> } };
 
 export type CreateTransactionMutationVariables = Exact<{
   data: CreateTransactionInput;
 }>;
 
-export type CreateTransactionMutation = {
-  __typename?: 'Mutation';
-  createTransaction: { __typename?: 'TransactionModel'; id: string };
-};
+
+export type CreateTransactionMutation = { __typename?: 'Mutation', createTransaction: { __typename?: 'TransactionModel', id: string } };
 
 export type UpdateTransactionMutationVariables = Exact<{
   data: UpdateTransactionInput;
 }>;
 
-export type UpdateTransactionMutation = {
-  __typename?: 'Mutation';
-  updateTransaction: {
-    __typename?: 'TransactionModel';
-    id: string;
-    description: string;
-    amount: any;
-    date: any;
-    status: TransactionStatus;
-    paymentMethod: PaymentMethod | null;
-  };
-};
 
-export type CancelTransactionMutationVariables = Exact<{
+export type UpdateTransactionMutation = { __typename?: 'Mutation', updateTransaction: { __typename?: 'TransactionModel', id: string, description: string, amount: any, date: any, status: TransactionStatus, paymentMethod: PaymentMethod | null } };
+
+export type DeleteTransactionMutationVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
-export type CancelTransactionMutation = {
-  __typename?: 'Mutation';
-  cancelTransaction: {
-    __typename?: 'TransactionModel';
-    id: string;
-    status: TransactionStatus;
-  };
-};
+
+export type DeleteTransactionMutation = { __typename?: 'Mutation', deleteTransaction: { __typename?: 'TransactionModel', id: string, deletedAt: any | null } };
 
 export type RescheduleTransactionMutationVariables = Exact<{
   data: RescheduleTransactionInput;
 }>;
 
-export type RescheduleTransactionMutation = {
-  __typename?: 'Mutation';
-  rescheduleTransaction: {
-    __typename?: 'TransactionModel';
-    id: string;
-    date: any;
-  };
-};
+
+export type RescheduleTransactionMutation = { __typename?: 'Mutation', rescheduleTransaction: { __typename?: 'TransactionModel', id: string, date: any } };
 
 export type UpdateRecurringTransactionsMutationVariables = Exact<{
   data: UpdateRecurringTransactionsInput;
 }>;
 
-export type UpdateRecurringTransactionsMutation = {
-  __typename?: 'Mutation';
-  updateRecurringTransactions: {
-    __typename?: 'TransactionModel';
-    id: string;
-    description: string;
-    amount: any;
-    paymentMethod: PaymentMethod | null;
-  };
-};
+
+export type UpdateRecurringTransactionsMutation = { __typename?: 'Mutation', updateRecurringTransactions: { __typename?: 'TransactionModel', id: string, description: string, amount: any, paymentMethod: PaymentMethod | null } };
+
+export type DeleteRecurringTransactionsMutationVariables = Exact<{
+  transactionId: Scalars['String']['input'];
+  scope: UpdateRecurringScope;
+}>;
+
+
+export type DeleteRecurringTransactionsMutation = { __typename?: 'Mutation', deleteRecurringTransactions: { __typename?: 'TransactionModel', id: string, deletedAt: any | null } };
 
 export type CreateInstallmentTransactionMutationVariables = Exact<{
   data: CreateInstallmentTransactionInput;
 }>;
 
-export type CreateInstallmentTransactionMutation = {
-  __typename?: 'Mutation';
-  createInstallmentTransaction: {
-    __typename?: 'TransactionModel';
-    id: string;
-    description: string;
-    amount: any;
-    date: any;
-    status: TransactionStatus;
-  };
-};
 
-export type TransactionFragmentFragment = {
-  __typename?: 'TransactionModel';
-  id: string;
-  description: string;
-  amount: any;
-  date: any;
-  type: TransactionType;
-  category: TransactionCategory | null;
-  createdAt: any;
-  updatedAt: any;
-  status: TransactionStatus;
-  paymentMethod: PaymentMethod | null;
-  recurringTransactionId: string | null;
-  canCancel: boolean | null;
-  cancelReason: string | null;
-  cancelWarningMessage: string | null;
-  installmentStartDate: any | null;
-  installmentNumber: number | null;
-  totalInstallments: number | null;
-  installmentId: string | null;
-  sourceAccount: {
-    __typename?: 'Account';
-    id: string;
-    name: string;
-    type: AccountType;
-    institution: {
-      __typename?: 'Institution';
-      id: string;
-      name: string;
-      logoUrl: string | null;
-    };
-  } | null;
-  destinyAccount: {
-    __typename?: 'Account';
-    id: string;
-    name: string;
-    type: AccountType;
-    institution: {
-      __typename?: 'Institution';
-      id: string;
-      name: string;
-      logoUrl: string | null;
-    };
-  } | null;
-  billingPayment: {
-    __typename?: 'CardBilling';
-    id: string;
-    status: CardBillingStatus;
-    periodStart: any;
-    periodEnd: any | null;
-    paymentDate: any | null;
-    limit: any;
-    accountCard: {
-      __typename?: 'AccountCard';
-      lastFourDigits: string | null;
-      account: {
-        __typename?: 'Account';
-        id: string;
-        name: string;
-        institution: {
-          __typename?: 'Institution';
-          id: string;
-          name: string;
-          logoUrl: string | null;
-        };
-      };
-    };
-  } | null;
-  cardBilling: {
-    __typename?: 'CardBilling';
-    id: string;
-    status: CardBillingStatus;
-    periodEnd: any | null;
-    paymentTransaction: {
-      __typename?: 'Transaction';
-      description: string;
-    } | null;
-  } | null;
-  installments: Array<{
-    __typename?: 'TransactionInstallment';
-    id: string;
-    installmentNumber: number;
-    amount: any;
-  }> | null;
-};
+export type CreateInstallmentTransactionMutation = { __typename?: 'Mutation', createInstallmentTransaction: { __typename?: 'TransactionModel', id: string, description: string, amount: any, date: any, status: TransactionStatus } };
+
+export type BulkUpdateTransactionsMutationVariables = Exact<{
+  data: BulkUpdateTransactionsInput;
+}>;
+
+
+export type BulkUpdateTransactionsMutation = { __typename?: 'Mutation', bulkUpdateTransactions: Array<{ __typename?: 'TransactionModel', id: string, category: TransactionCategory | null, status: TransactionStatus, sourceAccountId: string | null, date: any, paymentMethod: PaymentMethod | null }> };
+
+export type BulkDeleteTransactionsMutationVariables = Exact<{
+  data: BulkDeleteTransactionsInput;
+}>;
+
+
+export type BulkDeleteTransactionsMutation = { __typename?: 'Mutation', bulkDeleteTransactions: Array<{ __typename?: 'TransactionModel', id: string, deletedAt: any | null }> };
+
+export type TransactionFragmentFragment = { __typename?: 'TransactionModel', id: string, description: string, amount: any, date: any, type: TransactionType, category: TransactionCategory | null, createdAt: any, updatedAt: any, status: TransactionStatus, paymentMethod: PaymentMethod | null, recurringTransactionId: string | null, canDelete: boolean | null, deleteReason: string | null, deleteWarningMessage: string | null, installmentStartDate: any | null, installmentNumber: number | null, totalInstallments: number | null, installmentId: string | null, sourceAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, sourceCard: { __typename?: 'Card', id: string, name: string, type: CardType, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, destinyAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, billingPayment: { __typename?: 'CardBilling', id: string, status: CardBillingStatus, periodStart: any, periodEnd: any | null, paymentDate: any | null, limit: any, card: { __typename?: 'Card', id: string, name: string, lastFourDigits: string | null, institutionLink: { __typename?: 'InstitutionLink', id: string, account: { __typename?: 'Account', id: string, name: string } | null, institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } } | null, cardBilling: { __typename?: 'CardBilling', id: string, status: CardBillingStatus, periodEnd: any | null, paymentDate: any | null, paymentTransaction: { __typename?: 'Transaction', description: string, sourceAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null } | null } | null, installments: Array<{ __typename?: 'TransactionInstallment', id: string, installmentNumber: number, amount: any, cardBilling: { __typename?: 'CardBilling', id: string, periodEnd: any | null, paymentDate: any | null } | null }> | null };
 
 export type TransactionsQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -5839,108 +5688,8 @@ export type TransactionsQueryVariables = Exact<{
   statuses?: InputMaybe<Array<TransactionStatus> | TransactionStatus>;
 }>;
 
-export type TransactionsQuery = {
-  __typename?: 'Query';
-  transactions: {
-    __typename?: 'TransactionConnection';
-    edges: Array<{
-      __typename?: 'TransactionModelEdge';
-      cursor: string;
-      node: {
-        __typename?: 'TransactionModel';
-        id: string;
-        description: string;
-        amount: any;
-        date: any;
-        type: TransactionType;
-        category: TransactionCategory | null;
-        createdAt: any;
-        updatedAt: any;
-        status: TransactionStatus;
-        paymentMethod: PaymentMethod | null;
-        recurringTransactionId: string | null;
-        canCancel: boolean | null;
-        cancelReason: string | null;
-        cancelWarningMessage: string | null;
-        installmentStartDate: any | null;
-        installmentNumber: number | null;
-        totalInstallments: number | null;
-        installmentId: string | null;
-        sourceAccount: {
-          __typename?: 'Account';
-          id: string;
-          name: string;
-          type: AccountType;
-          institution: {
-            __typename?: 'Institution';
-            id: string;
-            name: string;
-            logoUrl: string | null;
-          };
-        } | null;
-        destinyAccount: {
-          __typename?: 'Account';
-          id: string;
-          name: string;
-          type: AccountType;
-          institution: {
-            __typename?: 'Institution';
-            id: string;
-            name: string;
-            logoUrl: string | null;
-          };
-        } | null;
-        billingPayment: {
-          __typename?: 'CardBilling';
-          id: string;
-          status: CardBillingStatus;
-          periodStart: any;
-          periodEnd: any | null;
-          paymentDate: any | null;
-          limit: any;
-          accountCard: {
-            __typename?: 'AccountCard';
-            lastFourDigits: string | null;
-            account: {
-              __typename?: 'Account';
-              id: string;
-              name: string;
-              institution: {
-                __typename?: 'Institution';
-                id: string;
-                name: string;
-                logoUrl: string | null;
-              };
-            };
-          };
-        } | null;
-        cardBilling: {
-          __typename?: 'CardBilling';
-          id: string;
-          status: CardBillingStatus;
-          periodEnd: any | null;
-          paymentTransaction: {
-            __typename?: 'Transaction';
-            description: string;
-          } | null;
-        } | null;
-        installments: Array<{
-          __typename?: 'TransactionInstallment';
-          id: string;
-          installmentNumber: number;
-          amount: any;
-        }> | null;
-      };
-    }> | null;
-    pageInfo: {
-      __typename?: 'PageInfo';
-      startCursor: string | null;
-      endCursor: string | null;
-      hasPreviousPage: boolean;
-      hasNextPage: boolean;
-    } | null;
-  };
-};
+
+export type TransactionsQuery = { __typename?: 'Query', transactions: { __typename?: 'TransactionConnection', edges: Array<{ __typename?: 'TransactionModelEdge', cursor: string, node: { __typename?: 'TransactionModel', id: string, description: string, amount: any, date: any, type: TransactionType, category: TransactionCategory | null, createdAt: any, updatedAt: any, status: TransactionStatus, paymentMethod: PaymentMethod | null, recurringTransactionId: string | null, canDelete: boolean | null, deleteReason: string | null, deleteWarningMessage: string | null, installmentStartDate: any | null, installmentNumber: number | null, totalInstallments: number | null, installmentId: string | null, sourceAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, sourceCard: { __typename?: 'Card', id: string, name: string, type: CardType, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, destinyAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, billingPayment: { __typename?: 'CardBilling', id: string, status: CardBillingStatus, periodStart: any, periodEnd: any | null, paymentDate: any | null, limit: any, card: { __typename?: 'Card', id: string, name: string, lastFourDigits: string | null, institutionLink: { __typename?: 'InstitutionLink', id: string, account: { __typename?: 'Account', id: string, name: string } | null, institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } } | null, cardBilling: { __typename?: 'CardBilling', id: string, status: CardBillingStatus, periodEnd: any | null, paymentDate: any | null, paymentTransaction: { __typename?: 'Transaction', description: string, sourceAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null } | null } | null, installments: Array<{ __typename?: 'TransactionInstallment', id: string, installmentNumber: number, amount: any, cardBilling: { __typename?: 'CardBilling', id: string, periodEnd: any | null, paymentDate: any | null } | null }> | null } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasPreviousPage: boolean, hasNextPage: boolean } | null } };
 
 export type TransactionsSummaryQueryVariables = Exact<{
   search?: InputMaybe<Scalars['String']['input']>;
@@ -5952,22 +5701,8 @@ export type TransactionsSummaryQueryVariables = Exact<{
   statuses?: InputMaybe<Array<TransactionStatus> | TransactionStatus>;
 }>;
 
-export type TransactionsSummaryQuery = {
-  __typename?: 'Query';
-  transactionsSummary: {
-    __typename?: 'TransactionsSummaryModel';
-    totalIncome: any;
-    totalExpense: any;
-    balance: any;
-    transactionCount: number;
-    realizedIncome: any;
-    realizedExpense: any;
-    realizedBalance: any;
-    forecastIncome: any;
-    forecastExpense: any;
-    forecastBalance: any;
-  };
-};
+
+export type TransactionsSummaryQuery = { __typename?: 'Query', transactionsSummary: { __typename?: 'TransactionsSummaryModel', totalIncome: any, totalExpense: any, balance: any, transactionCount: number, realizedIncome: any, realizedExpense: any, realizedBalance: any, forecastIncome: any, forecastExpense: any, forecastBalance: any } };
 
 export type TransactionsGroupedByPeriodQueryVariables = Exact<{
   accountId?: InputMaybe<Scalars['ID']['input']>;
@@ -5978,194 +5713,16 @@ export type TransactionsGroupedByPeriodQueryVariables = Exact<{
   statuses?: InputMaybe<Array<TransactionStatus> | TransactionStatus>;
 }>;
 
-export type TransactionsGroupedByPeriodQuery = {
-  __typename?: 'Query';
-  transactionsGroupedByPeriod: Array<{
-    __typename?: 'TransactionGroupModel';
-    period: TransactionPeriod;
-    label: string;
-    count: number;
-    hasMore: boolean;
-    transactions: Array<{
-      __typename?: 'TransactionModel';
-      id: string;
-      description: string;
-      amount: any;
-      date: any;
-      type: TransactionType;
-      category: TransactionCategory | null;
-      createdAt: any;
-      updatedAt: any;
-      status: TransactionStatus;
-      paymentMethod: PaymentMethod | null;
-      recurringTransactionId: string | null;
-      canCancel: boolean | null;
-      cancelReason: string | null;
-      cancelWarningMessage: string | null;
-      installmentStartDate: any | null;
-      installmentNumber: number | null;
-      totalInstallments: number | null;
-      installmentId: string | null;
-      sourceAccount: {
-        __typename?: 'Account';
-        id: string;
-        name: string;
-        type: AccountType;
-        institution: {
-          __typename?: 'Institution';
-          id: string;
-          name: string;
-          logoUrl: string | null;
-        };
-      } | null;
-      destinyAccount: {
-        __typename?: 'Account';
-        id: string;
-        name: string;
-        type: AccountType;
-        institution: {
-          __typename?: 'Institution';
-          id: string;
-          name: string;
-          logoUrl: string | null;
-        };
-      } | null;
-      billingPayment: {
-        __typename?: 'CardBilling';
-        id: string;
-        status: CardBillingStatus;
-        periodStart: any;
-        periodEnd: any | null;
-        paymentDate: any | null;
-        limit: any;
-        accountCard: {
-          __typename?: 'AccountCard';
-          lastFourDigits: string | null;
-          account: {
-            __typename?: 'Account';
-            id: string;
-            name: string;
-            institution: {
-              __typename?: 'Institution';
-              id: string;
-              name: string;
-              logoUrl: string | null;
-            };
-          };
-        };
-      } | null;
-      cardBilling: {
-        __typename?: 'CardBilling';
-        id: string;
-        status: CardBillingStatus;
-        periodEnd: any | null;
-        paymentTransaction: {
-          __typename?: 'Transaction';
-          description: string;
-        } | null;
-      } | null;
-      installments: Array<{
-        __typename?: 'TransactionInstallment';
-        id: string;
-        installmentNumber: number;
-        amount: any;
-      }> | null;
-    }>;
-  }>;
-};
+
+export type TransactionsGroupedByPeriodQuery = { __typename?: 'Query', transactionsGroupedByPeriod: Array<{ __typename?: 'TransactionGroupModel', period: TransactionPeriod, label: string, count: number, hasMore: boolean, transactions: Array<{ __typename?: 'TransactionModel', id: string, description: string, amount: any, date: any, type: TransactionType, category: TransactionCategory | null, createdAt: any, updatedAt: any, status: TransactionStatus, paymentMethod: PaymentMethod | null, recurringTransactionId: string | null, canDelete: boolean | null, deleteReason: string | null, deleteWarningMessage: string | null, installmentStartDate: any | null, installmentNumber: number | null, totalInstallments: number | null, installmentId: string | null, sourceAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, sourceCard: { __typename?: 'Card', id: string, name: string, type: CardType, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, destinyAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, billingPayment: { __typename?: 'CardBilling', id: string, status: CardBillingStatus, periodStart: any, periodEnd: any | null, paymentDate: any | null, limit: any, card: { __typename?: 'Card', id: string, name: string, lastFourDigits: string | null, institutionLink: { __typename?: 'InstitutionLink', id: string, account: { __typename?: 'Account', id: string, name: string } | null, institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } } | null, cardBilling: { __typename?: 'CardBilling', id: string, status: CardBillingStatus, periodEnd: any | null, paymentDate: any | null, paymentTransaction: { __typename?: 'Transaction', description: string, sourceAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null } | null } | null, installments: Array<{ __typename?: 'TransactionInstallment', id: string, installmentNumber: number, amount: any, cardBilling: { __typename?: 'CardBilling', id: string, periodEnd: any | null, paymentDate: any | null } | null }> | null }> }> };
 
 export type BillingTransactionsQueryVariables = Exact<{
   billingId: Scalars['ID']['input'];
+  search?: InputMaybe<Scalars['String']['input']>;
 }>;
 
-export type BillingTransactionsQuery = {
-  __typename?: 'Query';
-  billingTransactions: Array<{
-    __typename?: 'TransactionModel';
-    id: string;
-    description: string;
-    amount: any;
-    date: any;
-    type: TransactionType;
-    category: TransactionCategory | null;
-    createdAt: any;
-    updatedAt: any;
-    status: TransactionStatus;
-    paymentMethod: PaymentMethod | null;
-    recurringTransactionId: string | null;
-    canCancel: boolean | null;
-    cancelReason: string | null;
-    cancelWarningMessage: string | null;
-    installmentStartDate: any | null;
-    installmentNumber: number | null;
-    totalInstallments: number | null;
-    installmentId: string | null;
-    sourceAccount: {
-      __typename?: 'Account';
-      id: string;
-      name: string;
-      type: AccountType;
-      institution: {
-        __typename?: 'Institution';
-        id: string;
-        name: string;
-        logoUrl: string | null;
-      };
-    } | null;
-    destinyAccount: {
-      __typename?: 'Account';
-      id: string;
-      name: string;
-      type: AccountType;
-      institution: {
-        __typename?: 'Institution';
-        id: string;
-        name: string;
-        logoUrl: string | null;
-      };
-    } | null;
-    billingPayment: {
-      __typename?: 'CardBilling';
-      id: string;
-      status: CardBillingStatus;
-      periodStart: any;
-      periodEnd: any | null;
-      paymentDate: any | null;
-      limit: any;
-      accountCard: {
-        __typename?: 'AccountCard';
-        lastFourDigits: string | null;
-        account: {
-          __typename?: 'Account';
-          id: string;
-          name: string;
-          institution: {
-            __typename?: 'Institution';
-            id: string;
-            name: string;
-            logoUrl: string | null;
-          };
-        };
-      };
-    } | null;
-    cardBilling: {
-      __typename?: 'CardBilling';
-      id: string;
-      status: CardBillingStatus;
-      periodEnd: any | null;
-      paymentTransaction: {
-        __typename?: 'Transaction';
-        description: string;
-      } | null;
-    } | null;
-    installments: Array<{
-      __typename?: 'TransactionInstallment';
-      id: string;
-      installmentNumber: number;
-      amount: any;
-    }> | null;
-  }>;
-};
+
+export type BillingTransactionsQuery = { __typename?: 'Query', billingTransactions: Array<{ __typename?: 'TransactionModel', id: string, description: string, amount: any, date: any, type: TransactionType, category: TransactionCategory | null, createdAt: any, updatedAt: any, status: TransactionStatus, paymentMethod: PaymentMethod | null, recurringTransactionId: string | null, canDelete: boolean | null, deleteReason: string | null, deleteWarningMessage: string | null, installmentStartDate: any | null, installmentNumber: number | null, totalInstallments: number | null, installmentId: string | null, sourceAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, sourceCard: { __typename?: 'Card', id: string, name: string, type: CardType, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, destinyAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null, billingPayment: { __typename?: 'CardBilling', id: string, status: CardBillingStatus, periodStart: any, periodEnd: any | null, paymentDate: any | null, limit: any, card: { __typename?: 'Card', id: string, name: string, lastFourDigits: string | null, institutionLink: { __typename?: 'InstitutionLink', id: string, account: { __typename?: 'Account', id: string, name: string } | null, institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } } | null, cardBilling: { __typename?: 'CardBilling', id: string, status: CardBillingStatus, periodEnd: any | null, paymentDate: any | null, paymentTransaction: { __typename?: 'Transaction', description: string, sourceAccount: { __typename?: 'Account', id: string, name: string, institutionLink: { __typename?: 'InstitutionLink', institution: { __typename?: 'Institution', id: string, name: string, logoUrl: string | null } } } | null } | null } | null, installments: Array<{ __typename?: 'TransactionInstallment', id: string, installmentNumber: number, amount: any, cardBilling: { __typename?: 'CardBilling', id: string, periodEnd: any | null, paymentDate: any | null } | null }> | null }> };
 
 export type UsersQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -6177,5949 +5734,80 @@ export type UsersQueryVariables = Exact<{
   orderDirection?: InputMaybe<OrderDirection>;
 }>;
 
-export type UsersQuery = {
-  __typename?: 'Query';
-  users: {
-    __typename?: 'UserConnection';
-    edges: Array<{
-      __typename?: 'UserModelEdge';
-      cursor: string;
-      node: {
-        __typename?: 'UserModel';
-        id: string;
-        email: string;
-        name: string;
-        role: Role;
-      };
-    }> | null;
-    pageInfo: {
-      __typename?: 'PageInfo';
-      startCursor: string | null;
-      endCursor: string | null;
-      hasPreviousPage: boolean;
-      hasNextPage: boolean;
-    } | null;
-  };
-};
 
-export const AccountFragmentFragmentDoc = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'AccountFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'AccountModel' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'balance' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'currentBillingAmount' },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'totalInvested' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'institutionId' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'institution' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'code' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'logoUrl' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'color' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<AccountFragmentFragment, unknown>;
-export const InstitutionFragmentFragmentDoc = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'InstitutionFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'InstitutionModel' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'code' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'logoUrl' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'color' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<InstitutionFragmentFragment, unknown>;
-export const PageInfoFragmentFragmentDoc = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'PageInfoFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'PageInfo' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'startCursor' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'endCursor' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'hasPreviousPage' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'hasNextPage' } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<PageInfoFragmentFragment, unknown>;
-export const InvestmentFragmentFragmentDoc = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'InvestmentFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'InvestmentModel' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'correctedAmount' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'currentVariation' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'taxPercentage' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'taxedAmount' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'taxedVariation' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<InvestmentFragmentFragment, unknown>;
-export const InvestmentRegimeSummaryFragmentFragmentDoc = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'InvestmentRegimeSummaryFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'InvestmentRegimeSummary' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'totalInvested' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'currentInvested' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'currentInvestedPercentage' },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'taxedInvested' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'taxedInvestedPercentage' },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<InvestmentRegimeSummaryFragmentFragment, unknown>;
-export const RecurringTransactionFragmentFragmentDoc = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'RecurringTransactionFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'RecurringTransactionModel' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'estimatedAmount' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'frequency' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'dayMode' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'dayOfMonth' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'dayOfWeek' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'weekOfMonth' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'monthOfYear' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'sourceAccount' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'destinyAccount' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<RecurringTransactionFragmentFragment, unknown>;
-export const TransactionFragmentFragmentDoc = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'TransactionFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'TransactionModel' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'date' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'category' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'sourceAccount' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'destinyAccount' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'billingPayment' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'periodStart' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'periodEnd' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'paymentDate' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'accountCard' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastFourDigits' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'account' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'name' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'institution' },
-                              selectionSet: {
-                                kind: 'SelectionSet',
-                                selections: [
-                                  {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'id' },
-                                  },
-                                  {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'name' },
-                                  },
-                                  {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'logoUrl' },
-                                  },
-                                ],
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'cardBilling' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'periodEnd' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'paymentTransaction' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'description' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'recurringTransactionId' },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'installments' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'installmentNumber' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
-              ],
-            },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'canCancel' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'cancelWarningMessage' },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'installmentStartDate' },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'installmentNumber' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'totalInstallments' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'installmentId' } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<TransactionFragmentFragment, unknown>;
-export const CreateAccountDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'CreateAccount' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'CreateAccountInput' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'createAccount' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'data' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'data' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  CreateAccountMutation,
-  CreateAccountMutationVariables
->;
-export const CloseBillingDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'CloseBilling' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'billingId' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'closingDate' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'DateTime' },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'closeBilling' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'billingId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'billingId' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'closingDate' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'closingDate' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'periodStart' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'periodEnd' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'paymentDate' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'accountCardId' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'paymentTransactionId' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  CloseBillingMutation,
-  CloseBillingMutationVariables
->;
-export const UpdateAccountCardDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'UpdateAccountCard' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'cardId' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'billingCycleDay' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Float' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'billingPaymentDay' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Float' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'defaultLimit' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Float' } },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'updateAccountCard' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'cardId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'cardId' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'billingCycleDay' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'billingCycleDay' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'billingPaymentDay' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'billingPaymentDay' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'defaultLimit' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'defaultLimit' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'lastFourDigits' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'billingCycleDay' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'billingPaymentDay' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'defaultLimit' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'accountId' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  UpdateAccountCardMutation,
-  UpdateAccountCardMutationVariables
->;
-export const AccountsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'Accounts' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'orderBy' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'OrdenationAccountModel' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'orderDirection' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'OrderDirection' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'first' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'after' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'search' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'last' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'before' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'types' },
-          },
-          type: {
-            kind: 'ListType',
-            type: {
-              kind: 'NonNullType',
-              type: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'AccountType' },
-              },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'accounts' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'orderBy' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'orderBy' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'orderDirection' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'orderDirection' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'first' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'first' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'after' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'after' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'search' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'search' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'last' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'last' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'before' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'before' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'types' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'types' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'edges' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'cursor' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'node' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'FragmentSpread',
-                              name: { kind: 'Name', value: 'AccountFragment' },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'pageInfo' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'FragmentSpread',
-                        name: { kind: 'Name', value: 'PageInfoFragment' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'AccountFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'AccountModel' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'balance' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'currentBillingAmount' },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'totalInvested' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'institutionId' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'institution' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'code' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'logoUrl' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'color' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'PageInfoFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'PageInfo' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'startCursor' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'endCursor' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'hasPreviousPage' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'hasNextPage' } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<AccountsQuery, AccountsQueryVariables>;
-export const AccountDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'Account' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'account' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'FragmentSpread',
-                  name: { kind: 'Name', value: 'AccountFragment' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'accountCard' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'AccountFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'AccountModel' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'balance' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'currentBillingAmount' },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'totalInvested' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'institutionId' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'institution' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'code' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'logoUrl' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'color' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<AccountQuery, AccountQueryVariables>;
-export const InstitutionsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'Institutions' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'first' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'after' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'search' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'orderBy' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'OrdenationInstitutionModel' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'orderDirection' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'OrderDirection' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'types' },
-          },
-          type: {
-            kind: 'ListType',
-            type: {
-              kind: 'NonNullType',
-              type: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'AccountType' },
-              },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'institutions' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'first' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'first' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'after' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'after' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'search' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'search' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'orderBy' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'orderBy' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'orderDirection' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'orderDirection' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'types' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'types' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'edges' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'cursor' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'node' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'FragmentSpread',
-                              name: {
-                                kind: 'Name',
-                                value: 'InstitutionFragment',
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'pageInfo' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'FragmentSpread',
-                        name: { kind: 'Name', value: 'PageInfoFragment' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'InstitutionFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'InstitutionModel' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'code' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'logoUrl' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'color' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-        ],
-      },
-    },
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'PageInfoFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'PageInfo' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'startCursor' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'endCursor' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'hasPreviousPage' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'hasNextPage' } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<InstitutionsQuery, InstitutionsQueryVariables>;
-export const BillingDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'Billing' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'accountId' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'billing' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'accountId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'accountId' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'billing' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'periodStart' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'periodEnd' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'paymentDate' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'totalAmount' },
-                      },
-                      { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'usagePercentage' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'status' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'accountCardId' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'createdAt' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'updatedAt' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'accountCard' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'lastFourDigits' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'billingCycleDay' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: {
-                                kind: 'Name',
-                                value: 'billingPaymentDay',
-                              },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'defaultLimit' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'type' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'accountId' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'createdAt' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'updatedAt' },
-                            },
-                          ],
-                        },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'paymentTransaction' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'description' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'amount' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'date' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'status' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'type' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'paymentMethod' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'sourceAccountId' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'destinyAccountId' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'cardBillingId' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'userId' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'createdAt' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'updatedAt' },
-                            },
-                          ],
-                        },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'transactionsCount' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'transactions' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'status' },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'nextBillingId' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'previousBillingId' },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<BillingQuery, BillingQueryVariables>;
-export const SuggestCategoryDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'SuggestCategory' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'description' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'suggestCategory' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'description' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'description' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'category' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'confidence' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'reasoning' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  SuggestCategoryQuery,
-  SuggestCategoryQueryVariables
->;
-export const ChatDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'Chat' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'message' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'chat' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'message' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'message' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'message' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<ChatMutation, ChatMutationVariables>;
-export const AuthSignInDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'AuthSignIn' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'AuthSignInInput' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'authSignIn' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'data' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'data' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'user' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'email' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<AuthSignInMutation, AuthSignInMutationVariables>;
-export const AuthSignOutDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'AuthSignOut' },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'authSignOut' } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<AuthSignOutMutation, AuthSignOutMutationVariables>;
-export const CreateUserDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'CreateUser' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'UserCreateInput' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'createUser' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'data' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'data' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'user' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<CreateUserMutation, CreateUserMutationVariables>;
-export const RequestPasswordResetDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'RequestPasswordReset' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'email' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'requestPasswordReset' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'email' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'email' },
-                },
-              },
-            ],
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  RequestPasswordResetMutation,
-  RequestPasswordResetMutationVariables
->;
-export const ResetPasswordDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'ResetPassword' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'token' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'newPassword' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'resetPassword' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'token' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'token' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'newPassword' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'newPassword' },
-                },
-              },
-            ],
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  ResetPasswordMutation,
-  ResetPasswordMutationVariables
->;
-export const UserDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'User' },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'user' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'email' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'role' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<UserQuery, UserQueryVariables>;
-export const BalanceForecastDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'BalanceForecast' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'accountId' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'period' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'BalanceForecastPeriod' },
-            },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'startDate' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'DateTime' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'endDate' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'DateTime' },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'balanceForecast' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'accountId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'accountId' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'period' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'period' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'startDate' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'startDate' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'endDate' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'endDate' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'dataPoints' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'date' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'balance' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'isProjected' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'incomeAmount' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'expenseAmount' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'transactionCount' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'transactions' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'description' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'amount' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'isIncome' },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'currentBalance' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'projectedBalance' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'balanceTrend' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  BalanceForecastQuery,
-  BalanceForecastQueryVariables
->;
-export const TransactionsSummaryForCashFlowDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'TransactionsSummaryForCashFlow' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'accountId' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'startDate' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'DateTime' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'endDate' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'DateTime' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'types' },
-          },
-          type: {
-            kind: 'ListType',
-            type: {
-              kind: 'NonNullType',
-              type: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'TransactionType' },
-              },
-            },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'statuses' },
-          },
-          type: {
-            kind: 'ListType',
-            type: {
-              kind: 'NonNullType',
-              type: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'TransactionStatus' },
-              },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'transactionsSummary' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'accountId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'accountId' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'startDate' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'startDate' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'endDate' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'endDate' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'types' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'types' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'statuses' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'statuses' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'totalIncome' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'totalExpense' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'balance' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'transactionCount' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'realizedIncome' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'realizedExpense' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'realizedBalance' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'forecastIncome' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'forecastExpense' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'forecastBalance' },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  TransactionsSummaryForCashFlowQuery,
-  TransactionsSummaryForCashFlowQueryVariables
->;
-export const CreateInvestmentDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'CreateInvestment' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'CreateInvestmentInput' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'createInvestment' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'data' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'data' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'regimeName' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'regimePercentage' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'userId' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  CreateInvestmentMutation,
-  CreateInvestmentMutationVariables
->;
-export const DeleteInvestmentDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'DeleteInvestment' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'deleteInvestment' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  DeleteInvestmentMutation,
-  DeleteInvestmentMutationVariables
->;
-export const InvestmentsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'Investments' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'first' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'orderDirection' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'OrderDirection' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'orderBy' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'OrdenationInvestmentModel' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'after' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'last' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'before' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'regime' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Regime' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'accountIds' },
-          },
-          type: {
-            kind: 'ListType',
-            type: {
-              kind: 'NonNullType',
-              type: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'String' },
-              },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'investments' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'first' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'first' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'orderDirection' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'orderDirection' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'orderBy' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'orderBy' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'after' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'after' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'last' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'last' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'before' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'before' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'regime' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'regime' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'accountIds' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'accountIds' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'edges' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'cursor' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'node' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'FragmentSpread',
-                              name: {
-                                kind: 'Name',
-                                value: 'InvestmentFragment',
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'pageInfo' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'FragmentSpread',
-                        name: { kind: 'Name', value: 'PageInfoFragment' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'InvestmentFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'InvestmentModel' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'correctedAmount' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'currentVariation' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'taxPercentage' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'taxedAmount' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'taxedVariation' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'duration' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-        ],
-      },
-    },
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'PageInfoFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'PageInfo' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'startCursor' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'endCursor' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'hasPreviousPage' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'hasNextPage' } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<InvestmentsQuery, InvestmentsQueryVariables>;
-export const TotalInvestmentsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'TotalInvestments' },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'totalInvestments' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'initialAmount' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'currentAmount' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'currentVariation' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'taxedAmount' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'taxedVariation' },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  TotalInvestmentsQuery,
-  TotalInvestmentsQueryVariables
->;
-export const InvestmentRegimesDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'InvestmentRegimes' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'accountId' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'investmentRegimes' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'accountId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'accountId' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'edges' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'cursor' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'node' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'FragmentSpread',
-                              name: {
-                                kind: 'Name',
-                                value: 'InvestmentRegimeSummaryFragment',
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'InvestmentRegimeSummaryFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'InvestmentRegimeSummary' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'totalInvested' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'currentInvested' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'currentInvestedPercentage' },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'taxedInvested' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'taxedInvestedPercentage' },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  InvestmentRegimesQuery,
-  InvestmentRegimesQueryVariables
->;
-export const InvestmentEvolutionDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'InvestmentEvolution' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'period' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'InvestmentEvolutionPeriod' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'accountId' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'investmentEvolution' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'period' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'period' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'accountId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'accountId' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'dataPoints' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'date' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'invested' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'currentAmount' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'taxedAmount' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'profit' },
-                      },
-                    ],
-                  },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'totalInvested' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'totalCurrentAmount' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'totalTaxedAmount' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'totalProfit' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'totalProfitPercentage' },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  InvestmentEvolutionQuery,
-  InvestmentEvolutionQueryVariables
->;
-export const InvestmentAccountsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'InvestmentAccounts' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'regime' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'Regime' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'investmentAccounts' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'regime' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'regime' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'institutionName' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'institutionLogoUrl' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'investmentCount' },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  InvestmentAccountsQuery,
-  InvestmentAccountsQueryVariables
->;
-export const CreateRecurringTransactionDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'CreateRecurringTransaction' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'CreateRecurringTransactionInput' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'createRecurringTransaction' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'data' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'data' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  CreateRecurringTransactionMutation,
-  CreateRecurringTransactionMutationVariables
->;
-export const UpdateRecurringTransactionFromDateDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'UpdateRecurringTransactionFromDate' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'fromDate' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'DateTime' },
-            },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'UpdateRecurringTransactionInput' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'updateRecurringTransactionFromDate' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'fromDate' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'fromDate' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'data' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'data' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  UpdateRecurringTransactionFromDateMutation,
-  UpdateRecurringTransactionFromDateMutationVariables
->;
-export const PauseRecurringTransactionDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'PauseRecurringTransaction' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'pauseRecurringTransaction' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  PauseRecurringTransactionMutation,
-  PauseRecurringTransactionMutationVariables
->;
-export const ResumeRecurringTransactionDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'ResumeRecurringTransaction' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'resumeRecurringTransaction' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  ResumeRecurringTransactionMutation,
-  ResumeRecurringTransactionMutationVariables
->;
-export const EndRecurringTransactionDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'EndRecurringTransaction' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'endDate' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'DateTime' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'endRecurringTransaction' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'endDate' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'endDate' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  EndRecurringTransactionMutation,
-  EndRecurringTransactionMutationVariables
->;
-export const DeleteRecurringTransactionDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'DeleteRecurringTransaction' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'deleteRecurringTransaction' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  DeleteRecurringTransactionMutation,
-  DeleteRecurringTransactionMutationVariables
->;
-export const RecurringTransactionsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'RecurringTransactions' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'first' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'after' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'last' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'before' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'search' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'orderBy' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: {
-              kind: 'Name',
-              value: 'OrdenationRecurringTransactionModel',
-            },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'orderDirection' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'OrderDirection' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'accountId' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'isActive' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Boolean' } },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'recurringTransactions' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'first' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'first' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'after' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'after' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'last' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'last' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'before' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'before' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'search' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'search' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'orderBy' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'orderBy' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'orderDirection' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'orderDirection' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'accountId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'accountId' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'isActive' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'isActive' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'edges' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'cursor' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'node' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'FragmentSpread',
-                              name: {
-                                kind: 'Name',
-                                value: 'RecurringTransactionFragment',
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'pageInfo' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'FragmentSpread',
-                        name: { kind: 'Name', value: 'PageInfoFragment' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'RecurringTransactionFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'RecurringTransactionModel' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'estimatedAmount' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'frequency' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'dayMode' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'dayOfMonth' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'dayOfWeek' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'weekOfMonth' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'monthOfYear' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'sourceAccount' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'destinyAccount' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-        ],
-      },
-    },
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'PageInfoFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'PageInfo' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'startCursor' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'endCursor' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'hasPreviousPage' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'hasNextPage' } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  RecurringTransactionsQuery,
-  RecurringTransactionsQueryVariables
->;
-export const RecurringTransactionDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'RecurringTransaction' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'recurringTransaction' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'FragmentSpread',
-                  name: { kind: 'Name', value: 'RecurringTransactionFragment' },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'RecurringTransactionFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'RecurringTransactionModel' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'estimatedAmount' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'frequency' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'dayMode' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'dayOfMonth' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'dayOfWeek' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'weekOfMonth' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'monthOfYear' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'startDate' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'endDate' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'isActive' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'sourceAccount' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'destinyAccount' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  RecurringTransactionQuery,
-  RecurringTransactionQueryVariables
->;
-export const TransactionsCalendarDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'TransactionsCalendar' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'accountId' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'year' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'month' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'transactionsCalendar' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'accountId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'accountId' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'year' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'year' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'month' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'month' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'days' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'date' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'totalIncome' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'totalExpense' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'transactionCount' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'transactions' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'description' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'amount' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'type' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'status' },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'monthTotalIncome' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'monthTotalExpense' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'monthBalance' },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  TransactionsCalendarQuery,
-  TransactionsCalendarQueryVariables
->;
-export const FinancialAgendaDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'FinancialAgenda' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'accountId' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'daysAhead' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'financialAgenda' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'accountId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'accountId' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'daysAhead' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'daysAhead' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'groups' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'label' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'transactions' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'description' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'amount' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'type' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'status' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'date' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'daysUntilDue' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'isOverdue' },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'totalIncome' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'totalExpense' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'balance' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'pendingCount' },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  FinancialAgendaQuery,
-  FinancialAgendaQueryVariables
->;
-export const CreateTransactionDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'CreateTransaction' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'CreateTransactionInput' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'createTransaction' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'data' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'data' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  CreateTransactionMutation,
-  CreateTransactionMutationVariables
->;
-export const UpdateTransactionDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'UpdateTransaction' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'UpdateTransactionInput' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'updateTransaction' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'data' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'data' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'date' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'paymentMethod' },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  UpdateTransactionMutation,
-  UpdateTransactionMutationVariables
->;
-export const CancelTransactionDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'CancelTransaction' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'String' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'cancelTransaction' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  CancelTransactionMutation,
-  CancelTransactionMutationVariables
->;
-export const RescheduleTransactionDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'RescheduleTransaction' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'RescheduleTransactionInput' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'rescheduleTransaction' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'data' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'data' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'date' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  RescheduleTransactionMutation,
-  RescheduleTransactionMutationVariables
->;
-export const UpdateRecurringTransactionsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'UpdateRecurringTransactions' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: { kind: 'Name', value: 'UpdateRecurringTransactionsInput' },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'updateRecurringTransactions' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'data' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'data' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'paymentMethod' },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  UpdateRecurringTransactionsMutation,
-  UpdateRecurringTransactionsMutationVariables
->;
-export const CreateInstallmentTransactionDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'mutation',
-      name: { kind: 'Name', value: 'CreateInstallmentTransaction' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'data' } },
-          type: {
-            kind: 'NonNullType',
-            type: {
-              kind: 'NamedType',
-              name: {
-                kind: 'Name',
-                value: 'CreateInstallmentTransactionInput',
-              },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'createInstallmentTransaction' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'data' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'data' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'date' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  CreateInstallmentTransactionMutation,
-  CreateInstallmentTransactionMutationVariables
->;
-export const TransactionsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'Transactions' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'first' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'after' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'last' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'before' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'search' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'orderBy' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'OrdenationTransactionModel' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'orderDirection' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'OrderDirection' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'accountId' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'cardBillingId' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'startDate' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'DateTime' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'endDate' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'DateTime' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'types' },
-          },
-          type: {
-            kind: 'ListType',
-            type: {
-              kind: 'NonNullType',
-              type: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'TransactionType' },
-              },
-            },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'statuses' },
-          },
-          type: {
-            kind: 'ListType',
-            type: {
-              kind: 'NonNullType',
-              type: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'TransactionStatus' },
-              },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'transactions' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'first' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'first' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'after' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'after' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'last' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'last' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'before' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'before' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'search' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'search' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'orderBy' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'orderBy' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'orderDirection' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'orderDirection' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'accountId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'accountId' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'cardBillingId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'cardBillingId' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'startDate' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'startDate' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'endDate' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'endDate' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'types' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'types' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'statuses' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'statuses' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'edges' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'cursor' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'node' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'FragmentSpread',
-                              name: {
-                                kind: 'Name',
-                                value: 'TransactionFragment',
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'pageInfo' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'FragmentSpread',
-                        name: { kind: 'Name', value: 'PageInfoFragment' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'TransactionFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'TransactionModel' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'date' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'category' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'sourceAccount' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'destinyAccount' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'billingPayment' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'periodStart' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'periodEnd' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'paymentDate' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'accountCard' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastFourDigits' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'account' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'name' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'institution' },
-                              selectionSet: {
-                                kind: 'SelectionSet',
-                                selections: [
-                                  {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'id' },
-                                  },
-                                  {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'name' },
-                                  },
-                                  {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'logoUrl' },
-                                  },
-                                ],
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'cardBilling' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'periodEnd' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'paymentTransaction' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'description' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'recurringTransactionId' },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'installments' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'installmentNumber' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
-              ],
-            },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'canCancel' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'cancelWarningMessage' },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'installmentStartDate' },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'installmentNumber' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'totalInstallments' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'installmentId' } },
-        ],
-      },
-    },
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'PageInfoFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'PageInfo' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'startCursor' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'endCursor' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'hasPreviousPage' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'hasNextPage' } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<TransactionsQuery, TransactionsQueryVariables>;
-export const TransactionsSummaryDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'TransactionsSummary' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'search' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'accountId' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'cardBillingId' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'startDate' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'DateTime' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'endDate' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'DateTime' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'types' },
-          },
-          type: {
-            kind: 'ListType',
-            type: {
-              kind: 'NonNullType',
-              type: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'TransactionType' },
-              },
-            },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'statuses' },
-          },
-          type: {
-            kind: 'ListType',
-            type: {
-              kind: 'NonNullType',
-              type: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'TransactionStatus' },
-              },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'transactionsSummary' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'search' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'search' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'accountId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'accountId' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'cardBillingId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'cardBillingId' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'startDate' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'startDate' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'endDate' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'endDate' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'types' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'types' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'statuses' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'statuses' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'totalIncome' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'totalExpense' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'balance' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'transactionCount' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'realizedIncome' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'realizedExpense' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'realizedBalance' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'forecastIncome' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'forecastExpense' },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'forecastBalance' },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  TransactionsSummaryQuery,
-  TransactionsSummaryQueryVariables
->;
-export const TransactionsGroupedByPeriodDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'TransactionsGroupedByPeriod' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'accountId' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'limitPerGroup' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'startDate' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'DateTime' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'endDate' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'DateTime' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'types' },
-          },
-          type: {
-            kind: 'ListType',
-            type: {
-              kind: 'NonNullType',
-              type: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'TransactionType' },
-              },
-            },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'statuses' },
-          },
-          type: {
-            kind: 'ListType',
-            type: {
-              kind: 'NonNullType',
-              type: {
-                kind: 'NamedType',
-                name: { kind: 'Name', value: 'TransactionStatus' },
-              },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'transactionsGroupedByPeriod' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'accountId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'accountId' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'limitPerGroup' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'limitPerGroup' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'startDate' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'startDate' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'endDate' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'endDate' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'types' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'types' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'statuses' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'statuses' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'period' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'label' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'count' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'hasMore' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'transactions' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'FragmentSpread',
-                        name: { kind: 'Name', value: 'TransactionFragment' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'TransactionFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'TransactionModel' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'date' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'category' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'sourceAccount' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'destinyAccount' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'billingPayment' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'periodStart' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'periodEnd' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'paymentDate' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'accountCard' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastFourDigits' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'account' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'name' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'institution' },
-                              selectionSet: {
-                                kind: 'SelectionSet',
-                                selections: [
-                                  {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'id' },
-                                  },
-                                  {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'name' },
-                                  },
-                                  {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'logoUrl' },
-                                  },
-                                ],
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'cardBilling' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'periodEnd' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'paymentTransaction' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'description' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'recurringTransactionId' },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'installments' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'installmentNumber' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
-              ],
-            },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'canCancel' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'cancelWarningMessage' },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'installmentStartDate' },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'installmentNumber' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'totalInstallments' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'installmentId' } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  TransactionsGroupedByPeriodQuery,
-  TransactionsGroupedByPeriodQueryVariables
->;
-export const BillingTransactionsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'BillingTransactions' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'billingId' },
-          },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'billingTransactions' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'billingId' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'billingId' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'FragmentSpread',
-                  name: { kind: 'Name', value: 'TransactionFragment' },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'TransactionFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'TransactionModel' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'date' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'category' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'sourceAccount' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'destinyAccount' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'institution' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'logoUrl' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'billingPayment' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'periodStart' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'periodEnd' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'paymentDate' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'accountCard' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'lastFourDigits' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'account' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'name' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'institution' },
-                              selectionSet: {
-                                kind: 'SelectionSet',
-                                selections: [
-                                  {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'id' },
-                                  },
-                                  {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'name' },
-                                  },
-                                  {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'logoUrl' },
-                                  },
-                                ],
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'cardBilling' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'periodEnd' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'paymentTransaction' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'description' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'status' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'paymentMethod' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'recurringTransactionId' },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'installments' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'installmentNumber' },
-                },
-                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
-              ],
-            },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'canCancel' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'cancelReason' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'cancelWarningMessage' },
-          },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'installmentStartDate' },
-          },
-          { kind: 'Field', name: { kind: 'Name', value: 'installmentNumber' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'totalInstallments' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'installmentId' } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  BillingTransactionsQuery,
-  BillingTransactionsQueryVariables
->;
-export const UsersDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'Users' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'first' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'after' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'search' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'before' },
-          },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'last' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'orderBy' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'OrdenationUserModel' },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: {
-            kind: 'Variable',
-            name: { kind: 'Name', value: 'orderDirection' },
-          },
-          type: {
-            kind: 'NamedType',
-            name: { kind: 'Name', value: 'OrderDirection' },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'users' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'first' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'first' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'after' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'after' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'search' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'search' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'before' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'before' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'last' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'last' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'orderBy' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'orderBy' },
-                },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'orderDirection' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'orderDirection' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'edges' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'cursor' },
-                      },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'node' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'id' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'email' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'name' },
-                            },
-                            {
-                              kind: 'Field',
-                              name: { kind: 'Name', value: 'role' },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'pageInfo' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      {
-                        kind: 'FragmentSpread',
-                        name: { kind: 'Name', value: 'PageInfoFragment' },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'PageInfoFragment' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'PageInfo' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'startCursor' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'endCursor' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'hasPreviousPage' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'hasNextPage' } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<UsersQuery, UsersQueryVariables>;
+export type UsersQuery = { __typename?: 'Query', users: { __typename?: 'UserConnection', edges: Array<{ __typename?: 'UserModelEdge', cursor: string, node: { __typename?: 'UserModel', id: string, email: string, name: string, role: Role } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasPreviousPage: boolean, hasNextPage: boolean } | null } };
+
+export const AccountFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AccountFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"AccountModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLinkId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"types"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<AccountFragmentFragment, unknown>;
+export const CardFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"CardFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Card"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"lastFourDigits"}},{"kind":"Field","name":{"kind":"Name","value":"billingCycleDay"}},{"kind":"Field","name":{"kind":"Name","value":"billingPaymentDay"}},{"kind":"Field","name":{"kind":"Name","value":"defaultLimit"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLinkId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"types"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"cards"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]} as unknown as DocumentNode<CardFragmentFragment, unknown>;
+export const InstitutionFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"InstitutionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"InstitutionModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"types"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<InstitutionFragmentFragment, unknown>;
+export const PageInfoFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PageInfoFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PageInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}}]} as unknown as DocumentNode<PageInfoFragmentFragment, unknown>;
+export const InstitutionLinkFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"InstitutionLinkFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"InstitutionLinkModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"institutionId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"initialBalance"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"cards"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"lastFourDigits"}},{"kind":"Field","name":{"kind":"Name","value":"billingCycleDay"}},{"kind":"Field","name":{"kind":"Name","value":"billingPaymentDay"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"defaultLimit"}},{"kind":"Field","name":{"kind":"Name","value":"currentBilling"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payableBillings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"investments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"regimeName"}},{"kind":"Field","name":{"kind":"Name","value":"regimePercentage"}}]}}]}}]} as unknown as DocumentNode<InstitutionLinkFragmentFragment, unknown>;
+export const InvestmentFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"InvestmentFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"InvestmentModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"correctedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"currentVariation"}},{"kind":"Field","name":{"kind":"Name","value":"taxPercentage"}},{"kind":"Field","name":{"kind":"Name","value":"taxedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"taxedVariation"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"fixedRate"}},{"kind":"Field","name":{"kind":"Name","value":"currentMarketRate"}},{"kind":"Field","name":{"kind":"Name","value":"maturityDate"}},{"kind":"Field","name":{"kind":"Name","value":"regimeName"}},{"kind":"Field","name":{"kind":"Name","value":"regimePercentage"}},{"kind":"Field","name":{"kind":"Name","value":"brokerageFee"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLinkId"}},{"kind":"Field","name":{"kind":"Name","value":"taxesAndFees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"details"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalTaxesAndFees"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sellFeasibility"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]} as unknown as DocumentNode<InvestmentFragmentFragment, unknown>;
+export const InvestmentRegimeSummaryFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"InvestmentRegimeSummaryFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"InvestmentRegimeSummary"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"totalInvested"}},{"kind":"Field","name":{"kind":"Name","value":"currentInvested"}},{"kind":"Field","name":{"kind":"Name","value":"currentInvestedPercentage"}},{"kind":"Field","name":{"kind":"Name","value":"taxedInvested"}},{"kind":"Field","name":{"kind":"Name","value":"taxedInvestedPercentage"}}]}}]} as unknown as DocumentNode<InvestmentRegimeSummaryFragmentFragment, unknown>;
+export const RecurringTransactionFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RecurringTransactionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RecurringTransactionModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"estimatedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"frequency"}},{"kind":"Field","name":{"kind":"Name","value":"dayMode"}},{"kind":"Field","name":{"kind":"Name","value":"dayOfMonth"}},{"kind":"Field","name":{"kind":"Name","value":"dayOfWeek"}},{"kind":"Field","name":{"kind":"Name","value":"weekOfMonth"}},{"kind":"Field","name":{"kind":"Name","value":"monthOfYear"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"destinyAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"sourceCard"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"transactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"destinyAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<RecurringTransactionFragmentFragment, unknown>;
+export const TransactionFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"sourceCard"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"destinyAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"billingPayment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}},{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"card"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"lastFourDigits"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"cardBilling"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}},{"kind":"Field","name":{"kind":"Name","value":"paymentTransaction"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"recurringTransactionId"}},{"kind":"Field","name":{"kind":"Name","value":"installments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"installmentNumber"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"cardBilling"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"canDelete"}},{"kind":"Field","name":{"kind":"Name","value":"deleteReason"}},{"kind":"Field","name":{"kind":"Name","value":"deleteWarningMessage"}},{"kind":"Field","name":{"kind":"Name","value":"installmentStartDate"}},{"kind":"Field","name":{"kind":"Name","value":"installmentNumber"}},{"kind":"Field","name":{"kind":"Name","value":"totalInstallments"}},{"kind":"Field","name":{"kind":"Name","value":"installmentId"}}]}}]} as unknown as DocumentNode<TransactionFragmentFragment, unknown>;
+export const RecurringTransactionSuggestionFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RecurringTransactionSuggestionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RecurringTransactionSuggestion"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"averageAmount"}},{"kind":"Field","name":{"kind":"Name","value":"frequency"}},{"kind":"Field","name":{"kind":"Name","value":"suggestedDay"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccountId"}},{"kind":"Field","name":{"kind":"Name","value":"destinyAccountId"}},{"kind":"Field","name":{"kind":"Name","value":"transactionIds"}},{"kind":"Field","name":{"kind":"Name","value":"occurrenceCount"}},{"kind":"Field","name":{"kind":"Name","value":"transactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"sourceCard"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"destinyAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"billingPayment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}},{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"card"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"lastFourDigits"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"cardBilling"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}},{"kind":"Field","name":{"kind":"Name","value":"paymentTransaction"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"recurringTransactionId"}},{"kind":"Field","name":{"kind":"Name","value":"installments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"installmentNumber"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"cardBilling"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"canDelete"}},{"kind":"Field","name":{"kind":"Name","value":"deleteReason"}},{"kind":"Field","name":{"kind":"Name","value":"deleteWarningMessage"}},{"kind":"Field","name":{"kind":"Name","value":"installmentStartDate"}},{"kind":"Field","name":{"kind":"Name","value":"installmentNumber"}},{"kind":"Field","name":{"kind":"Name","value":"totalInstallments"}},{"kind":"Field","name":{"kind":"Name","value":"installmentId"}}]}}]} as unknown as DocumentNode<RecurringTransactionSuggestionFragmentFragment, unknown>;
+export const CreateAccountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateAccount"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateAccountInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createAccount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}}]}}]}}]} as unknown as DocumentNode<CreateAccountMutation, CreateAccountMutationVariables>;
+export const CreateCardDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateCard"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateCardInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCard"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateCardMutation, CreateCardMutationVariables>;
+export const ChangeBillingDatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ChangeBillingDates"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"closingDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"paymentDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"changeBillingDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"billingId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingId"}}},{"kind":"Argument","name":{"kind":"Name","value":"closingDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"closingDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"paymentDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"paymentDate"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}},{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"cardId"}},{"kind":"Field","name":{"kind":"Name","value":"paymentTransactionId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<ChangeBillingDatesMutation, ChangeBillingDatesMutationVariables>;
+export const UpdateAccountCardDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateAccountCard"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"cardId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingCycleDay"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Float"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingPaymentDay"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Float"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"defaultLimit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Float"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateAccountCard"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"cardId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"cardId"}}},{"kind":"Argument","name":{"kind":"Name","value":"billingCycleDay"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingCycleDay"}}},{"kind":"Argument","name":{"kind":"Name","value":"billingPaymentDay"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingPaymentDay"}}},{"kind":"Argument","name":{"kind":"Name","value":"defaultLimit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"defaultLimit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"lastFourDigits"}},{"kind":"Field","name":{"kind":"Name","value":"billingCycleDay"}},{"kind":"Field","name":{"kind":"Name","value":"billingPaymentDay"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"defaultLimit"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLinkId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateAccountCardMutation, UpdateAccountCardMutationVariables>;
+export const AccountsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Accounts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrdenationAccountModel"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrderDirection"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"first"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"search"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"last"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"before"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accounts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"first"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"search"},"value":{"kind":"Variable","name":{"kind":"Name","value":"search"}}},{"kind":"Argument","name":{"kind":"Name","value":"last"},"value":{"kind":"Variable","name":{"kind":"Name","value":"last"}}},{"kind":"Argument","name":{"kind":"Name","value":"before"},"value":{"kind":"Variable","name":{"kind":"Name","value":"before"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cursor"}},{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AccountFragment"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PageInfoFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AccountFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"AccountModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLinkId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"types"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PageInfoFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PageInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}}]} as unknown as DocumentNode<AccountsQuery, AccountsQueryVariables>;
+export const AccountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Account"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"account"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AccountFragment"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cards"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AccountFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"AccountModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLinkId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"types"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<AccountQuery, AccountQueryVariables>;
+export const CardDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Card"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"card"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"CardFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"CardFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Card"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"lastFourDigits"}},{"kind":"Field","name":{"kind":"Name","value":"billingCycleDay"}},{"kind":"Field","name":{"kind":"Name","value":"billingPaymentDay"}},{"kind":"Field","name":{"kind":"Name","value":"defaultLimit"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLinkId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"types"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"cards"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]} as unknown as DocumentNode<CardQuery, CardQueryVariables>;
+export const CardsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Cards"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrdenationCard"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrderDirection"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"first"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"search"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"last"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"before"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cards"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"first"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"search"},"value":{"kind":"Variable","name":{"kind":"Name","value":"search"}}},{"kind":"Argument","name":{"kind":"Name","value":"last"},"value":{"kind":"Variable","name":{"kind":"Name","value":"last"}}},{"kind":"Argument","name":{"kind":"Name","value":"before"},"value":{"kind":"Variable","name":{"kind":"Name","value":"before"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cursor"}},{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"CardFragment"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PageInfoFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"CardFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Card"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"lastFourDigits"}},{"kind":"Field","name":{"kind":"Name","value":"billingCycleDay"}},{"kind":"Field","name":{"kind":"Name","value":"billingPaymentDay"}},{"kind":"Field","name":{"kind":"Name","value":"defaultLimit"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLinkId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"types"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"cards"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PageInfoFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PageInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}}]} as unknown as DocumentNode<CardsQuery, CardsQueryVariables>;
+export const InstitutionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Institutions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"first"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"search"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrdenationInstitutionModel"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrderDirection"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"types"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"InstitutionType"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institutions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"first"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"search"},"value":{"kind":"Variable","name":{"kind":"Name","value":"search"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"types"},"value":{"kind":"Variable","name":{"kind":"Name","value":"types"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cursor"}},{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"InstitutionFragment"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PageInfoFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"InstitutionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"InstitutionModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"types"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PageInfoFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PageInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}}]} as unknown as DocumentNode<InstitutionsQuery, InstitutionsQueryVariables>;
+export const BillingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Billing"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"cardId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billing"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"cardId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"cardId"}}},{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billing"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"usagePercentage"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"cardId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"card"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"lastFourDigits"}},{"kind":"Field","name":{"kind":"Name","value":"billingCycleDay"}},{"kind":"Field","name":{"kind":"Name","value":"billingPaymentDay"}},{"kind":"Field","name":{"kind":"Name","value":"defaultLimit"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLinkId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"availableLimit"}},{"kind":"Field","name":{"kind":"Name","value":"unpaidBalance"}},{"kind":"Field","name":{"kind":"Name","value":"usagePercentage"}},{"kind":"Field","name":{"kind":"Name","value":"billings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"paymentTransaction"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccountId"}},{"kind":"Field","name":{"kind":"Name","value":"destinyAccountId"}},{"kind":"Field","name":{"kind":"Name","value":"cardBillingId"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"transactionsCount"}},{"kind":"Field","name":{"kind":"Name","value":"transactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"nextBillingId"}},{"kind":"Field","name":{"kind":"Name","value":"previousBillingId"}}]}}]}}]} as unknown as DocumentNode<BillingQuery, BillingQueryVariables>;
+export const SuggestCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SuggestCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"description"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"suggestCategory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"description"},"value":{"kind":"Variable","name":{"kind":"Name","value":"description"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"confidence"}},{"kind":"Field","name":{"kind":"Name","value":"reasoning"}}]}}]}}]} as unknown as DocumentNode<SuggestCategoryQuery, SuggestCategoryQueryVariables>;
+export const ChatDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Chat"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"message"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"chat"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"message"},"value":{"kind":"Variable","name":{"kind":"Name","value":"message"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]} as unknown as DocumentNode<ChatMutation, ChatMutationVariables>;
+export const AuthSignInDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AuthSignIn"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AuthSignInInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"authSignIn"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<AuthSignInMutation, AuthSignInMutationVariables>;
+export const AuthSignOutDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AuthSignOut"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"authSignOut"}}]}}]} as unknown as DocumentNode<AuthSignOutMutation, AuthSignOutMutationVariables>;
+export const CreateUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UserCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createUser"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<CreateUserMutation, CreateUserMutationVariables>;
+export const RequestPasswordResetDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RequestPasswordReset"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"requestPasswordReset"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}}]}]}}]} as unknown as DocumentNode<RequestPasswordResetMutation, RequestPasswordResetMutationVariables>;
+export const ResetPasswordDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ResetPassword"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"token"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"newPassword"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"resetPassword"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"token"},"value":{"kind":"Variable","name":{"kind":"Name","value":"token"}}},{"kind":"Argument","name":{"kind":"Name","value":"newPassword"},"value":{"kind":"Variable","name":{"kind":"Name","value":"newPassword"}}}]}]}}]} as unknown as DocumentNode<ResetPasswordMutation, ResetPasswordMutationVariables>;
+export const UserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"User"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]}}]} as unknown as DocumentNode<UserQuery, UserQueryVariables>;
+export const CashFlowBalanceForecastDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CashFlowBalanceForecast"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"period"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BalanceForecastPeriod"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"balanceForecast"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"accountId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}}},{"kind":"Argument","name":{"kind":"Name","value":"period"},"value":{"kind":"Variable","name":{"kind":"Name","value":"period"}}},{"kind":"Argument","name":{"kind":"Name","value":"startDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"endDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accountSeries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accountId"}},{"kind":"Field","name":{"kind":"Name","value":"accountName"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"dataPoints"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"isProjected"}},{"kind":"Field","name":{"kind":"Name","value":"isInitialBalance"}},{"kind":"Field","name":{"kind":"Name","value":"incomeAmount"}},{"kind":"Field","name":{"kind":"Name","value":"expenseAmount"}},{"kind":"Field","name":{"kind":"Name","value":"transactionCount"}},{"kind":"Field","name":{"kind":"Name","value":"transactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"isIncome"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"currentBalance"}},{"kind":"Field","name":{"kind":"Name","value":"projectedBalance"}},{"kind":"Field","name":{"kind":"Name","value":"balanceTrend"}}]}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}}]}}]}}]} as unknown as DocumentNode<CashFlowBalanceForecastQuery, CashFlowBalanceForecastQueryVariables>;
+export const TransactionsSummaryForCashFlowDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TransactionsSummaryForCashFlow"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"types"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionType"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"statuses"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionStatus"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"transactionsSummary"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"accountId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}}},{"kind":"Argument","name":{"kind":"Name","value":"startDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"endDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"types"},"value":{"kind":"Variable","name":{"kind":"Name","value":"types"}}},{"kind":"Argument","name":{"kind":"Name","value":"statuses"},"value":{"kind":"Variable","name":{"kind":"Name","value":"statuses"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalIncome"}},{"kind":"Field","name":{"kind":"Name","value":"totalExpense"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"transactionCount"}},{"kind":"Field","name":{"kind":"Name","value":"realizedIncome"}},{"kind":"Field","name":{"kind":"Name","value":"realizedExpense"}},{"kind":"Field","name":{"kind":"Name","value":"realizedBalance"}},{"kind":"Field","name":{"kind":"Name","value":"forecastIncome"}},{"kind":"Field","name":{"kind":"Name","value":"forecastExpense"}},{"kind":"Field","name":{"kind":"Name","value":"forecastBalance"}}]}}]}}]} as unknown as DocumentNode<TransactionsSummaryForCashFlowQuery, TransactionsSummaryForCashFlowQueryVariables>;
+export const CreateInstitutionLinkDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateInstitutionLink"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateInstitutionLinkInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createInstitutionLink"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateInstitutionLinkMutation, CreateInstitutionLinkMutationVariables>;
+export const InstitutionLinksDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InstitutionLinks"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"first"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"search"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrdenationInstitutionLinkModel"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrderDirection"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"institutionTypes"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"InstitutionType"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institutionLinks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"first"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"search"},"value":{"kind":"Variable","name":{"kind":"Name","value":"search"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"institutionTypes"},"value":{"kind":"Variable","name":{"kind":"Name","value":"institutionTypes"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cursor"}},{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"InstitutionLinkFragment"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PageInfoFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"InstitutionLinkFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"InstitutionLinkModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"institutionId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"initialBalance"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"cards"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"lastFourDigits"}},{"kind":"Field","name":{"kind":"Name","value":"billingCycleDay"}},{"kind":"Field","name":{"kind":"Name","value":"billingPaymentDay"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"defaultLimit"}},{"kind":"Field","name":{"kind":"Name","value":"currentBilling"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payableBillings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"investments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"regimeName"}},{"kind":"Field","name":{"kind":"Name","value":"regimePercentage"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PageInfoFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PageInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}}]} as unknown as DocumentNode<InstitutionLinksQuery, InstitutionLinksQueryVariables>;
+export const CreateInvestmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateInvestment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateInvestmentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createInvestment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"regimeName"}},{"kind":"Field","name":{"kind":"Name","value":"regimePercentage"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLinkId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"fixedRate"}},{"kind":"Field","name":{"kind":"Name","value":"brokerageFee"}},{"kind":"Field","name":{"kind":"Name","value":"maturityDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateInvestmentMutation, CreateInvestmentMutationVariables>;
+export const DeleteInvestmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteInvestment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteInvestment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode<DeleteInvestmentMutation, DeleteInvestmentMutationVariables>;
+export const UpdateInvestmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateInvestment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateInvestmentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateInvestment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"regimeName"}},{"kind":"Field","name":{"kind":"Name","value":"regimePercentage"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLinkId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"fixedRate"}},{"kind":"Field","name":{"kind":"Name","value":"brokerageFee"}},{"kind":"Field","name":{"kind":"Name","value":"maturityDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateInvestmentMutation, UpdateInvestmentMutationVariables>;
+export const InvestmentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Investments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"first"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrderDirection"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrdenationInvestmentModel"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"last"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"before"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"regime"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Regime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"status"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"InvestmentStatus"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"institutionLinkIds"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"investments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"first"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"last"},"value":{"kind":"Variable","name":{"kind":"Name","value":"last"}}},{"kind":"Argument","name":{"kind":"Name","value":"before"},"value":{"kind":"Variable","name":{"kind":"Name","value":"before"}}},{"kind":"Argument","name":{"kind":"Name","value":"regime"},"value":{"kind":"Variable","name":{"kind":"Name","value":"regime"}}},{"kind":"Argument","name":{"kind":"Name","value":"status"},"value":{"kind":"Variable","name":{"kind":"Name","value":"status"}}},{"kind":"Argument","name":{"kind":"Name","value":"institutionLinkIds"},"value":{"kind":"Variable","name":{"kind":"Name","value":"institutionLinkIds"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cursor"}},{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"InvestmentFragment"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PageInfoFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"InvestmentFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"InvestmentModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"correctedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"currentVariation"}},{"kind":"Field","name":{"kind":"Name","value":"taxPercentage"}},{"kind":"Field","name":{"kind":"Name","value":"taxedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"taxedVariation"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"fixedRate"}},{"kind":"Field","name":{"kind":"Name","value":"currentMarketRate"}},{"kind":"Field","name":{"kind":"Name","value":"maturityDate"}},{"kind":"Field","name":{"kind":"Name","value":"regimeName"}},{"kind":"Field","name":{"kind":"Name","value":"regimePercentage"}},{"kind":"Field","name":{"kind":"Name","value":"brokerageFee"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLinkId"}},{"kind":"Field","name":{"kind":"Name","value":"taxesAndFees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"details"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalTaxesAndFees"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sellFeasibility"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PageInfoFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PageInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}}]} as unknown as DocumentNode<InvestmentsQuery, InvestmentsQueryVariables>;
+export const AvailableTreasuryBondsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AvailableTreasuryBonds"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"regime"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Regime"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"availableTreasuryBonds"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"regime"},"value":{"kind":"Variable","name":{"kind":"Name","value":"regime"}}}]}]}}]} as unknown as DocumentNode<AvailableTreasuryBondsQuery, AvailableTreasuryBondsQueryVariables>;
+export const GetInvestmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetInvestment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"investment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"InvestmentFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"InvestmentFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"InvestmentModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"correctedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"currentVariation"}},{"kind":"Field","name":{"kind":"Name","value":"taxPercentage"}},{"kind":"Field","name":{"kind":"Name","value":"taxedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"taxedVariation"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"fixedRate"}},{"kind":"Field","name":{"kind":"Name","value":"currentMarketRate"}},{"kind":"Field","name":{"kind":"Name","value":"maturityDate"}},{"kind":"Field","name":{"kind":"Name","value":"regimeName"}},{"kind":"Field","name":{"kind":"Name","value":"regimePercentage"}},{"kind":"Field","name":{"kind":"Name","value":"brokerageFee"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLinkId"}},{"kind":"Field","name":{"kind":"Name","value":"taxesAndFees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"details"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalTaxesAndFees"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sellFeasibility"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]} as unknown as DocumentNode<GetInvestmentQuery, GetInvestmentQueryVariables>;
+export const TotalInvestmentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TotalInvestments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalInvestments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"initialAmount"}},{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"currentVariation"}},{"kind":"Field","name":{"kind":"Name","value":"taxedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"taxedVariation"}},{"kind":"Field","name":{"kind":"Name","value":"realVariation"}}]}}]}}]} as unknown as DocumentNode<TotalInvestmentsQuery, TotalInvestmentsQueryVariables>;
+export const InvestmentRegimesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InvestmentRegimes"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"institutionLinkId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"investmentRegimes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"institutionLinkId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"institutionLinkId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cursor"}},{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"InvestmentRegimeSummaryFragment"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"InvestmentRegimeSummaryFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"InvestmentRegimeSummary"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"totalInvested"}},{"kind":"Field","name":{"kind":"Name","value":"currentInvested"}},{"kind":"Field","name":{"kind":"Name","value":"currentInvestedPercentage"}},{"kind":"Field","name":{"kind":"Name","value":"taxedInvested"}},{"kind":"Field","name":{"kind":"Name","value":"taxedInvestedPercentage"}}]}}]} as unknown as DocumentNode<InvestmentRegimesQuery, InvestmentRegimesQueryVariables>;
+export const InvestmentEvolutionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InvestmentEvolution"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"period"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"InvestmentEvolutionPeriod"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"regime"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Regime"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"investmentEvolution"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"period"},"value":{"kind":"Variable","name":{"kind":"Name","value":"period"}}},{"kind":"Argument","name":{"kind":"Name","value":"accountId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}}},{"kind":"Argument","name":{"kind":"Name","value":"regime"},"value":{"kind":"Variable","name":{"kind":"Name","value":"regime"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dataPoints"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"invested"}},{"kind":"Field","name":{"kind":"Name","value":"currentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"taxedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"profit"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalInvested"}},{"kind":"Field","name":{"kind":"Name","value":"totalCurrentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"totalTaxedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"totalProfit"}},{"kind":"Field","name":{"kind":"Name","value":"totalProfitPercentage"}}]}}]}}]} as unknown as DocumentNode<InvestmentEvolutionQuery, InvestmentEvolutionQueryVariables>;
+export const InvestmentAccountsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InvestmentAccounts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"regime"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Regime"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"investmentAccounts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"regime"},"value":{"kind":"Variable","name":{"kind":"Name","value":"regime"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLogoUrl"}},{"kind":"Field","name":{"kind":"Name","value":"investmentCount"}}]}}]}}]} as unknown as DocumentNode<InvestmentAccountsQuery, InvestmentAccountsQueryVariables>;
+export const InvestmentChartDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InvestmentChartData"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"investmentId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"investmentChartData"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"investmentId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"investmentId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"theoreticalValue"}},{"kind":"Field","name":{"kind":"Name","value":"marketValue"}}]}}]}}]} as unknown as DocumentNode<InvestmentChartDataQuery, InvestmentChartDataQueryVariables>;
+export const RegimeTaxesHistoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RegimeTaxesHistory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"regime"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Regime"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"regimeTaxesHistory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"regime"},"value":{"kind":"Variable","name":{"kind":"Name","value":"regime"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dataPoints"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"component1"}},{"kind":"Field","name":{"kind":"Name","value":"component2"}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]}}]} as unknown as DocumentNode<RegimeTaxesHistoryQuery, RegimeTaxesHistoryQueryVariables>;
+export const InvestmentTaxesHistoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InvestmentTaxesHistory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"investmentId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"investmentTaxesHistory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"investmentId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"investmentId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dataPoints"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"component1"}},{"kind":"Field","name":{"kind":"Name","value":"component2"}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}}]}}]} as unknown as DocumentNode<InvestmentTaxesHistoryQuery, InvestmentTaxesHistoryQueryVariables>;
+export const CreateRecurringTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateRecurringTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateRecurringTransactionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createRecurringTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateRecurringTransactionMutation, CreateRecurringTransactionMutationVariables>;
+export const UpdateRecurringTransactionFromDateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateRecurringTransactionFromDate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"fromDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateRecurringTransactionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateRecurringTransactionFromDate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"fromDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"fromDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<UpdateRecurringTransactionFromDateMutation, UpdateRecurringTransactionFromDateMutationVariables>;
+export const PauseRecurringTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"PauseRecurringTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pauseRecurringTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]}}]} as unknown as DocumentNode<PauseRecurringTransactionMutation, PauseRecurringTransactionMutationVariables>;
+export const ResumeRecurringTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ResumeRecurringTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"resumeRecurringTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]}}]} as unknown as DocumentNode<ResumeRecurringTransactionMutation, ResumeRecurringTransactionMutationVariables>;
+export const EndRecurringTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"EndRecurringTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"endRecurringTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"endDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]}}]} as unknown as DocumentNode<EndRecurringTransactionMutation, EndRecurringTransactionMutationVariables>;
+export const DeleteRecurringTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteRecurringTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"deleteAllTransactions"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteRecurringTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"deleteAllTransactions"},"value":{"kind":"Variable","name":{"kind":"Name","value":"deleteAllTransactions"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<DeleteRecurringTransactionMutation, DeleteRecurringTransactionMutationVariables>;
+export const IgnorePossibleRecurrenceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"IgnorePossibleRecurrence"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"description"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ignorePossibleRecurrence"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"description"},"value":{"kind":"Variable","name":{"kind":"Name","value":"description"}}}]}]}}]} as unknown as DocumentNode<IgnorePossibleRecurrenceMutation, IgnorePossibleRecurrenceMutationVariables>;
+export const RecurringTransactionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RecurringTransactions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"first"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"last"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"before"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"search"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrdenationRecurringTransactionModel"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrderDirection"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isActive"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"recurringTransactions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"first"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"last"},"value":{"kind":"Variable","name":{"kind":"Name","value":"last"}}},{"kind":"Argument","name":{"kind":"Name","value":"before"},"value":{"kind":"Variable","name":{"kind":"Name","value":"before"}}},{"kind":"Argument","name":{"kind":"Name","value":"search"},"value":{"kind":"Variable","name":{"kind":"Name","value":"search"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"accountId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}}},{"kind":"Argument","name":{"kind":"Name","value":"isActive"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isActive"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cursor"}},{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RecurringTransactionFragment"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PageInfoFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RecurringTransactionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RecurringTransactionModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"estimatedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"frequency"}},{"kind":"Field","name":{"kind":"Name","value":"dayMode"}},{"kind":"Field","name":{"kind":"Name","value":"dayOfMonth"}},{"kind":"Field","name":{"kind":"Name","value":"dayOfWeek"}},{"kind":"Field","name":{"kind":"Name","value":"weekOfMonth"}},{"kind":"Field","name":{"kind":"Name","value":"monthOfYear"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"destinyAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"sourceCard"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"transactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"destinyAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PageInfoFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PageInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}}]} as unknown as DocumentNode<RecurringTransactionsQuery, RecurringTransactionsQueryVariables>;
+export const RecurringTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RecurringTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"recurringTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RecurringTransactionFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RecurringTransactionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RecurringTransactionModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"estimatedAmount"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"frequency"}},{"kind":"Field","name":{"kind":"Name","value":"dayMode"}},{"kind":"Field","name":{"kind":"Name","value":"dayOfMonth"}},{"kind":"Field","name":{"kind":"Name","value":"dayOfWeek"}},{"kind":"Field","name":{"kind":"Name","value":"weekOfMonth"}},{"kind":"Field","name":{"kind":"Name","value":"monthOfYear"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"destinyAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"sourceCard"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"transactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"destinyAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<RecurringTransactionQuery, RecurringTransactionQueryVariables>;
+export const PossibleRecurringTransactionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PossibleRecurringTransactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"possibleRecurringTransactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RecurringTransactionSuggestionFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"sourceCard"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"destinyAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"billingPayment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}},{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"card"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"lastFourDigits"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"cardBilling"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}},{"kind":"Field","name":{"kind":"Name","value":"paymentTransaction"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"recurringTransactionId"}},{"kind":"Field","name":{"kind":"Name","value":"installments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"installmentNumber"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"cardBilling"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"canDelete"}},{"kind":"Field","name":{"kind":"Name","value":"deleteReason"}},{"kind":"Field","name":{"kind":"Name","value":"deleteWarningMessage"}},{"kind":"Field","name":{"kind":"Name","value":"installmentStartDate"}},{"kind":"Field","name":{"kind":"Name","value":"installmentNumber"}},{"kind":"Field","name":{"kind":"Name","value":"totalInstallments"}},{"kind":"Field","name":{"kind":"Name","value":"installmentId"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RecurringTransactionSuggestionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"RecurringTransactionSuggestion"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"averageAmount"}},{"kind":"Field","name":{"kind":"Name","value":"frequency"}},{"kind":"Field","name":{"kind":"Name","value":"suggestedDay"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccountId"}},{"kind":"Field","name":{"kind":"Name","value":"destinyAccountId"}},{"kind":"Field","name":{"kind":"Name","value":"transactionIds"}},{"kind":"Field","name":{"kind":"Name","value":"occurrenceCount"}},{"kind":"Field","name":{"kind":"Name","value":"transactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionFragment"}}]}}]}}]} as unknown as DocumentNode<PossibleRecurringTransactionsQuery, PossibleRecurringTransactionsQueryVariables>;
+export const RealBalanceForecastSimulationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RealBalanceForecastSimulation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"balanceForecast"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"accountId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}}},{"kind":"Argument","name":{"kind":"Name","value":"period"},"value":{"kind":"EnumValue","value":"CUSTOM"}},{"kind":"Argument","name":{"kind":"Name","value":"startDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"endDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accountSeries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accountId"}},{"kind":"Field","name":{"kind":"Name","value":"accountName"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"dataPoints"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"isProjected"}},{"kind":"Field","name":{"kind":"Name","value":"isInitialBalance"}},{"kind":"Field","name":{"kind":"Name","value":"incomeAmount"}},{"kind":"Field","name":{"kind":"Name","value":"expenseAmount"}},{"kind":"Field","name":{"kind":"Name","value":"transactionCount"}},{"kind":"Field","name":{"kind":"Name","value":"transactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"isIncome"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"currentBalance"}},{"kind":"Field","name":{"kind":"Name","value":"projectedBalance"}},{"kind":"Field","name":{"kind":"Name","value":"balanceTrend"}}]}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}}]}}]}}]} as unknown as DocumentNode<RealBalanceForecastSimulationQuery, RealBalanceForecastSimulationQueryVariables>;
+export const SimulateBalanceForecastDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SimulateBalanceForecast"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SimulateBalanceForecastInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"simulateBalanceForecast"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accountSeries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accountId"}},{"kind":"Field","name":{"kind":"Name","value":"accountName"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"dataPoints"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"isProjected"}},{"kind":"Field","name":{"kind":"Name","value":"isInitialBalance"}},{"kind":"Field","name":{"kind":"Name","value":"incomeAmount"}},{"kind":"Field","name":{"kind":"Name","value":"expenseAmount"}},{"kind":"Field","name":{"kind":"Name","value":"transactionCount"}},{"kind":"Field","name":{"kind":"Name","value":"transactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"isIncome"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"currentBalance"}},{"kind":"Field","name":{"kind":"Name","value":"projectedBalance"}},{"kind":"Field","name":{"kind":"Name","value":"balanceTrend"}}]}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}}]}}]}}]} as unknown as DocumentNode<SimulateBalanceForecastQuery, SimulateBalanceForecastQueryVariables>;
+export const BalanceForecastDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"BalanceForecast"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"period"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BalanceForecastPeriod"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"balanceForecast"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"accountId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}}},{"kind":"Argument","name":{"kind":"Name","value":"period"},"value":{"kind":"Variable","name":{"kind":"Name","value":"period"}}},{"kind":"Argument","name":{"kind":"Name","value":"startDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"endDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accountSeries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accountId"}},{"kind":"Field","name":{"kind":"Name","value":"accountName"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"dataPoints"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"isProjected"}},{"kind":"Field","name":{"kind":"Name","value":"isInitialBalance"}},{"kind":"Field","name":{"kind":"Name","value":"incomeAmount"}},{"kind":"Field","name":{"kind":"Name","value":"expenseAmount"}},{"kind":"Field","name":{"kind":"Name","value":"transactionCount"}},{"kind":"Field","name":{"kind":"Name","value":"transactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"isIncome"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"currentBalance"}},{"kind":"Field","name":{"kind":"Name","value":"projectedBalance"}},{"kind":"Field","name":{"kind":"Name","value":"balanceTrend"}}]}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}}]}}]}}]} as unknown as DocumentNode<BalanceForecastQuery, BalanceForecastQueryVariables>;
+export const TransactionsCalendarDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TransactionsCalendar"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"year"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"month"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"transactionsCalendar"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"accountId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}}},{"kind":"Argument","name":{"kind":"Name","value":"year"},"value":{"kind":"Variable","name":{"kind":"Name","value":"year"}}},{"kind":"Argument","name":{"kind":"Name","value":"month"},"value":{"kind":"Variable","name":{"kind":"Name","value":"month"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"days"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"totalIncome"}},{"kind":"Field","name":{"kind":"Name","value":"totalExpense"}},{"kind":"Field","name":{"kind":"Name","value":"transactionCount"}},{"kind":"Field","name":{"kind":"Name","value":"transactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"monthTotalIncome"}},{"kind":"Field","name":{"kind":"Name","value":"monthTotalExpense"}},{"kind":"Field","name":{"kind":"Name","value":"monthBalance"}}]}}]}}]} as unknown as DocumentNode<TransactionsCalendarQuery, TransactionsCalendarQueryVariables>;
+export const FinancialAgendaDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"FinancialAgenda"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"daysAhead"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"financialAgenda"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"accountId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}}},{"kind":"Argument","name":{"kind":"Name","value":"daysAhead"},"value":{"kind":"Variable","name":{"kind":"Name","value":"daysAhead"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"groups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"transactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"daysUntilDue"}},{"kind":"Field","name":{"kind":"Name","value":"isOverdue"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalIncome"}},{"kind":"Field","name":{"kind":"Name","value":"totalExpense"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"pendingCount"}}]}}]}}]} as unknown as DocumentNode<FinancialAgendaQuery, FinancialAgendaQueryVariables>;
+export const CreateTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateTransactionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateTransactionMutation, CreateTransactionMutationVariables>;
+export const UpdateTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateTransactionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}}]}}]}}]} as unknown as DocumentNode<UpdateTransactionMutation, UpdateTransactionMutationVariables>;
+export const DeleteTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"deletedAt"}}]}}]}}]} as unknown as DocumentNode<DeleteTransactionMutation, DeleteTransactionMutationVariables>;
+export const RescheduleTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RescheduleTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RescheduleTransactionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rescheduleTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"date"}}]}}]}}]} as unknown as DocumentNode<RescheduleTransactionMutation, RescheduleTransactionMutationVariables>;
+export const UpdateRecurringTransactionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateRecurringTransactions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateRecurringTransactionsInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateRecurringTransactions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}}]}}]}}]} as unknown as DocumentNode<UpdateRecurringTransactionsMutation, UpdateRecurringTransactionsMutationVariables>;
+export const DeleteRecurringTransactionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteRecurringTransactions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"transactionId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"scope"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateRecurringScope"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteRecurringTransactions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"transactionId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"transactionId"}}},{"kind":"Argument","name":{"kind":"Name","value":"scope"},"value":{"kind":"Variable","name":{"kind":"Name","value":"scope"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"deletedAt"}}]}}]}}]} as unknown as DocumentNode<DeleteRecurringTransactionsMutation, DeleteRecurringTransactionsMutationVariables>;
+export const CreateInstallmentTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateInstallmentTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateInstallmentTransactionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createInstallmentTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]} as unknown as DocumentNode<CreateInstallmentTransactionMutation, CreateInstallmentTransactionMutationVariables>;
+export const BulkUpdateTransactionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BulkUpdateTransactions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BulkUpdateTransactionsInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bulkUpdateTransactions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccountId"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}}]}}]}}]} as unknown as DocumentNode<BulkUpdateTransactionsMutation, BulkUpdateTransactionsMutationVariables>;
+export const BulkDeleteTransactionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BulkDeleteTransactions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BulkDeleteTransactionsInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bulkDeleteTransactions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"deletedAt"}}]}}]}}]} as unknown as DocumentNode<BulkDeleteTransactionsMutation, BulkDeleteTransactionsMutationVariables>;
+export const TransactionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Transactions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"first"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"last"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"before"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"search"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrdenationTransactionModel"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrderDirection"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"cardBillingId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"types"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionType"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"statuses"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionStatus"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"transactions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"first"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"last"},"value":{"kind":"Variable","name":{"kind":"Name","value":"last"}}},{"kind":"Argument","name":{"kind":"Name","value":"before"},"value":{"kind":"Variable","name":{"kind":"Name","value":"before"}}},{"kind":"Argument","name":{"kind":"Name","value":"search"},"value":{"kind":"Variable","name":{"kind":"Name","value":"search"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"accountId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}}},{"kind":"Argument","name":{"kind":"Name","value":"cardBillingId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"cardBillingId"}}},{"kind":"Argument","name":{"kind":"Name","value":"startDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"endDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"types"},"value":{"kind":"Variable","name":{"kind":"Name","value":"types"}}},{"kind":"Argument","name":{"kind":"Name","value":"statuses"},"value":{"kind":"Variable","name":{"kind":"Name","value":"statuses"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cursor"}},{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionFragment"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PageInfoFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"sourceCard"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"destinyAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"billingPayment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}},{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"card"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"lastFourDigits"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"cardBilling"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}},{"kind":"Field","name":{"kind":"Name","value":"paymentTransaction"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"recurringTransactionId"}},{"kind":"Field","name":{"kind":"Name","value":"installments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"installmentNumber"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"cardBilling"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"canDelete"}},{"kind":"Field","name":{"kind":"Name","value":"deleteReason"}},{"kind":"Field","name":{"kind":"Name","value":"deleteWarningMessage"}},{"kind":"Field","name":{"kind":"Name","value":"installmentStartDate"}},{"kind":"Field","name":{"kind":"Name","value":"installmentNumber"}},{"kind":"Field","name":{"kind":"Name","value":"totalInstallments"}},{"kind":"Field","name":{"kind":"Name","value":"installmentId"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PageInfoFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PageInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}}]} as unknown as DocumentNode<TransactionsQuery, TransactionsQueryVariables>;
+export const TransactionsSummaryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TransactionsSummary"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"search"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"cardBillingId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"types"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionType"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"statuses"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionStatus"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"transactionsSummary"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"search"},"value":{"kind":"Variable","name":{"kind":"Name","value":"search"}}},{"kind":"Argument","name":{"kind":"Name","value":"accountId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}}},{"kind":"Argument","name":{"kind":"Name","value":"cardBillingId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"cardBillingId"}}},{"kind":"Argument","name":{"kind":"Name","value":"startDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"endDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"types"},"value":{"kind":"Variable","name":{"kind":"Name","value":"types"}}},{"kind":"Argument","name":{"kind":"Name","value":"statuses"},"value":{"kind":"Variable","name":{"kind":"Name","value":"statuses"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalIncome"}},{"kind":"Field","name":{"kind":"Name","value":"totalExpense"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"transactionCount"}},{"kind":"Field","name":{"kind":"Name","value":"realizedIncome"}},{"kind":"Field","name":{"kind":"Name","value":"realizedExpense"}},{"kind":"Field","name":{"kind":"Name","value":"realizedBalance"}},{"kind":"Field","name":{"kind":"Name","value":"forecastIncome"}},{"kind":"Field","name":{"kind":"Name","value":"forecastExpense"}},{"kind":"Field","name":{"kind":"Name","value":"forecastBalance"}}]}}]}}]} as unknown as DocumentNode<TransactionsSummaryQuery, TransactionsSummaryQueryVariables>;
+export const TransactionsGroupedByPeriodDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TransactionsGroupedByPeriod"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limitPerGroup"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"types"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionType"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"statuses"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionStatus"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"transactionsGroupedByPeriod"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"accountId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"accountId"}}},{"kind":"Argument","name":{"kind":"Name","value":"limitPerGroup"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limitPerGroup"}}},{"kind":"Argument","name":{"kind":"Name","value":"startDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"endDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"types"},"value":{"kind":"Variable","name":{"kind":"Name","value":"types"}}},{"kind":"Argument","name":{"kind":"Name","value":"statuses"},"value":{"kind":"Variable","name":{"kind":"Name","value":"statuses"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"period"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"hasMore"}},{"kind":"Field","name":{"kind":"Name","value":"transactions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"sourceCard"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"destinyAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"billingPayment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}},{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"card"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"lastFourDigits"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"cardBilling"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}},{"kind":"Field","name":{"kind":"Name","value":"paymentTransaction"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"recurringTransactionId"}},{"kind":"Field","name":{"kind":"Name","value":"installments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"installmentNumber"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"cardBilling"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"canDelete"}},{"kind":"Field","name":{"kind":"Name","value":"deleteReason"}},{"kind":"Field","name":{"kind":"Name","value":"deleteWarningMessage"}},{"kind":"Field","name":{"kind":"Name","value":"installmentStartDate"}},{"kind":"Field","name":{"kind":"Name","value":"installmentNumber"}},{"kind":"Field","name":{"kind":"Name","value":"totalInstallments"}},{"kind":"Field","name":{"kind":"Name","value":"installmentId"}}]}}]} as unknown as DocumentNode<TransactionsGroupedByPeriodQuery, TransactionsGroupedByPeriodQueryVariables>;
+export const BillingTransactionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"BillingTransactions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"search"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billingTransactions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"billingId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingId"}}},{"kind":"Argument","name":{"kind":"Name","value":"search"},"value":{"kind":"Variable","name":{"kind":"Name","value":"search"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransactionFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransactionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TransactionModel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"sourceCard"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"destinyAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"billingPayment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}},{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"card"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"lastFourDigits"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"cardBilling"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}},{"kind":"Field","name":{"kind":"Name","value":"paymentTransaction"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"sourceAccount"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"institutionLink"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"logoUrl"}}]}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"paymentMethod"}},{"kind":"Field","name":{"kind":"Name","value":"recurringTransactionId"}},{"kind":"Field","name":{"kind":"Name","value":"installments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"installmentNumber"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"cardBilling"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"paymentDate"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"canDelete"}},{"kind":"Field","name":{"kind":"Name","value":"deleteReason"}},{"kind":"Field","name":{"kind":"Name","value":"deleteWarningMessage"}},{"kind":"Field","name":{"kind":"Name","value":"installmentStartDate"}},{"kind":"Field","name":{"kind":"Name","value":"installmentNumber"}},{"kind":"Field","name":{"kind":"Name","value":"totalInstallments"}},{"kind":"Field","name":{"kind":"Name","value":"installmentId"}}]}}]} as unknown as DocumentNode<BillingTransactionsQuery, BillingTransactionsQueryVariables>;
+export const UsersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Users"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"first"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"search"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"before"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"last"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrdenationUserModel"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"OrderDirection"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"first"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"search"},"value":{"kind":"Variable","name":{"kind":"Name","value":"search"}}},{"kind":"Argument","name":{"kind":"Name","value":"before"},"value":{"kind":"Variable","name":{"kind":"Name","value":"before"}}},{"kind":"Argument","name":{"kind":"Name","value":"last"},"value":{"kind":"Variable","name":{"kind":"Name","value":"last"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cursor"}},{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PageInfoFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PageInfoFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PageInfo"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}}]} as unknown as DocumentNode<UsersQuery, UsersQueryVariables>;

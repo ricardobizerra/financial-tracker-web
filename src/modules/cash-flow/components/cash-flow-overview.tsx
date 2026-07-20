@@ -99,6 +99,7 @@ export function CashFlowOverview() {
         period={period}
         customStartDate={customStartDate}
         customEndDate={customEndDate}
+        type="balance"
       />
     </div>
   );

@@ -2,9 +2,12 @@
 
 import {
   RecurringTransactionsList,
-  IncomeRecurringTransactionCreateForm,
-  ExpenseRecurringTransactionCreateForm,
+  RecurringTransactionSuggestionsList,
 } from '@/modules/recurring-transactions';
+import {
+  IncomeTransactionCreateForm,
+  ExpenseTransactionCreateForm,
+} from '@/modules/transactions/components/transaction-create-form';
 import {
   Card,
   CardContent,
@@ -13,8 +16,53 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { CalendarClock } from 'lucide-react';
+import { useState } from 'react';
+import {
+  RecurrenceFrequency,
+  RecurringTransactionSuggestionFragmentFragment,
+} from '@/graphql/graphql';
 
 export function RecurringTransactionsContent() {
+  const [suggestionToActivate, setSuggestionToActivate] =
+    useState<RecurringTransactionSuggestionFragmentFragment | null>(null);
+  const [isIncomeFormOpen, setIsIncomeFormOpen] = useState(false);
+  const [isExpenseFormOpen, setIsExpenseFormOpen] = useState(false);
+
+  const handleActivate = (
+    suggestion: RecurringTransactionSuggestionFragmentFragment,
+  ) => {
+    setSuggestionToActivate(suggestion);
+    if (suggestion.destinyAccountId && !suggestion.sourceAccountId) {
+      setIsIncomeFormOpen(true);
+    } else {
+      setIsExpenseFormOpen(true);
+    }
+  };
+
+  const handleIncomeOpenChange = (open: boolean) => {
+    setIsIncomeFormOpen(open);
+    if (!open) setSuggestionToActivate(null);
+  };
+
+  const handleExpenseOpenChange = (open: boolean) => {
+    setIsExpenseFormOpen(open);
+    if (!open) setSuggestionToActivate(null);
+  };
+
+  const prefilledData = suggestionToActivate
+    ? {
+        description: suggestionToActivate.description,
+        amount: Math.round(suggestionToActivate.averageAmount),
+        destinyAccountId: suggestionToActivate.destinyAccountId ?? undefined,
+        sourceAccountId: suggestionToActivate.sourceAccountId ?? undefined,
+        category: suggestionToActivate.transactions.find((t) => !!t.category)
+          ?.category,
+        frequency: suggestionToActivate.frequency,
+        transactionIdsToLink: suggestionToActivate.transactionIds,
+        transactionsToLink: suggestionToActivate.transactions,
+      }
+    : undefined;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -25,8 +73,16 @@ export function RecurringTransactionsContent() {
           </p>
         </div>
         <div className="flex gap-2">
-          <IncomeRecurringTransactionCreateForm />
-          <ExpenseRecurringTransactionCreateForm />
+          <IncomeTransactionCreateForm
+            open={isIncomeFormOpen}
+            onOpenChange={handleIncomeOpenChange}
+            prefilledData={prefilledData}
+          />
+          <ExpenseTransactionCreateForm
+            open={isExpenseFormOpen}
+            onOpenChange={handleExpenseOpenChange}
+            prefilledData={prefilledData}
+          />
         </div>
       </div>
 
@@ -44,6 +100,8 @@ export function RecurringTransactionsContent() {
           <RecurringTransactionsList />
         </CardContent>
       </Card>
+
+      <RecurringTransactionSuggestionsList onActivate={handleActivate} />
     </div>
   );
 }

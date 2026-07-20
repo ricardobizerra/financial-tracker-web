@@ -12,6 +12,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import {
+  AlertTriangleIcon,
   ArrowDown,
   ArrowLeft,
   ArrowLeftRight,
@@ -20,11 +21,16 @@ import {
   Banknote,
   BriefcaseBusiness,
   Check,
+  CheckSquare,
   CreditCard,
+  History,
   LucideIcon,
   PlusIcon,
   Receipt,
+  Wallet2,
 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { SuggestionLinkingSection } from '@/modules/recurring-transactions/components/shared/suggestion-linking-section';
 import { TypeSelectionCard } from '@/components/form-stepper-shared';
 import { BRAND, z } from 'zod';
 import { useMutation, useQuery } from '@apollo/client';
@@ -35,12 +41,13 @@ import {
   OrdenationAccountModel,
   TransactionStatus,
   PaymentMethod,
-  AccountType,
+  InstitutionType,
   RecurrenceFrequency,
   RecurrenceType,
   CardType,
   DayMode,
   TransactionCategory,
+  OrdenationCard,
 } from '@/graphql/graphql';
 import {
   PropsWithChildren,
@@ -62,6 +69,10 @@ import {
   TransactionsCalendarQuery,
   FinancialAgendaQuery,
 } from '../graphql/calendar-agenda-queries';
+import {
+  RecurringTransactionsQuery,
+  PossibleRecurringTransactionsQuery,
+} from '@/modules/recurring-transactions/graphql/recurring-transactions-queries';
 import { TransactionTypeBadge } from './transaction-type-badge';
 import { Badge } from '@/components/ui/badge';
 import { InstitutionLogo } from '@/modules/accounts/components/institution-logo';
@@ -69,6 +80,8 @@ import {
   AccountQuery,
   AccountsQuery,
   BillingQuery,
+  CardQuery,
+  CardsQuery,
 } from '@/modules/accounts/graphql/accounts-queries';
 import { TransactionStatusBadge } from './transaction-status-badge';
 import { Separator } from '@/components/ui/separator';
@@ -77,9 +90,14 @@ import {
   transactionStatusLabel,
   transactionTypeLabels,
   transactionCategoryLabels,
+  paymentMethodIcons,
 } from '../transactions-constants';
 import { transactionCategoryIcons } from './transaction-category-badge';
 import { useForm, useWatch } from 'react-hook-form';
+import {
+  RecurrenceFormSection,
+  RecurrenceData,
+} from '@/modules/recurring-transactions/components/shared/recurrence-form-section';
 import { zodResolver } from '@hookform/resolvers/zod';
 import PixIcon from '@/static/pix-icon.svg';
 import {
@@ -89,11 +107,16 @@ import {
 } from '../graphql/transactions-mutations';
 import { TransactionFragmentFragment } from '@/graphql/graphql';
 import { formatCurrency } from '@/lib/formatters/currency';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import {
+  getRecurrenceSummary,
+  getRecurrenceDescription,
+} from '@/modules/recurring-transactions/recurrence-utils';
+import { Label } from '@/components/ui/label';
+import { RecurrenceTimelinePreview } from '@/modules/recurring-transactions/components/shared/recurrence-timeline-preview';
 
 interface TransactionCreateFormProps {
   accountId?: string;
+  cardId?: string;
   triggerClassName?: string;
   triggerSize?: ButtonProps['size'];
   /** Para modo de edição: transação a ser editada */
@@ -111,109 +134,22 @@ interface TransactionCreateFormProps {
     paymentMethod?: string;
     category?: string;
   }) => Promise<boolean>;
+  /** Variáveis para refetch da query de transações */
+  refetchVariables?: any;
+  /** Dados para pré-preenchimento (ex: vindo de uma sugestão) */
+  prefilledData?: {
+    description?: string;
+    amount?: number;
+    category?: TransactionCategory | null;
+    type?: TransactionType;
+    sourceAccountId?: string;
+    destinyAccountId?: string;
+    frequency?: RecurrenceFrequency;
+    dayOfMonth?: number;
+    transactionIdsToLink?: string[];
+    transactionsToLink?: any[];
+  };
 }
-
-// Helper function to get day of week name in Portuguese
-const getDayOfWeekName = (dayOfWeek: number): string => {
-  const days = [
-    'domingo',
-    'segunda-feira',
-    'terça-feira',
-    'quarta-feira',
-    'quinta-feira',
-    'sexta-feira',
-    'sábado',
-  ];
-  return days[dayOfWeek] || '';
-};
-
-// Helper function to get week ordinal in Portuguese
-const getWeekOrdinal = (week: number): string => {
-  const ordinals = ['', '1ª', '2ª', '3ª', '4ª', '5ª'];
-  return ordinals[week] || '';
-};
-
-// Helper function to generate recurrence summary
-const getRecurrenceSummary = (
-  frequency: RecurrenceFrequency,
-  dayMode: DayMode,
-  dayOfWeek: number,
-  weekOfMonth: number,
-  selectedDate?: Date | null,
-): string => {
-  const dayName = getDayOfWeekName(dayOfWeek);
-  const weekOrdinal = getWeekOrdinal(weekOfMonth);
-
-  switch (frequency) {
-    case RecurrenceFrequency.Weekly:
-      return `Toda semana às ${dayName}s`;
-    case RecurrenceFrequency.BiWeekly:
-      return `A cada duas semanas às ${dayName}s`;
-    case RecurrenceFrequency.Monthly:
-    case RecurrenceFrequency.Yearly:
-      const periodText =
-        frequency === RecurrenceFrequency.Monthly ? 'todo mês' : 'todo ano';
-      switch (dayMode) {
-        case DayMode.SpecificDay:
-          if (selectedDate) {
-            const dayFormat =
-              frequency === RecurrenceFrequency.Monthly ? 'dd' : "dd 'de' MMMM";
-            return `Esta transação será repetida ${periodText} no dia ${format(selectedDate, dayFormat, { locale: ptBR })}`;
-          }
-          return `Esta transação será repetida ${periodText}`;
-        case DayMode.LastDay:
-          return `Esta transação será repetida no último dia de cada ${frequency === RecurrenceFrequency.Monthly ? 'mês' : 'ano'}`;
-        case DayMode.LastBusinessDay:
-          return `Esta transação será repetida no último dia útil de cada ${frequency === RecurrenceFrequency.Monthly ? 'mês' : 'ano'}`;
-        case DayMode.FirstBusinessDay:
-          return `Esta transação será repetida no primeiro dia útil de cada ${frequency === RecurrenceFrequency.Monthly ? 'mês' : 'ano'}`;
-        case DayMode.NthWeekday:
-          return `Esta transação será repetida na ${weekOrdinal} ${dayName} de cada ${frequency === RecurrenceFrequency.Monthly ? 'mês' : 'ano'}`;
-        default:
-          return `Esta transação será repetida ${periodText}`;
-      }
-    default:
-      return 'Esta transação será repetida';
-  }
-};
-
-// Helper function for toast description
-const getRecurrenceDescription = (
-  frequency: RecurrenceFrequency,
-  dayMode: DayMode,
-  dayOfWeek: number,
-  weekOfMonth: number,
-): string => {
-  const dayName = getDayOfWeekName(dayOfWeek);
-  const weekOrdinal = getWeekOrdinal(weekOfMonth);
-
-  switch (frequency) {
-    case RecurrenceFrequency.Weekly:
-      return `Será repetida toda ${dayName}`;
-    case RecurrenceFrequency.BiWeekly:
-      return `Será repetida a cada duas semanas`;
-    case RecurrenceFrequency.Monthly:
-    case RecurrenceFrequency.Yearly:
-      const periodText =
-        frequency === RecurrenceFrequency.Monthly
-          ? 'mensalmente'
-          : 'anualmente';
-      switch (dayMode) {
-        case DayMode.LastDay:
-          return `Será repetida no último dia de cada ${frequency === RecurrenceFrequency.Monthly ? 'mês' : 'ano'}`;
-        case DayMode.LastBusinessDay:
-          return `Será repetida no último dia útil de cada ${frequency === RecurrenceFrequency.Monthly ? 'mês' : 'ano'}`;
-        case DayMode.FirstBusinessDay:
-          return `Será repetida no primeiro dia útil de cada ${frequency === RecurrenceFrequency.Monthly ? 'mês' : 'ano'}`;
-        case DayMode.NthWeekday:
-          return `Será repetida na ${weekOrdinal} ${dayName} de cada ${frequency === RecurrenceFrequency.Monthly ? 'mês' : 'ano'}`;
-        default:
-          return `Será repetida ${periodText}`;
-      }
-    default:
-      return 'Será repetida';
-  }
-};
 
 const categoryOptions = Object.values(TransactionCategory).map((c) => ({
   value: c,
@@ -380,32 +316,59 @@ function isToday(date: Date): boolean {
   checkDate.setHours(0, 0, 0, 0);
   return checkDate.getTime() === today.getTime();
 }
-export function IncomeTransactionCreateForm({
-  triggerClassName,
-  accountId,
-  triggerSize,
-  editTransaction,
-  open: externalOpen,
-  onOpenChange: externalOnOpenChange,
-  onBeforeSubmit,
-}: TransactionCreateFormProps) {
+export function IncomeTransactionCreateForm(props: TransactionCreateFormProps) {
+  const {
+    triggerClassName,
+    accountId,
+    triggerSize,
+    editTransaction,
+    open: externalOpen,
+    onOpenChange: externalOnOpenChange,
+    onBeforeSubmit,
+  } = props;
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen ?? internalOpen;
   const setOpen = externalOnOpenChange ?? setInternalOpen;
   const isEditMode = !!editTransaction;
 
-  // Form stepper state
-  const [currentStep, setCurrentStep] = useState(isEditMode ? 2 : 1);
   const [selectedAccount, setSelectedAccount] = useState<AccountData | null>(
     editTransaction?.destinyAccount
       ? {
           id: editTransaction.destinyAccount.id,
           name: editTransaction.destinyAccount.name,
-          institution: editTransaction.destinyAccount.institution,
-          type: editTransaction.destinyAccount.type,
+          institution:
+            editTransaction.destinyAccount.institutionLink.institution,
         }
       : null,
   );
+
+  const [currentStep, setCurrentStep] = useState(
+    isEditMode || !!selectedAccount ? 2 : 1,
+  );
+  const [isRecurrence, setIsRecurrence] = useState(false);
+  const [recurrenceStep, setRecurrenceStep] = useState<'CONFIG' | 'PREVIEW'>(
+    'CONFIG',
+  );
+
+  const accountQuery = useQuery(AccountQuery, {
+    variables: { id: props.prefilledData?.destinyAccountId ?? '' },
+    skip: !props.prefilledData?.destinyAccountId || !!selectedAccount,
+  });
+
+  useEffect(() => {
+    if (accountQuery.data?.account && !selectedAccount) {
+      const acc = accountQuery.data.account;
+      setSelectedAccount({
+        id: acc.id,
+        name: acc.name,
+        institution: acc.institutionLink.institution,
+      });
+      // Auto-advance if we have prefilled data
+      if (props.prefilledData) {
+        setCurrentStep(2);
+      }
+    }
+  }, [accountQuery.data, selectedAccount, props.prefilledData]);
 
   const handleOpenChange = useCallback(
     (isOpen: boolean) => {
@@ -415,6 +378,7 @@ export function IncomeTransactionCreateForm({
           if (!isEditMode) {
             setCurrentStep(1);
             setSelectedAccount(null);
+            setIsRecurrence(false);
           }
         }, 200);
       }
@@ -439,6 +403,17 @@ export function IncomeTransactionCreateForm({
       { number: 1, label: 'Conta' },
       { number: 2, label: 'Dados' },
     ];
+
+    if (isRecurrence) {
+      if (props.prefilledData?.transactionsToLink?.length) {
+        steps.push({ number: 3, label: 'Histórico' });
+        steps.push({ number: 4, label: 'Configurar' });
+        steps.push({ number: 5, label: 'Visualizar' });
+      } else {
+        steps.push({ number: 3, label: 'Configurar' });
+        steps.push({ number: 4, label: 'Visualizar' });
+      }
+    }
 
     const step1Completed = currentStep > 1 && selectedAccount;
 
@@ -540,15 +515,21 @@ export function IncomeTransactionCreateForm({
           />
         )}
 
-        {(currentStep === 2 || isEditMode) && selectedAccount && (
+        {(currentStep >= 2 || isEditMode) && selectedAccount ? (
           <IncomeTransactionFormDetails
             destinyAccountId={selectedAccount.id}
             editTransaction={editTransaction}
             onBeforeSubmit={onBeforeSubmit}
             onClose={() => handleOpenChange(false)}
             onBack={!isEditMode ? prevStep : undefined}
+            refetchVariables={props.refetchVariables}
+            prefilledData={props.prefilledData}
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
+            isRecurrence={isRecurrence}
+            setIsRecurrence={setIsRecurrence}
           />
-        )}
+        ) : null}
 
         {currentStep === 1 && !isEditMode && (
           <DialogFooter className="flex-row justify-between gap-2 sm:justify-between">
@@ -566,12 +547,24 @@ function IncomeTransactionFormDetails({
   onBeforeSubmit,
   onClose,
   onBack,
+  refetchVariables,
+  prefilledData,
+  currentStep,
+  setCurrentStep,
+  isRecurrence,
+  setIsRecurrence,
 }: {
   destinyAccountId: string;
   editTransaction?: TransactionFragmentFragment;
   onBeforeSubmit?: TransactionCreateFormProps['onBeforeSubmit'];
   onClose: () => void;
   onBack?: () => void;
+  refetchVariables?: any;
+  prefilledData?: TransactionCreateFormProps['prefilledData'];
+  currentStep: number;
+  setCurrentStep: (step: number) => void;
+  isRecurrence: boolean;
+  setIsRecurrence: (is: boolean) => void;
 }) {
   const isEditMode = !!editTransaction;
 
@@ -589,11 +582,17 @@ function IncomeTransactionFormDetails({
 
   // Internal step state for recurrence configuration
   const [showRecurrenceStep, setShowRecurrenceStep] = useState(false);
-  const [recurrenceFrequency, setRecurrenceFrequency] =
-    useState<RecurrenceFrequency>(RecurrenceFrequency.Monthly);
-  const [dayMode, setDayMode] = useState<DayMode>(DayMode.SpecificDay);
-  const [dayOfWeek, setDayOfWeek] = useState<number>(1); // 0-6, default Monday
-  const [weekOfMonth, setWeekOfMonth] = useState<number>(1); // 1-5, default 1st
+  const [isActive, setIsActive] = useState(true);
+  const [selectedTransactionIds, setSelectedTransactionIds] = useState<
+    string[]
+  >(prefilledData?.transactionIdsToLink || []);
+  const [recurrenceData, setRecurrenceData] = useState<RecurrenceData>({
+    frequency: (prefilledData?.frequency as any) || RecurrenceFrequency.Monthly,
+    dayMode: DayMode.SpecificDay,
+    dayOfWeek: 1,
+    weekOfMonth: 1,
+    stopCondition: 'INFINITE',
+  });
 
   const form = useForm<z.infer<typeof formStepperIncomeSchema>>({
     resolver: zodResolver(formStepperIncomeSchema),
@@ -620,6 +619,18 @@ function IncomeTransactionFormDetails({
         }
       : {
           isCompleted: false,
+          description: prefilledData?.description || '',
+          amount: prefilledData?.amount || 0,
+          date: new Date(),
+          category: prefilledData?.category
+            ? {
+                value: prefilledData.category,
+                label:
+                  transactionCategoryLabels[
+                    prefilledData.category as TransactionCategory
+                  ],
+              }
+            : undefined,
         },
   });
 
@@ -637,13 +648,177 @@ function IncomeTransactionFormDetails({
       label: paymentMethodLabel[method],
     }));
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const paymentMethodIcon: Record<PaymentMethod, any> = {
-    CASH: Banknote,
-    CREDIT_CARD: CreditCard,
-    DEBIT_CARD: CreditCard,
-    PIX: PixIcon,
-    BOLETO: Receipt,
+  const onSubmit = async (data: z.infer<typeof formStepperIncomeSchema>) => {
+    if (isEditMode) {
+      if (onBeforeSubmit) {
+        const shouldContinue = await onBeforeSubmit({
+          description: data.description,
+          amount: data.amount,
+          paymentMethod: data.paymentMethod?.value,
+          category: data.category?.value as TransactionCategory | undefined,
+        });
+        if (!shouldContinue) return;
+      }
+
+      await updateTransaction({
+        variables: {
+          data: {
+            id: editTransaction.id,
+            date: data.date,
+            description: data.description,
+            amount: data.amount,
+            isCompleted: data.isCompleted,
+            paymentMethod: data.paymentMethod?.value as PaymentMethod,
+            category: data.category?.value as TransactionCategory | undefined,
+          },
+        },
+        refetchQueries: [
+          refetchVariables
+            ? { query: TransactionsQuery, variables: refetchVariables }
+            : TransactionsQuery,
+          TransactionsGroupedByPeriodQuery,
+          TransactionsSummaryQuery,
+          BalanceForecastQuery,
+          TransactionsCalendarQuery,
+          FinancialAgendaQuery,
+        ],
+        onCompleted: () => {
+          toast.success('Movimentação atualizada!', {
+            description: 'As informações foram salvas com sucesso.',
+          });
+          onClose();
+        },
+        onError: (error) => {
+          toast.error('Erro ao atualizar movimentação', {
+            description: error.message,
+          });
+        },
+      });
+    } else {
+      // Check if recurrence mode is active
+      if (isRecurrence) {
+        // Create recurring transaction
+        await createRecurringTransaction({
+          variables: {
+            data: {
+              description: data.description,
+              estimatedAmount: data.amount,
+              type: TransactionType.Income,
+              destinyAccountId: destinyAccountId,
+              paymentMethod: data.paymentMethod?.value as PaymentMethod,
+
+              category: data.category?.value as TransactionCategory | undefined,
+              frequency: recurrenceData.frequency,
+              dayMode:
+                recurrenceData.frequency === RecurrenceFrequency.Weekly ||
+                recurrenceData.frequency === RecurrenceFrequency.BiWeekly
+                  ? DayMode.SpecificDay
+                  : recurrenceData.dayMode,
+              dayOfMonth:
+                recurrenceData.dayMode === DayMode.SpecificDay &&
+                !(
+                  recurrenceData.frequency === RecurrenceFrequency.Weekly ||
+                  recurrenceData.frequency === RecurrenceFrequency.BiWeekly
+                )
+                  ? (data.date?.getDate() ?? new Date().getDate())
+                  : undefined,
+              dayOfWeek:
+                recurrenceData.frequency === RecurrenceFrequency.Weekly ||
+                recurrenceData.frequency === RecurrenceFrequency.BiWeekly ||
+                recurrenceData.dayMode === DayMode.NthWeekday
+                  ? recurrenceData.dayOfWeek
+                  : undefined,
+              weekOfMonth:
+                recurrenceData.dayMode === DayMode.NthWeekday
+                  ? recurrenceData.weekOfMonth
+                  : undefined,
+              monthOfYear:
+                recurrenceData.frequency === RecurrenceFrequency.Yearly
+                  ? (data.date?.getMonth() ?? 0) + 1
+                  : undefined,
+              startDate: (data.date ?? new Date()).toISOString(),
+              endDate:
+                recurrenceData.stopCondition === 'UNTIL_DATE'
+                  ? recurrenceData.endDate?.toISOString()
+                  : undefined,
+              repeatCount:
+                recurrenceData.stopCondition === 'REPEATS'
+                  ? recurrenceData.repeatCount
+                  : undefined,
+              transactionIdsToLink: selectedTransactionIds,
+              isActive: isActive,
+            },
+          },
+          refetchQueries: [
+            refetchVariables
+              ? { query: TransactionsQuery, variables: refetchVariables }
+              : TransactionsQuery,
+            TransactionsGroupedByPeriodQuery,
+            TransactionsSummaryQuery,
+            BalanceForecastQuery,
+            TransactionsCalendarQuery,
+            FinancialAgendaQuery,
+            BillingQuery,
+            RecurringTransactionsQuery,
+            PossibleRecurringTransactionsQuery,
+          ],
+          onCompleted: () => {
+            toast.success('Entrada recorrente criada!', {
+              description: getRecurrenceDescription(
+                recurrenceData.frequency,
+                recurrenceData.dayMode,
+                recurrenceData.dayOfWeek,
+                recurrenceData.weekOfMonth,
+              ),
+            });
+            onClose();
+          },
+          onError: (error) => {
+            toast.error('Erro ao criar entrada recorrente', {
+              description: error.message,
+            });
+          },
+        });
+      } else {
+        await createTransaction({
+          variables: {
+            data: {
+              date: data.date,
+              type: TransactionType.Income,
+              destinyAccountId: destinyAccountId,
+              isCompleted: data.isCompleted,
+              description: data.description,
+              amount: data.amount,
+              paymentMethod: data.paymentMethod?.value as PaymentMethod,
+
+              category: data.category?.value as TransactionCategory | undefined,
+            },
+          },
+          refetchQueries: [
+            refetchVariables
+              ? { query: TransactionsQuery, variables: refetchVariables }
+              : TransactionsQuery,
+            TransactionsGroupedByPeriodQuery,
+            TransactionsSummaryQuery,
+            BalanceForecastQuery,
+            TransactionsCalendarQuery,
+            FinancialAgendaQuery,
+            BillingQuery,
+          ],
+          onCompleted: () => {
+            toast.success('Movimentação criada!', {
+              description: 'As informações foram salvas com sucesso.',
+            });
+            onClose();
+          },
+          onError: (error) => {
+            toast.error('Erro ao criar movimentação', {
+              description: error.message,
+            });
+          },
+        });
+      }
+    }
   };
 
   return (
@@ -658,7 +833,7 @@ function IncomeTransactionFormDetails({
         paymentMethod: {
           options: paymentMethodOptions,
           renderLabel: (option) => {
-            const Icon = paymentMethodIcon[option.value as PaymentMethod];
+            const Icon = paymentMethodIcons[option.value as PaymentMethod];
             return (
               <div className="flex items-center gap-2">
                 <Icon className="h-5 w-5" />
@@ -668,170 +843,15 @@ function IncomeTransactionFormDetails({
           },
         },
       }}
-      onSubmit={async (data) => {
-        if (isEditMode) {
-          if (onBeforeSubmit) {
-            const shouldContinue = await onBeforeSubmit({
-              description: data.description,
-              amount: data.amount,
-              paymentMethod: data.paymentMethod?.value,
-              category: data.category?.value as TransactionCategory | undefined,
-            });
-            if (!shouldContinue) return;
-          }
-
-          await updateTransaction({
-            variables: {
-              data: {
-                id: editTransaction.id,
-                date: data.date,
-                description: data.description,
-                amount: data.amount,
-                isCompleted: data.isCompleted,
-                paymentMethod: data.paymentMethod?.value as PaymentMethod,
-                category: data.category?.value as
-                  | TransactionCategory
-                  | undefined,
-              },
-            },
-            refetchQueries: [
-              TransactionsQuery,
-              TransactionsGroupedByPeriodQuery,
-              TransactionsSummaryQuery,
-              BalanceForecastQuery,
-              TransactionsCalendarQuery,
-              FinancialAgendaQuery,
-            ],
-            onCompleted: () => {
-              toast.success('Movimentação atualizada!', {
-                description: 'As informações foram salvas com sucesso.',
-              });
-              onClose();
-            },
-            onError: (error) => {
-              toast.error('Erro ao atualizar movimentação', {
-                description: error.message,
-              });
-            },
-          });
-        } else {
-          // Check if recurrence mode is active
-          if (showRecurrenceStep) {
-            // Create recurring transaction
-            await createRecurringTransaction({
-              variables: {
-                data: {
-                  description: data.description,
-                  estimatedAmount: data.amount,
-                  type: TransactionType.Income,
-                  destinyAccountId: destinyAccountId,
-                  paymentMethod: data.paymentMethod?.value as PaymentMethod,
-
-                  category: data.category?.value as
-                    | TransactionCategory
-                    | undefined,
-                  frequency: recurrenceFrequency,
-                  dayMode:
-                    recurrenceFrequency === RecurrenceFrequency.Weekly ||
-                    recurrenceFrequency === RecurrenceFrequency.BiWeekly
-                      ? DayMode.SpecificDay
-                      : dayMode,
-                  dayOfMonth:
-                    dayMode === DayMode.SpecificDay &&
-                    !(
-                      recurrenceFrequency === RecurrenceFrequency.Weekly ||
-                      recurrenceFrequency === RecurrenceFrequency.BiWeekly
-                    )
-                      ? (data.date?.getDate() ?? new Date().getDate())
-                      : undefined,
-                  dayOfWeek:
-                    recurrenceFrequency === RecurrenceFrequency.Weekly ||
-                    recurrenceFrequency === RecurrenceFrequency.BiWeekly ||
-                    dayMode === DayMode.NthWeekday
-                      ? dayOfWeek
-                      : undefined,
-                  weekOfMonth:
-                    dayMode === DayMode.NthWeekday ? weekOfMonth : undefined,
-                  monthOfYear:
-                    recurrenceFrequency === RecurrenceFrequency.Yearly
-                      ? (data.date?.getMonth() ?? 0) + 1
-                      : undefined,
-                  startDate: data.date ?? new Date(),
-                },
-              },
-              refetchQueries: [
-                TransactionsQuery,
-                TransactionsGroupedByPeriodQuery,
-                TransactionsSummaryQuery,
-                BalanceForecastQuery,
-                TransactionsCalendarQuery,
-                FinancialAgendaQuery,
-              ],
-              onCompleted: () => {
-                toast.success('Entrada recorrente criada!', {
-                  description: getRecurrenceDescription(
-                    recurrenceFrequency,
-                    dayMode,
-                    dayOfWeek,
-                    weekOfMonth,
-                  ),
-                });
-                onClose();
-              },
-              onError: (error) => {
-                toast.error('Erro ao criar entrada recorrente', {
-                  description: error.message,
-                });
-              },
-            });
-          } else {
-            await createTransaction({
-              variables: {
-                data: {
-                  date: data.date,
-                  type: TransactionType.Income,
-                  destinyAccountId: destinyAccountId,
-                  isCompleted: data.isCompleted,
-                  description: data.description,
-                  amount: data.amount,
-                  paymentMethod: data.paymentMethod?.value as PaymentMethod,
-
-                  category: data.category?.value as
-                    | TransactionCategory
-                    | undefined,
-                },
-              },
-              refetchQueries: [
-                TransactionsQuery,
-                TransactionsGroupedByPeriodQuery,
-                TransactionsSummaryQuery,
-                BalanceForecastQuery,
-                TransactionsCalendarQuery,
-                FinancialAgendaQuery,
-              ],
-              onCompleted: () => {
-                toast.success('Movimentação criada!', {
-                  description: 'As informações foram salvas com sucesso.',
-                });
-                onClose();
-              },
-              onError: (error) => {
-                toast.error('Erro ao criar movimentação', {
-                  description: error.message,
-                });
-              },
-            });
-          }
-        }
-      }}
+      onSubmit={onSubmit}
       renderAfter={() => (
         <DialogFooter className="flex-row justify-between gap-2 sm:justify-between">
           {/* Back button */}
-          {showRecurrenceStep ? (
+          {currentStep > 2 ? (
             <Button
               type="button"
               variant="outline"
-              onClick={() => setShowRecurrenceStep(false)}
+              onClick={() => setCurrentStep(currentStep - 1)}
               className="gap-1"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -853,11 +873,9 @@ function IncomeTransactionFormDetails({
 
           {/* Action buttons */}
           <div className="flex gap-2">
-            {/* Repetir button */}
-            {!showRecurrenceStep && !isEditMode && (
+            {prefilledData && currentStep === 2 && (
               <Button
                 type="button"
-                variant="secondary"
                 onClick={async () => {
                   const isValid = await form.trigger([
                     'date',
@@ -866,16 +884,89 @@ function IncomeTransactionFormDetails({
                     'paymentMethod',
                   ]);
                   if (isValid) {
-                    setShowRecurrenceStep(true);
+                    if (isActive) {
+                      setIsRecurrence(true);
+                      // If we have transactions to link, go to linking step
+                      if (prefilledData.transactionsToLink?.length) {
+                        setCurrentStep(3);
+                      } else {
+                        setCurrentStep(4);
+                      }
+                    } else {
+                      // Submit immediately if not extending to future
+                      form.handleSubmit(onSubmit)();
+                    }
                   }
                 }}
               >
-                Repetir
+                {isActive ? 'Próximo' : 'Finalizar'}
               </Button>
             )}
-            <Button type="submit" disabled={loading} loading={loading}>
-              Salvar
-            </Button>
+            {currentStep === 2 && !isEditMode && !prefilledData && (
+              <>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={async () => {
+                    const isValid = await form.trigger([
+                      'date',
+                      'amount',
+                      'description',
+                      'paymentMethod',
+                    ]);
+                    if (isValid) {
+                      setIsRecurrence(true);
+                      setCurrentStep(3);
+                    }
+                  }}
+                >
+                  Repetir
+                </Button>
+                <Button type="submit" disabled={loading} loading={loading}>
+                  Salvar
+                </Button>
+              </>
+            )}
+            {currentStep === 3 && (
+              <Button
+                type="button"
+                onClick={() => {
+                  // If we are in the linking step of a suggestion, next is config (step 4)
+                  // If we are in the config step of a manual entry, next is preview (step 4)
+                  setCurrentStep(4);
+                }}
+                disabled={loading}
+              >
+                Próximo
+              </Button>
+            )}
+            {currentStep === 4 && (
+              <Button
+                type="button"
+                onClick={() => {
+                  // If we are in the config step of a suggestion, next is preview (step 5)
+                  // If we are in the preview step of a manual entry, next is FINISH
+                  if (prefilledData?.transactionsToLink?.length) {
+                    setCurrentStep(5);
+                  } else {
+                    form.handleSubmit(onSubmit)();
+                  }
+                }}
+                disabled={loading}
+              >
+                Próximo
+              </Button>
+            )}
+            {currentStep === 5 && (
+              <Button type="submit" disabled={loading} loading={loading}>
+                Finalizar
+              </Button>
+            )}
+            {currentStep === 2 && isEditMode && (
+              <Button type="submit" disabled={loading} loading={loading}>
+                Salvar
+              </Button>
+            )}
           </div>
         </DialogFooter>
       )}
@@ -889,8 +980,29 @@ function IncomeTransactionFormDetails({
         category,
       }) => (
         <>
-          {!showRecurrenceStep && (
+          {currentStep === 2 && (
             <>
+              {prefilledData && (
+                <div className="space-y-4 pb-4 duration-500 animate-in fade-in slide-in-from-top-2">
+                  <div className="flex items-center justify-between rounded-xl border border-dashed border-primary/20 bg-primary/5 p-4">
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">
+                        Estender para o futuro
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        Gerar novas transações automaticamente daqui para
+                        frente.
+                      </p>
+                    </div>
+                    <Switch checked={isActive} onCheckedChange={setIsActive} />
+                  </div>
+
+                  <div className="my-2 h-px bg-border" />
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                    Detalhes da movimentação
+                  </p>
+                </div>
+              )}
               {date}
               {showIsCompleted && isCompleted}
               {amount}
@@ -900,238 +1012,43 @@ function IncomeTransactionFormDetails({
             </>
           )}
 
-          {showRecurrenceStep && (
+          {/* Step 3: Linking history (only for suggestions) */}
+          {currentStep === 3 && prefilledData?.transactionsToLink?.length ? (
+            <SuggestionLinkingSection
+              prefilledTransactions={prefilledData.transactionsToLink || []}
+              selectedTransactionIds={selectedTransactionIds || []}
+              onSelectedTransactionIdsChange={setSelectedTransactionIds}
+            />
+          ) : null}
+
+          {/* Step 3 (Manual) or Step 4 (Suggestion): Recurrence configuration */}
+          {((currentStep === 3 && !prefilledData?.transactionsToLink?.length) ||
+            (currentStep === 4 &&
+              prefilledData?.transactionsToLink?.length)) && (
             <div className="space-y-4">
               <div className="rounded-lg border border-muted bg-muted/30 p-4">
-                <p className="text-sm text-muted-foreground">Valor</p>
-                <p className="text-lg font-semibold">
-                  {form.getValues('amount')
-                    ? formatCurrency(form.getValues('amount'))
-                    : 'R$ 0,00'}
-                </p>
+                <div className="flex items-center gap-2">{amount}</div>
               </div>
 
-              {/* Frequency selection */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Frequência</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setRecurrenceFrequency(RecurrenceFrequency.Weekly)
-                    }
-                    className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                      recurrenceFrequency === RecurrenceFrequency.Weekly
-                        ? 'border-primary bg-primary/5 text-primary'
-                        : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                    }`}
-                  >
-                    Semanal
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setRecurrenceFrequency(RecurrenceFrequency.BiWeekly)
-                    }
-                    className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                      recurrenceFrequency === RecurrenceFrequency.BiWeekly
-                        ? 'border-primary bg-primary/5 text-primary'
-                        : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                    }`}
-                  >
-                    Quinzenal
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setRecurrenceFrequency(RecurrenceFrequency.Monthly)
-                    }
-                    className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                      recurrenceFrequency === RecurrenceFrequency.Monthly
-                        ? 'border-primary bg-primary/5 text-primary'
-                        : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                    }`}
-                  >
-                    Mensal
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setRecurrenceFrequency(RecurrenceFrequency.Yearly)
-                    }
-                    className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                      recurrenceFrequency === RecurrenceFrequency.Yearly
-                        ? 'border-primary bg-primary/5 text-primary'
-                        : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                    }`}
-                  >
-                    Anual
-                  </button>
-                </div>
-              </div>
-
-              {/* Day of week selection for weekly/bi-weekly */}
-              {(recurrenceFrequency === RecurrenceFrequency.Weekly ||
-                recurrenceFrequency === RecurrenceFrequency.BiWeekly) && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Dia da semana</label>
-                  <div className="flex flex-wrap gap-1">
-                    {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(
-                      (day, index) => (
-                        <button
-                          key={day}
-                          type="button"
-                          onClick={() => setDayOfWeek(index)}
-                          className={`min-w-[40px] flex-1 rounded-lg border-2 px-2 py-2 text-xs font-medium transition-all ${
-                            dayOfWeek === index
-                              ? 'border-primary bg-primary/5 text-primary'
-                              : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                          }`}
-                        >
-                          {day}
-                        </button>
-                      ),
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Day mode selection for monthly/yearly */}
-              {(recurrenceFrequency === RecurrenceFrequency.Monthly ||
-                recurrenceFrequency === RecurrenceFrequency.Yearly) && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    Dia do{' '}
-                    {recurrenceFrequency === RecurrenceFrequency.Monthly
-                      ? 'mês'
-                      : 'ano'}
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setDayMode(DayMode.SpecificDay)}
-                      className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                        dayMode === DayMode.SpecificDay
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      Dia específico
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDayMode(DayMode.LastDay)}
-                      className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                        dayMode === DayMode.LastDay
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      Último dia
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDayMode(DayMode.LastBusinessDay)}
-                      className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                        dayMode === DayMode.LastBusinessDay
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      Último dia útil
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDayMode(DayMode.FirstBusinessDay)}
-                      className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                        dayMode === DayMode.FirstBusinessDay
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      Primeiro dia útil
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDayMode(DayMode.NthWeekday)}
-                      className={`col-span-2 rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                        dayMode === DayMode.NthWeekday
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      Dia da semana específico
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Nth weekday selection */}
-              {dayMode === DayMode.NthWeekday &&
-                (recurrenceFrequency === RecurrenceFrequency.Monthly ||
-                  recurrenceFrequency === RecurrenceFrequency.Yearly) && (
-                  <>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">
-                        Qual semana?
-                      </label>
-                      <div className="flex gap-2">
-                        {['1ª', '2ª', '3ª', '4ª', '5ª'].map((week, index) => (
-                          <button
-                            key={week}
-                            type="button"
-                            onClick={() => setWeekOfMonth(index + 1)}
-                            className={`flex-1 rounded-lg border-2 px-2 py-2 text-sm font-medium transition-all ${
-                              weekOfMonth === index + 1
-                                ? 'border-primary bg-primary/5 text-primary'
-                                : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                            }`}
-                          >
-                            {week}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">
-                        Dia da semana
-                      </label>
-                      <div className="flex flex-wrap gap-1">
-                        {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(
-                          (day, index) => (
-                            <button
-                              key={day}
-                              type="button"
-                              onClick={() => setDayOfWeek(index)}
-                              className={`min-w-[40px] flex-1 rounded-lg border-2 px-2 py-2 text-xs font-medium transition-all ${
-                                dayOfWeek === index
-                                  ? 'border-primary bg-primary/5 text-primary'
-                                  : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                              }`}
-                            >
-                              {day}
-                            </button>
-                          ),
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
-
-              {/* Summary */}
-              <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-                <p className="text-sm text-muted-foreground">Resumo</p>
-                <p className="text-sm font-medium text-primary">
-                  {getRecurrenceSummary(
-                    recurrenceFrequency,
-                    dayMode,
-                    dayOfWeek,
-                    weekOfMonth,
-                    form.getValues('date'),
-                  )}
-                </p>
-              </div>
+              <RecurrenceFormSection
+                data={recurrenceData}
+                onChange={(newData) =>
+                  setRecurrenceData((prev) => ({ ...prev, ...newData }))
+                }
+                startDate={form.getValues('date')}
+                className="mt-2"
+              />
             </div>
+          )}
+
+          {/* Step 4 (Manual) or Step 5 (Suggestion): Recurrence preview */}
+          {((currentStep === 4 && !prefilledData?.transactionsToLink?.length) ||
+            (currentStep === 5 &&
+              prefilledData?.transactionsToLink?.length)) && (
+            <RecurrenceTimelinePreview
+              startDate={form.getValues('date') || new Date()}
+              data={recurrenceData}
+            />
           )}
         </>
       )}
@@ -1142,6 +1059,7 @@ function IncomeTransactionFormDetails({
 export function ExpenseTransactionCreateForm({
   triggerClassName,
   accountId,
+  cardId,
   triggerSize,
   hiddenFields = [],
   minDate,
@@ -1152,6 +1070,8 @@ export function ExpenseTransactionCreateForm({
   open: externalOpen,
   onOpenChange: externalOnOpenChange,
   onBeforeSubmit,
+  refetchVariables,
+  prefilledData,
 }: TransactionCreateFormProps & {
   hiddenFields?: Array<keyof typeof expenseSchema.shape>;
   minDate?: Date;
@@ -1164,19 +1084,50 @@ export function ExpenseTransactionCreateForm({
   const setOpen = externalOnOpenChange ?? setInternalOpen;
   const isEditMode = !!editTransaction;
 
-  // Form stepper state - skip to step 2 if accountId provided or in edit mode
-  const hasPreselectedAccount = !!accountId || isEditMode;
-  const [currentStep, setCurrentStep] = useState(hasPreselectedAccount ? 2 : 1);
+  // Form stepper state - skip to step 3 if accountId or cardId provided or in edit mode with a source already selected
+  const hasPreselectedAccount =
+    !!accountId ||
+    !!editTransaction?.sourceAccount ||
+    !!prefilledData?.sourceAccountId;
+  const hasPreselectedCard = !!cardId || !!editTransaction?.sourceCard;
+  const hasPreselected = hasPreselectedAccount || hasPreselectedCard;
+
   const [selectedAccount, setSelectedAccount] = useState<AccountData | null>(
     editTransaction?.sourceAccount
       ? {
           id: editTransaction.sourceAccount.id,
           name: editTransaction.sourceAccount.name,
-          institution: editTransaction.sourceAccount.institution,
-          type: editTransaction.sourceAccount.type,
+          institution:
+            editTransaction.sourceAccount.institutionLink.institution,
         }
       : null,
   );
+
+  const [selectedCard, setSelectedCard] = useState<CardData | null>(
+    editTransaction?.sourceCard
+      ? {
+          id: editTransaction.sourceCard.id,
+          name: editTransaction.sourceCard.name,
+          institution: editTransaction.sourceCard.institutionLink.institution,
+          type: editTransaction.sourceCard.type,
+        }
+      : null,
+  );
+
+  const [currentStep, setCurrentStep] = useState(
+    hasPreselected ? 3 : editTransaction?.billingPayment ? 2 : 1,
+  );
+  const [isRecurrence, setIsRecurrence] = useState(false);
+  const [recurrenceStep, setRecurrenceStep] = useState<'CONFIG' | 'PREVIEW'>(
+    'CONFIG',
+  );
+
+  const [selectedCardOrAccountStepType, setSelectedCardOrAccountStepType] =
+    useState<TransactionCardOrAccountStepType | undefined>(
+      editTransaction?.billingPayment
+        ? TransactionCardOrAccountStepType.Account
+        : undefined,
+    );
 
   // If accountId provided, fetch its data
   const { data: preselectedAccountData } = useQuery(AccountQuery, {
@@ -1186,55 +1137,144 @@ export function ExpenseTransactionCreateForm({
     skip: !accountId || !!selectedAccount,
   });
 
+  // If prefilled sourceAccountId provided, fetch its data
+  const { data: suggestionAccountData } = useQuery(AccountQuery, {
+    variables: {
+      id: prefilledData?.sourceAccountId ?? '',
+    },
+    skip: !prefilledData?.sourceAccountId || !!selectedAccount,
+  });
+
+  // Set the account from suggestion when data is fetched
+  useEffect(() => {
+    if (
+      prefilledData?.sourceAccountId &&
+      suggestionAccountData?.account &&
+      !selectedAccount
+    ) {
+      const account = suggestionAccountData.account;
+      setSelectedAccount({
+        id: account.id,
+        name: account.name,
+        institution: account.institutionLink.institution,
+      });
+      // Auto-advance if we have prefilled data
+      if (prefilledData) {
+        setCurrentStep(3);
+      }
+    }
+  }, [prefilledData, suggestionAccountData, selectedAccount]);
+  const { data: preselectedCardData } = useQuery(CardQuery, {
+    variables: {
+      id: cardId!,
+    },
+    skip: !cardId || !!selectedCard,
+  });
+
   // Set the account when data is fetched
   useEffect(() => {
     if (accountId && preselectedAccountData?.account && !selectedAccount) {
-      const account = preselectedAccountData.account as AccountData;
-      setSelectedAccount(account);
+      const account = preselectedAccountData.account;
+      setSelectedAccount({
+        id: account.id,
+        name: account.name,
+        institution: account.institutionLink.institution,
+      });
     }
   }, [accountId, preselectedAccountData, selectedAccount]);
+
+  // Set the card when data is fetched
+  useEffect(() => {
+    if (cardId && preselectedCardData?.card && !selectedCard) {
+      const card = preselectedCardData.card;
+      setSelectedCard({
+        id: card.id,
+        name: card.name,
+        institution: card.institutionLink.institution,
+        type: card.type,
+      });
+    }
+  }, [cardId, preselectedCardData, selectedCard]);
 
   const handleOpenChange = useCallback(
     (isOpen: boolean) => {
       setOpen(isOpen);
       if (!isOpen) {
         setTimeout(() => {
-          if (!isEditMode && !hasPreselectedAccount) {
+          if (!isEditMode && !hasPreselected) {
             setCurrentStep(1);
             setSelectedAccount(null);
+            setSelectedCard(null);
+            setSelectedCardOrAccountStepType(undefined);
+            setIsRecurrence(false);
           }
         }, 200);
       }
     },
-    [setOpen, isEditMode, hasPreselectedAccount],
+    [setOpen, isEditMode, hasPreselected],
   );
 
   const handleAccountSelect = useCallback((account: AccountData) => {
     setSelectedAccount(account);
-    setCurrentStep(2);
+    setSelectedCard(null);
+    setCurrentStep(3);
   }, []);
+
+  const handleCardSelect = useCallback((card: CardData) => {
+    setSelectedCard(card);
+    setSelectedAccount(null);
+    setCurrentStep(3);
+  }, []);
+
+  const handleCardOrAccountStepSelect = useCallback(
+    (type: TransactionCardOrAccountStepType) => {
+      setSelectedCardOrAccountStepType(type);
+      setCurrentStep(2);
+    },
+    [],
+  );
 
   const prevStep = useCallback(() => {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   }, []);
 
-  const isCreditCardAccount = selectedAccount?.type === AccountType.CreditCard;
-  const isDebitCard = selectedAccount?.accountCard?.type === CardType.Debit;
+  const isCardAccount = !!selectedCard;
+  const isDebitCard = selectedCard?.type === CardType.Debit;
 
   // Step indicator for form stepper
   const renderStepIndicator = () => {
-    if (isEditMode || hasPreselectedAccount) return null;
+    if (isEditMode || hasPreselected) return null;
 
     const steps = [
-      { number: 1, label: 'Conta' },
-      { number: 2, label: 'Dados' },
+      { number: 1, label: 'Tipo' },
+      {
+        number: 2,
+        label: !selectedCardOrAccountStepType
+          ? 'Conta ou cartão'
+          : selectedCardOrAccountStepType ===
+              TransactionCardOrAccountStepType.Account
+            ? 'Conta'
+            : 'Cartão',
+      },
+      { number: 3, label: 'Dados' },
     ];
 
-    const step1Completed = currentStep > 1 && selectedAccount;
+    if (isRecurrence) {
+      if (prefilledData?.transactionsToLink?.length) {
+        steps.push({ number: 4, label: 'Histórico' });
+        steps.push({ number: 5, label: 'Configurar' });
+        steps.push({ number: 6, label: 'Visualizar' });
+      } else {
+        steps.push({ number: 4, label: 'Configurar' });
+        steps.push({ number: 5, label: 'Visualizar' });
+      }
+    }
+
+    const step2Completed = currentStep > 2 && (selectedAccount || selectedCard);
 
     return (
       <div className="flex flex-col gap-2">
-        {step1Completed && (
+        {step2Completed && selectedAccount && (
           <div className="flex items-center gap-2 rounded-md border border-muted px-3 py-1 text-sm text-foreground">
             <span className="font-semibold text-muted-foreground">Conta</span>
             <div className="flex items-center gap-1">
@@ -1249,12 +1289,27 @@ export function ExpenseTransactionCreateForm({
           </div>
         )}
 
+        {step2Completed && selectedCard && (
+          <div className="flex items-center gap-2 rounded-md border border-muted px-3 py-1 text-sm text-foreground">
+            <span className="font-semibold text-muted-foreground">Cartão</span>
+            <div className="flex items-center gap-1">
+              <InstitutionLogo
+                logoUrl={selectedCard.institution.logoUrl}
+                name={selectedCard.institution.name}
+                color={selectedCard.institution.color}
+                size="xs"
+              />
+              <span>{selectedCard.name}</span>
+            </div>
+          </div>
+        )}
+
         <div className="flex items-center justify-center gap-2">
           {steps.map((step) => {
             const isCompleted = currentStep > step.number;
             const isCurrent = currentStep === step.number;
 
-            if (step.number === 1 && step1Completed) return null;
+            if (step.number <= 2 && step2Completed) return null;
 
             return (
               <div
@@ -1314,7 +1369,7 @@ export function ExpenseTransactionCreateForm({
           <DialogDescription>
             {isEditMode
               ? 'Edite os campos da despesa abaixo.'
-              : currentStep === 1
+              : currentStep === 2
                 ? 'Selecione a conta de origem para a despesa.'
                 : 'Preencha os dados da movimentação.'}
           </DialogDescription>
@@ -1322,38 +1377,68 @@ export function ExpenseTransactionCreateForm({
 
         {renderStepIndicator()}
 
-        {currentStep === 1 && !isEditMode && !hasPreselectedAccount && (
-          <TransactionAccountStep
-            transactionType={TransactionType.Expense}
-            selectedAccountId={selectedAccount?.id}
-            onSelect={handleAccountSelect}
+        {currentStep === 1 && !hasPreselected && (
+          <TransactionCardOrAccountStep
+            selectedType={selectedCardOrAccountStepType}
+            onSelect={handleCardOrAccountStepSelect}
           />
         )}
 
-        {(currentStep === 2 || isEditMode || hasPreselectedAccount) &&
-          selectedAccount && (
-            <ExpenseTransactionFormDetails
-              sourceAccountId={selectedAccount.id}
-              isCreditCardAccount={isCreditCardAccount}
-              isDebitCard={isDebitCard}
-              editTransaction={editTransaction}
-              hiddenFields={hiddenFields}
-              minDate={minDate}
-              maxDate={maxDate}
-              presetPaymentMethod={paymentMethod}
-              onBeforeSubmit={onBeforeSubmit}
-              onClose={() => handleOpenChange(false)}
-              onBack={
-                !isEditMode && !hasPreselectedAccount ? prevStep : undefined
-              }
-            />
-          )}
-
-        {currentStep === 1 && !isEditMode && !hasPreselectedAccount && (
-          <DialogFooter className="flex-row justify-between gap-2 sm:justify-between">
-            <div />
-          </DialogFooter>
+        {currentStep === 2 && !hasPreselected && (
+          <>
+            {selectedCardOrAccountStepType ===
+              TransactionCardOrAccountStepType.Account && (
+              <TransactionAccountStep
+                transactionType={TransactionType.Expense}
+                selectedAccountId={selectedAccount?.id}
+                onSelect={handleAccountSelect}
+              />
+            )}
+            {selectedCardOrAccountStepType ===
+              TransactionCardOrAccountStepType.Card && (
+              <TransactionCardStep
+                transactionType={TransactionType.Expense}
+                selectedCardId={selectedCard?.id}
+                onSelect={handleCardSelect}
+              />
+            )}
+            <DialogFooter className="flex-row justify-start gap-2 sm:justify-start">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={prevStep}
+                className="gap-1"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Voltar
+              </Button>
+            </DialogFooter>
+          </>
         )}
+
+        {(currentStep >= 3 || isEditMode || hasPreselected) &&
+        (selectedAccount || selectedCard) ? (
+          <ExpenseTransactionFormDetails
+            sourceAccountId={selectedAccount?.id}
+            sourceCardId={selectedCard?.id}
+            isCardAccount={isCardAccount}
+            isDebitCard={isDebitCard}
+            editTransaction={editTransaction}
+            hiddenFields={hiddenFields}
+            minDate={minDate}
+            maxDate={maxDate}
+            presetPaymentMethod={paymentMethod}
+            onBeforeSubmit={onBeforeSubmit}
+            onClose={() => handleOpenChange(false)}
+            onBack={!isEditMode && !hasPreselected ? prevStep : undefined}
+            refetchVariables={refetchVariables}
+            prefilledData={prefilledData}
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
+            isRecurrence={isRecurrence}
+            setIsRecurrence={setIsRecurrence}
+          />
+        ) : null}
       </DialogContent>
     </Dialog>
   );
@@ -1362,7 +1447,8 @@ export function ExpenseTransactionCreateForm({
 // Expense Form Details (for form step 2 and edit mode)
 function ExpenseTransactionFormDetails({
   sourceAccountId,
-  isCreditCardAccount,
+  sourceCardId,
+  isCardAccount,
   isDebitCard,
   editTransaction,
   hiddenFields = [],
@@ -1372,9 +1458,16 @@ function ExpenseTransactionFormDetails({
   onBeforeSubmit,
   onClose,
   onBack,
+  refetchVariables,
+  prefilledData,
+  currentStep,
+  setCurrentStep,
+  isRecurrence,
+  setIsRecurrence,
 }: {
-  sourceAccountId: string;
-  isCreditCardAccount?: boolean;
+  sourceAccountId?: string;
+  sourceCardId?: string;
+  isCardAccount?: boolean;
   isDebitCard?: boolean;
   editTransaction?: TransactionFragmentFragment;
   hiddenFields?: Array<keyof typeof expenseSchema.shape>;
@@ -1384,6 +1477,12 @@ function ExpenseTransactionFormDetails({
   onBeforeSubmit?: TransactionCreateFormProps['onBeforeSubmit'];
   onClose: () => void;
   onBack?: () => void;
+  refetchVariables?: any;
+  prefilledData?: TransactionCreateFormProps['prefilledData'];
+  currentStep: number;
+  setCurrentStep: (step: number) => void;
+  isRecurrence: boolean;
+  setIsRecurrence: (is: boolean) => void;
 }) {
   const isEditMode = !!editTransaction;
 
@@ -1405,11 +1504,17 @@ function ExpenseTransactionFormDetails({
   const [showInstallmentStep, setShowInstallmentStep] = useState(false);
   // Internal step state for recurrence configuration
   const [showRecurrenceStep, setShowRecurrenceStep] = useState(false);
-  const [recurrenceFrequency, setRecurrenceFrequency] =
-    useState<RecurrenceFrequency>(RecurrenceFrequency.Monthly);
-  const [dayMode, setDayMode] = useState<DayMode>(DayMode.SpecificDay);
-  const [dayOfWeek, setDayOfWeek] = useState<number>(1); // 0-6, default Monday
-  const [weekOfMonth, setWeekOfMonth] = useState<number>(1); // 1-5, default 1st
+  const [isActive, setIsActive] = useState(true);
+  const [selectedTransactionIds, setSelectedTransactionIds] = useState<
+    string[] | undefined
+  >(prefilledData?.transactionIdsToLink);
+  const [recurrenceData, setRecurrenceData] = useState<RecurrenceData>({
+    frequency: (prefilledData?.frequency as any) || RecurrenceFrequency.Monthly,
+    dayMode: DayMode.SpecificDay,
+    dayOfWeek: 1,
+    weekOfMonth: 1,
+    stopCondition: 'INFINITE',
+  });
 
   const form = useForm<z.infer<typeof formStepperExpenseSchema>>({
     resolver: zodResolver(formStepperExpenseSchema),
@@ -1439,8 +1544,20 @@ function ExpenseTransactionFormDetails({
       : {
           isCompleted: false,
           isInstallment: false,
+          description: prefilledData?.description || '',
+          amount: prefilledData?.amount || 0,
+          date: new Date(),
+          category: prefilledData?.category
+            ? {
+                value: prefilledData.category,
+                label:
+                  transactionCategoryLabels[
+                    prefilledData.category as TransactionCategory
+                  ],
+              }
+            : undefined,
           // For credit/debit card accounts, auto-set payment method based on card type
-          paymentMethod: isCreditCardAccount
+          paymentMethod: isCardAccount
             ? isDebitCard
               ? {
                   value: PaymentMethod.DebitCard,
@@ -1474,17 +1591,26 @@ function ExpenseTransactionFormDetails({
     name: 'installmentCount',
   });
 
-  const installmentValue = useMemo(() => {
+  const installmentDistribution = useMemo(() => {
     if (
-      isInstallment &&
-      watchedAmount &&
-      watchedInstallmentCount &&
-      watchedInstallmentCount > 1
+      !watchedAmount ||
+      !watchedInstallmentCount ||
+      watchedInstallmentCount <= 1
     ) {
-      return (watchedAmount / watchedInstallmentCount).toFixed(2);
+      return null;
     }
-    return null;
-  }, [isInstallment, watchedAmount, watchedInstallmentCount]);
+
+    const totalCents = Math.round(watchedAmount);
+    const baseCents = Math.floor(totalCents / watchedInstallmentCount);
+    const remainder = totalCents % watchedInstallmentCount;
+
+    return {
+      firstCount: remainder,
+      firstAmount: baseCents + 1,
+      remainingCount: watchedInstallmentCount - remainder,
+      remainingAmount: baseCents,
+    };
+  }, [watchedAmount, watchedInstallmentCount]);
 
   const selectedDate = useWatch({
     control: form.control,
@@ -1492,7 +1618,7 @@ function ExpenseTransactionFormDetails({
   });
 
   const showIsCompleted = selectedDate && isToday(selectedDate);
-  const showPaymentMethod = !isCreditCardAccount;
+  const showPaymentMethod = !isCardAccount;
 
   const paymentMethodOptions = Object.values(PaymentMethod)
     .filter((m) => !['CREDIT_CARD', 'DEBIT_CARD'].includes(m))
@@ -1501,13 +1627,214 @@ function ExpenseTransactionFormDetails({
       label: paymentMethodLabel[method],
     }));
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const paymentMethodIcon: Record<PaymentMethod, any> = {
-    CASH: Banknote,
-    CREDIT_CARD: CreditCard,
-    DEBIT_CARD: CreditCard,
-    PIX: PixIcon,
-    BOLETO: Receipt,
+  const onSubmit = async (data: z.infer<typeof formStepperExpenseSchema>) => {
+    if (isEditMode) {
+      if (onBeforeSubmit) {
+        const shouldContinue = await onBeforeSubmit({
+          description: data.description,
+          amount: data.amount,
+          paymentMethod: data.paymentMethod?.value,
+
+          category: data.category?.value as TransactionCategory | undefined,
+        });
+        if (!shouldContinue) return;
+      }
+
+      await updateTransaction({
+        variables: {
+          data: {
+            id: editTransaction.id,
+            date: data.date,
+            description: data.description,
+            amount: data.amount,
+            isCompleted: data.isCompleted,
+            paymentMethod: data.paymentMethod?.value as PaymentMethod,
+
+            category: data.category?.value as TransactionCategory | undefined,
+          },
+        },
+        refetchQueries: [
+          refetchVariables
+            ? { query: TransactionsQuery, variables: refetchVariables }
+            : TransactionsQuery,
+          TransactionsGroupedByPeriodQuery,
+          TransactionsSummaryQuery,
+          BalanceForecastQuery,
+          TransactionsCalendarQuery,
+          FinancialAgendaQuery,
+          BillingQuery,
+        ],
+        onCompleted: () => {
+          toast.success('Movimentação atualizada!', {
+            description: 'As informações foram salvas com sucesso.',
+          });
+          onClose();
+        },
+        onError: (error) => {
+          toast.error('Erro ao atualizar movimentação', {
+            description: error.message,
+          });
+        },
+      });
+    } else {
+      // If in installment step and has valid installment count, create installment transaction
+      if (
+        showInstallmentStep &&
+        data.installmentCount &&
+        data.installmentCount > 1
+      ) {
+        await createInstallmentTransaction({
+          variables: {
+            data: {
+              description: data.description,
+              totalAmount: data.amount,
+              totalInstallments: data.installmentCount,
+              startDate: data.date.toISOString(),
+              sourceCardId: sourceCardId!,
+            },
+          },
+          refetchQueries: [
+            refetchVariables
+              ? { query: TransactionsQuery, variables: refetchVariables }
+              : TransactionsQuery,
+            TransactionsGroupedByPeriodQuery,
+            TransactionsSummaryQuery,
+            BalanceForecastQuery,
+            TransactionsCalendarQuery,
+            FinancialAgendaQuery,
+            BillingQuery,
+          ],
+          onCompleted: () => {
+            toast.success(`Parcelamento criado em ${data.installmentCount}x!`, {
+              description: 'As parcelas foram geradas com sucesso.',
+            });
+            onClose();
+          },
+          onError: (error) => {
+            toast.error('Erro ao criar parcelamento', {
+              description: error.message,
+            });
+          },
+        });
+      } else if (isRecurrence) {
+        // If in recurrence step, create recurring transaction
+        // Build data object based on frequency and dayMode
+        const isWeeklyOrBiWeekly =
+          recurrenceData.frequency === RecurrenceFrequency.Weekly ||
+          recurrenceData.frequency === RecurrenceFrequency.BiWeekly;
+        const isYearly =
+          recurrenceData.frequency === RecurrenceFrequency.Yearly;
+        const needsDayOfWeek =
+          isWeeklyOrBiWeekly || recurrenceData.dayMode === DayMode.NthWeekday;
+        const needsDayOfMonth =
+          recurrenceData.dayMode === DayMode.SpecificDay && !isWeeklyOrBiWeekly;
+
+        await createRecurringTransaction({
+          variables: {
+            data: {
+              description: data.description,
+              estimatedAmount: data.amount,
+              frequency: recurrenceData.frequency,
+              startDate: data.date.toISOString(),
+              dayMode: isWeeklyOrBiWeekly
+                ? DayMode.SpecificDay
+                : recurrenceData.dayMode,
+              dayOfMonth: needsDayOfMonth ? data.date.getDate() : undefined,
+              dayOfWeek: needsDayOfWeek ? recurrenceData.dayOfWeek : undefined,
+              weekOfMonth:
+                recurrenceData.dayMode === DayMode.NthWeekday
+                  ? recurrenceData.weekOfMonth
+                  : undefined,
+              monthOfYear: isYearly ? data.date.getMonth() + 1 : undefined,
+              endDate:
+                recurrenceData.stopCondition === 'UNTIL_DATE'
+                  ? recurrenceData.endDate?.toISOString()
+                  : undefined,
+              repeatCount:
+                recurrenceData.stopCondition === 'REPEATS'
+                  ? recurrenceData.repeatCount
+                  : undefined,
+              sourceAccountId: isCardAccount ? undefined : sourceAccountId,
+              sourceCardId: isCardAccount ? sourceCardId : undefined,
+              type: TransactionType.Expense,
+              transactionIdsToLink: selectedTransactionIds,
+              isActive: isActive,
+              paymentMethod: data.paymentMethod?.value as PaymentMethod,
+
+              category: data.category?.value as TransactionCategory | undefined,
+            },
+          },
+          refetchQueries: [
+            refetchVariables
+              ? { query: TransactionsQuery, variables: refetchVariables }
+              : TransactionsQuery,
+            TransactionsGroupedByPeriodQuery,
+            TransactionsSummaryQuery,
+            BalanceForecastQuery,
+            TransactionsCalendarQuery,
+            FinancialAgendaQuery,
+            BillingQuery,
+            RecurringTransactionsQuery,
+            PossibleRecurringTransactionsQuery,
+          ],
+          onCompleted: () => {
+            toast.success('Despesa recorrente criada!', {
+              description: getRecurrenceDescription(
+                recurrenceData.frequency,
+                recurrenceData.dayMode,
+                recurrenceData.dayOfWeek,
+                recurrenceData.weekOfMonth,
+              ),
+            });
+            onClose();
+          },
+          onError: (error) => {
+            toast.error('Erro ao criar despesa recorrente', {
+              description: error.message,
+            });
+          },
+        });
+      } else {
+        await createTransaction({
+          variables: {
+            data: {
+              date: data.date,
+              type: TransactionType.Expense,
+              sourceAccountId: isCardAccount ? undefined : sourceAccountId,
+              sourceCardId: isCardAccount ? sourceCardId : undefined,
+              isCompleted: data.isCompleted,
+              description: data.description,
+              amount: data.amount,
+              paymentMethod: data.paymentMethod?.value as PaymentMethod,
+
+              category: data.category?.value as TransactionCategory | undefined,
+            },
+          },
+          refetchQueries: [
+            refetchVariables
+              ? { query: TransactionsQuery, variables: refetchVariables }
+              : TransactionsQuery,
+            TransactionsGroupedByPeriodQuery,
+            TransactionsSummaryQuery,
+            BalanceForecastQuery,
+            TransactionsCalendarQuery,
+            FinancialAgendaQuery,
+            BillingQuery,
+          ],
+          onCompleted: () => {
+            toast.success('Movimentação criada!', {
+              description: 'As informações foram salvas com sucesso.',
+            });
+            onClose();
+          },
+          onError: (error) => {
+            toast.error('Erro ao criar movimentação', {
+              description: error.message,
+            });
+          },
+        });
+      }
+    }
   };
 
   return (
@@ -1527,7 +1854,7 @@ function ExpenseTransactionFormDetails({
         paymentMethod: {
           options: paymentMethodOptions,
           renderLabel: (option) => {
-            const Icon = paymentMethodIcon[option.value as PaymentMethod];
+            const Icon = paymentMethodIcons[option.value as PaymentMethod];
             return (
               <div className="flex items-center gap-2">
                 <Icon className="h-5 w-5" />
@@ -1537,194 +1864,7 @@ function ExpenseTransactionFormDetails({
           },
         },
       }}
-      onSubmit={async (data) => {
-        if (isEditMode) {
-          if (onBeforeSubmit) {
-            const shouldContinue = await onBeforeSubmit({
-              description: data.description,
-              amount: data.amount,
-              paymentMethod: data.paymentMethod?.value,
-
-              category: data.category?.value as TransactionCategory | undefined,
-            });
-            if (!shouldContinue) return;
-          }
-
-          await updateTransaction({
-            variables: {
-              data: {
-                id: editTransaction.id,
-                date: data.date,
-                description: data.description,
-                amount: data.amount,
-                isCompleted: data.isCompleted,
-                paymentMethod: data.paymentMethod?.value as PaymentMethod,
-
-                category: data.category?.value as
-                  | TransactionCategory
-                  | undefined,
-              },
-            },
-            refetchQueries: [
-              TransactionsQuery,
-              TransactionsGroupedByPeriodQuery,
-              TransactionsSummaryQuery,
-              BalanceForecastQuery,
-              TransactionsCalendarQuery,
-              FinancialAgendaQuery,
-              BillingQuery,
-            ],
-            onCompleted: () => {
-              toast.success('Movimentação atualizada!', {
-                description: 'As informações foram salvas com sucesso.',
-              });
-              onClose();
-            },
-            onError: (error) => {
-              toast.error('Erro ao atualizar movimentação', {
-                description: error.message,
-              });
-            },
-          });
-        } else {
-          // If in installment step and has valid installment count, create installment transaction
-          if (
-            showInstallmentStep &&
-            data.installmentCount &&
-            data.installmentCount > 1
-          ) {
-            await createInstallmentTransaction({
-              variables: {
-                data: {
-                  description: data.description,
-                  totalAmount: data.amount,
-                  totalInstallments: data.installmentCount,
-                  startDate: data.date,
-                  sourceAccountId: sourceAccountId,
-                },
-              },
-              refetchQueries: [
-                TransactionsQuery,
-                TransactionsGroupedByPeriodQuery,
-                TransactionsSummaryQuery,
-                BalanceForecastQuery,
-                TransactionsCalendarQuery,
-                FinancialAgendaQuery,
-                BillingQuery,
-              ],
-              onCompleted: () => {
-                toast.success(
-                  `Parcelamento criado em ${data.installmentCount}x!`,
-                  {
-                    description: 'As parcelas foram geradas com sucesso.',
-                  },
-                );
-                onClose();
-              },
-              onError: (error) => {
-                toast.error('Erro ao criar parcelamento', {
-                  description: error.message,
-                });
-              },
-            });
-          } else if (showRecurrenceStep) {
-            // If in recurrence step, create recurring transaction
-            // Build data object based on frequency and dayMode
-            const isWeeklyOrBiWeekly =
-              recurrenceFrequency === RecurrenceFrequency.Weekly ||
-              recurrenceFrequency === RecurrenceFrequency.BiWeekly;
-            const isYearly = recurrenceFrequency === RecurrenceFrequency.Yearly;
-            const needsDayOfWeek =
-              isWeeklyOrBiWeekly || dayMode === DayMode.NthWeekday;
-            const needsDayOfMonth =
-              dayMode === DayMode.SpecificDay && !isWeeklyOrBiWeekly;
-
-            await createRecurringTransaction({
-              variables: {
-                data: {
-                  description: data.description,
-                  estimatedAmount: data.amount,
-                  frequency: recurrenceFrequency,
-                  startDate: data.date,
-                  dayMode: isWeeklyOrBiWeekly ? DayMode.SpecificDay : dayMode,
-                  dayOfMonth: needsDayOfMonth ? data.date.getDate() : undefined,
-                  dayOfWeek: needsDayOfWeek ? dayOfWeek : undefined,
-                  weekOfMonth:
-                    dayMode === DayMode.NthWeekday ? weekOfMonth : undefined,
-                  monthOfYear: isYearly ? data.date.getMonth() + 1 : undefined,
-                  sourceAccountId: sourceAccountId,
-                  type: TransactionType.Expense,
-                  paymentMethod: data.paymentMethod?.value as PaymentMethod,
-
-                  category: data.category?.value as
-                    | TransactionCategory
-                    | undefined,
-                },
-              },
-              refetchQueries: [
-                TransactionsQuery,
-                TransactionsGroupedByPeriodQuery,
-                TransactionsSummaryQuery,
-                BalanceForecastQuery,
-                TransactionsCalendarQuery,
-                FinancialAgendaQuery,
-              ],
-              onCompleted: () => {
-                toast.success('Despesa recorrente criada!', {
-                  description: getRecurrenceDescription(
-                    recurrenceFrequency,
-                    dayMode,
-                    dayOfWeek,
-                    weekOfMonth,
-                  ),
-                });
-                onClose();
-              },
-              onError: (error) => {
-                toast.error('Erro ao criar despesa recorrente', {
-                  description: error.message,
-                });
-              },
-            });
-          } else {
-            await createTransaction({
-              variables: {
-                data: {
-                  date: data.date,
-                  type: TransactionType.Expense,
-                  sourceAccountId: sourceAccountId,
-                  isCompleted: data.isCompleted,
-                  description: data.description,
-                  amount: data.amount,
-                  paymentMethod: isCreditCardAccount
-                    ? undefined
-                    : (data.paymentMethod?.value as PaymentMethod),
-                },
-              },
-              refetchQueries: [
-                TransactionsQuery,
-                TransactionsGroupedByPeriodQuery,
-                TransactionsSummaryQuery,
-                BalanceForecastQuery,
-                TransactionsCalendarQuery,
-                FinancialAgendaQuery,
-                BillingQuery,
-              ],
-              onCompleted: () => {
-                toast.success('Movimentação criada!', {
-                  description: 'As informações foram salvas com sucesso.',
-                });
-                onClose();
-              },
-              onError: (error) => {
-                toast.error('Erro ao criar movimentação', {
-                  description: error.message,
-                });
-              },
-            });
-          }
-        }
-      }}
+      onSubmit={onSubmit}
       renderAfter={() => (
         <DialogFooter className="flex-row justify-between gap-2 sm:justify-between">
           {/* Back button */}
@@ -1738,11 +1878,11 @@ function ExpenseTransactionFormDetails({
               <ArrowLeft className="h-4 w-4" />
               Voltar
             </Button>
-          ) : showRecurrenceStep ? (
+          ) : currentStep > 3 ? (
             <Button
               type="button"
               variant="outline"
-              onClick={() => setShowRecurrenceStep(false)}
+              onClick={() => setCurrentStep(currentStep - 1)}
               className="gap-1"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -1768,7 +1908,7 @@ function ExpenseTransactionFormDetails({
             {!showInstallmentStep &&
               !showRecurrenceStep &&
               !isEditMode &&
-              isCreditCardAccount &&
+              isCardAccount &&
               !isDebitCard && (
                 <Button
                   type="button"
@@ -1792,13 +1932,10 @@ function ExpenseTransactionFormDetails({
                   Parcelar
                 </Button>
               )}
-            {/* Repetir button - available for all accounts */}
-            {!showInstallmentStep && !showRecurrenceStep && !isEditMode && (
+            {prefilledData && currentStep === 3 && (
               <Button
                 type="button"
-                variant="secondary"
                 onClick={async () => {
-                  // Validate form before navigating to recurrence step
                   const fieldsToValidate = showPaymentMethod
                     ? ([
                         'date',
@@ -1809,16 +1946,97 @@ function ExpenseTransactionFormDetails({
                     : (['date', 'amount', 'description'] as const);
                   const isValid = await form.trigger(fieldsToValidate);
                   if (isValid) {
-                    setShowRecurrenceStep(true);
+                    if (isActive) {
+                      setIsRecurrence(true);
+                      // If we have transactions to link, go to linking step (step 4)
+                      if (prefilledData.transactionsToLink?.length) {
+                        setCurrentStep(4);
+                      } else {
+                        // Otherwise go to config (step 5)
+                        setCurrentStep(5);
+                      }
+                    } else {
+                      // Submit immediately if not extending to future
+                      form.handleSubmit(onSubmit)();
+                    }
                   }
                 }}
               >
-                Repetir
+                {isActive ? 'Próximo' : 'Finalizar'}
               </Button>
             )}
-            <Button type="submit" disabled={loading} loading={loading}>
-              Salvar
-            </Button>
+            {!showInstallmentStep &&
+              currentStep === 3 &&
+              !isEditMode &&
+              !prefilledData && (
+                <>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={async () => {
+                      // Validate form before navigating to recurrence step
+                      const fieldsToValidate = showPaymentMethod
+                        ? ([
+                            'date',
+                            'amount',
+                            'description',
+                            'paymentMethod',
+                          ] as const)
+                        : (['date', 'amount', 'description'] as const);
+                      const isValid = await form.trigger(fieldsToValidate);
+                      if (isValid) {
+                        setIsRecurrence(true);
+                        setCurrentStep(4);
+                      }
+                    }}
+                  >
+                    Repetir
+                  </Button>
+                  <Button type="submit" disabled={loading} loading={loading}>
+                    Salvar
+                  </Button>
+                </>
+              )}
+            {currentStep === 4 && (
+              <Button
+                type="button"
+                onClick={() => {
+                  // If we are in the linking step of a suggestion, next is config (step 5)
+                  // If we are in the config step of a manual entry, next is preview (step 5)
+                  setCurrentStep(5);
+                }}
+                disabled={loading}
+              >
+                Próximo
+              </Button>
+            )}
+            {currentStep === 5 && (
+              <Button
+                type="button"
+                onClick={() => {
+                  // If we are in the config step of a suggestion, next is preview (step 6)
+                  // If we are in the preview step of a manual entry, next is FINISH
+                  if (prefilledData?.transactionsToLink?.length) {
+                    setCurrentStep(6);
+                  } else {
+                    form.handleSubmit(onSubmit)();
+                  }
+                }}
+                disabled={loading}
+              >
+                Próximo
+              </Button>
+            )}
+            {(showInstallmentStep || currentStep === 6) && (
+              <Button type="submit" disabled={loading} loading={loading}>
+                Finalizar
+              </Button>
+            )}
+            {!showInstallmentStep && currentStep === 3 && isEditMode && (
+              <Button type="submit" disabled={loading} loading={loading}>
+                Salvar
+              </Button>
+            )}
           </div>
         </DialogFooter>
       )}
@@ -1833,9 +2051,30 @@ function ExpenseTransactionFormDetails({
         category,
       }) => (
         <>
-          {/* Step 2: Transaction details */}
-          {!showInstallmentStep && !showRecurrenceStep && (
+          {/* Step 3: Transaction details */}
+          {!showInstallmentStep && currentStep === 3 && (
             <>
+              {prefilledData && (
+                <div className="space-y-4 pb-4 duration-500 animate-in fade-in slide-in-from-top-2">
+                  <div className="flex items-center justify-between rounded-xl border border-dashed border-primary/20 bg-primary/5 p-4">
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">
+                        Estender para o futuro
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        Gerar novas transações automaticamente daqui para
+                        frente.
+                      </p>
+                    </div>
+                    <Switch checked={isActive} onCheckedChange={setIsActive} />
+                  </div>
+
+                  <div className="my-2 h-px bg-border" />
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                    Detalhes da movimentação
+                  </p>
+                </div>
+              )}
               {!hiddenFields.includes('date') && date}
               {showIsCompleted && isCompleted}
               {!hiddenFields.includes('amount') && amount}
@@ -1861,265 +2100,88 @@ function ExpenseTransactionFormDetails({
 
                 {installmentCount}
 
-                {/* Installment value calculation */}
-                {watchedInstallmentCount &&
-                  watchedInstallmentCount > 1 &&
-                  watchedAmount && (
-                    <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-                      <p className="text-sm text-muted-foreground">
-                        Valor de cada parcela
-                      </p>
-                      <p className="text-lg font-semibold text-primary">
-                        {formatCurrency(
-                          watchedAmount / watchedInstallmentCount,
-                        )}
-                      </p>
-                    </div>
-                  )}
+                {installmentDistribution && (
+                  <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+                    <p className="text-sm text-muted-foreground">
+                      Distribuição das parcelas
+                    </p>
+                    <p className="text-sm font-medium text-primary">
+                      {installmentDistribution.firstCount === 0 ? (
+                        <>
+                          Todas as {installmentDistribution.remainingCount}{' '}
+                          parcelas com valor{' '}
+                          {formatCurrency(
+                            installmentDistribution.remainingAmount,
+                          )}
+                          .
+                        </>
+                      ) : (
+                        <>
+                          {installmentDistribution.firstCount === 1
+                            ? 'Primeira parcela'
+                            : `${installmentDistribution.firstCount} primeiras parcelas`}{' '}
+                          com valor{' '}
+                          {formatCurrency(installmentDistribution.firstAmount)}
+                          {installmentDistribution.remainingCount > 0 && (
+                            <>
+                              {' '}
+                              e as demais{' '}
+                              {installmentDistribution.remainingCount === 1
+                                ? 'parcela'
+                                : `${installmentDistribution.remainingCount} parcelas`}{' '}
+                              com valor{' '}
+                              {formatCurrency(
+                                installmentDistribution.remainingAmount,
+                              )}
+                            </>
+                          )}
+                          .
+                        </>
+                      )}
+                    </p>
+                  </div>
+                )}
               </div>
             </>
           )}
 
-          {/* Step 3: Recurrence configuration */}
-          {showRecurrenceStep && (
-            <>
-              <div className="space-y-4">
-                {/* Summary of previous step data */}
-                <div className="rounded-lg border border-muted bg-muted/30 p-4">
-                  <p className="text-sm text-muted-foreground">Valor</p>
-                  <p className="text-lg font-semibold">
-                    {watchedAmount ? formatCurrency(watchedAmount) : 'R$ 0,00'}
-                  </p>
-                </div>
+          {/* Step 4: Linking history (only for suggestions) */}
+          {currentStep === 4 && prefilledData?.transactionsToLink?.length ? (
+            <SuggestionLinkingSection
+              prefilledTransactions={prefilledData.transactionsToLink || []}
+              selectedTransactionIds={selectedTransactionIds || []}
+              onSelectedTransactionIdsChange={setSelectedTransactionIds}
+            />
+          ) : null}
 
-                {/* Frequency selection */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Frequência</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setRecurrenceFrequency(RecurrenceFrequency.Weekly)
-                      }
-                      className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                        recurrenceFrequency === RecurrenceFrequency.Weekly
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      Semanal
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setRecurrenceFrequency(RecurrenceFrequency.BiWeekly)
-                      }
-                      className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                        recurrenceFrequency === RecurrenceFrequency.BiWeekly
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      Quinzenal
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setRecurrenceFrequency(RecurrenceFrequency.Monthly)
-                      }
-                      className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                        recurrenceFrequency === RecurrenceFrequency.Monthly
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      Mensal
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setRecurrenceFrequency(RecurrenceFrequency.Yearly)
-                      }
-                      className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                        recurrenceFrequency === RecurrenceFrequency.Yearly
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
-                      Anual
-                    </button>
-                  </div>
-                </div>
-
-                {/* Day of week selection for weekly/bi-weekly */}
-                {(recurrenceFrequency === RecurrenceFrequency.Weekly ||
-                  recurrenceFrequency === RecurrenceFrequency.BiWeekly) && (
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Dia da semana</label>
-                    <div className="flex flex-wrap gap-1">
-                      {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(
-                        (day, index) => (
-                          <button
-                            key={day}
-                            type="button"
-                            onClick={() => setDayOfWeek(index)}
-                            className={`min-w-[40px] flex-1 rounded-lg border-2 px-2 py-2 text-xs font-medium transition-all ${
-                              dayOfWeek === index
-                                ? 'border-primary bg-primary/5 text-primary'
-                                : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                            }`}
-                          >
-                            {day}
-                          </button>
-                        ),
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Day mode selection for monthly/yearly */}
-                {(recurrenceFrequency === RecurrenceFrequency.Monthly ||
-                  recurrenceFrequency === RecurrenceFrequency.Yearly) && (
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">
-                      Dia do{' '}
-                      {recurrenceFrequency === RecurrenceFrequency.Monthly
-                        ? 'mês'
-                        : 'ano'}
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setDayMode(DayMode.SpecificDay)}
-                        className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                          dayMode === DayMode.SpecificDay
-                            ? 'border-primary bg-primary/5 text-primary'
-                            : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                        }`}
-                      >
-                        Dia específico
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setDayMode(DayMode.LastDay)}
-                        className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                          dayMode === DayMode.LastDay
-                            ? 'border-primary bg-primary/5 text-primary'
-                            : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                        }`}
-                      >
-                        Último dia
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setDayMode(DayMode.LastBusinessDay)}
-                        className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                          dayMode === DayMode.LastBusinessDay
-                            ? 'border-primary bg-primary/5 text-primary'
-                            : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                        }`}
-                      >
-                        Último dia útil
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setDayMode(DayMode.FirstBusinessDay)}
-                        className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                          dayMode === DayMode.FirstBusinessDay
-                            ? 'border-primary bg-primary/5 text-primary'
-                            : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                        }`}
-                      >
-                        Primeiro dia útil
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setDayMode(DayMode.NthWeekday)}
-                        className={`col-span-2 rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
-                          dayMode === DayMode.NthWeekday
-                            ? 'border-primary bg-primary/5 text-primary'
-                            : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                        }`}
-                      >
-                        Dia da semana específico
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Nth weekday selection */}
-                {dayMode === DayMode.NthWeekday &&
-                  (recurrenceFrequency === RecurrenceFrequency.Monthly ||
-                    recurrenceFrequency === RecurrenceFrequency.Yearly) && (
-                    <>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Qual semana?
-                        </label>
-                        <div className="flex gap-2">
-                          {['1ª', '2ª', '3ª', '4ª', '5ª'].map((week, index) => (
-                            <button
-                              key={week}
-                              type="button"
-                              onClick={() => setWeekOfMonth(index + 1)}
-                              className={`flex-1 rounded-lg border-2 px-2 py-2 text-sm font-medium transition-all ${
-                                weekOfMonth === index + 1
-                                  ? 'border-primary bg-primary/5 text-primary'
-                                  : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                              }`}
-                            >
-                              {week}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Dia da semana
-                        </label>
-                        <div className="flex flex-wrap gap-1">
-                          {[
-                            'Dom',
-                            'Seg',
-                            'Ter',
-                            'Qua',
-                            'Qui',
-                            'Sex',
-                            'Sáb',
-                          ].map((day, index) => (
-                            <button
-                              key={day}
-                              type="button"
-                              onClick={() => setDayOfWeek(index)}
-                              className={`min-w-[40px] flex-1 rounded-lg border-2 px-2 py-2 text-xs font-medium transition-all ${
-                                dayOfWeek === index
-                                  ? 'border-primary bg-primary/5 text-primary'
-                                  : 'border-muted bg-muted/30 text-muted-foreground hover:bg-muted'
-                              }`}
-                            >
-                              {day}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                {/* Summary */}
-                <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-                  <p className="text-sm text-muted-foreground">Resumo</p>
-                  <p className="text-sm font-medium text-primary">
-                    {getRecurrenceSummary(
-                      recurrenceFrequency,
-                      dayMode,
-                      dayOfWeek,
-                      weekOfMonth,
-                      selectedDate,
-                    )}
-                  </p>
-                </div>
+          {/* Step 4 (Manual) or Step 5 (Suggestion): Recurrence configuration */}
+          {((currentStep === 4 && !prefilledData?.transactionsToLink?.length) ||
+            (currentStep === 5 &&
+              prefilledData?.transactionsToLink?.length)) && (
+            <div className="space-y-4">
+              <div className="rounded-lg border border-muted bg-muted/30 p-4">
+                <div className="flex items-center gap-2">{amount}</div>
               </div>
-            </>
+
+              <RecurrenceFormSection
+                data={recurrenceData}
+                onChange={(newData) =>
+                  setRecurrenceData((prev) => ({ ...prev, ...newData }))
+                }
+                startDate={form.getValues('date')}
+                className="mt-2"
+              />
+            </div>
+          )}
+
+          {/* Step 5 (Manual) or Step 6 (Suggestion): Recurrence preview */}
+          {((currentStep === 5 && !prefilledData?.transactionsToLink?.length) ||
+            (currentStep === 6 &&
+              prefilledData?.transactionsToLink?.length)) && (
+            <RecurrenceTimelinePreview
+              startDate={form.getValues('date') || new Date()}
+              data={recurrenceData}
+            />
           )}
 
           {/* Edit mode: show installment info */}
@@ -2127,10 +2189,46 @@ function ExpenseTransactionFormDetails({
             <>
               <Separator />
               {installmentCount}
-              {installmentValue && (
+              {installmentDistribution && (
                 <p className="text-sm text-muted-foreground">
-                  Valor de cada parcela:{' '}
-                  <strong>{formatCurrency(Number(installmentValue))}</strong>
+                  {installmentDistribution.firstCount === 0 ? (
+                    <>
+                      Todas as {installmentDistribution.remainingCount} parcelas
+                      com valor{' '}
+                      <strong>
+                        {formatCurrency(
+                          installmentDistribution.remainingAmount,
+                        )}
+                      </strong>
+                      .
+                    </>
+                  ) : (
+                    <>
+                      {installmentDistribution.firstCount === 1
+                        ? 'Primeira parcela'
+                        : `${installmentDistribution.firstCount} primeiras parcelas`}{' '}
+                      com valor{' '}
+                      <strong>
+                        {formatCurrency(installmentDistribution.firstAmount)}
+                      </strong>
+                      {installmentDistribution.remainingCount > 0 && (
+                        <>
+                          {' '}
+                          e as demais{' '}
+                          {installmentDistribution.remainingCount === 1
+                            ? 'parcela'
+                            : `${installmentDistribution.remainingCount} parcelas`}{' '}
+                          com valor{' '}
+                          <strong>
+                            {formatCurrency(
+                              installmentDistribution.remainingAmount,
+                            )}
+                          </strong>
+                        </>
+                      )}
+                      .
+                    </>
+                  )}
                 </p>
               )}
               <p className="text-xs text-muted-foreground">
@@ -2153,6 +2251,7 @@ export function BetweenAccountsTransactionCreateForm({
   open: externalOpen,
   onOpenChange: externalOnOpenChange,
   onBeforeSubmit,
+  refetchVariables,
 }: TransactionCreateFormProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen ?? internalOpen;
@@ -2161,13 +2260,17 @@ export function BetweenAccountsTransactionCreateForm({
 
   // Form stepper state - 3 steps for between accounts
   const [currentStep, setCurrentStep] = useState(isEditMode ? 3 : 1);
+  const [isRecurrence, setIsRecurrence] = useState(false);
+  const [recurrenceStep, setRecurrenceStep] = useState<'CONFIG' | 'PREVIEW'>(
+    'CONFIG',
+  );
   const [sourceAccount, setSourceAccount] = useState<AccountData | null>(
     editTransaction?.sourceAccount
       ? {
           id: editTransaction.sourceAccount.id,
           name: editTransaction.sourceAccount.name,
-          institution: editTransaction.sourceAccount.institution,
-          type: editTransaction.sourceAccount.type,
+          institution:
+            editTransaction.sourceAccount.institutionLink.institution,
         }
       : null,
   );
@@ -2176,8 +2279,8 @@ export function BetweenAccountsTransactionCreateForm({
       ? {
           id: editTransaction.destinyAccount.id,
           name: editTransaction.destinyAccount.name,
-          institution: editTransaction.destinyAccount.institution,
-          type: editTransaction.destinyAccount.type,
+          institution:
+            editTransaction.destinyAccount.institutionLink.institution,
         }
       : null,
   );
@@ -2191,6 +2294,7 @@ export function BetweenAccountsTransactionCreateForm({
             setCurrentStep(1);
             setSourceAccount(null);
             setDestinyAccount(null);
+            setIsRecurrence(false);
           }
         }, 200);
       }
@@ -2221,6 +2325,11 @@ export function BetweenAccountsTransactionCreateForm({
       { number: 2, label: 'Destino' },
       { number: 3, label: 'Dados' },
     ];
+
+    if (isRecurrence) {
+      steps.push({ number: 4, label: 'Configurar' });
+      steps.push({ number: 5, label: 'Visualizar' });
+    }
 
     const step1Completed = currentStep > 1 && sourceAccount;
     const step2Completed = currentStep > 2 && destinyAccount;
@@ -2351,7 +2460,7 @@ export function BetweenAccountsTransactionCreateForm({
           />
         )}
 
-        {(currentStep === 3 || isEditMode) &&
+        {(currentStep >= 3 || isEditMode) &&
           sourceAccount &&
           destinyAccount && (
             <BetweenAccountsTransactionFormDetails
@@ -2361,6 +2470,11 @@ export function BetweenAccountsTransactionCreateForm({
               onBeforeSubmit={onBeforeSubmit}
               onClose={() => handleOpenChange(false)}
               onBack={!isEditMode ? prevStep : undefined}
+              refetchVariables={refetchVariables}
+              currentStep={currentStep}
+              setCurrentStep={setCurrentStep}
+              isRecurrence={isRecurrence}
+              setIsRecurrence={setIsRecurrence}
             />
           )}
 
@@ -2396,6 +2510,11 @@ function BetweenAccountsTransactionFormDetails({
   onBeforeSubmit,
   onClose,
   onBack,
+  refetchVariables,
+  currentStep,
+  setCurrentStep,
+  isRecurrence,
+  setIsRecurrence,
 }: {
   sourceAccountId: string;
   destinyAccountId: string;
@@ -2403,6 +2522,11 @@ function BetweenAccountsTransactionFormDetails({
   onBeforeSubmit?: TransactionCreateFormProps['onBeforeSubmit'];
   onClose: () => void;
   onBack?: () => void;
+  refetchVariables?: any;
+  currentStep: number;
+  setCurrentStep: (step: number) => void;
+  isRecurrence: boolean;
+  setIsRecurrence: (is: boolean) => void;
 }) {
   const isEditMode = !!editTransaction;
 
@@ -2412,7 +2536,18 @@ function BetweenAccountsTransactionFormDetails({
   const [updateTransaction, { loading: updateLoading }] = useMutation(
     UpdateTransactionMutation,
   );
-  const loading = isEditMode ? updateLoading : createLoading;
+  const [createRecurringTransaction, { loading: recurringLoading }] =
+    useMutation(CreateRecurringTransactionMutation);
+  const loading = isEditMode
+    ? updateLoading
+    : createLoading || recurringLoading;
+  const [recurrenceData, setRecurrenceData] = useState<RecurrenceData>({
+    frequency: RecurrenceFrequency.Monthly,
+    dayMode: DayMode.SpecificDay,
+    dayOfWeek: 1,
+    weekOfMonth: 1,
+    stopCondition: 'INFINITE',
+  });
 
   const form = useForm<z.infer<typeof formStepperBetweenAccountsSchema>>({
     resolver: zodResolver(formStepperBetweenAccountsSchema),
@@ -2456,15 +2591,6 @@ function BetweenAccountsTransactionFormDetails({
       label: paymentMethodLabel[method],
     }));
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const paymentMethodIcon: Record<PaymentMethod, any> = {
-    CASH: Banknote,
-    CREDIT_CARD: CreditCard,
-    DEBIT_CARD: CreditCard,
-    PIX: PixIcon,
-    BOLETO: Receipt,
-  };
-
   return (
     <TsForm
       form={form}
@@ -2478,7 +2604,7 @@ function BetweenAccountsTransactionFormDetails({
         paymentMethod: {
           options: paymentMethodOptions,
           renderLabel: (option) => {
-            const Icon = paymentMethodIcon[option.value as PaymentMethod];
+            const Icon = paymentMethodIcons[option.value as PaymentMethod];
             return (
               <div className="flex items-center gap-2">
                 <Icon className="h-5 w-5" />
@@ -2517,7 +2643,9 @@ function BetweenAccountsTransactionFormDetails({
               },
             },
             refetchQueries: [
-              TransactionsQuery,
+              refetchVariables
+                ? { query: TransactionsQuery, variables: refetchVariables }
+                : TransactionsQuery,
               TransactionsGroupedByPeriodQuery,
               TransactionsSummaryQuery,
               BalanceForecastQuery,
@@ -2537,6 +2665,87 @@ function BetweenAccountsTransactionFormDetails({
             },
           });
         } else {
+          // Check if recurrence mode is active
+          if (isRecurrence) {
+            // Create recurring transaction
+            await createRecurringTransaction({
+              variables: {
+                data: {
+                  description: data.description,
+                  estimatedAmount: data.amount,
+                  frequency: recurrenceData.frequency,
+                  startDate: data.date.toISOString(),
+                  dayMode:
+                    recurrenceData.frequency === RecurrenceFrequency.Weekly ||
+                    recurrenceData.frequency === RecurrenceFrequency.BiWeekly
+                      ? DayMode.SpecificDay
+                      : recurrenceData.dayMode,
+                  dayOfMonth:
+                    recurrenceData.dayMode === DayMode.SpecificDay &&
+                    !(
+                      recurrenceData.frequency === RecurrenceFrequency.Weekly ||
+                      recurrenceData.frequency === RecurrenceFrequency.BiWeekly
+                    )
+                      ? data.date.getDate()
+                      : undefined,
+                  dayOfWeek:
+                    recurrenceData.frequency === RecurrenceFrequency.Weekly ||
+                    recurrenceData.frequency === RecurrenceFrequency.BiWeekly ||
+                    recurrenceData.dayMode === DayMode.NthWeekday
+                      ? recurrenceData.dayOfWeek
+                      : undefined,
+                  weekOfMonth:
+                    recurrenceData.dayMode === DayMode.NthWeekday
+                      ? recurrenceData.weekOfMonth
+                      : undefined,
+                  monthOfYear:
+                    recurrenceData.frequency === RecurrenceFrequency.Yearly
+                      ? data.date.getMonth() + 1
+                      : undefined,
+                  endDate:
+                    recurrenceData.stopCondition === 'UNTIL_DATE'
+                      ? recurrenceData.endDate?.toISOString()
+                      : undefined,
+                  repeatCount:
+                    recurrenceData.stopCondition === 'REPEATS'
+                      ? recurrenceData.repeatCount
+                      : undefined,
+                  type: TransactionType.BetweenAccounts,
+                  sourceAccountId: sourceAccountId,
+                  destinyAccountId: destinyAccountId,
+                  isActive: true,
+                },
+              },
+              refetchQueries: [
+                refetchVariables
+                  ? { query: TransactionsQuery, variables: refetchVariables }
+                  : TransactionsQuery,
+                TransactionsGroupedByPeriodQuery,
+                TransactionsSummaryQuery,
+                BalanceForecastQuery,
+                TransactionsCalendarQuery,
+                FinancialAgendaQuery,
+              ],
+              onCompleted: () => {
+                toast.success('Transferência recorrente criada!', {
+                  description: getRecurrenceDescription(
+                    recurrenceData.frequency,
+                    recurrenceData.dayMode,
+                    recurrenceData.dayOfWeek,
+                    recurrenceData.weekOfMonth,
+                  ),
+                });
+                onClose();
+              },
+              onError: (error) => {
+                toast.error('Erro ao criar transferência recorrente', {
+                  description: error.message,
+                });
+              },
+            });
+            return;
+          }
+
           await createTransaction({
             variables: {
               data: {
@@ -2555,7 +2764,9 @@ function BetweenAccountsTransactionFormDetails({
               },
             },
             refetchQueries: [
-              TransactionsQuery,
+              refetchVariables
+                ? { query: TransactionsQuery, variables: refetchVariables }
+                : TransactionsQuery,
               TransactionsGroupedByPeriodQuery,
               TransactionsSummaryQuery,
               BalanceForecastQuery,
@@ -2578,7 +2789,18 @@ function BetweenAccountsTransactionFormDetails({
       }}
       renderAfter={() => (
         <DialogFooter className="flex-row justify-between gap-2 sm:justify-between">
-          {onBack ? (
+          {/* Back button */}
+          {currentStep > 3 ? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setCurrentStep(currentStep - 1)}
+              className="gap-1"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Voltar
+            </Button>
+          ) : onBack ? (
             <Button
               type="button"
               variant="outline"
@@ -2591,9 +2813,53 @@ function BetweenAccountsTransactionFormDetails({
           ) : (
             <div />
           )}
-          <Button type="submit" disabled={loading} loading={loading}>
-            Salvar
-          </Button>
+
+          {/* Action buttons */}
+          <div className="flex gap-2">
+            {currentStep === 3 && !isEditMode && (
+              <>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={async () => {
+                    const isValid = await form.trigger([
+                      'date',
+                      'amount',
+                      'description',
+                    ]);
+                    if (isValid) {
+                      setIsRecurrence(true);
+                      setCurrentStep(4);
+                    }
+                  }}
+                >
+                  Repetir
+                </Button>
+                <Button type="submit" disabled={loading} loading={loading}>
+                  Salvar
+                </Button>
+              </>
+            )}
+            {currentStep === 4 && (
+              <Button
+                type="button"
+                onClick={() => setCurrentStep(5)}
+                disabled={loading}
+              >
+                Próximo
+              </Button>
+            )}
+            {currentStep === 5 && (
+              <Button type="submit" disabled={loading} loading={loading}>
+                Finalizar
+              </Button>
+            )}
+            {currentStep === 3 && isEditMode && (
+              <Button type="submit" disabled={loading} loading={loading}>
+                Salvar
+              </Button>
+            )}
+          </div>
         </DialogFooter>
       )}
     >
@@ -2606,12 +2872,46 @@ function BetweenAccountsTransactionFormDetails({
         category,
       }) => (
         <>
-          {date}
-          {showIsCompleted && isCompleted}
-          {amount}
-          {paymentMethod}
-          {description}
-          {category}
+          {/* Step 3: Transaction details */}
+          {currentStep === 3 && (
+            <>
+              {date}
+              {showIsCompleted && isCompleted}
+              {amount}
+              {paymentMethod}
+              {description}
+              {category}
+            </>
+          )}
+
+          {/* Step 4: Recurrence configuration */}
+          {currentStep === 4 && (
+            <>
+              <div className="space-y-4">
+                {/* Summary of previous step data */}
+                <div className="rounded-lg border border-muted bg-muted/30 p-4">
+                  <div className="flex items-center gap-2">{amount}</div>
+                </div>
+
+                <RecurrenceFormSection
+                  data={recurrenceData}
+                  onChange={(newData) =>
+                    setRecurrenceData((prev) => ({ ...prev, ...newData }))
+                  }
+                  startDate={form.getValues('date')}
+                  className="mt-2"
+                />
+              </div>
+            </>
+          )}
+
+          {/* Step 5: Recurrence preview */}
+          {currentStep === 5 && (
+            <RecurrenceTimelinePreview
+              startDate={form.getValues('date') || new Date()}
+              data={recurrenceData}
+            />
+          )}
         </>
       )}
     </TsForm>
@@ -2674,10 +2974,10 @@ interface AccountData {
     logoUrl?: string | null;
     color?: string | null;
   };
-  type: AccountType;
-  accountCard?: {
-    type: CardType;
-  } | null;
+}
+
+interface CardData extends AccountData {
+  type: CardType;
 }
 
 interface TransactionWizardState {
@@ -2687,6 +2987,63 @@ interface TransactionWizardState {
 }
 
 const initialTransactionWizardState: TransactionWizardState = {};
+
+enum TransactionCardOrAccountStepType {
+  Account = 'account',
+  Card = 'card',
+}
+
+const transactionCardOrAccountStepTypeIcons: Record<
+  TransactionCardOrAccountStepType,
+  LucideIcon
+> = {
+  [TransactionCardOrAccountStepType.Account]: Wallet2,
+  [TransactionCardOrAccountStepType.Card]: CreditCard,
+};
+
+const transactionCardOrAccountStepTypeLabels: Record<
+  TransactionCardOrAccountStepType,
+  string
+> = {
+  [TransactionCardOrAccountStepType.Account]: 'Conta',
+  [TransactionCardOrAccountStepType.Card]: 'Cartão',
+};
+
+const transactionCardOrAccountStepTypeDescriptions: Record<
+  TransactionCardOrAccountStepType,
+  string
+> = {
+  [TransactionCardOrAccountStepType.Account]: 'Conta-corrente',
+  [TransactionCardOrAccountStepType.Card]: 'Cartão de crédito ou débito',
+};
+
+function TransactionCardOrAccountStep({
+  selectedType,
+  onSelect,
+}: {
+  selectedType?: TransactionCardOrAccountStepType;
+  onSelect: (type: TransactionCardOrAccountStepType) => void;
+}) {
+  const orderedCardTypes = [
+    TransactionCardOrAccountStepType.Account,
+    TransactionCardOrAccountStepType.Card,
+  ];
+
+  return (
+    <div className="flex flex-col gap-2">
+      {orderedCardTypes.map((cardType) => (
+        <TypeSelectionCard
+          key={cardType}
+          icon={transactionCardOrAccountStepTypeIcons[cardType]}
+          label={transactionCardOrAccountStepTypeLabels[cardType]}
+          description={transactionCardOrAccountStepTypeDescriptions[cardType]}
+          isSelected={selectedType === cardType}
+          onClick={() => onSelect(cardType)}
+        />
+      ))}
+    </div>
+  );
+}
 
 function TransactionAccountCard({
   account,
@@ -2717,12 +3074,61 @@ function TransactionAccountCard({
       <div className="flex min-w-0 flex-1 items-center gap-2">
         <div
           className="h-8 w-1 flex-shrink-0 rounded"
-          style={{ backgroundColor: account.institution.color || '#888' }}
+          style={{
+            backgroundColor:
+              account.institution.color || 'hsl(var(--muted-foreground))',
+          }}
         />
         <div className="flex flex-col items-start">
           <span className="truncate font-semibold">{account.name}</span>
           <span className="truncate text-sm text-muted-foreground">
             {account.institution.name}
+          </span>
+        </div>
+      </div>
+      {isSelected && <Check className="h-5 w-5 flex-shrink-0 text-primary" />}
+    </button>
+  );
+}
+
+function TransactionCardCard({
+  card,
+  isSelected,
+  onClick,
+}: {
+  card: CardData;
+  isSelected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'flex w-full cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-all duration-200 hover:bg-accent',
+        isSelected
+          ? 'border-primary bg-primary/5'
+          : 'border-transparent bg-muted/50',
+      )}
+    >
+      <InstitutionLogo
+        logoUrl={card.institution.logoUrl}
+        name={card.institution.name}
+        color={card.institution.color}
+        size="lg"
+      />
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        <div
+          className="h-8 w-1 flex-shrink-0 rounded"
+          style={{
+            backgroundColor:
+              card.institution.color || 'hsl(var(--muted-foreground))',
+          }}
+        />
+        <div className="flex flex-col items-start">
+          <span className="truncate font-semibold">{card.name}</span>
+          <span className="truncate text-sm text-muted-foreground">
+            {card.institution.name}
           </span>
         </div>
       </div>
@@ -2744,42 +3150,22 @@ function TransactionAccountStep({
   excludeAccountId,
   onSelect,
 }: TransactionAccountStepProps) {
-  const accountTypeFilter = useMemo(() => {
-    if (transactionType === TransactionType.Income) {
-      return Object.values(AccountType).filter(
-        (t) =>
-          t !== AccountType.CreditCard &&
-          t !== AccountType.Savings &&
-          t !== AccountType.Investment,
-      );
-    }
-    if (transactionType === TransactionType.Expense) {
-      return Object.values(AccountType).filter(
-        (t) => t !== AccountType.Savings && t !== AccountType.Investment,
-      );
-    }
-    if (transactionType === TransactionType.BetweenAccounts) {
-      // Card accounts cannot participate in between-accounts transactions
-      return Object.values(AccountType).filter(
-        (t) => t !== AccountType.CreditCard,
-      );
-    }
-    return undefined;
-  }, [transactionType]);
-
   const { data, loading, fetchMore, networkStatus } = useQuery(AccountsQuery, {
     variables: {
       first: 50,
       orderBy: OrdenationAccountModel.Name,
       orderDirection: OrderDirection.Asc,
-      types: accountTypeFilter,
     },
     notifyOnNetworkStatusChange: true,
   });
 
   const accounts = useMemo(() => {
     const allAccounts =
-      data?.accounts.edges?.map((edge) => edge.node as AccountData) || [];
+      data?.accounts.edges?.map((edge) => ({
+        id: edge.node.id,
+        name: edge.node.name,
+        institution: edge.node.institutionLink.institution,
+      })) || [];
     if (excludeAccountId) {
       return allAccounts.filter((a) => a.id !== excludeAccountId);
     }
@@ -2831,6 +3217,106 @@ function TransactionAccountStep({
             key={account.id}
             account={account}
             isSelected={selectedAccountId === account.id}
+            onClick={() => onSelect(account)}
+          />
+        ))}
+      </div>
+      {pageInfo?.hasNextPage && (
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full"
+          onClick={paginate}
+          disabled={networkStatus === 3}
+        >
+          Carregar mais
+        </Button>
+      )}
+    </div>
+  );
+}
+
+interface TransactionCardStepProps {
+  transactionType: TransactionType;
+  selectedCardId?: string;
+  excludeCardId?: string;
+  onSelect: (card: CardData) => void;
+}
+
+function TransactionCardStep({
+  transactionType,
+  selectedCardId,
+  excludeCardId,
+  onSelect,
+}: TransactionCardStepProps) {
+  const { data, loading, fetchMore, networkStatus } = useQuery(CardsQuery, {
+    variables: {
+      first: 50,
+      orderBy: OrdenationCard.Name,
+      orderDirection: OrderDirection.Asc,
+    },
+    notifyOnNetworkStatusChange: true,
+  });
+
+  const accounts = useMemo(() => {
+    const allAccounts =
+      data?.cards.edges?.map((edge) => ({
+        id: edge.node.id,
+        name: edge.node.name,
+        institution: edge.node.institutionLink.institution,
+        type: edge.node.type,
+      })) || [];
+    if (excludeCardId) {
+      return allAccounts.filter((a) => a.id !== excludeCardId);
+    }
+    return allAccounts;
+  }, [data?.cards.edges, excludeCardId]);
+
+  const pageInfo = data?.cards.pageInfo;
+
+  const paginate = useCallback(() => {
+    fetchMore({
+      variables: {
+        after: pageInfo?.endCursor,
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev;
+        return {
+          ...prev,
+          cards: {
+            ...prev.cards,
+            ...fetchMoreResult.cards,
+            edges: [
+              ...(prev.cards.edges || []),
+              ...(fetchMoreResult.cards.edges || []),
+            ],
+          },
+        };
+      },
+    });
+  }, [fetchMore, pageInfo]);
+
+  if (loading && accounts.length === 0) {
+    return (
+      <div className="grid grid-cols-1 gap-2">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div
+            key={i}
+            className="h-14 w-full animate-pulse rounded-lg bg-muted"
+          />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="max-h-[300px] space-y-2 overflow-y-auto">
+        {accounts.map((account) => (
+          <TransactionCardCard
+            key={account.id}
+            card={account}
+            isSelected={selectedCardId === account.id}
             onClick={() => onSelect(account)}
           />
         ))}
@@ -3103,6 +3589,7 @@ export function TransactionCreateForm({
       return (
         <ExpenseTransactionFormContent
           sourceAccountId={wizardState.sourceAccount.id}
+          sourceCardId={wizardState.sourceAccount.id}
           onClose={onClose}
         />
       );
@@ -3218,330 +3705,59 @@ function IncomeTransactionFormContent({
   destinyAccountId: string;
   onClose: () => void;
 }) {
-  const [createTransaction, { loading }] = useMutation(
-    CreateTransactionMutation,
-  );
-
-  const form = useForm<z.infer<typeof formStepperIncomeSchema>>({
-    resolver: zodResolver(formStepperIncomeSchema),
-    defaultValues: {
-      isCompleted: false,
-    },
-  });
-
-  const selectedDate = useWatch({
-    control: form.control,
-    name: 'date',
-  });
-
-  const showIsCompleted = selectedDate && isToday(selectedDate);
-
-  const paymentMethodOptions = Object.values(PaymentMethod)
-    .filter((m) => !['CREDIT_CARD', 'DEBIT_CARD'].includes(m))
-    .map((method) => ({
-      value: method,
-      label: paymentMethodLabel[method],
-    }));
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const paymentMethodIcon: Record<PaymentMethod, any> = {
-    CASH: Banknote,
-    CREDIT_CARD: CreditCard,
-    DEBIT_CARD: CreditCard,
-    PIX: PixIcon,
-    BOLETO: Receipt,
-  };
+  const [currentStep, setCurrentStep] = useState(2);
+  const [isRecurrence, setIsRecurrence] = useState(false);
 
   return (
-    <TsForm
-      form={form}
-      schema={formStepperIncomeSchema}
-      props={{
-        category: {
-          options: categoryOptions,
-          renderLabel: renderCategoryLabel,
-        } as any,
-
-        paymentMethod: {
-          options: paymentMethodOptions,
-          renderLabel: (option) => {
-            const Icon = paymentMethodIcon[option.value as PaymentMethod];
-            return (
-              <div className="flex items-center gap-2">
-                <Icon className="h-5 w-5" />
-                <p>{option.label}</p>
-              </div>
-            );
-          },
-        },
-      }}
-      onSubmit={async (data) => {
-        await createTransaction({
-          variables: {
-            data: {
-              date: data.date,
-              type: TransactionType.Income,
-              destinyAccountId: destinyAccountId,
-              isCompleted: data.isCompleted,
-              description: data.description,
-              amount: data.amount,
-              paymentMethod: data.paymentMethod?.value as PaymentMethod,
-
-              category: data.category?.value as TransactionCategory | undefined,
-            },
-          },
-          refetchQueries: [
-            TransactionsQuery,
-            TransactionsGroupedByPeriodQuery,
-            TransactionsSummaryQuery,
-            BalanceForecastQuery,
-            TransactionsCalendarQuery,
-            FinancialAgendaQuery,
-          ],
-          onCompleted: () => {
-            toast.success('Movimentação criada!', {
-              description: 'As informações foram salvas com sucesso.',
-            });
-            onClose();
-          },
-          onError: (error) => {
-            toast.error('Erro ao criar movimentação', {
-              description: error.message,
-            });
-          },
-        });
-      }}
-      renderAfter={() => (
-        <DialogFooter>
-          <Button type="submit" disabled={loading} loading={loading}>
-            Salvar
-          </Button>
-        </DialogFooter>
-      )}
-    >
-      {({ date, isCompleted, amount, description, paymentMethod }) => (
-        <>
-          {date}
-          {showIsCompleted && isCompleted}
-          {amount}
-          {paymentMethod}
-          {description}
-        </>
-      )}
-    </TsForm>
+    <IncomeTransactionFormDetails
+      destinyAccountId={destinyAccountId}
+      onClose={onClose}
+      currentStep={currentStep}
+      setCurrentStep={setCurrentStep}
+      isRecurrence={isRecurrence}
+      setIsRecurrence={setIsRecurrence}
+    />
   );
 }
 
 function ExpenseTransactionFormContent({
   sourceAccountId,
+  sourceCardId,
   onClose,
 }: {
   sourceAccountId: string;
+  sourceCardId: string;
   onClose: () => void;
 }) {
-  const [createTransaction, { loading: createLoading }] = useMutation(
-    CreateTransactionMutation,
+  const [currentStep, setCurrentStep] = useState(3);
+  const [isRecurrence, setIsRecurrence] = useState(false);
+
+  const { data: accountData } = useQuery(AccountQuery, {
+    variables: { id: sourceAccountId },
+  });
+
+  const isCardAccount =
+    accountData?.account?.institutionLink?.institution?.types?.includes(
+      InstitutionType.Card,
+    );
+  const isDebitCard = accountData?.account?.institutionLink?.cards?.some(
+    (c) => c.type === CardType.Debit,
   );
-  const [createInstallmentTransaction, { loading: installmentLoading }] =
-    useMutation(CreateInstallmentTransactionMutation);
-  const loading = createLoading || installmentLoading;
 
-  const form = useForm<z.infer<typeof formStepperExpenseSchema>>({
-    resolver: zodResolver(formStepperExpenseSchema),
-    defaultValues: {
-      isCompleted: false,
-      isInstallment: false,
-    },
-  });
-
-  const isInstallment = useWatch({
-    control: form.control,
-    name: 'isInstallment',
-  });
-
-  const watchedAmount = useWatch({
-    control: form.control,
-    name: 'amount',
-  });
-
-  const watchedInstallmentCount = useWatch({
-    control: form.control,
-    name: 'installmentCount',
-  });
-
-  const installmentValue = useMemo(() => {
-    if (
-      isInstallment &&
-      watchedAmount &&
-      watchedInstallmentCount &&
-      watchedInstallmentCount > 1
-    ) {
-      return (watchedAmount / watchedInstallmentCount).toFixed(2);
-    }
-    return null;
-  }, [isInstallment, watchedAmount, watchedInstallmentCount]);
-
-  const selectedDate = useWatch({
-    control: form.control,
-    name: 'date',
-  });
-
-  const showIsCompleted = selectedDate && isToday(selectedDate);
-
-  const paymentMethodOptions = Object.values(PaymentMethod)
-    .filter((m) => !['CREDIT_CARD', 'DEBIT_CARD'].includes(m))
-    .map((method) => ({
-      value: method,
-      label: paymentMethodLabel[method],
-    }));
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const paymentMethodIcon: Record<PaymentMethod, any> = {
-    CASH: Banknote,
-    CREDIT_CARD: CreditCard,
-    DEBIT_CARD: CreditCard,
-    PIX: PixIcon,
-    BOLETO: Receipt,
-  };
+  if (!accountData?.account) return null;
 
   return (
-    <TsForm
-      form={form}
-      schema={formStepperExpenseSchema}
-      props={{
-        category: {
-          options: categoryOptions,
-          renderLabel: renderCategoryLabel,
-        } as any,
-
-        paymentMethod: {
-          options: paymentMethodOptions,
-          renderLabel: (option) => {
-            const Icon = paymentMethodIcon[option.value as PaymentMethod];
-            return (
-              <div className="flex items-center gap-2">
-                <Icon className="h-5 w-5" />
-                <p>{option.label}</p>
-              </div>
-            );
-          },
-        },
-      }}
-      onSubmit={async (data) => {
-        if (
-          data.isInstallment &&
-          data.installmentCount &&
-          data.installmentCount > 1
-        ) {
-          await createInstallmentTransaction({
-            variables: {
-              data: {
-                description: data.description,
-                totalAmount: data.amount,
-                totalInstallments: data.installmentCount,
-                startDate: data.date,
-                sourceAccountId: sourceAccountId,
-              },
-            },
-            refetchQueries: [
-              TransactionsQuery,
-              TransactionsGroupedByPeriodQuery,
-              TransactionsSummaryQuery,
-              BalanceForecastQuery,
-              TransactionsCalendarQuery,
-              FinancialAgendaQuery,
-              BillingQuery,
-            ],
-            onCompleted: () => {
-              toast.success(
-                `Parcelamento criado em ${data.installmentCount}x!`,
-                {
-                  description: 'As parcelas foram geradas com sucesso.',
-                },
-              );
-              onClose();
-            },
-            onError: (error) => {
-              toast.error('Erro ao criar parcelamento', {
-                description: error.message,
-              });
-            },
-          });
-        } else {
-          await createTransaction({
-            variables: {
-              data: {
-                date: data.date,
-                type: TransactionType.Expense,
-                sourceAccountId: sourceAccountId,
-                isCompleted: data.isCompleted,
-                description: data.description,
-                amount: data.amount,
-                paymentMethod: data.paymentMethod?.value as PaymentMethod,
-
-                category: data.category?.value as
-                  | TransactionCategory
-                  | undefined,
-              },
-            },
-            refetchQueries: [
-              TransactionsQuery,
-              TransactionsGroupedByPeriodQuery,
-              TransactionsSummaryQuery,
-              BalanceForecastQuery,
-              TransactionsCalendarQuery,
-              FinancialAgendaQuery,
-              BillingQuery,
-            ],
-            onCompleted: () => {
-              toast.success('Movimentação criada!', {
-                description: 'As informações foram salvas com sucesso.',
-              });
-              onClose();
-            },
-            onError: (error) => {
-              toast.error('Erro ao criar movimentação', {
-                description: error.message,
-              });
-            },
-          });
-        }
-      }}
-      renderAfter={() => (
-        <DialogFooter>
-          <Button type="submit" disabled={loading} loading={loading}>
-            Salvar
-          </Button>
-        </DialogFooter>
-      )}
-    >
-      {({
-        date,
-        isCompleted,
-        amount,
-        description,
-        paymentMethod,
-        isInstallment: isInstallmentField,
-        installmentCount,
-      }) => (
-        <>
-          {date}
-          {showIsCompleted && isCompleted}
-          {amount}
-          {description}
-          {paymentMethod}
-          <Separator />
-          {isInstallmentField}
-          {isInstallment && installmentCount}
-          {installmentValue && (
-            <p className="text-sm text-muted-foreground">
-              Valor de cada parcela:{' '}
-              <strong>{formatCurrency(Number(installmentValue))}</strong>
-            </p>
-          )}
-        </>
-      )}
-    </TsForm>
+    <ExpenseTransactionFormDetails
+      sourceAccountId={sourceAccountId}
+      sourceCardId={sourceCardId}
+      isCardAccount={isCardAccount}
+      isDebitCard={isDebitCard}
+      onClose={onClose}
+      currentStep={currentStep}
+      setCurrentStep={setCurrentStep}
+      isRecurrence={isRecurrence}
+      setIsRecurrence={setIsRecurrence}
+    />
   );
 }
 
@@ -3554,120 +3770,18 @@ function BetweenAccountsTransactionFormContent({
   destinyAccountId: string;
   onClose: () => void;
 }) {
-  const [createTransaction, { loading }] = useMutation(
-    CreateTransactionMutation,
-  );
-
-  const form = useForm<z.infer<typeof formStepperBetweenAccountsSchema>>({
-    resolver: zodResolver(formStepperBetweenAccountsSchema),
-    defaultValues: {
-      isCompleted: false,
-    },
-  });
-
-  const selectedDate = useWatch({
-    control: form.control,
-    name: 'date',
-  });
-
-  const showIsCompleted = selectedDate && isToday(selectedDate);
-
-  const paymentMethodOptions = Object.values(PaymentMethod)
-    .filter(
-      (option) =>
-        ![PaymentMethod.CreditCard, PaymentMethod.DebitCard].includes(option),
-    )
-    .map((method) => ({
-      value: method,
-      label: paymentMethodLabel[method],
-    }));
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const paymentMethodIcon: Record<PaymentMethod, any> = {
-    CASH: Banknote,
-    CREDIT_CARD: CreditCard,
-    DEBIT_CARD: CreditCard,
-    PIX: PixIcon,
-    BOLETO: Receipt,
-  };
+  const [currentStep, setCurrentStep] = useState(3);
+  const [isRecurrence, setIsRecurrence] = useState(false);
 
   return (
-    <TsForm
-      form={form}
-      schema={formStepperBetweenAccountsSchema}
-      props={{
-        category: {
-          options: categoryOptions,
-          renderLabel: renderCategoryLabel,
-        } as any,
-
-        paymentMethod: {
-          options: paymentMethodOptions,
-          renderLabel: (option) => {
-            const Icon = paymentMethodIcon[option.value as PaymentMethod];
-            return (
-              <div className="flex items-center gap-2">
-                <Icon className="h-5 w-5" />
-                <p>{option.label}</p>
-              </div>
-            );
-          },
-        },
-      }}
-      onSubmit={async (data) => {
-        await createTransaction({
-          variables: {
-            data: {
-              date: data.date,
-              type: TransactionType.BetweenAccounts,
-              sourceAccountId: sourceAccountId,
-              destinyAccountId: destinyAccountId,
-              isCompleted: data.isCompleted,
-              description: data.description,
-              amount: data.amount,
-              paymentMethod: data.paymentMethod?.value as PaymentMethod,
-
-              category: data.category?.value as TransactionCategory | undefined,
-            },
-          },
-          refetchQueries: [
-            TransactionsQuery,
-            TransactionsGroupedByPeriodQuery,
-            TransactionsSummaryQuery,
-            BalanceForecastQuery,
-            TransactionsCalendarQuery,
-            FinancialAgendaQuery,
-          ],
-          onCompleted: () => {
-            toast.success('Movimentação criada!', {
-              description: 'As informações foram salvas com sucesso.',
-            });
-            onClose();
-          },
-          onError: (error) => {
-            toast.error('Erro ao criar movimentação', {
-              description: error.message,
-            });
-          },
-        });
-      }}
-      renderAfter={() => (
-        <DialogFooter>
-          <Button type="submit" disabled={loading} loading={loading}>
-            Salvar
-          </Button>
-        </DialogFooter>
-      )}
-    >
-      {({ date, isCompleted, amount, description, paymentMethod }) => (
-        <>
-          {date}
-          {showIsCompleted && isCompleted}
-          {amount}
-          {description}
-          {paymentMethod}
-        </>
-      )}
-    </TsForm>
+    <BetweenAccountsTransactionFormDetails
+      sourceAccountId={sourceAccountId}
+      destinyAccountId={destinyAccountId}
+      onClose={onClose}
+      currentStep={currentStep}
+      setCurrentStep={setCurrentStep}
+      isRecurrence={isRecurrence}
+      setIsRecurrence={setIsRecurrence}
+    />
   );
 }

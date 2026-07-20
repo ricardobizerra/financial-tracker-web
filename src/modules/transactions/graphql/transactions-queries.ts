@@ -13,21 +13,35 @@ export const TransactionsFragment = graphql(`
     sourceAccount {
       id
       name
+      institutionLink {
+        institution {
+          id
+          name
+          logoUrl
+        }
+      }
+    }
+    sourceCard {
+      id
+      name
       type
-      institution {
-        id
-        name
-        logoUrl
+      institutionLink {
+        institution {
+          id
+          name
+          logoUrl
+        }
       }
     }
     destinyAccount {
       id
       name
-      type
-      institution {
-        id
-        name
-        logoUrl
+      institutionLink {
+        institution {
+          id
+          name
+          logoUrl
+        }
       }
     }
     billingPayment {
@@ -37,11 +51,16 @@ export const TransactionsFragment = graphql(`
       periodEnd
       paymentDate
       limit
-      accountCard {
+      card {
+        id
+        name
         lastFourDigits
-        account {
+        institutionLink {
           id
-          name
+          account {
+            id
+            name
+          }
           institution {
             id
             name
@@ -54,8 +73,20 @@ export const TransactionsFragment = graphql(`
       id
       status
       periodEnd
+      paymentDate
       paymentTransaction {
         description
+        sourceAccount {
+          id
+          name
+          institutionLink {
+            institution {
+              id
+              name
+              logoUrl
+            }
+          }
+        }
       }
     }
     status
@@ -65,10 +96,15 @@ export const TransactionsFragment = graphql(`
       id
       installmentNumber
       amount
+      cardBilling {
+        id
+        periodEnd
+        paymentDate
+      }
     }
-    canCancel
-    cancelReason
-    cancelWarningMessage
+    canDelete
+    deleteReason
+    deleteWarningMessage
     installmentStartDate
     installmentNumber
     totalInstallments
@@ -182,8 +218,8 @@ export const TransactionsGroupedByPeriodQuery = graphql(`
 `);
 
 export const BillingTransactionsQuery = graphql(`
-  query BillingTransactions($billingId: ID!) {
-    billingTransactions(billingId: $billingId) {
+  query BillingTransactions($billingId: ID!, $search: String) {
+    billingTransactions(billingId: $billingId, search: $search) {
       ...TransactionFragment
     }
   }
