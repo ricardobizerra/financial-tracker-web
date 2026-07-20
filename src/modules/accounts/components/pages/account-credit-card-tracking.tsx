@@ -88,17 +88,19 @@ export function AccountCreditCardTracking({
   const nextBillingId = data?.billing?.nextBillingId;
   const previousBillingId = data?.billing?.previousBillingId;
 
+  const changeBillingDatesDefaultValues = useMemo(() => ({
+    closingDate: billing?.periodEnd
+      ? new Date(billing.periodEnd)
+      : new Date(),
+    paymentDate: billing?.paymentDate
+      ? new Date(billing.paymentDate)
+      : new Date(),
+  }), [billing?.periodEnd, billing?.paymentDate]);
+
   const changeBillingDatesForm = useForm<
     z.infer<typeof changeBillingDatesSchema>
   >({
-    values: {
-      closingDate: billing?.periodEnd
-        ? new Date(billing.periodEnd)
-        : new Date(),
-      paymentDate: billing?.paymentDate
-        ? new Date(billing.paymentDate)
-        : new Date(),
-    },
+    values: changeBillingDatesDefaultValues,
   });
 
   const handleChangeBillingDates = async (
@@ -209,6 +211,7 @@ export function AccountCreditCardTracking({
   const availableLimit = Number(billing.card.availableLimit ?? 0);
   const unpaidBalance = Number(billing.card.unpaidBalance ?? 0);
   const usagePercentage = Number(billing.card.usagePercentage ?? 0);
+  const isFuture = billing.status === CardBillingStatus.Future;
   const isPending = billing.status === CardBillingStatus.Pending;
   const isClosed = billing.status === CardBillingStatus.Closed;
   const isOverdue = billing.status === CardBillingStatus.Overdue;
@@ -337,8 +340,8 @@ export function AccountCreditCardTracking({
                 className={cn(
                   'relative flex shrink-0 snap-center flex-col items-center justify-center overflow-hidden rounded-2xl border p-5 shadow-sm transition-all duration-300',
                   isActive
-                    ? 'z-10 min-h-[160px] w-[280px] scale-100 border-zinc-700 bg-zinc-950/80 shadow-lg backdrop-blur-md sm:w-[320px]'
-                    : 'min-h-[140px] w-[240px] scale-95 cursor-pointer border-zinc-800/60 bg-zinc-950/40 opacity-70 hover:bg-zinc-950/60 hover:opacity-100 sm:w-[260px]',
+                    ? 'z-10 min-h-[160px] w-[280px] scale-100 border-zinc-200 dark:border-zinc-700 bg-card dark:bg-zinc-900/90 shadow-md backdrop-blur-md sm:w-[320px]'
+                    : 'min-h-[140px] w-[240px] scale-95 cursor-pointer border-zinc-200/60 dark:border-zinc-800/60 bg-zinc-50 dark:bg-zinc-950/40 opacity-70 hover:bg-zinc-100 dark:hover:bg-zinc-950/60 hover:opacity-100 sm:w-[260px]',
                 )}
               >
                 {/* Status Badge */}
@@ -388,7 +391,7 @@ export function AccountCreditCardTracking({
                   className={cn(
                     'text-center font-bold',
                     isActive
-                      ? 'text-lg text-primary'
+                      ? 'text-lg text-emerald-600 dark:text-emerald-400'
                       : 'text-base text-muted-foreground',
                   )}
                 >
@@ -418,7 +421,7 @@ export function AccountCreditCardTracking({
         {/* Left Column: Stats & Actions */}
         <div className="space-y-6 lg:col-span-4">
           {/* Actions Panel */}
-          {isPending && (
+          {(isPending || isFuture) && (
             <Card className="rounded-xl border bg-card p-4 shadow-sm">
               <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Ações da Fatura
@@ -503,11 +506,13 @@ export function AccountCreditCardTracking({
             <div className="flex min-h-[100px] flex-col justify-between rounded-xl border bg-card p-4 shadow-sm">
               <div>
                 <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  {isPending
-                    ? 'Fatura Atual'
-                    : isPaid
-                      ? 'Valor Pago'
-                      : 'A Pagar'}
+                  {isFuture
+                    ? 'Fatura Planejada'
+                    : isPending
+                      ? 'Fatura Atual'
+                      : isPaid
+                        ? 'Valor Pago'
+                        : 'A Pagar'}
                 </div>
                 <div
                   className={cn(
@@ -523,7 +528,7 @@ export function AccountCreditCardTracking({
                 </div>
               </div>
               <div className="mt-2 text-xs text-muted-foreground">
-                {isPending ? (
+                {isPending || isFuture ? (
                   <>Fechamento em {formatDate(billing.periodEnd)}</>
                 ) : (
                   billing.paymentDate && (
@@ -535,7 +540,7 @@ export function AccountCreditCardTracking({
 
             {/* Second Card - Context-dependent */}
             <div className="flex min-h-[100px] flex-col justify-between rounded-xl border bg-card p-4 shadow-sm">
-              {isPending ? (
+              {isPending || isFuture ? (
                 <>
                   <div>
                     <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">

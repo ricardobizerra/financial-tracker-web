@@ -14,6 +14,7 @@ type CardBillingStatusBadgeProps = {
 };
 
 const statusDotColors: Record<CardBillingStatus, string> = {
+  [CardBillingStatus.Future]: 'bg-sky-500 dark:bg-sky-400',
   [CardBillingStatus.Pending]: 'bg-green-500 dark:bg-green-400',
   [CardBillingStatus.Closed]: 'bg-amber-500 dark:bg-amber-400',
   [CardBillingStatus.Overdue]: 'bg-white dark:bg-red-100',

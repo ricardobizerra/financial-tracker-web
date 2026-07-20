@@ -913,6 +913,7 @@ export type CardBillingRelationFilter = {
 export enum CardBillingStatus {
   Closed = 'CLOSED',
   Completed = 'COMPLETED',
+  Future = 'FUTURE',
   Overdue = 'OVERDUE',
   Paid = 'PAID',
   Pending = 'PENDING'

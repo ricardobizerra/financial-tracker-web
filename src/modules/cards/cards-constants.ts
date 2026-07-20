@@ -1,6 +1,7 @@
 import { CardBillingStatus } from '@/graphql/graphql';
 
 export const cardBillingStatusLabels: Record<CardBillingStatus, string> = {
+  [CardBillingStatus.Future]: 'Planejada',
   [CardBillingStatus.Pending]: 'Aberta',
   [CardBillingStatus.Paid]: 'Paga',
   [CardBillingStatus.Overdue]: 'Vencida',
@@ -9,6 +10,8 @@ export const cardBillingStatusLabels: Record<CardBillingStatus, string> = {
 };
 
 export const cardBillingStatusClassNames: Record<CardBillingStatus, string> = {
+  [CardBillingStatus.Future]:
+    'bg-sky-50 text-sky-700 border-sky-200/80 dark:bg-sky-950/40 dark:text-sky-400 dark:border-sky-900/50',
   [CardBillingStatus.Pending]:
     'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 border-green-500/50 dark:border-green-400/50',
   [CardBillingStatus.Closed]:
